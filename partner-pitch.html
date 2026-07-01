@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Waypoint Partner Pitch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #2c2c2c;
+      background: #fff;
+      padding: 40px 20px;
+    }
+    a:focus-visible {
+      outline: 2px solid #13231A;
+      outline-offset: 2px;
+    }
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 3px solid #E7C57E;
+    }
+    .logo {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #13231A;
+      margin-bottom: 8px;
+    }
+    .tagline {
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+      font-weight: 500;
+    }
+    h1 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1.2;
+      color: #13231A;
+      margin: 40px 0 24px;
+      text-wrap: balance;
+    }
+    h2 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: #13231A;
+      margin: 32px 0 16px;
+      text-wrap: balance;
+    }
+    h3 {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: #13231A;
+      margin: 20px 0 12px;
+    }
+    p {
+      margin-bottom: 16px;
+      max-width: 70ch;
+      text-wrap: pretty;
+    }
+    .intro {
+      font-size: 18px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+      color: #1a1a1a;
+      font-style: italic;
+      text-wrap: pretty;
+    }
+    .highlight-box {
+      background: #faf9f6;
+      padding: 20px;
+      margin: 28px 0;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .highlight-box em {
+      font-style: italic;
+      color: #13231A;
+    }
+    ol {
+      list-style: none;
+      counter-reset: item;
+      margin: 24px 0;
+    }
+    ol li {
+      counter-increment: item;
+      margin-bottom: 28px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    ol li::before {
+      content: counter(item);
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: #E7C57E;
+    }
+    ol li strong {
+      display: block;
+      font-weight: 600;
+      color: #13231A;
+      margin-bottom: 4px;
+    }
+    .needs {
+      background: #f9f8f4;
+      padding: 24px;
+      margin: 28px 0;
+      border-radius: 4px;
+    }
+    .needs h3 {
+      margin-top: 0;
+    }
+    ul {
+      list-style: none;
+      margin: 16px 0;
+    }
+    ul li {
+      padding-left: 24px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    ul li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #E7C57E;
+      font-weight: bold;
+    }
+    .contact {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 14px;
+    }
+    .contact-name {
+      font-weight: 600;
+      color: #13231A;
+      margin-bottom: 6px;
+    }
+    .contact-details {
+      color: #666;
+      margin-bottom: 16px;
+    }
+    .footer-note {
+      font-size: 13px;
+      color: #999;
+      margin-top: 20px;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 24px 16px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      .intro {
+        font-size: 16px;
+      }
+    }
+    @media print {
+      body {
+        padding: 0;
+        background: white;
+      }
+      .container {
+        max-width: 100%;
+      }
+      header {
+        page-break-after: avoid;
+      }
+      h2 {
+        page-break-after: avoid;
+      }
+      ol li {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">WAYPOINT</div>
+      <div class="tagline">Student Health Corps · New York City</div>
+    </header>
+
+    <p class="intro">
+      A trained student volunteer corps that reliably brings underserved New Yorkers (especially elderly, low-income, and immigrant residents) to the free health resources, programs, and professionals that already exist but go unused.
+    </p>
+
+    <h1>The gap we close</h1>
+    <p>New York is full of free help: senior centers, benefits counselors, clinics, Medicare assistance, food and transit programs. Most of it goes underused, not because it doesn't exist, but because no one reliably walks people to the door.</p>
+    <p>Waypoint is that bridge: vetted, trained student volunteers who show up on a schedule and connect neighbors to the professionals already serving them. We're not building a parallel health service. We're filling in the one piece the existing system is missing: someone reliable to make the introduction.</p>
+
+    <div class="highlight-box">
+      <em>"We are trained student volunteers who connect you to free and low-cost health resources that already exist in NYC. We are not doctors, nurses, social workers, or benefits counselors. We share information; we do not give medical or legal advice. We never charge for anything."</em>
+    </div>
+
+    <h1>How a Resource Navigation Event works</h1>
+    <ol>
+      <li>
+        <div>
+          <strong>Outreach & greeting</strong>
+          Students welcome community members at a library, senior center, or community space and listen for what they need.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Plain-language triage</strong>
+          Students help identify which free programs might fit, in the resident's language where possible, and explain rather than advise.
+        </div>
+      </li>
+      <li>
+        <div>
+          <strong>Warm handoff</strong>
+          A certified enrollment counselor or HIICAP-trained partner on site handles any regulated work; the resident leaves with one concrete next step.
+        </div>
+      </li>
+    </ol>
+
+    <h1>Why now</h1>
+    <p>We're launching in 2026 with Resource Navigation events aligned to NYC Aging, at libraries and senior centers. The model is deliberately low-risk and easy to host: students inform and refer only. They never perform enrollment, give medical or legal advice, or work unsupervised with vulnerable adults.</p>
+
+    <div class="needs">
+      <h3>What we're looking for</h3>
+      <ul>
+        <li>A venue to co-host a first Resource Navigation event. Library branches, senior centers, and community spaces all work well.</li>
+        <li>A faculty or institutional advisor to anchor the program.</li>
+        <li>A certified enrollment counselor or HIICAP-trained partner to co-staff events.</li>
+      </ul>
+    </div>
+
+    <div class="contact">
+      <div class="contact-name">Michael · Founder, Waypoint</div>
+      <div class="contact-details">waypointoutreach@gmail.com · 347-725-8708 · [website URL]</div>
+      <div class="footer-note">A student-led volunteer initiative based in New York City.</div>
+    </div>
+  </div>
+</body>
+</html>

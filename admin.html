@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Submissions — Waypoint admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{ --green-deep:#13231A; --green:#1E3528; --mint:#FBFFF4; --gold:#E7C57E; --muted:#ABA08E; --line:rgba(252,254,247,.14); }
+  *{ box-sizing:border-box; margin:0; }
+  body{ font-family:"Inter",system-ui,sans-serif; background:var(--green-deep); color:var(--mint); padding:clamp(20px,5vw,56px); line-height:1.5; }
+  h1{ font-family:"Fraunces",serif; font-weight:500; font-size:clamp(1.8rem,4vw,2.6rem); letter-spacing:-.02em; }
+  p.sub{ color:var(--muted); margin-top:6px; }
+  .gate{ max-width:420px; margin:48px 0; display:flex; flex-direction:column; gap:12px; }
+  label{ font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  input{ font:inherit; color:var(--mint); background:rgba(252,254,247,.05); border:1px solid var(--line); border-radius:8px; padding:12px 14px; }
+  input:focus{ outline:none; border-color:var(--gold); }
+  button{ font:inherit; font-weight:600; cursor:pointer; background:var(--gold); color:var(--green-deep); border:0; border-radius:8px; padding:12px 22px; align-self:flex-start; }
+  .bar{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:24px 0; }
+  .count{ color:var(--muted); font-size:14px; }
+  .filter{ background:none; border:1px solid var(--line); color:var(--mint); border-radius:100px; padding:7px 16px; font-size:13px; }
+  .filter.on{ background:var(--gold); color:var(--green-deep); border-color:var(--gold); }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th,td{ text-align:left; padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th{ color:var(--muted); font-weight:600; font-size:12px; letter-spacing:.06em; text-transform:uppercase; }
+  .tag{ font-size:11px; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border:1px solid var(--line); border-radius:100px; color:var(--gold); }
+  .pay{ color:var(--muted); white-space:pre-wrap; }
+  a{ color:var(--gold); }
+  .err{ color:#f0b58a; margin-top:10px; }
+  .hide{ display:none; }
+</style>
+</head>
+<body>
+  <h1>Submissions</h1>
+  <p class="sub">Waypoint admin · private. Submissions are read through a password-gated function; the database is never exposed publicly.</p>
+
+  <form class="gate" id="gate">
+    <label for="tok">Admin password</label>
+    <input id="tok" type="password" autocomplete="off" placeholder="Enter admin token" />
+    <button type="submit">View submissions</button>
+    <div class="err hide" id="err"></div>
+  </form>
+
+  <section id="panel" class="hide">
+    <div class="bar">
+      <span class="count" id="count"></span>
+      <button class="filter on" data-f="all">All</button>
+      <button class="filter" data-f="students">Students</button>
+      <button class="filter" data-f="partners">Partners</button>
+      <button class="filter" data-f="schools">Schools</button>
+      <button class="filter" id="refresh">Refresh</button>
+      <button class="filter" id="logout">Lock</button>
+    </div>
+    <table>
+      <thead><tr><th>When</th><th>Type</th><th>Name</th><th>Email</th><th>Details</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+
+<script>
+  // Set at deploy time to the Waypoint project's functions URL:
+  var ADMIN_ENDPOINT = "https://zzsqvztwbhdgrdvjpbrr.supabase.co/functions/v1/admin-list";
+  var ALL = [], FILTER = "all", TOKEN = "";
+  var $ = function(s){ return document.querySelector(s); };
+
+  function esc(s){ return String(s==null?"":s).replace(/[&<>]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c]; }); }
+
+  function render(){
+    var rows = ALL.filter(function(r){ return FILTER==="all" || r.form_type===FILTER; });
+    $("#count").textContent = rows.length + " of " + ALL.length + " submissions";
+    $("#rows").innerHTML = rows.map(function(r){
+      var when = new Date(r.created_at).toLocaleString();
+      var pay = Object.entries(r.payload||{}).map(function(kv){ return esc(kv[0])+": "+esc(kv[1]); }).join("\n");
+      return "<tr><td>"+esc(when)+"</td><td><span class='tag'>"+esc(r.form_type)+"</span></td><td>"+esc(r.name)+
+             "</td><td><a href='mailto:"+esc(r.email)+"'>"+esc(r.email)+"</a></td><td class='pay'>"+esc(pay)+"</td></tr>";
+    }).join("") || "<tr><td colspan='5' style='color:var(--muted)'>No submissions yet.</td></tr>";
+  }
+
+  function load(){
+    return fetch(ADMIN_ENDPOINT, { headers: { "x-admin-token": TOKEN } }).then(function(r){
+      if(!r.ok) throw new Error(r.status===401?"Wrong password.":"Error "+r.status);
+      return r.json();
+    }).then(function(d){ ALL = d.rows||[]; $("#gate").classList.add("hide"); $("#panel").classList.remove("hide"); render(); });
+  }
+
+  $("#gate").addEventListener("submit", function(e){
+    e.preventDefault(); TOKEN = $("#tok").value.trim(); $("#err").classList.add("hide");
+    load().catch(function(err){ $("#err").textContent = err.message; $("#err").classList.remove("hide"); });
+  });
+  document.querySelectorAll(".filter[data-f]").forEach(function(b){
+    b.addEventListener("click", function(){ FILTER=b.dataset.f; document.querySelectorAll(".filter[data-f]").forEach(function(x){x.classList.toggle("on",x===b);}); render(); });
+  });
+  $("#refresh").addEventListener("click", function(){ load().catch(function(){}); });
+  $("#logout").addEventListener("click", function(){ TOKEN=""; ALL=[]; $("#panel").classList.add("hide"); $("#gate").classList.remove("hide"); $("#tok").value=""; });
+</script>
+</body>
+</html>
