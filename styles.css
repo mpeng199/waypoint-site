@@ -26,6 +26,10 @@
 
 *{ box-sizing:border-box; margin:0; padding:0; }
 html{ -webkit-text-size-adjust:100%; }
+/* Lenis (vendored) needs these to hand scrolling over cleanly */
+html.lenis,html.lenis body{ height:auto; }
+.lenis.lenis-smooth{ scroll-behavior:auto !important; }
+.lenis.lenis-stopped{ overflow:hidden; }
 body{
   font-family:var(--sans); background:var(--green-deep); color:var(--cream);
   line-height:1.6; font-size:17px; -webkit-font-smoothing:antialiased;
@@ -52,14 +56,72 @@ img,svg{ display:block; max-width:100%; }
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
 /* ============================================================
+   THE DOOR — WebGL centrepiece, with a CSS poster underneath it.
+   The poster is a finished picture in its own right: if WebGL is
+   missing or slow to arrive, this is what the hero looks like.
+   ============================================================ */
+.doorstage{ position:fixed; inset:0; z-index:0; pointer-events:none; background:#080f0b;
+  opacity:var(--doorShow,1); transition:opacity .25s linear; }
+.doorstage__poster{ position:absolute; inset:0; overflow:hidden; }
+/* hold the poster until the canvas is fully opaque, then drop it in one step:
+   crossfading the two double-exposes the beam */
+.doorstage--on .doorstage__poster{ opacity:0; transition:opacity .01s linear .55s; }
+.no-gl .doorstage__poster{ opacity:1 !important; }
+.doorstage__poster{ --dw:clamp(150px,15vw,230px); --dh:min(58vh,470px); --dx:50%; --dy:50%; }
+.poster__wall{ position:absolute; inset:0;
+  background:radial-gradient(130% 95% at 50% 44%, #16261c 0%, #0c150f 52%, #070c09 100%); }
+/* the casing: what makes it read as a door in a wall */
+.poster__case{ position:absolute; left:var(--dx); top:var(--dy); width:var(--dw); height:var(--dh);
+  transform:translate(-50%,-50%); border:2px solid rgba(128,106,71,.65); border-bottom:0; border-radius:1px;
+  box-shadow:inset 0 0 46px rgba(0,0,0,.66), inset -3px 0 14px rgba(255,214,152,.20); }
+/* the panel, hinged at the left jamb and swung toward the viewer */
+.poster__panel{ position:absolute; left:calc(var(--dx) - var(--dw) * .5); top:var(--dy);
+  width:calc(var(--dw) * .96); height:calc(var(--dh) * .99);
+  transform:translate(0,-50%) perspective(820px) rotateY(-26deg); transform-origin:left center;
+  background:linear-gradient(90deg, #0b1209 0%, #0d150d 74%, #2a2214 96%, #6b5330 100%);
+  box-shadow:10px 0 30px rgba(0,0,0,.7); }
+/* the opening: a slit of daylight on the latch side */
+.poster__glow{ position:absolute; left:calc(var(--dx) + var(--dw) * .43); top:var(--dy);
+  width:calc(var(--dw) * .15); height:calc(var(--dh) * .985); transform:translate(-50%,-50%);
+  background:linear-gradient(180deg,#fff6e6,#f7dcae 52%,#e8bd7d);
+  box-shadow:0 0 24px 6px rgba(255,221,168,.6), 0 0 90px 26px rgba(231,197,126,.32); }
+/* the glare it throws into the room: soft, no geometry */
+.poster__beam{ position:absolute; left:calc(var(--dx) + var(--dw) * .43); top:var(--dy);
+  width:min(150vw,1800px); height:min(96vh,900px); transform:translate(-50%,-50%);
+  background:
+    radial-gradient(closest-side at 50% 50%, rgba(255,223,175,.34) 0%, rgba(240,203,150,.12) 42%, transparent 72%),
+    radial-gradient(38% 12% at 50% 50%, rgba(255,232,196,.5) 0%, transparent 78%);
+  filter:blur(26px); }
+/* and the pool it lays on the floor */
+.poster__pool{ position:absolute; left:calc(var(--dx) + var(--dw) * .46);
+  top:calc(var(--dy) + var(--dh) * .5); width:min(120vw,1400px); height:min(46vh,420px);
+  transform:translate(-50%,-14%);
+  background:radial-gradient(closest-side at 50% 30%, rgba(255,218,163,.30) 0%, rgba(231,197,126,.09) 46%, transparent 76%);
+  filter:blur(30px); }
+#doorCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block;
+  opacity:0; transition:opacity .5s var(--ease-out); }
+.doorstage--on #doorCanvas{ opacity:1; }
+.no-gl .doorstage--on #doorCanvas{ opacity:0; }
+
+/* the bloom that covers the handover from the door to the painted world */
+.threshold{ position:fixed; inset:0; z-index:2; pointer-events:none; opacity:0;
+  background:radial-gradient(70% 55% at 50% 48%, rgba(255,244,224,.95) 0%, rgba(247,219,172,.72) 38%, rgba(231,197,126,0) 78%); }
+
+/* ============================================================
    THREAD you follow (fixed center line + comet)
    ============================================================ */
-.spiral{ position:fixed; inset:0; z-index:1; pointer-events:none; }
+.spiral{ position:fixed; inset:0; z-index:1; pointer-events:none; opacity:var(--worldShow,0); }
 @media (max-width:900px){ .spiral{ display:none; } }
+
+/* skip link */
+.skip{ position:absolute; left:-9999px; top:0; z-index:200; background:var(--cream); color:var(--green-deep);
+  padding:12px 18px; border-radius:0 0 6px 0; font-weight:600; font-size:14px; }
+.skip:focus{ left:0; }
 
 /* progress rail (EverSwap-style diamonds) */
 .rail{ position:fixed; left:clamp(14px,2.4vw,34px); top:50%; transform:translateY(-50%); z-index:40;
-  display:flex; flex-direction:column; gap:18px; }
+  display:flex; flex-direction:column; gap:18px; transition:opacity .5s var(--ease); }
+.at-door .rail{ opacity:0; pointer-events:none; }
 .rail button{ width:11px; height:11px; padding:0; border:0; background:none; cursor:pointer; display:grid; place-items:center; }
 .rail button::before{ content:""; width:7px; height:7px; border:1px solid rgba(252,254,247,.5);
   transform:rotate(45deg); transition:all .35s var(--ease); }
@@ -249,6 +311,70 @@ img,svg{ display:block; max-width:100%; }
 .legal__date{ margin-top:36px; padding-top:20px; border-top:1px solid rgba(252,254,247,.14); font-size:13px; color:var(--ink-faint); }
 
 /* ============================================================
+   THE HERO — text arranged around the doorway, Jesko-style split.
+   Scrolling drives --doorT from 0 to 1; the type falls away as the
+   camera moves through the opening.
+   ============================================================ */
+.hero{ position:relative; height:240vh; z-index:3; }
+.hero__sticky{ position:sticky; top:0; height:100svh; overflow:hidden; }
+.hero__ui{ position:absolute; inset:0; z-index:3;
+  padding:clamp(96px,13vh,152px) var(--pad) clamp(26px,5vh,54px);
+  display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-rows:auto 1fr auto;
+  column-gap:24px; row-gap:clamp(16px,3vh,36px);
+  opacity:clamp(0, calc(1 - var(--doorT,0) * 1.45), 1);
+  transform:scale(calc(1 + var(--doorT,0) * 0.22));
+  filter:blur(calc(var(--doorT,0) * 16px));
+  will-change:opacity,transform,filter; }
+.hero__eye{ grid-area:1/1/2/3; margin:0; }
+.hero__head{ grid-area:2/1/3/3; margin:0; font-weight:400; display:grid;
+  grid-template-columns:1fr 1fr; grid-template-rows:auto auto; align-content:space-between; }
+.hero__l,.hero__r{ display:block; font-family:var(--display); font-weight:400; letter-spacing:-.032em;
+  line-height:.95; font-size:clamp(2.5rem,6.4vw,6rem); text-shadow:0 2px 50px rgba(6,12,9,.8); }
+.hero__l em,.hero__r em{ font-style:italic; color:var(--gold); }
+.hero__l{ grid-column:1; grid-row:1; max-width:12ch; }
+.hero__r{ grid-column:2; grid-row:2; justify-self:end; text-align:right; max-width:11ch; }
+.hero__foot{ grid-area:3/1/4/2; align-self:end; }
+.hero__lede{ max-width:40ch; font-size:clamp(1rem,1.35vw,1.2rem); color:var(--cream);
+  text-shadow:0 1px 26px rgba(6,12,9,.85); }
+.hero__cta{ margin-top:22px; display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
+.hero__cue{ grid-area:3/2/4/3; align-self:end; justify-self:end; display:flex; align-items:center; gap:14px;
+  font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
+.hero__cue i{ width:clamp(40px,7vw,74px); height:1px; background:rgba(252,254,247,.26); position:relative; overflow:hidden; }
+.hero__cue i::after{ content:""; position:absolute; top:0; bottom:0; left:-100%; width:100%; background:var(--gold); animation:cueX 2.4s var(--ease) infinite; }
+@keyframes cueX{ to{ left:100%; } }
+
+/* ============================================================
+   HOLD SCENES — the phrase holds its place while the substance
+   moves past it. Used where a partner needs real depth.
+   ============================================================ */
+.scene--hold{ position:relative; display:block; min-height:auto; padding:0 var(--pad); }
+.scene--hold::before{ content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:linear-gradient(180deg, transparent 0%, rgba(8,16,11,.60) 13%, rgba(8,16,11,.66) 87%, transparent 100%); }
+.hold{ position:relative; z-index:3; max-width:var(--container); margin-inline:auto;
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(28px,6vw,104px); align-items:start; }
+.hold__anchor{ position:sticky; top:26vh; grid-column:1; grid-row:1; padding-block:24vh 0; }
+.hold__stream{ grid-column:2; grid-row:1; display:grid; gap:clamp(46px,8.5vh,104px); padding-block:26vh 28vh; }
+.scene--hold-r .hold__anchor{ grid-column:2; }
+.scene--hold-r .hold__stream{ grid-column:1; }
+.scene--hold .phrase{ font-size:clamp(2.1rem,4.1vw,3.8rem); }
+.scene--hold .eyebrow{ margin-bottom:18px; }
+.beat{ font-size:clamp(1.02rem,1.35vw,1.22rem); line-height:1.62; color:rgba(252,254,247,.85);
+  max-width:48ch; text-shadow:0 1px 22px rgba(6,12,9,.8); }
+.beat b{ font-weight:600; color:var(--cream); }
+
+/* the honesty statement: the one thing that never bends */
+.scene--vow::before{ content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:radial-gradient(78% 62% at 50% 50%, rgba(8,16,11,.72) 0%, rgba(8,16,11,.52) 55%, transparent 100%); }
+.scene--vow .scene__inner{ max-width:min(880px,94%); }
+.vow{ margin:34px auto 0; max-width:52ch; font-family:var(--display); font-weight:400; font-style:italic;
+  font-size:clamp(1.18rem,2.1vw,1.75rem); line-height:1.5; color:var(--cream);
+  padding-block:30px; border-top:1px solid rgba(231,197,126,.45); border-bottom:1px solid rgba(231,197,126,.45);
+  text-shadow:0 1px 26px rgba(6,12,9,.8); }
+.say--after{ margin-top:26px; color:var(--ink-soft); font-size:clamp(1rem,1.3vw,1.15rem); }
+
+.footer__ul{ border-bottom:1px solid rgba(231,197,126,.5); }
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width:900px){
@@ -264,10 +390,33 @@ img,svg{ display:block; max-width:100%; }
   .footer__grid{ grid-template-columns:1fr 1fr; gap:28px; }
   .facts{ grid-template-columns:1fr 1fr; }
   .field{ grid-column:span 12; }
+
+  /* hero: stack the split headline, keep the door behind it */
+  .hero{ height:190vh; }
+  .hero__ui{ padding:clamp(88px,12vh,120px) var(--pad) clamp(22px,4vh,40px);
+    grid-template-columns:minmax(0,1fr); grid-template-rows:auto 1fr auto auto; row-gap:clamp(14px,2.4vh,26px); }
+  .hero__eye{ grid-area:1/1/2/2; }
+  .hero__head{ grid-area:2/1/3/2; grid-template-columns:1fr; grid-template-rows:auto auto;
+    align-content:center; gap:6px; }
+  .hero__l,.hero__r{ grid-column:1; max-width:100%; text-align:left; justify-self:start;
+    font-size:clamp(2.4rem,10.5vw,3.6rem); }
+  .hero__l{ grid-row:1; } .hero__r{ grid-row:2; }
+  .hero__foot{ grid-area:3/1/4/2; }
+  .hero__cue{ grid-area:4/1/5/2; justify-self:start; }
+
+  /* hold scenes: anchor stops holding, everything flows in one column */
+  .scene--hold{ padding:12vh var(--pad) !important; }
+  .scene--hold::before{ background:linear-gradient(180deg, transparent 0%, rgba(8,16,11,.62) 8%, rgba(8,16,11,.66) 92%, transparent 100%); }
+  .hold{ grid-template-columns:minmax(0,1fr); gap:clamp(26px,5vh,44px); }
+  .hold__anchor{ position:static; grid-column:1 !important; grid-row:auto; padding-block:0; }
+  .hold__stream{ grid-column:1 !important; grid-row:auto; padding-block:0; gap:clamp(30px,5vh,48px); }
+  .beat{ max-width:100%; }
+  .vow{ margin-inline:0; }
 }
 @media (max-width:560px){
   .footer__grid{ grid-template-columns:1fr; }
   .facts{ grid-template-columns:1fr; }
+  .hero__cta{ gap:14px; }
 }
 
 /* ============================================================
@@ -277,4 +426,11 @@ img,svg{ display:block; max-width:100%; }
   *{ animation:none !important; transition-duration:.01ms !important; }
   .focus-in{ filter:none; opacity:1; transform:none; }
   .stage__layer{ transform:none !important; }
+  /* the door is still there, already open; stepping through is a cut, not a move */
+  .hero{ height:100svh; }
+  .hero__ui{ opacity:1 !important; transform:none !important; filter:none !important; }
+  .threshold{ display:none; }
+  .hold__anchor{ position:static; padding-block:0; }
+  .hold__stream{ padding-block:0; }
+  .scene--hold{ padding-block:12vh; }
 }
