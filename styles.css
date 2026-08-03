@@ -104,13 +104,21 @@ img,svg{ display:block; max-width:100%; }
 .no-gl .doorstage--on #doorCanvas{ opacity:0; }
 
 /* the bloom that covers the handover from the door to the painted world */
-.threshold{ position:fixed; inset:0; z-index:2; pointer-events:none; opacity:0;
-  background:radial-gradient(70% 55% at 50% 48%, rgba(255,244,224,.95) 0%, rgba(247,219,172,.72) 38%, rgba(231,197,126,0) 78%); }
+.threshold{ position:fixed; inset:0; z-index:4; pointer-events:none; opacity:0;
+  background:radial-gradient(85% 70% at 50% 48%, rgba(255,232,190,.85) 0%, rgba(240,206,150,.55) 45%, rgba(231,197,126,0) 82%); }
+
+/* Reading veil. One fixed element, never a per-section gradient: two adjacent
+   section scrims both fade out at their shared edge, which leaves a bright band
+   at every seam. Its opacity rises with how much dense text is on screen. */
+.readveil{ position:fixed; inset:0; z-index:1; pointer-events:none;
+  opacity:var(--readVeil,0);
+  background:radial-gradient(125% 105% at 50% 50%, rgba(8,16,11,.50) 0%, rgba(8,16,11,.68) 100%); }
 
 /* ============================================================
    THREAD you follow (fixed center line + comet)
    ============================================================ */
-.spiral{ position:fixed; inset:0; z-index:1; pointer-events:none; opacity:var(--worldShow,0); }
+.spiral{ position:fixed; inset:0; z-index:2; pointer-events:none;
+  opacity:calc(var(--worldShow,0) * var(--spiralShow,0)); }
 @media (max-width:900px){ .spiral{ display:none; } }
 
 /* skip link */
@@ -349,8 +357,6 @@ img,svg{ display:block; max-width:100%; }
    moves past it. Used where a partner needs real depth.
    ============================================================ */
 .scene--hold{ position:relative; display:block; min-height:auto; padding:0 var(--pad); }
-.scene--hold::before{ content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
-  background:linear-gradient(180deg, transparent 0%, rgba(8,16,11,.60) 13%, rgba(8,16,11,.66) 87%, transparent 100%); }
 .hold{ position:relative; z-index:3; max-width:var(--container); margin-inline:auto;
   display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(28px,6vw,104px); align-items:start; }
 .hold__anchor{ position:sticky; top:26vh; grid-column:1; grid-row:1; padding-block:24vh 0; }
@@ -364,8 +370,6 @@ img,svg{ display:block; max-width:100%; }
 .beat b{ font-weight:600; color:var(--cream); }
 
 /* the honesty statement: the one thing that never bends */
-.scene--vow::before{ content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
-  background:radial-gradient(78% 62% at 50% 50%, rgba(8,16,11,.72) 0%, rgba(8,16,11,.52) 55%, transparent 100%); }
 .scene--vow .scene__inner{ max-width:min(880px,94%); }
 .vow{ margin:34px auto 0; max-width:52ch; font-family:var(--display); font-weight:400; font-style:italic;
   font-size:clamp(1.18rem,2.1vw,1.75rem); line-height:1.5; color:var(--cream);
@@ -407,7 +411,6 @@ img,svg{ display:block; max-width:100%; }
 
   /* hold scenes: anchor stops holding, everything flows in one column */
   .scene--hold{ padding:12vh var(--pad) !important; }
-  .scene--hold::before{ background:linear-gradient(180deg, transparent 0%, rgba(8,16,11,.62) 8%, rgba(8,16,11,.66) 92%, transparent 100%); }
   .hold{ grid-template-columns:minmax(0,1fr); gap:clamp(26px,5vh,44px); }
   .hold__anchor{ position:static; grid-column:1 !important; grid-row:auto; padding-block:0; }
   .hold__stream{ grid-column:1 !important; grid-row:auto; padding-block:0; gap:clamp(30px,5vh,48px); }

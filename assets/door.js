@@ -19,6 +19,11 @@ const EYE_Y = 2.05;
 const AJAR = 19 * Math.PI / 180;    // how far open at rest
 const WIDE = 78 * Math.PI / 180;    // how far open at the threshold
 const START_Z = 9.6;                // far enough back that the whole door reads
+// The camera stops just short of the wall. Flying past it would take the eye
+// through the light-shaft quads and the wall itself, and every frame in the
+// middle of that is a mess of edge-on geometry. Instead the opening grows until
+// it is all you can see, which is the same sensation without the wreckage.
+const END_Z = 0.72;
 
 const canvas = document.getElementById("doorCanvas");
 const stage = document.querySelector(".doorstage");
@@ -108,11 +113,12 @@ loader.load("assets/land1.webp", (tex) => {
 
 // floor: unlit, so the light behind the wall cannot spill onto it
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(60, 60),
+  new THREE.PlaneGeometry(60, 34),
   new THREE.MeshBasicMaterial({ color: 0x080d0a, toneMapped: false })
 );
 floor.rotation.x = -Math.PI / 2;
-scene.add(floor);
+floor.position.z = 17;   // stops at the threshold: past it the floor would
+scene.add(floor);        // occlude the lower half of the view through the door
 
 // one warm source behind the wall: rakes the jamb and the back of the door,
 // leaves everything facing the camera in darkness. No shadow maps needed.
@@ -126,6 +132,12 @@ const spill = new THREE.PointLight(0xffd6ab, 16, 9, 2);
 spill.position.set(0.5, MID_Y - 0.4, 1.5);
 scene.add(spill);
 scene.add(new THREE.AmbientLight(0x16221b, 0.75));
+
+/* The room stays fully opaque the whole way. Fading it out reads as a grey
+   translucent wash rather than a dissolve, and flying the camera past it puts
+   edge-on geometry on screen. Instead the camera stops just short of the wall,
+   by which point the opening is wider than the frame and the valley is all
+   there is to see, and the handover happens only inside that window. */
 
 /* ---------- shared GLSL: cheap value noise for dust density ---------- */
 const NOISE = `
@@ -192,7 +204,7 @@ const shaft = new THREE.Mesh(shaftGeometry(LAYERS), new THREE.ShaderMaterial({
       float my = 1.0 - smoothstep(1.0 - soft * 0.75, 1.0, abs(vQ.y));
       float m = mx * my;
       if (m <= 0.001) discard;
-      float depth = pow(1.0 - vZ, 1.55);
+      float depth = pow(1.0 - vZ, 2.4);   // keep the density near the door, not near the lens
       float dust = 0.70 + 0.30 * vnoise(vec3(vQ * 2.6, vZ * 7.0 + uTime * 0.06));
       float a = m * depth * dust * uIntensity;
       gl_FragColor = vec4(vec3(1.0, 0.80, 0.53) * a, a);
@@ -263,7 +275,7 @@ const mSeed = new Float32Array(MOTES);
 for (let i = 0; i < MOTES; i++) {
   mPos[i * 3] = (Math.random() - 0.5) * 5.2;
   mPos[i * 3 + 1] = Math.random() * 6.2;
-  mPos[i * 3 + 2] = Math.random() * SHAFT_LEN;
+  mPos[i * 3 + 2] = Math.random();          // normalised: scaled by uLen at draw time
   mSeed[i] = Math.random();
 }
 const moteGeo = new THREE.BufferGeometry();
@@ -272,24 +284,27 @@ moteGeo.setAttribute("aSeed", new THREE.BufferAttribute(mSeed, 1));
 const moteUniforms = {
   uTime: { value: 0 }, uGapX: { value: 0 }, uGapHW: { value: 0.1 },
   uMidY: { value: MID_Y }, uIntensity: { value: 0.5 }, uSize: { value: coarse ? 46 : 62 },
+  uLen: { value: SHAFT_LEN },
 };
 const motes = new THREE.Points(moteGeo, new THREE.ShaderMaterial({
   uniforms: moteUniforms,
   transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
   vertexShader: `
     attribute float aSeed;
-    uniform float uTime, uGapX, uGapHW, uMidY, uIntensity, uSize;
+    uniform float uTime, uGapX, uGapHW, uMidY, uIntensity, uSize, uLen;
     varying float vA;
     void main(){
+      float zn = position.z;                 // 0 at the door, 1 at the near end
       vec3 p = position;
+      p.z = zn * uLen;
       p.y = mod(p.y + uTime * (0.045 + aSeed * 0.07), 6.2);
       p.x += sin(uTime * 0.30 + aSeed * 25.0) * 0.14;
-      float grow = 1.0 + 0.85 * (p.z / ${SHAFT_LEN.toFixed(1)});
+      float grow = 1.0 + 0.85 * zn;
       float hw = max(uGapHW, 0.03) * grow * 1.6;
-      float cx = uGapX * (1.0 - 0.28 * (p.z / ${SHAFT_LEN.toFixed(1)}));
+      float cx = uGapX * (1.0 - 0.28 * zn);
       float inX = 1.0 - smoothstep(hw * 0.55, hw * 1.5, abs(p.x - cx));
       float inY = 1.0 - smoothstep(1.7, 3.3, abs(p.y - uMidY));
-      float depth = pow(1.0 - clamp(p.z / ${SHAFT_LEN.toFixed(1)}, 0.0, 1.0), 1.3);
+      float depth = pow(1.0 - zn, 1.3);
       vA = inX * inY * depth * uIntensity * (0.35 + aSeed * 0.65);
       vec4 mv = modelViewMatrix * vec4(p, 1.0);
       gl_PointSize = uSize * (0.5 + aSeed) / max(-mv.z, 0.6);
@@ -319,6 +334,7 @@ let running = false, visible = true;
 
 const lerp = (a, b, k) => a + (b - a) * k;
 const clamp01 = (v) => v < 0 ? 0 : v > 1 ? 1 : v;
+const ramp = (v, a, b) => { const x = clamp01((v - a) / (b - a)); return x * x * (3 - 2 * x); };
 /* the walk toward a door: unhurried at first, then the threshold arrives fast */
 const approach = (v) => Math.pow(v, 1.9);
 
@@ -367,29 +383,60 @@ function renderOnce(now) {
   const gapHW = Math.max(0.02, HALF_W * (1 - cosA));
   const gapX = HALF_W * cosA;
 
-  const glowT = inMode ? t : 1 - t * 0.55;
-  const beam = inMode ? lerp(0.38, 1.2, Math.pow(t, 0.8)) : lerp(0.30, 0.62, t);
+  // The shaft, its floor pool and its dust stop well short of the camera. A quad
+  // a few centimetres from the lens covers the whole viewport, and 54 of them
+  // stacked additively is a flat grey wash, so the near end is kept proportional
+  // to the distance rather than a fixed offset.
+  const camZ = inMode ? lerp(START_Z, END_Z, e) : lerp(-11.5, -8.6, e);
+  const reach = Math.max(0.35, Math.min(SHAFT_LEN, camZ * 0.55));
+  // and the beam bows out entirely once the doorway is wider than the frame:
+  // by then you are standing in the light, not looking at it
+  const beamFade = inMode ? 1 - ramp(t, 0.50, 0.82) : 1;
+
+  // The beam swells while the door is opening and then bows out. Letting it keep
+  // growing turns the opening into an additive white slab, because past the
+  // halfway point the opening IS the light and no longer needs blooming.
+  const beam = inMode
+    ? lerp(0.38, 0.58, ramp(t, 0, 0.45)) * beamFade
+    : lerp(0.30, 0.62, t);
 
   shaftUniforms.uTime.value = time;
   shaftUniforms.uGapX.value = gapX; shaftUniforms.uGapHW.value = gapHW;
-  shaftUniforms.uIntensity.value = beam;
+  shaftUniforms.uIntensity.value = beam; shaftUniforms.uLen.value = reach;
   poolUniforms.uGapX.value = gapX; poolUniforms.uGapHW.value = gapHW;
-  poolUniforms.uIntensity.value = beam;
+  poolUniforms.uIntensity.value = beam; poolUniforms.uLen.value = reach;
   moteUniforms.uTime.value = time; moteUniforms.uGapX.value = gapX;
   moteUniforms.uGapHW.value = gapHW; moteUniforms.uIntensity.value = beam;
+  moteUniforms.uLen.value = reach;
   glow.position.x = gapX;
   glow.material.uniforms.uW.value = Math.max(gapHW, 0.05) * 3.4;
-  glow.material.uniforms.uIntensity.value = inMode ? lerp(0.55, 1.25, glowT) : 0.22;
+  // the slit bloom belongs to the slit: it is gone by the time the door is wide
+  glow.material.uniforms.uIntensity.value = inMode ? lerp(0.62, 0, ramp(t, 0.12, 0.55)) : 0.22;
   lamp.intensity = inMode ? lerp(78, 150, t) : lerp(150, 230, t);
-  // the world beyond only resolves as you get close to it
-  if (inMode && beyond.material.map) beyond.material.color.setScalar(lerp(0.52, 1.0, Math.pow(t, 0.7)));
+  // The world beyond resolves as you approach, and by the end it is framed the
+  // way the CSS background will frame it. Handing over between two near-identical
+  // images is what makes the crossfade invisible instead of needing a white flash.
+  if (inMode) {
+    // held back while the beam is still additively stacking on top of it, then
+    // brought to full once the beam is gone: otherwise the opening clips to white
+    if (beyond.material.map) beyond.material.color.setScalar(lerp(0.42, 1.0, ramp(t, 0.45, 0.95)));
+    // Only in the last stretch, once the opening is wider than the frame, does
+    // the plane converge on the crop the CSS background will show. Before that
+    // it stays large, so its edges can never appear inside the doorway.
+    const land = ramp(t, 0.86, 1);
+    beyond.scale.setScalar(lerp(1, 0.36, land));
+    beyond.position.y = lerp(5, MID_Y - 0.2, land);
+  } else {
+    beyond.scale.setScalar(1);
+    beyond.position.y = 5;
+  }
 
   // pointer parallax, damped
   px = lerp(px, pxTarget, 0.055); py = lerp(py, pyTarget, 0.055);
 
   if (inMode) {
-    camera.position.set(px * 0.42, EYE_Y + py * 0.26 + e * 0.18, lerp(START_Z, -1.4, e));
-    camera.lookAt(px * 0.1, MID_Y - 0.2 + py * 0.18, -2.5);
+    camera.position.set(px * 0.42 * (1 - e), EYE_Y + py * 0.26 * (1 - e) + e * 0.16, camZ);
+    camera.lookAt(0, MID_Y - 0.2 + py * 0.18 * (1 - e), -2.5);
   } else {
     camera.position.set(-0.5 + px * 0.34, EYE_Y + 0.25 + py * 0.22, lerp(-11.5, -8.6, e));
     camera.lookAt(0.1, MID_Y - 0.25 + py * 0.16, 0.2);
@@ -398,14 +445,30 @@ function renderOnce(now) {
   renderer.render(scene, camera);
 }
 
+/* If the scene ever throws, stop and hand back to the CSS poster. A frozen or
+   blank canvas is a worse failure than the fallback, and a silent one. */
+let broken = false;
+function guarded(now) {
+  if (broken) return;
+  try {
+    renderOnce(now);
+  } catch (err) {
+    broken = true;
+    running = false;
+    document.documentElement.classList.add("no-gl");
+    stage.classList.remove("doorstage--on");
+    console.error("waypoint/door: render failed, falling back to the poster", err);
+  }
+}
+
 function frame(now) {
   if (!running) return;
-  renderOnce(now);
-  requestAnimationFrame(frame);
+  guarded(now);
+  if (running) requestAnimationFrame(frame);
 }
 
 /* exactly one frame, no loop: reduced motion, and verification */
-function still() { renderOnce(performance.now()); }
+function still() { guarded(performance.now()); }
 
 function resize() {
   const w = window.innerWidth, h = window.innerHeight;
@@ -454,6 +517,16 @@ const api = {
   },
   still,      // render a single frame on demand (used by test/verification)
   reduced,
+  probe: () => ({
+    t, mode, camZ: camera.position.z.toFixed(2),
+    beyondMap: !!beyond.material.map,
+    beyondColor: beyond.material.color.getHexString(),
+    beyondScale: beyond.scale.x.toFixed(2),
+    beam: shaftUniforms.uIntensity.value.toFixed(3),
+    glow: glow.material.uniforms.uIntensity.value.toFixed(3),
+    reach: shaftUniforms.uLen.value.toFixed(2),
+    broken,
+  }),
 };
 
 applyMode();

@@ -23,6 +23,8 @@
 
   $$("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });
 
+  var scenes = $$(".scene");
+
   /* ---------- inertial scrolling (vendored Lenis) ---------- */
   var lenis = null;
   if (window.Lenis && !reduced) {
@@ -94,16 +96,21 @@
     root.classList.toggle("at-door", t < 0.9);
 
     var cT = closeT();
-    var heroShow = 1 - ramp(t, 0.86, 0.99);
+    // by t=0.95 the doorway is wider than the viewport, so the canvas and the
+    // painted backdrop are showing the same thing: that is the only safe window
+    // to hand over in, and parking anywhere inside it looks like one image
+    var heroShow = 1 - ramp(t, 0.95, 1);
     var closeShow = cT < 0 ? 0 : ramp(cT, 0.04, 0.42) * (1 - ramp(cT, 0.86, 1));
     var show = Math.max(heroShow, closeShow);
 
     root.style.setProperty("--doorShow", show.toFixed(3));
-    root.style.setProperty("--worldShow", ramp(t, 0.88, 1).toFixed(3));
+    root.style.setProperty("--worldShow", ramp(t, 0.96, 1).toFixed(3));
 
+    // a brief warm swell across the threshold, not a white flash: it only has
+    // to soften a crossfade between two framings of the same painting
     if (thresh && !reduced) {
-      var x = clamp((t - 0.78) / 0.22, 0, 1);
-      thresh.style.opacity = (Math.sin(Math.PI * x) * 0.92).toFixed(3);
+      var x = clamp((t - 0.90) / 0.10, 0, 1);
+      thresh.style.opacity = (Math.sin(Math.PI * x) * 0.45).toFixed(3);
     }
 
     if (api) {
@@ -154,13 +161,56 @@
     spiral.style.width = sw + "px"; spiral.style.height = sh + "px";
     sctx = spiral.getContext("2d"); sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
+  /* The thread reshapes itself for whichever scene you are in: it swings wide
+     opposite the text on the alternating scenes, and narrows to a quiet line
+     down the gutter between the two columns of a hold scene. */
+  var SPIRAL_REST = { cx: 0.5, amp: 0.055, turn: 0.66 };
+  var spiralNow = { cx: 0.5, amp: 0.055, turn: 0.66 };
+
+  function spiralTarget() {
+    var mid = window.innerHeight * 0.5;
+    for (var i = 0; i < scenes.length; i++) {
+      var r = scenes[i].getBoundingClientRect();
+      if (r.top > mid || r.bottom < mid) continue;
+      var c = scenes[i].classList;
+      if (c.contains("scene--hold")) return { cx: 0.5, amp: 0.020, turn: 1.15 };
+      if (c.contains("scene--center")) return { cx: 0.5, amp: 0.048, turn: 0.72 };
+      if (c.contains("scene--left")) return { cx: 0.74, amp: 0.082, turn: 0.54 };
+      if (c.contains("scene--right")) return { cx: 0.26, amp: 0.082, turn: 0.54 };
+      break;
+    }
+    return SPIRAL_REST;
+  }
+
+  /* and it only exists while you are actually moving */
+  var spiralAlpha = 0, lastMoveAt = -1e9, lastY = window.scrollY || 0;
+  function spiralFade() {
+    var y = window.scrollY || 0;
+    if (Math.abs(y - lastY) > 0.5) { lastMoveAt = performance.now(); lastY = y; }
+    if (reduced) { spiralAlpha = 1; }
+    else {
+      var want = performance.now() - lastMoveAt < 700 ? 1 : 0;
+      spiralAlpha += (want - spiralAlpha) * 0.07;
+    }
+    root.style.setProperty("--spiralShow", spiralAlpha.toFixed(3));
+  }
+
   function drawSpiral() {
     if (!sctx) return;
     sctx.clearRect(0, 0, sw, sh);
     if (window.matchMedia("(max-width:900px)").matches) return;
+    if (spiralAlpha < 0.02) return;
     if (parseFloat(root.style.getPropertyValue("--worldShow") || "1") < 0.02) return;
+
+    var want = spiralTarget(), k = reduced ? 1 : 0.055;
+    spiralNow.cx += (want.cx - spiralNow.cx) * k;
+    spiralNow.amp += (want.amp - spiralNow.amp) * k;
+    spiralNow.turn += (want.turn - spiralNow.turn) * k;
+
     var P = progress();
-    var cx = sw / 2, amp = Math.min(sw * 0.16, 200), turn = sh * 0.6;
+    var cx = sw * spiralNow.cx;
+    var amp = Math.min(sw * spiralNow.amp, 220);
+    var turn = sh * spiralNow.turn;
     var drift = reduced ? 0 : performance.now() * 0.012;
     var phase = P * sh * 4 + drift, step = 11;
     for (var y = -amp; y < sh + amp; y += step) {
@@ -175,6 +225,21 @@
       sctx.fill();
     }
     sctx.shadowBlur = 0;
+  }
+
+  /* ---------- reading veil: one fixed layer, opacity follows dense text ---------- */
+  var denseScenes = $$(".scene--hold, .scene--vow, .scene--wide");
+  var veilNow = 0;
+  function readVeil() {
+    var vh = window.innerHeight, want = 0;
+    for (var i = 0; i < denseScenes.length; i++) {
+      var r = denseScenes[i].getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= vh) continue;
+      var seen = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+      want = Math.max(want, clamp(seen / (vh * 0.55), 0, 1));
+    }
+    veilNow += (want - veilNow) * (reduced ? 1 : 0.09);
+    root.style.setProperty("--readVeil", veilNow.toFixed(3));
   }
 
   /* ---------- tubelight nav ---------- */
@@ -205,7 +270,7 @@
   }
 
   /* ---------- one loop drives everything scroll-linked ---------- */
-  function tick() { doorFrame(); chrome(); journey(); navActive(); }
+  function tick() { doorFrame(); chrome(); journey(); navActive(); readVeil(); spiralFade(); drawSpiral(); }
   /* exposed so the scroll choreography can be driven deterministically in tests,
      where requestAnimationFrame does not run (headless tabs report hidden) */
   window.__waypointTick = tick;
@@ -220,8 +285,8 @@
   window.addEventListener("resize", function () { sresize(); tick(); });
 
   if (spiral && spiral.getContext) sresize();
-  if (!reduced) { (function loop() { tick(); drawSpiral(); requestAnimationFrame(loop); })(); }
-  else { drawSpiral(); tick(); }
+  if (!reduced) { (function loop() { tick(); requestAnimationFrame(loop); })(); }
+  else { tick(); }
 
   /* ---------- blur-to-focus reveals ---------- */
   var foci = $$(".focus-in");
@@ -238,7 +303,6 @@
   }
 
   /* ---------- diamond rail ---------- */
-  var scenes = $$(".scene");
   var rail = $(".rail");
   if (rail && scenes.length) {
     rail.innerHTML = "";

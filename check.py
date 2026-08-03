@@ -232,6 +232,61 @@ def check_door():
         bad("door.js not loaded as a module")
 
 
+def check_transition_invariants():
+    """The three things that made the transition look broken, guarded."""
+    door = read("assets/door.js")
+    css = read("styles.css")
+    idx = read("index.html")
+    js = read("script.js")
+
+    # 1. the camera must stop in front of the wall. Crossing it puts the eye
+    #    through the light-shaft quads and the wall, which is the diagonal-band bug.
+    m = re.search(r"const END_Z\s*=\s*([\d.]+)", door)
+    if m and float(m.group(1)) > 0.2:
+        ok(f"door: camera stops at z={m.group(1)}, in front of the wall")
+    else:
+        bad("door: END_Z must stay in front of the wall (> 0.2)")
+    if re.search(r"lerp\(START_Z,\s*-", door):
+        bad("door: camera dollies past the wall again")
+    else:
+        ok("door: camera never dollies past the wall")
+
+    # 2. the shaft's near end has to stay clear of the lens, or the layers
+    #    stack additively across the whole viewport into a flat wash
+    if "camZ * 0.55" in door or re.search(r"reach\s*=.*camZ\s*\*", door):
+        ok("door: shaft length is proportional to camera distance")
+    else:
+        bad("door: shaft near end is not tied to the camera distance")
+
+    # 3. one fixed reading veil, never per-section scrims: two adjacent section
+    #    gradients both fade out at their shared edge and leave a bright seam
+    if '<div class="readveil"' in idx and ".readveil{" in css:
+        ok("single fixed reading veil present")
+    else:
+        bad("the fixed .readveil layer is missing")
+    for sel in [".scene--hold::before", ".scene--vow::before"]:
+        if sel in css:
+            bad(f"{sel} is back: per-section scrims band at every section seam")
+        else:
+            ok(f"no per-section scrim on {sel.split('::')[0]}")
+    if "--readVeil" in js and "--readVeil" in css:
+        ok("reading veil is driven from the scroll loop")
+    else:
+        bad("--readVeil is not wired between script.js and styles.css")
+
+    # 4. the thread fades when idle and reshapes per scene
+    if "--spiralShow" in css and "spiralFade" in js and "spiralTarget" in js:
+        ok("thread: idle fade + per-scene shape wired")
+    else:
+        bad("thread: idle fade or per-scene shape missing")
+
+    # 5. a throwing frame must fall back to the poster, not freeze the canvas
+    if "falling back to the poster" in door and "broken" in door:
+        ok("door: render failures fall back to the CSS poster")
+    else:
+        bad("door: no guard around the render loop")
+
+
 def check_vendored():
     """No CDN dependencies: privacy.html discloses only Google Fonts."""
     for f in ["assets/vendor/three.module.min.js", "assets/vendor/three.core.min.js",
@@ -350,7 +405,7 @@ def check_nav_matches_sections():
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
-               check_forms, check_labels, check_door, check_vendored,
+               check_forms, check_labels, check_door, check_transition_invariants, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections]:
         fn()
 

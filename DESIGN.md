@@ -14,7 +14,15 @@ Rules the page is built to: no card grids, no numbered step lists, no section la
 
 ## The door (`assets/door.js`)
 
-A wall in darkness with a door ajar, warm light knifing through the gap on the latch side, and the sunlit valley (`land1.webp`, the same asset the journey uses) beyond it. Scroll drives `t` from 0 to 1: the door swings wider, the beam brightens, and the camera dollies from `z 9.6` to `z -1.4`, through the opening. A bloom (`.threshold`) peaks at `t≈0.89` and covers the handover from canvas to the HTML landscape.
+A wall in darkness with a door ajar, warm light knifing through the gap on the latch side, and the sunlit valley (`land1.webp`, the same asset the journey uses) beyond it. Scroll drives `t` from 0 to 1: the door swings wider and the camera dollies from `z 9.6` to `z 0.72`.
+
+**Every parked position has to look intentional**, because scroll can stop anywhere. Three rules make that true, and `check.py` guards all three:
+
+- **The camera stops in front of the wall.** It used to fly through to `z -1.4`, which took the eye through the 54 light-shaft quads and the wall itself; edge-on quads read as hard diagonal bands across the viewport. At `z 0.72` the opening is wider than the frame, so you get the same sensation of passing through with nothing to collide with.
+- **The shaft's near end is proportional to the camera distance** (`camZ * 0.55`), never a fixed offset. An additive quad a few centimetres from the lens covers the whole viewport, and 54 of them stacked is a flat grey wash.
+- **The beam and the slit bloom retire.** Both peak while the door is opening and are gone by `t ≈ 0.82`. Letting them keep growing turns the opening into an additive white slab, because past halfway the opening *is* the light and no longer needs blooming. The valley's brightness is held back to match, then brought to full once the beam is gone.
+
+The handover happens only between `t 0.95` and `1`, the window where the doorway is already wider than the viewport, so the canvas and the painted backdrop are showing the same thing. The `beyond` plane converges on the crop the CSS background will use, and a modest warm swell (`.threshold`, peak 0.45) softens the seam. If the render ever throws, the loop stops and the CSS poster takes over rather than leaving a frozen canvas.
 
 | Piece | How it is made |
 |---|---|
@@ -30,7 +38,7 @@ The gap is computed the way a hinged door actually leaves one: half-width `0.95�
 
 **Degradation, in order.** `prefers-reduced-motion` renders one static frame with the door already open and turns the pass-through into a cut. Phones cap pixel ratio at 1.6, drop to 26 shaft layers and 260 motes, and widen the FOV to 52° in portrait. No WebGL at all leaves the **CSS poster** (`.doorstage__poster`) in place — a wall, casing, panel in perspective, slit and soft glare built entirely from gradients. It is a finished picture, not a grey box, and it costs no extra bytes.
 
-`window.__waypointDoor` exposes `set(t, mode)`, `live(on)` and `still()`; `window.__waypointTick` drives the scroll choreography. Both exist so `check.py` and browser verification can step through states deterministically.
+`window.__waypointDoor` exposes `set(t, mode)`, `live(on)`, `still()` and a read-only `probe()`; `window.__waypointTick` recomputes everything scroll-linked, including the thread. These exist because headless tabs report `hidden`, so `requestAnimationFrame` never runs and the only way to verify a scroll-driven state is to drive it: freeze `set`, call `still()`, then read `probe()`. Diagnosing by eye alone led to three wrong hypotheses before `probe()` gave the actual uniform values.
 
 ## Color
 
@@ -173,6 +181,8 @@ All form inputs:
 ### Parallax & Scroll Interactions
 
 - **Inertial scrolling**: Lenis (vendored) with `lerp: 0.085`. Anchor clicks and the progress rail route through `lenis.scrollTo`. Disabled entirely under reduced motion.
+- **The thread** (`#spiral`) reshapes itself for the scene at the viewport centre and only exists while you are moving. It swings wide *opposite* the text on the alternating scenes (centre 26% against a right-aligned scene, 74% against a left-aligned one), and narrows to a quiet line down the gutter on hold scenes (centre 50%, about 4% of the viewport wide). Parameters lerp toward their target so the reshape is continuous, never a cut. It fades in on scroll and fades out about 700ms after movement stops, so a still page is never cluttered by it. Under reduced motion it is simply always visible and static.
+- **Reading veil** (`.readveil`): one fixed full-viewport layer whose opacity follows how much dense text is on screen. It replaced per-section scrims, which were the cause of the horizontal banding: two adjacent sections each faded their gradient to transparent at the shared edge, leaving a bright stripe at every seam. A single fixed element cannot produce a seam.
 - **Journey progress** is measured from the *end of the hero* to the end of the document, so adding the 240vh door section does not compress the landscape crossfade.
 - **Landscape layers** (`.stage__layer`): Scale (1.05 + parallax) and opacity crossfade based on scroll position. Four-layer progression.
 - **Focus-in reveals**: Applied to `.focus-in` elements; staggered via `--d` custom property (multiply by 90ms).
