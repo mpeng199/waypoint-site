@@ -123,9 +123,10 @@ img,svg{ display:block; max-width:100%; }
   display:flex; flex-direction:column; gap:18px; transition:opacity .5s var(--ease); }
 .at-door .rail{ opacity:0; pointer-events:none; }
 .rail button{ width:11px; height:11px; padding:0; border:0; background:none; cursor:pointer; display:grid; place-items:center; }
-.rail button::before{ content:""; width:7px; height:7px; border:1px solid rgba(252,254,247,.5);
-  transform:rotate(45deg); transition:all .35s var(--ease); }
-.rail button.on::before{ background:var(--gold); border-color:var(--gold); width:9px; height:9px;
+.rail button::before{ content:""; width:9px; height:9px; border:1px solid rgba(252,254,247,.5);
+  transform:rotate(45deg) scale(.78);
+  transition:transform .35s var(--ease), background-color .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease); }
+.rail button.on::before{ background:var(--gold); border-color:var(--gold); transform:rotate(45deg) scale(1);
   box-shadow:0 0 10px rgba(231,197,126,.8); }
 @media (max-width:900px){ .rail{ display:none; } }
 
