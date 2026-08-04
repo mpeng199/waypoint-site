@@ -279,6 +279,11 @@ def check_transition_invariants():
         ok("thread: idle fade + per-scene shape wired")
     else:
         bad("thread: idle fade or per-scene shape missing")
+    # the closing frame is the door and one line: the thread unwinds and leaves
+    if "closingRoom" in js and "openNow" in js and re.search(r"\* leaving|leaving\s*=", js):
+        ok("thread: opens out and clears the closing scene")
+    else:
+        bad("thread: nothing makes it leave the closing scene")
 
     # 5. a throwing frame must fall back to the poster, not freeze the canvas
     if "falling back to the poster" in door and "broken" in door:

@@ -182,14 +182,28 @@
     return SPIRAL_REST;
   }
 
+  /* How much of the screen the closing scene has taken. The thread unwinds into
+     that space and is gone before the door arrives: the last frame of the page
+     is the door and one line, nothing else. */
+  function closingRoom() {
+    if (!closeSec) return 0;
+    var r = closeSec.getBoundingClientRect(), vh = window.innerHeight;
+    if (r.bottom <= 0 || r.top >= vh) return 0;
+    var seen = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+    return clamp(seen / (vh * 0.6), 0, 1);
+  }
+  var openNow = 0;
+
   /* and it only exists while you are actually moving */
   var spiralAlpha = 0, lastMoveAt = -1e9, lastY = window.scrollY || 0;
   function spiralFade() {
     var y = window.scrollY || 0;
     if (Math.abs(y - lastY) > 0.5) { lastMoveAt = performance.now(); lastY = y; }
-    if (reduced) { spiralAlpha = 1; }
+    openNow += (closingRoom() - openNow) * (reduced ? 1 : 0.08);
+    var leaving = 1 - ramp(openNow, 0.10, 0.62);
+    if (reduced) { spiralAlpha = leaving; }
     else {
-      var want = performance.now() - lastMoveAt < 700 ? 1 : 0;
+      var want = (performance.now() - lastMoveAt < 700 ? 1 : 0) * leaving;
       spiralAlpha += (want - spiralAlpha) * 0.07;
     }
     root.style.setProperty("--spiralShow", spiralAlpha.toFixed(3));
@@ -209,8 +223,10 @@
 
     var P = progress();
     var cx = sw * spiralNow.cx;
-    var amp = Math.min(sw * spiralNow.amp, 220);
-    var turn = sh * spiralNow.turn;
+    // as the closing scene arrives the coil opens out and unwinds, so it reads
+    // as making way rather than simply switching off
+    var amp = Math.min(sw * spiralNow.amp, 220) * (1 + openNow * 3.4);
+    var turn = sh * spiralNow.turn * (1 + openNow * 1.8);
     var drift = reduced ? 0 : performance.now() * 0.012;
     var phase = P * sh * 4 + drift, step = 11;
     for (var y = -amp; y < sh + amp; y += step) {
