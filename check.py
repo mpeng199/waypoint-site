@@ -51,8 +51,17 @@ def bad(msg):
     failures.append(msg)
 
 
+class Missing(Exception):
+    """A file a check needs is not there."""
+
+
 def read(p):
-    return (ROOT / p).read_text(encoding="utf-8")
+    """Never raise past main(): a crashed harness reports nothing at all,
+    which is strictly worse than a harness that reports one missing file."""
+    f = ROOT / p
+    if not f.is_file():
+        raise Missing(str(p))
+    return f.read_text(encoding="utf-8")
 
 
 def strip_tags(s):
@@ -101,17 +110,33 @@ def check_links():
                     bad(f"{page}: anchor #{a} has no matching id")
 
 
+CROSS_REF = re.compile(r'href="([A-Za-z0-9._-]+\.html)#([^"]+)"')
+
+
 def check_cross_page_anchors():
-    """Links from other pages into index.html#... must land on something."""
-    index_ids = set(ID.findall(read("index.html")))
-    for page in PAGES:
-        if page in ("index.html",) or not (ROOT / page).is_file():
-            continue
-        for a in set(re.findall(r'href="index\.html#([^"]+)"', read(page))):
-            if a in index_ids:
-                ok(f"{page} -> index.html#{a}")
+    """Any local page.html#fragment link must land on a real id, whichever page
+    it points at. Checking only index.html let broken secondary anchors pass."""
+    ids_by_page = {}
+
+    def ids_for(target):
+        if target not in ids_by_page:
+            if not (ROOT / target).is_file():
+                ids_by_page[target] = None
             else:
-                bad(f"{page}: index.html#{a} does not exist on the homepage")
+                ids_by_page[target] = set(ID.findall(read(target)))
+        return ids_by_page[target]
+
+    for page in PAGES:
+        if not (ROOT / page).is_file():
+            continue
+        for target, frag in set(CROSS_REF.findall(read(page))):
+            known = ids_for(target)
+            if known is None:
+                bad(f"{page}: links to {target}#{frag} but {target} does not exist")
+            elif frag in known:
+                ok(f"{page} -> {target}#{frag}")
+            else:
+                bad(f"{page}: {target}#{frag} has no matching id in {target}")
 
 
 def check_stage_layers():
@@ -373,7 +398,9 @@ def check_a11y_basics():
 def check_nav_matches_sections():
     src = read("index.html")
     nav = re.findall(r'<nav class="nav__links".*?</nav>', src, flags=re.S)
-    assert nav, "nav block not found"
+    if not nav:
+        bad("index.html: no primary nav block, so nav wiring cannot be checked")
+        return
     targets = re.findall(r'href="#([^"]+)"', nav[0])
     ids = set(ID.findall(src))
     for t in targets:
@@ -412,7 +439,10 @@ def main():
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
                check_forms, check_labels, check_door, check_transition_invariants, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections]:
-        fn()
+        try:
+            fn()
+        except Missing as e:
+            bad(f"{fn.__name__}: skipped, {e} is missing")
 
     if VERBOSE:
         for p in passes:

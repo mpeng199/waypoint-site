@@ -237,7 +237,7 @@ All form inputs:
 
 ## Verification
 
-`python3 check.py` (add `-v` to list passes). 170 checks covering dead links and anchors, missing assets, the honesty statement present verbatim on two surfaces, no surviving references to the removed Schools chapter or the unlaunched Companionship track, no numeric track-record claims, form completeness and labelling, the door's fallback paths, vendored dependency integrity, the asset-size budget, and that `script.js`'s tracked nav sections match the markup.
+`python3 check.py` prints the pass/fail total; add `-v` to list every passing check. It covers dead links and anchors (including fragments into any local page, not just the homepage), missing assets, the honesty statement present verbatim on two surfaces, no surviving references to the removed Schools chapter or the unlaunched Companionship track, no numeric track-record claims, form completeness and labelling, the door's fallback paths and transition invariants, vendored dependency integrity, the asset-size budget, and that `script.js`'s tracked nav sections match the markup. A missing file is reported as a failed check rather than raised, so one absent page never costs you the rest of the report.
 
 ## Notes
 

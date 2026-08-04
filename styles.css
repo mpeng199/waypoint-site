@@ -349,8 +349,8 @@ img,svg{ display:block; max-width:100%; }
 .hero__cue{ grid-area:3/2/4/3; align-self:end; justify-self:end; display:flex; align-items:center; gap:14px;
   font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
 .hero__cue i{ width:clamp(40px,7vw,74px); height:1px; background:rgba(252,254,247,.26); position:relative; overflow:hidden; }
-.hero__cue i::after{ content:""; position:absolute; top:0; bottom:0; left:-100%; width:100%; background:var(--gold); animation:cueX 2.4s var(--ease) infinite; }
-@keyframes cueX{ to{ left:100%; } }
+.hero__cue i::after{ content:""; position:absolute; top:0; bottom:0; left:-100%; width:100%; background:var(--gold); animation:cue-x 2.4s var(--ease) infinite; }
+@keyframes cue-x{ to{ left:100%; } }
 
 /* ============================================================
    HOLD SCENES — the phrase holds its place while the substance

@@ -106,9 +106,15 @@ beyond.position.set(0, 5, -11);
 scene.add(beyond);
 loader.load("assets/land1.webp", (tex) => {
   tex.colorSpace = THREE.SRGBColorSpace;
-  beyond.material.map = tex;
-  beyond.material.color.setHex(0xffffff);
-  beyond.material.needsUpdate = true;
+  beyond.userData.tex = tex;
+  // Only hang it on the material if we are still on the approach. Landing late
+  // while the closing scene is up would paint the valley back into the dark
+  // side of the door, which is the one thing that view must not show.
+  if (mode === "in") {
+    beyond.material.map = tex;
+    beyond.material.color.setHex(0xffffff);
+    beyond.material.needsUpdate = true;
+  }
 });
 
 // floor: unlit, so the light behind the wall cannot spill onto it
@@ -366,7 +372,6 @@ function applyMode() {
     beyond.material.needsUpdate = true;
   }
 }
-loader.manager.onLoad = () => { beyond.userData.tex = beyond.material.map; };
 
 function renderOnce(now) {
   const time = now * 0.001;
