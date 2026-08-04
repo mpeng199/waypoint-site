@@ -1,5 +1,9 @@
 /* ============================================================
-   Waypoint — landscape journey controller
+   Waypoint — journey controller
+
+   Owns: the hero pass-through (driving the WebGL door in assets/door.js),
+   the painterly crossfade, the spiral, the tubelight nav, reveals,
+   the progress rail, and the two forms.
    ============================================================ */
 (function () {
   "use strict";
@@ -8,14 +12,47 @@
   var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+  var root = document.documentElement;
+
+  /* smoothstep between two thresholds */
+  function ramp(v, a, b) {
+    if (b === a) return v >= b ? 1 : 0;
+    var x = clamp((v - a) / (b - a), 0, 1);
+    return x * x * (3 - 2 * x);
+  }
 
   $$("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });
 
-  /* nav chrome */
+  var scenes = $$(".scene");
+
+  /* ---------- inertial scrolling (vendored Lenis) ---------- */
+  var lenis = null;
+  if (window.Lenis && !reduced) {
+    lenis = new window.Lenis({ lerp: 0.085, smoothWheel: true, touchMultiplier: 1.7 });
+    (function raf(time) { lenis.raf(time); requestAnimationFrame(raf); })(0);
+  }
+  function goTo(target) {
+    if (lenis) lenis.scrollTo(target, { offset: 0, duration: 1.25 });
+    else if (typeof target === "number") window.scrollTo(0, target);
+    else target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+  }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute("href").slice(1);
+    if (!id) return;
+    var el = document.getElementById(id);
+    if (!el) return;
+    e.preventDefault();
+    goTo(el);
+    if (history.replaceState) history.replaceState(null, "", "#" + id);
+  });
+
+  /* ---------- nav chrome ---------- */
   var nav = $(".nav");
   function chrome() { if (nav) nav.classList.toggle("stuck", (window.scrollY || 0) > 40); }
 
-  /* mobile menu */
+  /* ---------- mobile menu ---------- */
   var tog = $(".nav__tog"), links = $(".nav__links");
   if (tog && links) {
     tog.addEventListener("click", function () {
@@ -23,21 +60,96 @@
       tog.classList.toggle("open", open);
       tog.setAttribute("aria-expanded", String(open));
     });
-    links.addEventListener("click", function (e) { if (e.target.closest("a")) { links.classList.remove("open"); tog.classList.remove("open"); } });
+    links.addEventListener("click", function (e) {
+      if (e.target.closest("a")) { links.classList.remove("open"); tog.classList.remove("open"); tog.setAttribute("aria-expanded", "false"); }
+    });
   }
 
-  /* ---------- journey background (crossfade through N landscape stages) ---------- */
+  /* ============================================================
+     THE DOOR — the hero's scroll drives it, and the closing scene
+     brings it back with the camera on the far side.
+     ============================================================ */
+  var hero = $(".hero");
+  var closeSec = $("#close");
+  var thresh = $(".threshold");
+  var doorLive = false;
+
+  function heroT() {
+    if (!hero) return 1;
+    var span = hero.offsetHeight - window.innerHeight;
+    if (span <= 0) return (window.scrollY || 0) > 0 ? 1 : 0;
+    return clamp(((window.scrollY || 0) - hero.offsetTop) / span, 0, 1);
+  }
+
+  function closeT() {
+    if (!closeSec) return -1;
+    var r = closeSec.getBoundingClientRect(), vh = window.innerHeight;
+    if (r.top > vh || r.bottom < 0) return -1;
+    return clamp((vh - r.top) / (vh + r.height), 0, 1);
+  }
+
+  function doorFrame() {
+    var t = heroT();
+    var api = window.__waypointDoor;
+
+    root.style.setProperty("--doorT", t.toFixed(4));
+    root.classList.toggle("at-door", t < 0.9);
+
+    var cT = closeT();
+    // by t=0.95 the doorway is wider than the viewport, so the canvas and the
+    // painted backdrop are showing the same thing: that is the only safe window
+    // to hand over in, and parking anywhere inside it looks like one image
+    var heroShow = 1 - ramp(t, 0.95, 1);
+    var closeShow = cT < 0 ? 0 : ramp(cT, 0.04, 0.42) * (1 - ramp(cT, 0.86, 1));
+    var show = Math.max(heroShow, closeShow);
+
+    root.style.setProperty("--doorShow", show.toFixed(3));
+    root.style.setProperty("--worldShow", ramp(t, 0.96, 1).toFixed(3));
+
+    // a brief warm swell across the threshold, not a white flash: it only has
+    // to soften a crossfade between two framings of the same painting
+    if (thresh && !reduced) {
+      var x = clamp((t - 0.90) / 0.10, 0, 1);
+      thresh.style.opacity = (Math.sin(Math.PI * x) * 0.45).toFixed(3);
+    }
+
+    if (api) {
+      if (closeShow > heroShow && cT >= 0) api.set(cT, "out");
+      else api.set(t, "in");
+      var wantLive = show > 0.01;
+      if (wantLive !== doorLive) { doorLive = wantLive; api.live(wantLive); }
+    }
+  }
+
+  /* ---------- journey background: crossfade the stages AFTER the door ---------- */
   var layers = ["#layA", "#layB", "#layC", "#layD"].map(function (s) { return $(s); }).filter(Boolean);
-  function progress() { var max = document.documentElement.scrollHeight - window.innerHeight; return max > 0 ? clamp((window.scrollY || 0) / max, 0, 1) : 0; }
+
+  function progress() {
+    var start = hero ? hero.offsetTop + hero.offsetHeight - window.innerHeight : 0;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var span = max - start;
+    return span > 0 ? clamp(((window.scrollY || 0) - start) / span, 0, 1) : 0;
+  }
+
   function journey() {
     if (reduced) return;
     var P = progress(), N = layers.length;
-    var pos = P * (N - 1);                 // 0 .. N-1, current position in the stage sequence
+    var pos = P * (N - 1);
     layers.forEach(function (l, i) {
       l.style.opacity = clamp(1 - Math.abs(pos - i), 0, 1);
       l.style.transform = "scale(" + (1.05 + P * 0.5 + i * 0.015) + ")";
     });
   }
+
+  /* the later stages are not needed until the door is behind you */
+  function loadStages() {
+    $$(".stage__layer[data-src]").forEach(function (l) {
+      l.style.backgroundImage = "url('" + l.getAttribute("data-src") + "')";
+      l.removeAttribute("data-src");
+    });
+  }
+  if ("requestIdleCallback" in window) requestIdleCallback(loadStages, { timeout: 2500 });
+  else window.addEventListener("load", function () { setTimeout(loadStages, 400); });
 
   /* ---------- spiral that winds down through the scenery ---------- */
   var spiral = $("#spiral"), sctx = null, sw = 0, sh = 0;
@@ -49,18 +161,78 @@
     spiral.style.width = sw + "px"; spiral.style.height = sh + "px";
     sctx = spiral.getContext("2d"); sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
+  /* The thread reshapes itself for whichever scene you are in: it swings wide
+     opposite the text on the alternating scenes, and narrows to a quiet line
+     down the gutter between the two columns of a hold scene. */
+  var SPIRAL_REST = { cx: 0.5, amp: 0.055, turn: 0.66 };
+  var spiralNow = { cx: 0.5, amp: 0.055, turn: 0.66 };
+
+  function spiralTarget() {
+    var mid = window.innerHeight * 0.5;
+    for (var i = 0; i < scenes.length; i++) {
+      var r = scenes[i].getBoundingClientRect();
+      if (r.top > mid || r.bottom < mid) continue;
+      var c = scenes[i].classList;
+      if (c.contains("scene--hold")) return { cx: 0.5, amp: 0.020, turn: 1.15 };
+      if (c.contains("scene--center")) return { cx: 0.5, amp: 0.048, turn: 0.72 };
+      if (c.contains("scene--left")) return { cx: 0.74, amp: 0.082, turn: 0.54 };
+      if (c.contains("scene--right")) return { cx: 0.26, amp: 0.082, turn: 0.54 };
+      break;
+    }
+    return SPIRAL_REST;
+  }
+
+  /* How much of the screen the closing scene has taken. The thread unwinds into
+     that space and is gone before the door arrives: the last frame of the page
+     is the door and one line, nothing else. */
+  function closingRoom() {
+    if (!closeSec) return 0;
+    var r = closeSec.getBoundingClientRect(), vh = window.innerHeight;
+    if (r.bottom <= 0 || r.top >= vh) return 0;
+    var seen = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+    return clamp(seen / (vh * 0.6), 0, 1);
+  }
+  var openNow = 0;
+
+  /* and it only exists while you are actually moving */
+  var spiralAlpha = 0, lastMoveAt = -1e9, lastY = window.scrollY || 0;
+  function spiralFade() {
+    var y = window.scrollY || 0;
+    if (Math.abs(y - lastY) > 0.5) { lastMoveAt = performance.now(); lastY = y; }
+    openNow += (closingRoom() - openNow) * (reduced ? 1 : 0.08);
+    var leaving = 1 - ramp(openNow, 0.10, 0.62);
+    if (reduced) { spiralAlpha = leaving; }
+    else {
+      var want = (performance.now() - lastMoveAt < 700 ? 1 : 0) * leaving;
+      spiralAlpha += (want - spiralAlpha) * 0.07;
+    }
+    root.style.setProperty("--spiralShow", spiralAlpha.toFixed(3));
+  }
+
   function drawSpiral() {
     if (!sctx) return;
     sctx.clearRect(0, 0, sw, sh);
     if (window.matchMedia("(max-width:900px)").matches) return;
+    if (spiralAlpha < 0.02) return;
+    if (parseFloat(root.style.getPropertyValue("--worldShow") || "1") < 0.02) return;
+
+    var want = spiralTarget(), k = reduced ? 1 : 0.055;
+    spiralNow.cx += (want.cx - spiralNow.cx) * k;
+    spiralNow.amp += (want.amp - spiralNow.amp) * k;
+    spiralNow.turn += (want.turn - spiralNow.turn) * k;
+
     var P = progress();
-    var cx = sw / 2, amp = Math.min(sw * 0.16, 200), turn = sh * 0.6;
+    var cx = sw * spiralNow.cx;
+    // as the closing scene arrives the coil opens out and unwinds, so it reads
+    // as making way rather than simply switching off
+    var amp = Math.min(sw * spiralNow.amp, 220) * (1 + openNow * 3.4);
+    var turn = sh * spiralNow.turn * (1 + openNow * 1.8);
     var drift = reduced ? 0 : performance.now() * 0.012;
     var phase = P * sh * 4 + drift, step = 11;
     for (var y = -amp; y < sh + amp; y += step) {
       var ang = (y + phase) * (Math.PI * 2 / turn);
       var x = cx + amp * Math.cos(ang);
-      var f = (Math.sin(ang) + 1) / 2;            // 0 back .. 1 front
+      var f = (Math.sin(ang) + 1) / 2;
       sctx.beginPath();
       sctx.fillStyle = "rgba(231,197,126," + (0.08 + f * 0.5) + ")";
       sctx.shadowColor = "rgba(231,197,126,0.7)";
@@ -71,11 +243,27 @@
     sctx.shadowBlur = 0;
   }
 
-  /* ---------- tubelight nav (lights the section you're in, slides between) ---------- */
+  /* ---------- reading veil: one fixed layer, opacity follows dense text ---------- */
+  var denseScenes = $$(".scene--hold, .scene--vow, .scene--wide");
+  var veilNow = 0;
+  function readVeil() {
+    var vh = window.innerHeight, want = 0;
+    for (var i = 0; i < denseScenes.length; i++) {
+      var r = denseScenes[i].getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= vh) continue;
+      var seen = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+      want = Math.max(want, clamp(seen / (vh * 0.55), 0, 1));
+    }
+    veilNow += (want - veilNow) * (reduced ? 1 : 0.09);
+    root.style.setProperty("--readVeil", veilNow.toFixed(3));
+  }
+
+  /* ---------- tubelight nav ---------- */
   var lamp = $("#navLamp");
-  var navSections = ["students", "partners", "schools"].map(function (id) {
+  var navSections = ["work", "partners", "students"].map(function (id) {
     return { id: id, el: document.getElementById(id), link: $('.nav__links a[href="#' + id + '"]') };
   }).filter(function (s) { return s.el && s.link; });
+
   function navActive() {
     if (!lamp || !navSections.length) return;
     if (window.matchMedia("(max-width:900px)").matches) {
@@ -86,7 +274,7 @@
     var center = (window.scrollY || 0) + window.innerHeight * 0.5;
     var active = null;
     navSections.forEach(function (s) { if (s.el.offsetTop <= center) active = s; });
-    navSections.forEach(function (s) { s.link.classList.toggle("current", active && s.id === active.id); });
+    navSections.forEach(function (s) { s.link.classList.toggle("current", !!active && s.id === active.id); });
     if (active) {
       var L = active.link, pad = 6;
       lamp.style.left = (L.offsetLeft - pad) + "px";
@@ -97,17 +285,24 @@
     }
   }
 
-  var ticking = false;
-  function onScroll() { if (ticking) return; ticking = true; requestAnimationFrame(function () { chrome(); journey(); navActive(); ticking = false; }); }
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", navActive);
+  /* ---------- one loop drives everything scroll-linked ---------- */
+  function tick() { doorFrame(); chrome(); journey(); navActive(); readVeil(); spiralFade(); drawSpiral(); }
+  /* exposed so the scroll choreography can be driven deterministically in tests,
+     where requestAnimationFrame does not run (headless tabs report hidden) */
+  window.__waypointTick = tick;
 
-  if (spiral && spiral.getContext) {
-    sresize();
-    window.addEventListener("resize", sresize);
-    if (!reduced) { (function sloop() { journey(); navActive(); drawSpiral(); requestAnimationFrame(sloop); })(); }
-    else drawSpiral();
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { tick(); ticking = false; });
   }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", function () { sresize(); tick(); });
+
+  if (spiral && spiral.getContext) sresize();
+  if (!reduced) { (function loop() { tick(); requestAnimationFrame(loop); })(); }
+  else { tick(); }
 
   /* ---------- blur-to-focus reveals ---------- */
   var foci = $$(".focus-in");
@@ -117,21 +312,20 @@
         if (e.isIntersecting) e.target.classList.add("in");
         else if (e.target.getAttribute("data-once") === null) e.target.classList.remove("in");
       });
-    }, { rootMargin: "-28% 0px -28% 0px", threshold: 0 });
+    }, { rootMargin: "-22% 0px -22% 0px", threshold: 0 });
     foci.forEach(function (el) { fo.observe(el); });
   } else {
     foci.forEach(function (el) { el.classList.add("in"); });
   }
 
-  /* ---------- diamond rail (active scene + click to travel) ---------- */
-  var scenes = $$(".scene");
+  /* ---------- diamond rail ---------- */
   var rail = $(".rail");
   if (rail && scenes.length) {
     rail.innerHTML = "";
     var dots = scenes.map(function (sc, i) {
       var b = document.createElement("button");
       b.setAttribute("aria-label", "Go to part " + (i + 1));
-      b.addEventListener("click", function () { sc.scrollIntoView({ behavior: reduced ? "auto" : "smooth" }); });
+      b.addEventListener("click", function () { goTo(sc); });
       rail.appendChild(b);
       return b;
     });
@@ -148,7 +342,7 @@
     }
   }
 
-  /* ---------- count up (subpages, optional) ---------- */
+  /* ---------- count up (used by the pitch pages) ---------- */
   $$("[data-count]").forEach(function (el) {
     var t = parseFloat(el.getAttribute("data-count")) || 0;
     if (reduced) { el.textContent = t; return; }
@@ -157,7 +351,11 @@
       es.forEach(function (e) {
         if (e.isIntersecting && !done) {
           done = true; var s = performance.now();
-          (function tick(now) { var p = clamp((now - s) / 1300, 0, 1), k = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(t * k); if (p < 1) requestAnimationFrame(tick); })(s);
+          (function step(now) {
+            var p = clamp((now - s) / 1300, 0, 1), k = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(t * k);
+            if (p < 1) requestAnimationFrame(step);
+          })(s);
         }
       });
     }, { threshold: 0.6 });
@@ -180,7 +378,9 @@
       var name = (fd.get("name") || "").toString().trim();
       var email = (fd.get("email") || "").toString().trim();
       var payload = {};
-      fd.forEach(function (v, k) { if (["name", "email", "trap"].indexOf(k) === -1) { v = v.toString().trim(); if (v) payload[k] = v; } });
+      fd.forEach(function (v, k) {
+        if (["name", "email", "trap"].indexOf(k) === -1) { v = v.toString().trim(); if (v) payload[k] = v; }
+      });
 
       if (err) err.classList.remove("show");
       if (btn) { btn.disabled = true; btn.dataset.label = btn.dataset.label || btn.textContent; btn.textContent = "Sending…"; }
@@ -200,5 +400,5 @@
     });
   });
 
-  chrome(); journey(); navActive();
+  tick();
 })();

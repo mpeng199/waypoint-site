@@ -4,23 +4,47 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Waypoint — Student Health Corps, NYC</title>
-<meta name="description" content="Waypoint is a trained student volunteer corps that carries older, low-income, and immigrant New Yorkers to the free health programs and people who already serve them." />
+<meta name="description" content="Waypoint is a trained student volunteer corps that brings older, low-income, and immigrant New Yorkers to the free health resources and professionals who already serve them. We are looking for the branch that hosts our first event." />
+<meta name="theme-color" content="#13231A" />
+<meta property="og:title" content="Waypoint — Student Health Corps, NYC" />
+<meta property="og:description" content="The help is already here. No one walks you to it. A trained student volunteer corps connecting older, low-income, and immigrant New Yorkers to free health resources across the city." />
+<meta property="og:type" content="website" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="styles.css" />
+<link rel="preload" as="image" href="assets/land1.webp" />
+<link rel="modulepreload" href="assets/door.js" />
+<link rel="modulepreload" href="assets/vendor/three.module.min.js" />
 </head>
 <body>
 
+<a class="skip" href="#work">Skip to what we do</a>
+
+<!-- the door: CSS poster underneath, WebGL over it once it is ready -->
+<div class="doorstage" aria-hidden="true">
+  <div class="doorstage__poster">
+    <div class="poster__wall"></div>
+    <div class="poster__case"></div>
+    <div class="poster__panel"></div>
+    <div class="poster__beam"></div>
+    <div class="poster__glow"></div>
+    <div class="poster__pool"></div>
+  </div>
+  <canvas id="doorCanvas"></canvas>
+</div>
+
 <!-- journey backdrop -->
 <div class="stage" aria-hidden="true">
-  <div class="stage__layer" id="layA" style="background-image:url('assets/land1.png')"></div>
-  <div class="stage__layer" id="layB" style="background-image:url('assets/land2.png')"></div>
-  <div class="stage__layer" id="layC" style="background-image:url('assets/land3.png')"></div>
-  <div class="stage__layer" id="layD" style="background-image:url('assets/land4.png')"></div>
+  <div class="stage__layer" id="layA" style="background-image:url('assets/land1.webp')"></div>
+  <div class="stage__layer" id="layB" data-src="assets/land2.webp"></div>
+  <div class="stage__layer" id="layC" data-src="assets/land3.webp"></div>
+  <div class="stage__layer" id="layD" data-src="assets/land4.webp"></div>
 </div>
 <div class="stage__veil" aria-hidden="true"></div>
 <div class="stage__grain" aria-hidden="true"></div>
+<div class="readveil" aria-hidden="true"></div>
+<div class="threshold" aria-hidden="true"></div>
 
 <!-- spiral you wind down through the scenery -->
 <canvas class="spiral" id="spiral" aria-hidden="true"></canvas>
@@ -30,91 +54,174 @@
 <header class="nav">
   <div class="nav__in">
     <a class="brand" href="index.html" aria-label="Waypoint home">
-      <svg viewBox="0 0 32 32"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>
       <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>
     </a>
     <nav class="nav__links" aria-label="Primary">
       <span class="nav-lamp" id="navLamp" aria-hidden="true"><i class="nav-lamp__bar"></i></span>
-      <a href="#students">Students</a>
+      <a href="#work">The work</a>
       <a href="#partners">Partners</a>
-      <a href="#schools">Schools</a>
+      <a href="#students">Students</a>
     </nav>
     <button class="nav__tog" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </header>
 
 <main>
-  <!-- open -->
-  <section class="scene scene--center" id="s1">
-    <div class="scene__inner focus-in" data-once>
-      <span class="eyebrow">Waypoint · A student health corps, New York City</span>
-      <h2 class="phrase">The help is <em>already here.</em></h2>
-      <p class="say">New York is full of free health care. Most of the people who need it never reach the door.</p>
-      <div class="scene__cta">
-        <a href="#students" class="btn btn--solid">Join the corps <span class="arr">→</span></a>
+  <!-- ===== the door ===== -->
+  <section class="hero" id="top">
+    <div class="hero__sticky">
+      <div class="hero__ui">
+        <span class="eyebrow hero__eye">Waypoint · A student health corps, New York City</span>
+        <h1 class="hero__head">
+          <span class="hero__l">The help is <em>already here.</em></span>
+          <span class="hero__r">No one <em>walks you to it.</em></span>
+        </h1>
+        <div class="hero__foot">
+          <p class="hero__lede">New York is full of free care, free counsel, free food, free rides. Most of the people who need it never reach the door.</p>
+          <div class="hero__cta">
+            <a href="#partners" class="btn btn--solid">Host the first event <span class="arr">→</span></a>
+            <a href="#students" class="tlink">Join the corps <span class="arr">→</span></a>
+          </div>
+        </div>
+        <div class="hero__cue"><span>Scroll to step through</span><i></i></div>
       </div>
     </div>
-    <div class="scrollcue" aria-hidden="true">Scroll <i></i></div>
   </section>
 
   <!-- the gap -->
   <section class="scene scene--right">
     <div class="scene__inner focus-in">
       <h2 class="phrase">All around them. <em>Out of reach.</em></h2>
-      <p class="say">Senior centers, counselors, clinics, Medicare help, food, transit. All free. All quietly going unused, because no one walks people to it.</p>
+      <p class="say">Senior centers, benefits counselors, clinics, Medicare help, food programs, transit fares. All free, all open, all quietly going unused. Not because the city built too little. Because nobody walks people to the door.</p>
     </div>
   </section>
 
-  <!-- the thread -->
-  <section class="scene scene--left" id="s3">
-    <div class="scene__inner focus-in">
-      <h2 class="phrase">So we became <em>the thread.</em></h2>
-      <p class="say">Waypoint is a trained student volunteer corps. We carry older, low-income, and immigrant New Yorkers to the care that is already theirs.</p>
-    </div>
-  </section>
-
-  <!-- navigation -->
-  <section class="scene scene--right">
-    <div class="scene__inner focus-in">
-      <h2 class="phrase">Find what's <em>already yours.</em></h2>
-      <p class="say">At libraries and senior centers, students help neighbors find the free services they qualify for and leave with one clear next step. When a certified counselor is there, they handle the rest.</p>
-    </div>
-  </section>
-
-  <!-- companionship -->
+  <!-- what we are -->
   <section class="scene scene--left">
     <div class="scene__inner focus-in">
-      <h2 class="phrase">So no one <em>sits alone.</em></h2>
-      <p class="say">Through trusted partners, vetted students show up on a schedule, in groups and supervised pairs. Games, music, reading, company that keeps coming back.</p>
+      <h2 class="phrase">So we became <em>the way through.</em></h2>
+      <p class="say">Waypoint is a trained student volunteer corps. We bring older, low-income, and immigrant New Yorkers to the free health resources and the professionals who already serve them. We are not building a second system. We are the introduction the first one never makes.</p>
     </div>
   </section>
 
-  <!-- promise -->
-  <section class="scene scene--center">
+  <!-- ===== HOLD: a morning at a library ===== -->
+  <section class="scene scene--hold" id="work">
+    <div class="hold">
+      <div class="hold__anchor">
+        <div class="hold__anchor-in focus-in" data-once>
+          <span class="eyebrow">A resource navigation event</span>
+          <h2 class="phrase">What it looks like on <em>a Saturday morning.</em></h2>
+        </div>
+      </div>
+      <div class="hold__stream">
+        <p class="beat focus-in"><b>It starts with somebody walking in out of the heat.</b> A branch library on a Saturday, a table near the door, a few students, and no clipboard in anyone's face. Most people who come in are not there for us. They came for the air conditioning, the computers, a book for a grandchild. We say hello anyway.</p>
+        <p class="beat focus-in"><b>The conversation is the whole job.</b> A student asks what has been hard lately, in whatever language that conversation works best in. Someone mentions a prescription they stopped filling, or a letter they could not read, or a parent who is alone from Monday to Friday.</p>
+        <p class="beat focus-in"><b>Then we say what exists, plainly.</b> Not what you qualify for, which is not ours to decide. What exists: this program, that office, this number, and roughly who it is meant for. Enough for someone to recognise themselves in it and say yes, that sounds like me.</p>
+        <p class="beat focus-in"><b>And then the short walk across the room.</b> The certified counselor is already sitting at the next table, because we asked them to be there before we asked you for a room. The student makes the introduction and steps back. The regulated work starts exactly where our part stops.</p>
+        <p class="beat focus-in"><b>Nobody leaves holding a pamphlet.</b> They leave with one thing they can act on. An appointment, a name, an address, a number that a person actually answers, and someone who will check that it worked.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- the honesty statement -->
+  <section class="scene scene--center scene--vow">
     <div class="scene__inner focus-in">
       <h2 class="phrase">We share the way. We never play <em>the doctor.</em></h2>
-      <p class="say">We are students, not doctors, nurses, social workers, or benefits counselors. We share information, never medical or legal advice. <b>And we never charge for anything.</b></p>
+      <p class="vow">We are trained student volunteers who connect you to free and low-cost health resources that already exist in NYC. We are not doctors, nurses, social workers, or benefits counselors. We share information; we do not give medical or legal advice. We never charge for anything.</p>
+      <p class="say say--after">This is printed on every table sign, every flyer, and said out loud at every event. It is the first thing we teach and the last thing we would ever bend.</p>
     </div>
   </section>
 
-  <!-- transition into the ways in -->
-  <section class="scene scene--center">
-    <div class="scene__inner focus-in">
-      <h2 class="phrase">Now, <em>pull a thread.</em></h2>
-      <p class="say">Wherever you stand, there is a way to help carry someone to the care that is waiting for them. The journey keeps going from here.</p>
+  <!-- ===== HOLD: who we send ===== -->
+  <section class="scene scene--hold scene--hold-r">
+    <div class="hold">
+      <div class="hold__anchor">
+        <div class="hold__anchor-in focus-in" data-once>
+          <span class="eyebrow">Who we send</span>
+          <h2 class="phrase">Trained to know exactly <em>where the line is.</em></h2>
+        </div>
+      </div>
+      <div class="hold__stream">
+        <p class="beat focus-in"><b>Every student is vetted before they meet anyone.</b> Onboarding, parental consent, a background check where the setting calls for one, and whatever additional training you require of your own volunteers. Your rules layered on top of ours, never instead of them.</p>
+        <p class="beat focus-in"><b>They commit by the semester, not by the afternoon.</b> Students join a cohort with a minimum commitment and a real schedule, and we staff in stable pairs so that no single volunteer is irreplaceable and no shift depends on one teenager's week going well.</p>
+        <p class="beat focus-in"><b>When the semester ends, we tell you.</b> Summer is an honest pause with a handover, not a slow disappearance. You will have our calendar before you plan anything around us.</p>
+        <p class="beat focus-in"><b>What they will not do is the part that protects you.</b> They do not enroll anyone, fill in an application, or touch a protected system. They do not give medical or legal advice, and they do not discuss anyone's diagnosis or medication. They are never alone with a vulnerable adult; they work in pairs or groups with an adult present. They write down no names and no health details. If a question touches immigration status, they stop and route it to a professional.</p>
+        <p class="beat focus-in"><b>That last part is not caution, it is how enrollment is regulated.</b> In New York, enrollment assistance is provided by certified assistors, who complete the state training, pass the certification exam, and work through an agency the state has authorized to host them. Our students hold none of that, so the regulated work is not theirs to do, and we built the program so that they never need to.</p>
+      </div>
     </div>
   </section>
 
-  <!-- ===== STUDENTS chapter ===== -->
-  <section class="scene scene--left" id="students">
+  <!-- ===== HOLD: reach (the climax) ===== -->
+  <section class="scene scene--hold scene--reach">
+    <div class="hold">
+      <div class="hold__anchor">
+        <div class="hold__anchor-in focus-in" data-once>
+          <span class="eyebrow">Reach</span>
+          <h2 class="phrase">The people you have been trying <em>to reach all year.</em></h2>
+        </div>
+      </div>
+      <div class="hold__stream">
+        <p class="beat focus-in"><b>Our students speak the languages your block speaks.</b> Multilingual volunteers are the point of this, not a bonus feature. A conversation about a benefit someone has never heard of rarely survives being translated by a stranger, and almost never survives a leaflet.</p>
+        <p class="beat focus-in"><b>Nobody is asked for a status.</b> We route to services that serve people regardless of immigration status, and anything that touches immigration goes to an immigration professional rather than a student's best guess. Wrong information there costs a family far more than the appointment was ever worth.</p>
+        <p class="beat focus-in"><b>Behind every referral is a directory we maintain.</b> A curated set of free and low-cost services across the five boroughs, each entry carrying the date it was last checked and a named human on the other end wherever one exists. It is re-verified every semester by someone whose job that is. A directory that sends an eighty-year-old to a disconnected number is worse than no directory at all.</p>
+        <p class="beat focus-in"><b>And you get numbers you can actually use.</b> After every event we hand you counts: how many people came, what they asked about, how many were walked to a professional. Categories, never names, no health information, nothing that could identify anyone. Aggregate by design, and exactly the shape of thing your board or your funder asks you for in the spring.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOLD: the ask ===== -->
+  <section class="scene scene--hold scene--hold-r" id="partners">
+    <div class="hold">
+      <div class="hold__anchor">
+        <div class="hold__anchor-in focus-in" data-once>
+          <span class="eyebrow">For partners</span>
+          <h2 class="phrase">One room, one morning, <em>one counselor.</em></h2>
+        </div>
+      </div>
+      <div class="hold__stream">
+        <p class="beat focus-in"><b>A room you already have.</b> A library branch, a senior center, a community or faith hall, on a day you are open anyway. We bring the students, the materials, the table signs, and the directory. You do not staff it and you do not fund it.</p>
+        <p class="beat focus-in"><b>A certified counselor in the room with us.</b> Yours, or one we bring. This is the piece that makes the morning worth someone's time, and it is the piece that keeps the regulated work in regulated hands.</p>
+        <p class="beat focus-in"><b>We work inside your supervision and your coverage.</b> Students follow your rules, with an adult present, doing only what this page says they do. Nothing about the arrangement asks you to extend cover to something new or to take on a risk you were not already carrying.</p>
+        <p class="beat focus-in"><b>And we have not done this yet.</b> That is the honest part. Waypoint has not held its first event. We are looking for the branch that hosts it, and whoever says yes will shape how the whole thing runs, be named in the first semester report, and be the reason there is a second one.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene scene--left scene--wide">
+    <div class="scene__inner focus-in" data-once>
+      <div class="panel">
+        <span class="ey">Start a partnership</span>
+        <h3>Send us <em>a note.</em></h3>
+        <p>Tell us about your space and who you serve. We will come back with a simple plan for a first event, and we will bring the counselor.</p>
+        <form class="form" data-form="partners">
+          <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div class="field"><label for="p-org">Organization</label><input id="p-org" name="org" required placeholder="Branch or center name" /></div>
+          <div class="field"><label for="p-name">Your name</label><input id="p-name" name="name" required placeholder="Contact name" /></div>
+          <div class="field"><label for="p-email">Email</label><input id="p-email" type="email" name="email" required placeholder="you@org.org" /></div>
+          <div class="field"><label for="p-type">Type of partner</label>
+            <select id="p-type" name="type"><option>Library branch</option><option>Senior center / NYC Aging</option><option>Certified counselor</option><option>Clinic / FQHC outreach</option><option>Community or faith space</option><option>Other</option></select>
+          </div>
+          <div class="field full"><label for="p-msg">What you have in mind</label><textarea id="p-msg" name="message" rows="3" placeholder="Who you serve, and what a good first morning would look like"></textarea></div>
+          <div class="form__submit"><button type="submit" class="btn btn--solid">Send <span class="arr">→</span></button></div>
+          <p class="form__legal">By sending this, you agree to our <a href="privacy.html">Privacy &amp; Legal</a> notice. We use your details only to reply.</p>
+          <div class="form__ok">Thanks. We'll be in touch to scope a first event with you.</div>
+          <div class="form__err">Sorry, something went wrong sending that. Please try again, or email waypointoutreach@gmail.com.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STUDENTS ===== -->
+  <section class="scene scene--right" id="students">
     <div class="scene__inner focus-in">
       <span class="eyebrow">For students</span>
       <h2 class="phrase">For the students who <em>show up.</em></h2>
-      <p class="chapter-lede">Join a trained corps and spend your hours on something real. We onboard you, a partner adds their training, and you join a semester cohort with a schedule. At events you greet, listen, translate, and walk people to the right professional. You inform and refer; the regulated work stays with certified counselors. <b>Multilingual students especially.</b></p>
+      <p class="chapter-lede">Join a trained corps and spend your hours on something that leaves a room different than you found it. We onboard you, the partner adds their own training, and you join a semester cohort with a real schedule. At events you greet, you listen, you translate, and you walk people to the right professional. You inform and refer; the regulated work stays with certified counselors. <b>Multilingual students especially.</b></p>
     </div>
   </section>
 
-  <section class="scene scene--right scene--wide">
+  <section class="scene scene--left scene--wide">
     <div class="scene__inner focus-in" data-once>
       <div class="panel">
         <span class="ey">Sign up</span>
@@ -136,77 +243,13 @@
     </div>
   </section>
 
-  <!-- ===== PARTNERS chapter ===== -->
-  <section class="scene scene--right" id="partners">
-    <div class="scene__inner focus-in">
-      <span class="eyebrow">For partners</span>
-      <h2 class="phrase">For the places people <em>already trust.</em></h2>
-      <p class="chapter-lede">Libraries, senior centers, counselors, community halls: co-host an event and we bring vetted students who turn up on schedule, work inside your supervision and coverage, and hand you anonymous, aggregate numbers for your own board and funders.</p>
-    </div>
-  </section>
-
-  <section class="scene scene--left scene--wide">
-    <div class="scene__inner focus-in" data-once>
-      <div class="panel">
-        <span class="ey">Start a partnership</span>
-        <h3>Send us <em>a note.</em></h3>
-        <p>Tell us about your space and who you serve. We will come back with a simple plan for a first event.</p>
-        <form class="form" data-form="partners">
-          <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <div class="field"><label for="p-org">Organization</label><input id="p-org" name="org" required placeholder="Branch or center name" /></div>
-          <div class="field"><label for="p-name">Your name</label><input id="p-name" name="name" required placeholder="Contact name" /></div>
-          <div class="field"><label for="p-email">Email</label><input id="p-email" type="email" name="email" required placeholder="you@org.org" /></div>
-          <div class="field"><label for="p-type">Type of partner</label>
-            <select id="p-type" name="type"><option>Library branch</option><option>Senior center / NYC Aging</option><option>Certified counselor</option><option>Clinic / FQHC outreach</option><option>Community or faith space</option><option>Other</option></select>
-          </div>
-          <div class="field full"><label for="p-msg">What you have in mind</label><textarea id="p-msg" name="message" rows="3" placeholder="Who you serve, and what a good event would look like"></textarea></div>
-          <div class="form__submit"><button type="submit" class="btn btn--solid">Send <span class="arr">→</span></button></div>
-          <p class="form__legal">By sending this, you agree to our <a href="privacy.html">Privacy &amp; Legal</a> notice. We use your details only to reply.</p>
-          <div class="form__ok">Thanks. We'll be in touch to scope a first event with you.</div>
-          <div class="form__err">Sorry, something went wrong sending that. Please try again, or email waypointoutreach@gmail.com.</div>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== SCHOOLS chapter ===== -->
-  <section class="scene scene--left" id="schools">
-    <div class="scene__inner focus-in">
-      <span class="eyebrow">For schools &amp; advisors</span>
-      <h2 class="phrase">For the schools who'll <em>carry it on.</em></h2>
-      <p class="chapter-lede">Waypoint is built to be copied. Sponsor a chapter so it runs inside your coverage, advise the corps, or take the whole playbook and run it yourself. Low risk to start, documented, measured each semester, and built to outlast the students who begin it.</p>
-    </div>
-  </section>
-
-  <section class="scene scene--right scene--wide">
-    <div class="scene__inner focus-in" data-once>
-      <div class="panel">
-        <span class="ey">Talk to us</span>
-        <h3>Let's find <em>the right fit.</em></h3>
-        <p>Tell us your role and your school. We will figure out whether sponsoring, advising, or adopting makes the most sense for you.</p>
-        <form class="form" data-form="schools">
-          <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <div class="field"><label for="c-name">Name</label><input id="c-name" name="name" required placeholder="Your name" /></div>
-          <div class="field"><label for="c-role">Your role</label><input id="c-role" name="role" placeholder="e.g. teacher, counselor, student" /></div>
-          <div class="field"><label for="c-school">School</label><input id="c-school" name="school" placeholder="School name" /></div>
-          <div class="field"><label for="c-email">Email</label><input id="c-email" type="email" name="email" required placeholder="you@school.edu" /></div>
-          <div class="field full"><label for="c-int">What you're interested in</label>
-            <select id="c-int" name="interest"><option>Sponsoring a chapter</option><option>Advising the corps</option><option>Adopting the model at our school</option><option>Not sure yet</option></select>
-          </div>
-          <div class="field full"><label for="c-msg">Anything else</label><textarea id="c-msg" name="message" rows="3" placeholder="Optional"></textarea></div>
-          <div class="form__submit"><button type="submit" class="btn btn--solid">Send <span class="arr">→</span></button></div>
-          <p class="form__legal">By sending this, you agree to our <a href="privacy.html">Privacy &amp; Legal</a> notice. We use your details only to reply.</p>
-          <div class="form__ok">Thanks. We'll reach out to talk through the best fit for your school.</div>
-          <div class="form__err">Sorry, something went wrong sending that. Please try again, or email waypointoutreach@gmail.com.</div>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <!-- close -->
-  <section class="scene scene--center">
+  <!-- close: the door, from the other side -->
+  <section class="scene scene--center scene--close" id="close">
     <div class="scene__inner focus-in">
       <h2 class="phrase">The door was always open. <em>Now someone walks you to it.</em></h2>
+      <div class="scene__cta">
+        <a href="#partners" class="btn btn--solid">Host the first event <span class="arr">→</span></a>
+      </div>
     </div>
   </section>
 </main>
@@ -216,17 +259,22 @@
   <div class="footer__wrap">
     <div class="footer__grid">
       <div>
-        <a class="brand" href="index.html"><svg viewBox="0 0 32 32"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg><span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>
+        <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg><span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>
         <p class="footer__note">We are trained student volunteers who connect New Yorkers to free and low-cost health resources that already exist. We are not doctors, nurses, social workers, or benefits counselors. We share information, not medical or legal advice. We never charge for anything.</p>
       </div>
-      <div class="footer__col"><h4>The journey</h4><a href="#s1">The help is here</a><a href="#s3">The thread</a><a href="#students">For students</a><a href="#partners">For partners</a></div>
-      <div class="footer__col"><h4>Get involved</h4><a href="#students">Students</a><a href="#partners">Partners</a><a href="#schools">Schools &amp; advisors</a></div>
+      <div class="footer__col"><h4>The journey</h4><a href="#top">The help is here</a><a href="#work">A Saturday morning</a><a href="#partners">What we ask for</a><a href="#students">For students</a></div>
+      <div class="footer__col"><h4>Get involved</h4><a href="#partners">Partner with us</a><a href="#students">Join the corps</a><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a></div>
       <div class="footer__col"><h4>More</h4><a href="privacy.html">Privacy &amp; Legal</a><a href="terms.html">Terms of Use</a></div>
     </div>
-    <div class="footer__base"><p>© <span data-year>2026</span> Waypoint. A student-led volunteer initiative in New York City.</p><p><a href="privacy.html" style="border-bottom:1px solid rgba(231,197,126,.5)">Privacy</a> · <a href="terms.html" style="border-bottom:1px solid rgba(231,197,126,.5)">Terms</a></p></div>
+    <div class="footer__base">
+      <p>© <span data-year>2026</span> Waypoint. A student-led volunteer initiative in New York City. Michael, founder.</p>
+      <p><a href="privacy.html" class="footer__ul">Privacy</a> · <a href="terms.html" class="footer__ul">Terms</a></p>
+    </div>
   </div>
 </footer>
 
+<script src="assets/vendor/lenis.min.js"></script>
 <script src="script.js"></script>
+<script type="module" src="assets/door.js"></script>
 </body>
 </html>
