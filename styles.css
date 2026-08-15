@@ -198,7 +198,20 @@ img,svg{ display:block; max-width:100%; }
 /* ============================================================
    SCENES (the journey)
    ============================================================ */
-.scene{ position:relative; min-height:100svh; display:flex; align-items:center; padding:14vh var(--pad); }
+/* ONE BLOCK ON SCREEN AT A TIME.
+   A block leaves the screen once the next section's top edge is `space below`
+   from the viewport top; the next block arrives once that edge is one screen
+   minus `space above` from it. So for the two never to share the screen,
+   space-below + space-above >= 100vh at EVERY boundary. 50vh on both sides of
+   every block is the smallest even way to buy that, and it is why the numbers
+   below (here, on the hold scenes, and above the footer) all say 50vh. Lower
+   one and the pair either side of it starts double-booking the screen. */
+.scene{ position:relative; min-height:100svh; display:flex; align-items:center; padding:50vh var(--pad); }
+/* the one boundary that needs none of its own: the hero's text is gone by the
+   time the door finishes, leaving ~140vh of clear space below it — already over
+   the 100vh, so 50vh here would be surplus you scroll through watching nothing.
+   Only the hero earns this; every other section needs its half. */
+.hero + .scene{ padding-top:14vh; }
 .scene__inner{ max-width:min(560px,90%); position:relative; z-index:3; }
 .scene--left{ justify-content:flex-start; }
 .scene--right{ justify-content:flex-end; }
@@ -250,8 +263,10 @@ img,svg{ display:block; max-width:100%; }
 /* ============================================================
    FOOTER (solid, arrival)
    ============================================================ */
+/* the 50vh is the footer's half of the gap that keeps it off the closing line's
+   screen — solid ground you land on before any of the links show up */
 .footer{ position:relative; z-index:3; background:var(--green-deep); border-top:1px solid rgba(252,254,247,.12);
-  padding:clamp(60px,7vw,96px) 0 36px; }
+  padding:50vh 0 36px; }
 .footer__wrap{ max-width:var(--container); margin-inline:auto; padding-inline:var(--pad); }
 .footer__grid{ display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; padding-bottom:44px; border-bottom:1px solid rgba(252,254,247,.12); }
 .footer__note{ margin-top:20px; max-width:44ch; font-size:14px; color:var(--ink-soft); line-height:1.65; }
@@ -359,8 +374,15 @@ img,svg{ display:block; max-width:100%; }
 .scene--hold{ position:relative; display:block; min-height:auto; padding:0 var(--pad); }
 .hold{ position:relative; z-index:3; max-width:var(--container); margin-inline:auto;
   display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(28px,6vw,104px); align-items:start; }
-.hold__anchor{ position:sticky; top:26vh; grid-column:1; grid-row:1; padding-block:24vh 0; }
-.hold__stream{ grid-column:2; grid-row:1; display:grid; gap:clamp(46px,8.5vh,104px); padding-block:26vh 28vh; }
+/* a hold scene carries its own 50vh on both sides, since the section itself has
+   none. the anchor's bottom 50vh is also what stops it sticking all the way to
+   the section's edge — without it the phrase is pinned to the exact pixel the
+   next scene begins and can never leave first. the stream's 60vh is the larger
+   of the two on purpose: the beats clear the screen before their own phrase
+   does. top:0 + 50vh of padding parks the stuck phrase at the same 50vh as the
+   old top:26vh + 24vh did. */
+.hold__anchor{ position:sticky; top:0; grid-column:1; grid-row:1; padding-block:50vh; }
+.hold__stream{ grid-column:2; grid-row:1; display:grid; gap:clamp(46px,8.5vh,104px); padding-block:52vh 60vh; }
 .scene--hold-r .hold__anchor{ grid-column:2; }
 .scene--hold-r .hold__stream{ grid-column:1; }
 .scene--hold .phrase{ font-size:clamp(2.1rem,4.1vw,3.8rem); }
@@ -389,7 +411,7 @@ img,svg{ display:block; max-width:100%; }
   .nav__links.open{ transform:none; }
   .nav__links a{ font-size:20px; }
   .nav__tog{ display:block; z-index:95; }
-  .scene{ justify-content:flex-start !important; text-align:left !important; min-height:auto; padding-block:18vh; }
+  .scene{ justify-content:flex-start !important; text-align:left !important; min-height:auto; padding-block:50vh; }
   .scene__inner{ max-width:100%; }
   .scene--center .scene__cta{ justify-content:flex-start; }
   .footer__grid{ grid-template-columns:1fr 1fr; gap:28px; }
@@ -409,8 +431,9 @@ img,svg{ display:block; max-width:100%; }
   .hero__foot{ grid-area:3/1/4/2; }
   .hero__cue{ grid-area:4/1/5/2; justify-self:start; }
 
-  /* hold scenes: anchor stops holding, everything flows in one column */
-  .scene--hold{ padding:12vh var(--pad) !important; }
+  /* hold scenes: anchor stops holding, everything flows in one column.
+     the anchor and stream drop their own padding, so the 50vh moves here */
+  .scene--hold{ padding:50vh var(--pad) !important; }
   .hold{ grid-template-columns:minmax(0,1fr); gap:clamp(26px,5vh,44px); }
   .hold__anchor{ position:static; grid-column:1 !important; grid-row:auto; padding-block:0; }
   .hold__stream{ grid-column:1 !important; grid-row:auto; padding-block:0; gap:clamp(30px,5vh,48px); }
@@ -436,5 +459,5 @@ img,svg{ display:block; max-width:100%; }
   .threshold{ display:none; }
   .hold__anchor{ position:static; padding-block:0; }
   .hold__stream{ padding-block:0; }
-  .scene--hold{ padding-block:12vh; }
+  .scene--hold{ padding-block:50vh; }
 }

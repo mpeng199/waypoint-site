@@ -317,6 +317,60 @@ def check_transition_invariants():
         bad("door: no guard around the render loop")
 
 
+def check_one_block_at_a_time():
+    """Never two dense, unrelated blocks of text on the screen at once.
+
+    A block leaves the screen once the next section's top edge is `space below`
+    from the viewport top, and the next block arrives once that edge is one
+    screen minus `space above` from it. So the two never share the screen only
+    while space-below + space-above >= 100vh at every boundary, which is what
+    the matching 50vh paddings below buy. They are the whole mechanism: drop
+    any one of them and that pair starts double-booking the screen again.
+    """
+    css = read("styles.css")
+    GAP = 50.0
+
+    def vhs(pattern, label):
+        m = re.search(pattern, css)
+        if not m:
+            bad(f"one-block-at-a-time: cannot find {label}")
+            return []
+        found = [float(v) for v in re.findall(r"([\d.]+)vh", m.group(1))]
+        if not found:
+            bad(f"one-block-at-a-time: {label} no longer carries a vh value")
+        return found
+
+    rules = [
+        (r"\n\.scene\{[^}]*?padding:([^;]+);", "scene"),
+        (r"\.hold__anchor\{[^}]*?padding-block:([^;]+);", "hold anchor"),
+        (r"\.hold__stream\{[^}]*?padding-block:([^;]+);", "hold stream"),
+        (r"\n\.footer\{[^}]*?padding:([^;]+);", "footer"),
+        (r"\.scene\{[^}]*?min-height:auto;\s*padding-block:([^;]+);", "mobile scene"),
+        (r"\.scene--hold\{\s*padding:([^;]+);", "mobile hold"),
+        (r"\.scene--hold\{\s*padding-block:([^;]+);", "reduced-motion hold"),
+    ]
+    for pattern, label in rules:
+        vals = vhs(pattern, label)
+        if not vals:
+            continue
+        if min(vals) >= GAP:
+            ok(f"{label}: keeps >= {GAP:g}vh of clear space either side")
+        else:
+            bad(f"{label}: only {min(vals):g}vh of clear space, under the "
+                f"{GAP:g}vh that keeps it off the next section's screen")
+
+    # the stream has to clear the screen before its own sticky phrase does,
+    # or the phrase is left labelling a beat the reader can no longer see
+    anchor = vhs(r"\.hold__anchor\{[^}]*?padding-block:([^;]+);", "hold anchor")
+    stream = vhs(r"\.hold__stream\{[^}]*?padding-block:([^;]+);", "hold stream")
+    if anchor and stream:
+        if stream[-1] > anchor[-1]:
+            ok(f"hold phrase outlives its beats ({stream[-1]:g}vh > {anchor[-1]:g}vh)")
+        else:
+            bad(f"hold stream's {stream[-1]:g}vh must exceed the anchor's "
+                f"{anchor[-1]:g}vh, or the beats outlast their own phrase")
+
+
 def check_vendored():
     """No CDN dependencies: privacy.html discloses only Google Fonts."""
     for f in ["assets/vendor/three.module.min.js", "assets/vendor/three.core.min.js",
@@ -437,7 +491,8 @@ def check_nav_matches_sections():
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
-               check_forms, check_labels, check_door, check_transition_invariants, check_vendored,
+               check_forms, check_labels, check_door, check_transition_invariants,
+               check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections]:
         try:
             fn()
