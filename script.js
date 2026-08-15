@@ -260,7 +260,7 @@
 
   /* ---------- tubelight nav ---------- */
   var lamp = $("#navLamp");
-  var navSections = ["work", "partners", "students"].map(function (id) {
+  var navSections = ["bills", "work", "partners", "students"].map(function (id) {
     return { id: id, el: document.getElementById(id), link: $('.nav__links a[href="#' + id + '"]') };
   }).filter(function (s) { return s.el && s.link; });
 

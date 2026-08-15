@@ -4,10 +4,11 @@ A scroll-driven journey through a painterly landscape, with warm green + gold pa
 
 ## The shape of the page
 
-The homepage is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between, twelve beats alternate between the established phrase-per-screen rhythm and a denser **hold scene** used four times where a partner needs real depth.
+The homepage is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between, fourteen beats alternate between the established phrase-per-screen rhythm and a denser **hold scene** used five times where a partner needs real depth.
 
-    door → the gap → what we are → [hold] a Saturday morning → the honesty statement
-      → [hold] who we send → [hold] who we reach → [hold] what we ask for
+    door → real, free, invisible → what we are → [hold] bills and denials
+      → [hold] how a referral works → the honesty statement → [hold] who we send
+      → the second track → [hold] who we reach → [hold] what we ask for
       → partner form → students → students form → the door, from the other side
 
 Rules the page is built to: no card grids, no numbered step lists, no section labels, no visible boundary between beats. Each beat hands off to the next.

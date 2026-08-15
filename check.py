@@ -3,7 +3,8 @@
 Waypoint site checks.
 
 Guards the things that rot silently: dead links and anchors, missing assets,
-the honesty statement drifting out of a surface that must carry it verbatim,
+the honesty statement drifting out of any surface that must carry it verbatim,
+overclaims about what a volunteer may do with a bill or a denial,
 stale references to programmes we do not run, and the asset-size budget that
 keeps the site fast on a library's wifi.
 
@@ -26,8 +27,20 @@ PAGES = ["index.html", "privacy.html", "terms.html", "partner-pitch.html",
          "cohort-onboarding.html", "students.html", "partners.html", "admin.html"]
 
 # Printed on every flyer, every table sign, and the site. It exists to stop a
-# vulnerable person mistaking a student for a clinician; it does not get reworded.
-HONESTY = ("We are trained student volunteers who connect", "not doctors, nurses, social workers, or benefits counselors")
+# vulnerable person mistaking a student for a professional; it does not get
+# reworded. Source of truth: Mission & Operating Model v2.0, section 8.
+#
+# Fragment rules, learned from how strip_tags() works: each fragment must be a
+# contiguous, tag-free run (a tag mid-fragment becomes a space and breaks the
+# match), and matching is case-sensitive, so fragments start mid-sentence where
+# the surrounding wording may differ.
+HONESTY = ("We are trained student volunteers.",
+           "not doctors, lawyers, benefits counselors, or insurance experts",
+           "do not read your bills, fill out your forms, or tell you what you qualify for")
+
+# The statement is duplicated by hand with no shared source, so the linter is
+# the shared source. index.html carries it twice: the vow scene and the footer.
+HONESTY_SURFACES = {"index.html": 2, "partner-pitch.html": 1, "cohort-onboarding.html": 1}
 
 # Cut from the public site: schools/replication and the Companionship track.
 FORBIDDEN = [
@@ -38,6 +51,17 @@ FORBIDDEN = [
     (r"assets/land\d\.png", "unoptimised PNG landscape (use .webp)"),
     (r"\bTrack [AB]\b", "internal track naming"),
     (r"a working name", "the org name is settled; drop the placeholder hedge"),
+    # The billing vertical's own failure modes. Volunteers never state
+    # eligibility, quote a deadline, promise an outcome, or read like a lawyer.
+    (r"\b\d+\s*%\s*of the federal poverty (?:level|line)\b",
+     "a numeric eligibility threshold; who qualifies is never ours to state"),
+    (r"501\(r\)|26 U\.S\.C\.|Public Health Law\s*(?:§|Section)|N\.Y\. Pub(?:lic)?\.? Health",
+     "a statute citation; describe the role, do not cite the law"),
+    (r"\bfree bill (?:review|audit)\b", "a bill-review service we do not provide"),
+    (r"\b(?:success fee|contingency fee|% of (?:your )?savings)\b",
+     "a fee model; we never charge for anything"),
+    (r"\bmedical debt (?:relief|forgiveness|settlement)\b",
+     "debt work that is neither ours to do nor ours to promise"),
 ]
 
 failures, passes = [], []
@@ -157,19 +181,23 @@ def check_stage_layers():
 
 # ------------------------------------------------------------------ content
 def check_honesty_statement():
-    for page in ["index.html"]:
+    """Every surface that must carry the statement, carries all of it.
+
+    Checking only index.html let the pitch and onboarding copies drift, which is
+    exactly the failure this statement exists to prevent: the printed leave-behind
+    saying something the site does not."""
+    for page, times in HONESTY_SURFACES.items():
+        if not (ROOT / page).is_file():
+            bad(f"{page}: missing, so the honesty statement cannot be verified")
+            continue
         text = re.sub(r"\s+", " ", strip_tags(read(page)))
         for fragment in HONESTY:
-            if fragment in text:
-                ok(f"{page}: honesty statement fragment present")
+            n = text.count(fragment)
+            if n >= times:
+                ok(f"{page}: honesty fragment present {n}x")
             else:
-                bad(f"{page}: honesty statement altered or missing: {fragment!r}")
-        # it must appear both as the vow and in the footer
-        n = text.count("We are not doctors") + text.count("We are not doctors, nurses")
-        if text.count("not doctors, nurses, social workers, or benefits counselors") >= 2:
-            ok("index.html: honesty statement on two surfaces (vow + footer)")
-        else:
-            bad("index.html: honesty statement should appear in both the vow scene and the footer")
+                bad(f"{page}: honesty statement altered or missing "
+                    f"({n}x, expected {times}x): {fragment!r}")
 
 
 def check_forbidden():
@@ -197,6 +225,70 @@ def check_no_invented_numbers():
         ok("index.html: pre-launch status stated plainly")
     else:
         bad("index.html: the page should say the first event has not happened yet")
+
+
+# ------------------------------------------------------- billing boundaries
+# Students inform and refer. They never read a document, state eligibility,
+# quote a deadline, or promise an outcome. These guards cannot live in
+# FORBIDDEN, because our own boundary sentences contain the same verbs under a
+# negation ("they do not read your bills"). So: split into sentences, drop the
+# ones carrying a negation cue, and only then look for an affirmative claim.
+BILLING_OVERCLAIM = [
+    (r"\b(?:we|our students|students|volunteers)\s+(?:can\s+|will\s+|also\s+|)"
+     r"(?:negotiate|settle|dispute|appeal|reduce|lower|erase|forgive|waive|wipe)\b",
+     "a first-person claim to do the regulated billing work"),
+    (r"\b(?:we|our students|students|volunteers)\s+(?:can\s+|will\s+|)"
+     r"(?:file|submit|complete|fill out|draft)\s+(?:the|your|an?|any)\s+"
+     r"(?:application|appeal|form|paperwork|letter)\b",
+     "a claim to file or draft on somebody's behalf"),
+    (r"\b(?:reduc\w*|lower\w*|eras\w*|forgiv\w*|settl\w*|wip\w*)\s+"
+     r"(?:your|their|the|a|any)\s+(?:hospital\s+|medical\s+)?(?:bill|bills|debt)\b",
+     "an outcome claim about somebody's bill"),
+    (r"\byou (?:will |)(?:qualify|are eligible)\b",
+     "an eligibility determination, which is never ours to make"),
+    (r"\b(?:we|our students|students|volunteers)\s+(?:can\s+|will\s+|)"
+     r"(?:read|review|interpret|look over)\s+(?:your|their|the)\s+"
+     r"(?:bill|bills|denial|letter|paperwork|documents?)\b",
+     "a claim to read documents, which is the first of the eight nevers"),
+]
+NEGATION = re.compile(r"\b(?:never|not|cannot|can't|don't|doesn't|no|without|instead of)\b", re.I)
+
+
+def check_billing_boundaries():
+    for page in PAGES:
+        if not (ROOT / page).is_file():
+            continue
+        text = re.sub(r"\s+", " ", strip_tags(read(page)))
+        hits = []
+        for sentence in re.split(r"(?<=[.!?;])\s+", text):
+            if NEGATION.search(sentence):
+                continue           # a boundary statement, not a claim
+            for pattern, why in BILLING_OVERCLAIM:
+                m = re.search(pattern, sentence, re.I)
+                if m:
+                    hits.append((why, m.group(0)))
+        if hits:
+            bad(f"{page}: overclaims on billing: {hits[:3]}")
+        else:
+            ok(f"{page}: no billing overclaim")
+
+    # the positive half: the primary chapter has to actually be on the page
+    idx = read("index.html")
+    text = re.sub(r"\s+", " ", strip_tags(idx))
+    if 'id="bills"' in idx:
+        ok("index.html: the billing chapter has an anchor")
+    else:
+        bad('index.html: no id="bills"; bills and denials are the primary identity')
+    for phrase in ["financial assistance", "denial"]:
+        if phrase in text:
+            ok(f"index.html: names {phrase!r}")
+        else:
+            bad(f"index.html: must name {phrase!r}")
+    money = re.findall(r"\$\s?\d[\d,]*", text)
+    if money:
+        bad(f"index.html: dollar figures imply an outcome we cannot promise: {money[:3]}")
+    else:
+        ok("index.html: no dollar figures")
 
 
 def check_forms():
@@ -491,7 +583,8 @@ def check_nav_matches_sections():
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
-               check_forms, check_labels, check_door, check_transition_invariants,
+               check_billing_boundaries, check_forms, check_labels, check_door,
+               check_transition_invariants,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections]:
         try:

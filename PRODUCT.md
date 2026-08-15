@@ -8,7 +8,9 @@ brand
 
 **The website is built for two audiences, in this order.** The others still matter to the programme; they are simply not who the site is written to convert.
 
-**1. Partners & venue hosts (libraries, senior centers, NYC Aging programmes, certified counselors) — primary.** Institutional decision-makers evaluating a request to co-host an event. Need assurance of reliability, legal safety, credential clarity, and low operational burden. The single thing they must believe by the end of the page: *this reaches people I have not been able to reach.* Everything else on the site exists to make that claim credible.
+**1. Resource holders — the organisations whose help we distribute — primary.** Consumer assistance programmes, charity-care nonprofits, legal services, prescription assistance programmes, agency helplines. They have a real, chronic problem: eligible people never hear about them. The single thing they must believe by the end of the page: *these students can put my materials in front of people I have never reached, and they will not overstate what I do.* We are offering distribution, not requesting a favour, and the page has to read that way.
+
+**1b. Venue hosts (libraries, senior centers, NYC Aging programmes, faith spaces, FQHC outreach) — the second ask.** Shelf space for reviewed materials, or a small table at programming they already run. Lower stakes than the original co-host ask, and deliberately sequenced behind at least one confirmed resource partner: naming a real partner is what makes this ask land.
 
 **2. Students (14–18) — secondary.** Seeking meaningful volunteer work that matters. Want clear structure, reliable commitment windows (semester cohorts), peer community, and credibility. One strong chapter and a form, not a co-equal half of the site.
 
@@ -20,7 +22,9 @@ brand
 
 ## Product Purpose
 
-Waypoint connects underserved NYC communities — especially elderly, low-income, and immigrant residents — to the free health resources, programs, and professionals that already exist but go unused because no one reliably walks people to the door.
+Waypoint helps New Yorkers buried in medical bills or fighting a denied insurance claim reach the free experts who can actually help — especially elderly, low-income, and immigrant residents.
+
+New York already built the infrastructure: hospitals are required to offer financial assistance to patients under certain incomes, the state runs an independent appeal for denied claims, free counselors take coverage disputes in dozens of languages, and national nonprofits will file a charity care application at no cost. Almost nobody who qualifies ever hears about any of it. The help is real, it is free, and it is invisible, which makes this a distribution problem rather than a funding one — and distribution is something a student corps can genuinely provide before it has ever run an event.
 
 We are not building parallel services or clinical expertise. We are building the **human bridge** and the **reliable volunteer pipeline** that the existing system lacks.
 
@@ -40,7 +44,13 @@ Success is measured by: community members reaching resources they qualify for, p
 
 ## Scope of the programme, as described publicly
 
-The site describes **Resource Navigation only**. The Companionship track exists in the durable plan (`Project-Context-Student-Health-Corps copy.md`, section 6) and is still the intended second phase, but it is not launched, so it does not appear on any public surface, pitch, or onboarding material. Describing it in the present tense would set an expectation a partner could reasonably try to accept.
+The site leads with **Medical Bills & Coverage Navigation** (Phase A) and this is Waypoint's public identity. Three activities, in order of how much time they take: awareness and distribution (~60%), triage and routing (~30%), warm handoff (~10%).
+
+**General Resource Navigation is the second track, and the site says so in the future tense.** It is not cancelled and it is not hidden — it gets a full scene of its own, named as where Waypoint started and as half of why it exists — but it is sequenced behind Phase A and gated on six unlock criteria (confirmed partners, a legal review cleared, an active trained cohort, completed distribution runs, a named second lead, a written impact report). Describing it in the present tense would invite a partner to ask for it today, which is the exact scope creep the narrowing was meant to prevent.
+
+The Companionship track is undecided and appears on no public surface. `check.py` fails the build if the word appears at all.
+
+**The eight nevers are the operating spine and constrain every word of copy.** A volunteer never: reads or interprets a bill, denial letter, or insurance document (not even to help someone understand it); drafts or fills in an appeal or application; says whether someone qualifies; states a deadline; takes custody of documents; records a name beside medical or financial detail; determines someone's plan type; or predicts an outcome. Any copy that implies otherwise is a defect, and `check_billing_boundaries` in `check.py` fails the build on the affirmative forms.
 
 Status is stated plainly: **Waypoint has not held its first event.** The site turns that into the ask — the first host is the founding branch, shapes how the programme runs, and is named in the first semester report. No numbers are claimed anywhere, because there are none yet. `check.py` fails the build if a numeric track-record claim appears.
 
