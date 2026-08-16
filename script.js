@@ -121,14 +121,77 @@
     }
   }
 
+  /* ============================================================
+     THE SCRUB ENGINE
+
+     Anything marked [data-scrub] gets a --p that runs 0 → 1 as it crosses
+     the viewport, and every set piece on the page is a pure CSS function of
+     that one number. Nothing animates on a timer, so wherever the scroll
+     stops is a finished frame rather than a half-played animation.
+
+       (default)  0 as the element's top enters, 1 as its bottom leaves
+       "enter"    0 as the top enters, 1 once the top reaches the ceiling —
+                  for effects that should be over before the section settles
+       "pin"      the travel of a sticky child through its tall wrapper
+     ============================================================ */
+  var scrubs = $$("[data-scrub]");
+
+  function scrub() {
+    if (reduced) return;          /* the stylesheet parks every set piece at --p 1 */
+    var vh = window.innerHeight;
+    for (var i = 0; i < scrubs.length; i++) {
+      var el = scrubs[i], r = el.getBoundingClientRect(), p;
+      var mode = el.getAttribute("data-scrub");
+      if (mode === "pin") {
+        var travel = r.height - vh;
+        p = travel > 0 ? clamp(-r.top / travel, 0, 1) : (r.top <= 0 ? 1 : 0);
+      } else if (mode === "enter") {
+        p = clamp((vh - r.top) / vh, 0, 1);
+      } else {
+        p = clamp((vh - r.top) / (vh + r.height), 0, 1);
+      }
+      el.style.setProperty("--p", p.toFixed(4));
+    }
+  }
+
   /* ---------- journey background: crossfade the stages AFTER the door ---------- */
   var layers = ["#layA", "#layB", "#layC", "#layD"].map(function (s) { return $(s); }).filter(Boolean);
+
+  /* Sections that stop the world. A set piece needs the landscape to hold
+     still while it plays, so the scroll it consumes is subtracted from the
+     journey rather than spent on it: the crossfade picks up exactly where it
+     left off once the piece is behind you. */
+  var holds = $$("[data-world-hold]");
 
   function progress() {
     var start = hero ? hero.offsetTop + hero.offsetHeight - window.innerHeight : 0;
     var max = document.documentElement.scrollHeight - window.innerHeight;
     var span = max - start;
-    return span > 0 ? clamp(((window.scrollY || 0) - start) / span, 0, 1) : 0;
+    if (span <= 0) return 0;
+    var y = clamp(window.scrollY || 0, start, max), eaten = 0;
+    for (var i = 0; i < holds.length; i++) {
+      var top = holds[i].getBoundingClientRect().top + (window.scrollY || 0);
+      var a = clamp(top, start, max), b = clamp(top + holds[i].offsetHeight, start, max);
+      span -= b - a;
+      if (y >= b) eaten += b - a;
+      else if (y > a) eaten += y - a;
+    }
+    return span > 0 ? clamp((y - start - eaten) / span, 0, 1) : 0;
+  }
+
+  /* how much of the screen a stopped section has taken: the room dims and the
+     thread makes way, so the object in the frame is the only thing in it */
+  var stopNow = 0;
+  function worldStop() {
+    var vh = window.innerHeight, want = 0;
+    for (var i = 0; i < holds.length; i++) {
+      var r = holds[i].getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= vh) continue;
+      var seen = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+      want = Math.max(want, clamp(seen / (vh * 0.72), 0, 1));
+    }
+    stopNow += (want - stopNow) * (reduced ? 1 : 0.09);
+    root.style.setProperty("--stop", stopNow.toFixed(3));
   }
 
   function journey() {
@@ -173,7 +236,10 @@
       var r = scenes[i].getBoundingClientRect();
       if (r.top > mid || r.bottom < mid) continue;
       var c = scenes[i].classList;
+      if (c.contains("scene--stage")) return { cx: 0.5, amp: 0.012, turn: 1.35 };
       if (c.contains("scene--hold")) return { cx: 0.5, amp: 0.020, turn: 1.15 };
+      if (c.contains("scene--talk")) return { cx: 0.5, amp: 0.030, turn: 0.92 };
+      if (c.contains("scene--flow")) return { cx: 0.5, amp: 0.022, turn: 1.10 };
       if (c.contains("scene--center")) return { cx: 0.5, amp: 0.048, turn: 0.72 };
       if (c.contains("scene--left")) return { cx: 0.74, amp: 0.082, turn: 0.54 };
       if (c.contains("scene--right")) return { cx: 0.26, amp: 0.082, turn: 0.54 };
@@ -200,7 +266,9 @@
     var y = window.scrollY || 0;
     if (Math.abs(y - lastY) > 0.5) { lastMoveAt = performance.now(); lastY = y; }
     openNow += (closingRoom() - openNow) * (reduced ? 1 : 0.08);
-    var leaving = 1 - ramp(openNow, 0.10, 0.62);
+    /* it clears the closing scene, and it clears a set piece too: while the
+       world is stopped the object in the frame is the only thing in it */
+    var leaving = (1 - ramp(openNow, 0.10, 0.62)) * (1 - stopNow * 0.92);
     if (reduced) { spiralAlpha = leaving; }
     else {
       var want = (performance.now() - lastMoveAt < 700 ? 1 : 0) * leaving;
@@ -244,7 +312,7 @@
   }
 
   /* ---------- reading veil: one fixed layer, opacity follows dense text ---------- */
-  var denseScenes = $$(".scene--hold, .scene--vow, .scene--wide");
+  var denseScenes = $$(".scene--hold, .scene--vow, .scene--wide, .scene--talk, .scene--flow");
   var veilNow = 0;
   function readVeil() {
     var vh = window.innerHeight, want = 0;
@@ -286,7 +354,10 @@
   }
 
   /* ---------- one loop drives everything scroll-linked ---------- */
-  function tick() { doorFrame(); chrome(); journey(); navActive(); readVeil(); spiralFade(); drawSpiral(); }
+  function tick() {
+    scrub(); doorFrame(); chrome(); worldStop(); journey();
+    navActive(); readVeil(); spiralFade(); drawSpiral();
+  }
   /* exposed so the scroll choreography can be driven deterministically in tests,
      where requestAnimationFrame does not run (headless tabs report hidden) */
   window.__waypointTick = tick;

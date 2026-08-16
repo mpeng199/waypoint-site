@@ -409,6 +409,81 @@ def check_transition_invariants():
         bad("door: no guard around the render loop")
 
 
+def check_no_section_labels():
+    """No card grids, no numbered step lists, no section labels.
+
+    The eyebrow above a chapter heading is the one that keeps growing back,
+    because it is the easiest way to make a beat look finished. It is also the
+    tell that the beat has not earned its place: if the phrase under it does
+    not say what the section is, the phrase is the thing to fix. Kept as a
+    check rather than a note because it was reintroduced twice.
+    """
+    src = read("index.html")
+    for cls, what in [("eyebrow", "an eyebrow label"), ('class="ey"', "a panel label")]:
+        hits = src.count(cls)
+        if hits:
+            bad(f"index.html: {what} is back ({hits}x); the journey carries no section labels")
+        else:
+            ok(f"index.html: no {what}")
+    if "<ol" in src:
+        bad("index.html: an ordered list; the page names no steps by number")
+    else:
+        ok("index.html: no numbered step list")
+
+
+def check_scrub_engine():
+    """Every set piece is a pure function of one scroll number, and the three
+    things that made that true are easy to break silently."""
+    idx = read("index.html")
+    css = read("styles.css")
+    js = read("script.js")
+
+    # 1. the engine is wired end to end
+    if "[data-scrub]" in js and "--p" in css and "data-scrub" in idx:
+        ok("scrub: --p wired from script.js through the markup to the stylesheet")
+    else:
+        bad("scrub: --p is not wired between index.html, script.js and styles.css")
+
+    # 2. a stage without a pin driver is a 300vh section that does nothing, and
+    #    a stage that does not stop the world scrubs against a moving landscape
+    stages = re.findall(r"<section[^>]*\bclass=\"[^\"]*scene--stage[^\"]*\"[^>]*>", idx)
+    if not stages:
+        bad("index.html: no set-piece stages left on the page")
+    for tag in stages:
+        if "data-world-hold" in tag:
+            ok("stage stops the world")
+        else:
+            bad(f"index.html: a stage without data-world-hold: {tag[:70]!r}")
+    pins = idx.count('data-scrub="pin"')
+    if pins == len(stages) and pins:
+        ok(f"stage: all {pins} carry a pinned scrub driver")
+    else:
+        bad(f"stage: {len(stages)} stages but {pins} pinned scrub wrappers")
+
+    # 3. the landscape hold, and the dimming that goes with it
+    for token, where in [("data-world-hold", js), ("--stop", js), ("--stop", css)]:
+        if token in where:
+            ok(f"world hold: {token} present")
+        else:
+            bad(f"world hold: {token} missing; a set piece would play over a moving landscape")
+
+    # 4. sequenced items are stacked on one spot: a soft crossfade leaves two
+    #    sentences at half opacity on top of each other and neither is readable
+    m = re.search(r"--sharp,\s*([\d.]+)", css)
+    if m and float(m.group(1)) >= 4:
+        ok(f"seq: crossfade stays sharp (--sharp {m.group(1)})")
+    else:
+        bad("seq: --sharp must stay >= 4, or stacked items overlap illegibly")
+
+    # 5. reduced motion parks every set piece at its finished state instead of
+    #    leaving it frozen at whatever --p the stylesheet defaults to
+    rm = css.split("prefers-reduced-motion", 1)[-1]
+    if "[data-scrub]{ --p:1 !important; }" in rm:
+        ok("reduced motion: set pieces resolve to their finished frame")
+    else:
+        bad("reduced motion: [data-scrub] is not parked at --p 1")
+
+
 def check_one_block_at_a_time():
     """Never two dense, unrelated blocks of text on the screen at once.
 
@@ -584,7 +659,7 @@ def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
                check_billing_boundaries, check_forms, check_labels, check_door,
-               check_transition_invariants,
+               check_transition_invariants, check_no_section_labels, check_scrub_engine,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections]:
         try:

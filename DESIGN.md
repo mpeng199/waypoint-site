@@ -4,14 +4,58 @@ A scroll-driven journey through a painterly landscape, with warm green + gold pa
 
 ## The shape of the page
 
-The homepage is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between, fourteen beats alternate between the established phrase-per-screen rhythm and a denser **hold scene** used five times where a partner needs real depth.
+The homepage is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side.
 
-    door → real, free, invisible → what we are → [hold] bills and denials
-      → [hold] how a referral works → the honesty statement → [hold] who we send
-      → the second track → [hold] who we reach → [hold] what we ask for
+Between those two doors, **no two beats are built the same way**. Five identical hold scenes and five identical phrase scenes told the whole story in two mechanisms, and a reader stops seeing a mechanism they have already met. Each beat now gets the device that carries its particular fact best, and the landscape crossfade — the thing that makes it one journey rather than a stack of sections — runs underneath all of them.
+
+    door
+      → the vanishing word          real, free, and invisible
+      → a phrase                    so we carry it to people
+      → [stop] THE ENVELOPE         the letter, and what is printed on its back
+      → a column, and the ribbon    almost nobody uses it / where we take it
+      → the transcript              what a referral looks like when it works
+      → [stop] THE STATEMENT        the honesty statement, a sentence at a time
+      → [stop] THE LINE             what a volunteer does, and never does
+      → a column                    vetting, the reason about dates, the review
+      → a phrase                    the second track
+      → the word for help           multilingual reach, the directory, the counts
+      → the struck ask              not money, not an endorsement, your materials
+      → [stop] the admission        we have not done this yet
       → partner form → students → students form → the door, from the other side
 
-Rules the page is built to: no card grids, no numbered step lists, no section labels, no visible boundary between beats. Each beat hands off to the next.
+Rules the page is built to, unchanged and now stricter: **no card grids, no numbered step lists, no section labels** (the eyebrows above each chapter are gone — a beat that needs a label has not earned its place), no visible boundary between beats. Each beat hands off to the next.
+
+## The scrub engine, and stopping the world
+
+Two mechanisms carry every set piece, and both live in `script.js`'s single `tick()`.
+
+**`[data-scrub]` gives an element a `--p` that runs 0 → 1 as it crosses the viewport**, and each set piece is then a pure CSS function of that one number — no timers, no transitions, no state. This is the same discipline the door is built to: **wherever the scroll stops is a finished frame**, never a half-played animation. Three modes:
+
+| Mode | `--p` runs | Used by |
+|---|---|---|
+| *(default)* | as the element's top enters to as its bottom leaves | the vanishing word, the ribbon, the word for help |
+| `enter` | until the element's top reaches the ceiling | effects that must be over before the section settles (the struck ask, the admission) |
+| `pin` | the travel of a sticky child through its tall wrapper | the three stages |
+
+**`[data-world-hold]` stops the landscape.** The scroll a marked section consumes is subtracted from journey progress rather than spent on it, so the crossfade freezes on the frame it was on and picks up exactly there once the piece is behind you. The same measurement drives `--stop`, which deepens the reading veil and clears the thread out of the way, so a set piece plays in a quiet, dimmed room and the object in the frame is the only thing in it. Four beats stop the world: the envelope, the statement, the line, and the admission.
+
+`.seq` is the shared reveal: children get `--r` from two `min()`'d clamps against the parent's `--n` (the count, less half an item) and their own `--i`. **The crossfade has to stay sharp** (`--sharp`, 5.5). Sequenced items are stacked on the same spot, so a lazy fade leaves two sentences at half opacity on top of each other, which is unreadable in a way neither of them is alone. The windows overlap for about 8% of an item's turn: long enough to read as a swap, short enough that it is never two things at once.
+
+## The set pieces
+
+**The envelope** (`#bills`). A flat mailer in real CSS 3D — `perspective` on the wrapper, `preserve-3d` on the group, the pocket nearest the lens at `translateZ(12px)` so the sheet is genuinely *inside* it rather than layered over it. The flap opens on a hinge at the top edge, the envelope falls away and fades, and the letter comes forward and turns over. The front is the bill: redaction bars and one italic line. The back is what New York already built. It is the argument of the whole chapter as one object — the help was on the other side of the page, and only one side ever arrives. The bars are bars and never a figure, because there is no figure we could invent honestly (`check.py` fails on dollar amounts anyway).
+
+**The statement.** The one thing on the page that is never half-shown: sentences arrive cumulatively and all six are up by the end, so the finished frame is the whole statement. The two "we are not / we do not" sentences take a gold rule that draws down beside them. The text is verbatim and must stay contiguous — `check.py`'s fragments are tag-free runs, so a sentence may be wrapped but never split.
+
+**The line.** A gold hairline pinned at the centre of the frame that does not move while six pairs cross it: what a volunteer does above, what they never do below. The mechanism is the meaning, and it puts the eight nevers at the same size and weight as the work rather than in the fine print, which is what "safety first" is supposed to look like.
+
+**The transcript** (`#work`). A referral shown rather than described — the person's words in Fraunces italic gold, what the volunteer does in Inter against a gold rule, alternating. It replaced four stacked beats and is shorter than they were.
+
+**The word for help.** One sentence that holds while the word inside it changes through the languages our students speak. The slot is `aria-hidden` with a visually-hidden "help" beside it, so the sentence reads correctly aloud.
+
+**The ribbon.** Two rows of place-kinds drifting in opposite directions under the distribution beat, masked at both edges. It is `aria-hidden`: it repeats what the beat above it already says, and a screen reader does not need it twice.
+
+**The vanishing word** and **the struck ask** are the two small ones — a fill that drains out of "And invisible." leaving a gold outline, and a rule drawn through "Not money. Not an endorsement." The drained fill floors at 32% on purpose: the point is that the help is still there and you cannot see it, not that the word becomes unreadable.
 
 ## The door (`assets/door.js`)
 
@@ -112,8 +156,10 @@ Fluid padding based on viewport width. All major spacing uses `clamp()` to scale
 
 ### Grid & Composition
 
-- **Hero** (`.hero`): 240vh tall (190vh on phones, 100svh under reduced motion) with a `position:sticky` inner frame. Type is arranged around the doorway in a 2×3 grid: eyebrow top-left, headline split top-left / bottom-right, lede and CTAs bottom-left, scroll cue bottom-right. The whole `.hero__ui` fades, scales and blurs as a function of `--doorT`, so the type falls away as the camera moves through the opening. On phones the split headline stacks into one left-aligned column.
-- **Hold scenes** (`.scene--hold`): two columns. `.hold__anchor` is `position:sticky` and keeps the phrase in place while `.hold__stream` moves past it at its own rate. `.scene--hold-r` mirrors the columns. A full-bleed `::before` gradient, faded to nothing at both ends of the section, keeps dense text legible over the landscape without drawing a visible box. Below 900px the anchor stops holding and everything flows in one column.
+- **Hero** (`.hero`): 240vh tall (190vh on phones, 100svh under reduced motion) with a `position:sticky` inner frame. Type is arranged around the doorway in a 2×2 grid: headline split top-left / bottom-right, lede and CTAs bottom-left, scroll cue bottom-right. The whole `.hero__ui` fades, scales and blurs as a function of `--doorT`, so the type falls away as the camera moves through the opening. On phones the split headline stacks into one left-aligned column.
+- **Stages** (`.scene--stage`): a tall `.stagewrap` (240–320vh) giving the scroll length, and a `.stagefix` sticky 100svh frame inside it holding the phrase, the object and one caption slot. The wrapper carries `data-scrub="pin"`; the section carries `data-world-hold`. Sticky is constrained by the section's *content* box, so the scene's own 50vh paddings still buy the clear space either side.
+- **Hold scenes** (`.scene--hold`): two columns. `.hold__anchor` is `position:sticky` and keeps the phrase in place while `.hold__stream` moves past it at its own rate. `.scene--hold-r` mirrors the columns. Now used once, for the partner ask, where a reader genuinely is scanning a list of asks against a fixed heading. Below 900px the anchor stops holding and everything flows in one column.
+- **Columns** (`.scene--flow`): one centred 680px column of beats with nothing else in the frame, used for the prose tails that follow a set piece. Deliberately plainer than a hold scene — after a pinned object, a quiet page is the contrast.
 - **Beats** (`.beat`): continuous prose with a bolded run-in lead sentence. Deliberately not headings, not numbered, not cards.
 - **Scene sections** (`.scene`): Full-height (100svh min), centered or aligned left/right. Flexible layout for asymmetric composition.
 - **Panel sections** (`.panel`): Translucent backdrop (green with blur), border, rounded corners. Live over the landscape for visual layering.
@@ -184,7 +230,7 @@ All form inputs:
 - **Inertial scrolling**: Lenis (vendored) with `lerp: 0.085`. Anchor clicks and the progress rail route through `lenis.scrollTo`. Disabled entirely under reduced motion.
 - **The thread** (`#spiral`) reshapes itself for the scene at the viewport centre and only exists while you are moving. It swings wide *opposite* the text on the alternating scenes (centre 26% against a right-aligned scene, 74% against a left-aligned one), and narrows to a quiet line down the gutter on hold scenes (centre 50%, about 4% of the viewport wide). Parameters lerp toward their target so the reshape is continuous, never a cut. It fades in on scroll and fades out about 700ms after movement stops, so a still page is never cluttered by it. As the closing scene arrives the coil **opens out and unwinds** (amplitude roughly doubles, from about 17% of the viewport to 31%) while its opacity falls to zero, so it reads as making way rather than switching off. It is fully gone before the door appears: the last frame of the page is the door, one line and one button, nothing else. Under reduced motion it is static and follows the same closing fade.
 - **Reading veil** (`.readveil`): one fixed full-viewport layer whose opacity follows how much dense text is on screen. It replaced per-section scrims, which were the cause of the horizontal banding: two adjacent sections each faded their gradient to transparent at the shared edge, leaving a bright stripe at every seam. A single fixed element cannot produce a seam.
-- **Journey progress** is measured from the *end of the hero* to the end of the document, so adding the 240vh door section does not compress the landscape crossfade.
+- **Journey progress** is measured from the *end of the hero* to the end of the document, so adding the 240vh door section does not compress the landscape crossfade. Scroll spent inside a `[data-world-hold]` section is subtracted from both the numerator and the span, so a set piece costs the crossfade nothing.
 - **Landscape layers** (`.stage__layer`): Scale (1.05 + parallax) and opacity crossfade based on scroll position. Four-layer progression.
 - **Focus-in reveals**: Applied to `.focus-in` elements; staggered via `--d` custom property (multiply by 90ms).
 - **Reduced motion**: All animations disabled via `@media (prefers-reduced-motion: reduce)`. Blur → instant; opacity → instant; scale → none.

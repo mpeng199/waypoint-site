@@ -111,7 +111,7 @@ img,svg{ display:block; max-width:100%; }
    section scrims both fade out at their shared edge, which leaves a bright band
    at every seam. Its opacity rises with how much dense text is on screen. */
 .readveil{ position:fixed; inset:0; z-index:1; pointer-events:none;
-  opacity:var(--readVeil,0);
+  opacity:max(var(--readVeil,0), calc(var(--stop,0) * .84));
   background:radial-gradient(125% 105% at 50% 50%, rgba(8,16,11,.50) 0%, rgba(8,16,11,.68) 100%); }
 
 /* ============================================================
@@ -343,25 +343,30 @@ img,svg{ display:block; max-width:100%; }
 .hero__sticky{ position:sticky; top:0; height:100svh; overflow:hidden; }
 .hero__ui{ position:absolute; inset:0; z-index:3;
   padding:clamp(96px,13vh,152px) var(--pad) clamp(26px,5vh,54px);
-  display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-rows:auto 1fr auto;
+  display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-rows:1fr auto;
   column-gap:24px; row-gap:clamp(16px,3vh,36px);
   opacity:clamp(0, calc(1 - var(--doorT,0) * 1.45), 1);
   transform:scale(calc(1 + var(--doorT,0) * 0.22));
   filter:blur(calc(var(--doorT,0) * 16px));
   will-change:opacity,transform,filter; }
-.hero__eye{ grid-area:1/1/2/3; margin:0; }
-.hero__head{ grid-area:2/1/3/3; margin:0; font-weight:400; display:grid;
+.hero__head{ grid-area:1/1/2/3; margin:0; font-weight:400; display:grid;
   grid-template-columns:1fr 1fr; grid-template-rows:auto auto; align-content:space-between; }
+/* The split headline is seven lines of display type stacked in one viewport,
+   so it has to answer to the viewport's *height* as well as its width. Sized
+   on vw alone it pushed the lede and the two calls to action off the bottom of
+   the frame on any laptop screen — and the frame is `overflow:hidden`, so they
+   were not scrolled past, they were gone. */
 .hero__l,.hero__r{ display:block; font-family:var(--display); font-weight:400; letter-spacing:-.032em;
-  line-height:.95; font-size:clamp(2.5rem,6.4vw,6rem); text-shadow:0 2px 50px rgba(6,12,9,.8); }
+  line-height:.95; font-size:clamp(2.5rem, min(6.4vw, 8.6vh), 6rem);
+  text-shadow:0 2px 50px rgba(6,12,9,.8); }
 .hero__l em,.hero__r em{ font-style:italic; color:var(--gold); }
 .hero__l{ grid-column:1; grid-row:1; max-width:12ch; }
 .hero__r{ grid-column:2; grid-row:2; justify-self:end; text-align:right; max-width:11ch; }
-.hero__foot{ grid-area:3/1/4/2; align-self:end; }
+.hero__foot{ grid-area:2/1/3/2; align-self:end; }
 .hero__lede{ max-width:40ch; font-size:clamp(1rem,1.35vw,1.2rem); color:var(--cream);
   text-shadow:0 1px 26px rgba(6,12,9,.85); }
 .hero__cta{ margin-top:22px; display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
-.hero__cue{ grid-area:3/2/4/3; align-self:end; justify-self:end; display:flex; align-items:center; gap:14px;
+.hero__cue{ grid-area:2/2/3/3; align-self:end; justify-self:end; display:flex; align-items:center; gap:14px;
   font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
 .hero__cue i{ width:clamp(40px,7vw,74px); height:1px; background:rgba(252,254,247,.26); position:relative; overflow:hidden; }
 .hero__cue i::after{ content:""; position:absolute; top:0; bottom:0; left:-100%; width:100%; background:var(--gold); animation:cue-x 2.4s var(--ease) infinite; }
@@ -391,13 +396,218 @@ img,svg{ display:block; max-width:100%; }
   max-width:48ch; text-shadow:0 1px 22px rgba(6,12,9,.8); }
 .beat b{ font-weight:600; color:var(--cream); }
 
-/* the honesty statement: the one thing that never bends */
-.scene--vow .scene__inner{ max-width:min(880px,94%); }
-.vow{ margin:34px auto 0; max-width:52ch; font-family:var(--display); font-weight:400; font-style:italic;
-  font-size:clamp(1.18rem,2.1vw,1.75rem); line-height:1.5; color:var(--cream);
-  padding-block:30px; border-top:1px solid rgba(231,197,126,.45); border-bottom:1px solid rgba(231,197,126,.45);
-  text-shadow:0 1px 26px rgba(6,12,9,.8); }
-.say--after{ margin-top:26px; color:var(--ink-soft); font-size:clamp(1rem,1.3vw,1.15rem); }
+/* ============================================================
+   THE SCRUB ENGINE
+
+   script.js gives any [data-scrub] element a --p that runs 0 → 1 as it
+   crosses the viewport (or, in "pin" mode, as its sticky child travels).
+   Everything below is a pure function of that one number, so a parked
+   scroll position is a parked frame — no timers, no state to get stuck.
+   ============================================================ */
+
+/* A run of children revealed one at a time: --n on the parent is the count
+   less half an item, --i the index. Rise and fall are two clamps min()'d, so
+   the first is already up at --p 0 and the last is still up at --p 1.
+
+   --sharp has to stay high. These items are stacked on the same spot, so a
+   lazy crossfade leaves two sentences at half opacity on top of each other,
+   which is unreadable in a way neither of them is alone. The windows below
+   overlap for about 8% of one item's turn: long enough to read as a swap
+   rather than a cut, short enough that it is never two things at once. */
+.seq > *{
+  --r: min( clamp(0, calc((var(--p,0) * var(--n,1) - var(--i,0) + .18) * var(--sharp,5.5)), 1),
+            clamp(0, calc((var(--i,0) + .9 - var(--p,0) * var(--n,1)) * var(--sharp,5.5)), 1) ); }
+
+/* visually hidden, still read aloud */
+.vh{ position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+
+/* A word that loses its fill as you pass it and leaves the outline behind.
+   The fill floors well above zero: the point is that the help is still there
+   and you cannot see it, not that the word becomes unreadable. */
+.phrase em.ghost{ --gf: clamp(.32, calc(1 - (var(--p,0) - 0.30) * 4.5), 1);
+  color:rgba(231,197,126,var(--gf));
+  -webkit-text-stroke:clamp(1px,.022em,2.4px) rgba(231,197,126,.9); }
+
+/* a claim struck out where it stands */
+.struck{ position:relative; white-space:nowrap; color:var(--ink-soft); }
+.struck::after{ content:""; position:absolute; left:-.03em; right:-.03em; top:.55em; height:2px;
+  background:var(--gold); box-shadow:0 0 12px rgba(231,197,126,.6);
+  transform:scaleX(var(--sk,0)); transform-origin:left center; }
+.scene--hold .struck{ --sk:clamp(0, calc((var(--p,0) - 0.34) * 4), 1); }
+.scene--hold .struck--b{ --sk:clamp(0, calc((var(--p,0) - 0.48) * 4), 1); }
+
+/* ============================================================
+   SET-PIECE STAGES — the landscape stops moving (data-world-hold)
+   and a single object has the screen to itself.
+   ============================================================ */
+.scene--stage{ display:block; }
+.stagewrap{ position:relative; }
+.stagewrap--env{ height:280vh; }
+.stagewrap--vow{ height:240vh; }
+.stagewrap--axis{ height:320vh; }
+.stagefix{ position:sticky; top:0; height:100svh; z-index:3;
+  display:grid; grid-template-rows:auto 1fr; justify-items:center; align-items:center;
+  gap:clamp(14px,2.4vh,30px);
+  padding:clamp(84px,12vh,132px) 0 clamp(74px,11vh,120px); }
+.phrase--stage{ font-family:var(--display); font-weight:400; letter-spacing:-.025em; line-height:1.03;
+  font-size:clamp(1.9rem,3.8vw,3.2rem); text-align:center; max-width:19ch;
+  text-shadow:0 2px 40px rgba(12,22,16,.6); }
+.phrase--stage em{ font-style:italic; color:var(--gold); }
+/* the two captions share one slot at the foot of the frame, so neither moves
+   the object when it takes over from the other */
+.stagesay{ position:absolute; left:50%; bottom:clamp(14px,3vh,38px); transform:translateX(-50%);
+  width:min(600px,88%); text-align:center; font-size:clamp(.96rem,1.25vw,1.12rem);
+  color:var(--ink-soft); text-shadow:0 1px 22px rgba(6,12,9,.85); }
+.stagesay--a{ opacity:clamp(0, calc(1 - (var(--p,0) - 0.14) * 7), 1); }
+.stagesay--b{ opacity:clamp(0, calc((var(--p,0) - 0.76) * 7), 1); }
+/* once the page has turned, the heading has said its piece: it steps back so
+   the sheet and the line under it are what you are looking at */
+.stagewrap--env .phrase--stage{ opacity:clamp(.38, calc(1 - (var(--p,0) - 0.64) * 2.6), 1); }
+
+/* ---------- the envelope, and what was printed on the back ---------- */
+.env{ --lw:min(45vmin,346px); --lh:calc(var(--lw) * 1.34);
+  --open:clamp(0, calc((var(--p,0) - 0.07) / 0.18), 1);
+  --rise:clamp(0, calc((var(--p,0) - 0.28) / 0.24), 1);
+  --flip:clamp(0, calc((var(--p,0) - 0.62) / 0.24), 1);
+  position:relative; width:calc(var(--lw) * 1.08); height:calc(var(--lh) * 1.07);
+  perspective:1600px; align-self:center; }
+.env__3d{ position:absolute; inset:0; transform-style:preserve-3d;
+  transform:rotateX(calc(19deg - var(--rise) * 19deg)) rotateZ(calc(-5deg + var(--rise) * 5deg)); }
+
+/* The mailer sits nearest the lens, so the sheet is genuinely inside it rather
+   than layered over it — then it falls away and takes the whole problem with it. */
+.env__pocket,.env__flap{ position:absolute; left:0; right:0;
+  opacity:clamp(0, calc(1.05 - var(--rise) * 1.7), 1); }
+.env__pocket{ top:0; bottom:0; border-radius:3px;
+  background:linear-gradient(158deg,#e4e7d8 0%,#d3d8c6 58%,#c3cab6 100%);
+  box-shadow:0 26px 60px -26px rgba(0,0,0,.75);
+  transform:translateZ(12px) translateY(calc(var(--rise) * 62%)); }
+.env__flap{ top:0; height:34%; transform-origin:50% 0;
+  background:linear-gradient(178deg,#dce1cf,#c8cfba);
+  filter:drop-shadow(0 5px 9px rgba(0,0,0,.34));
+  transform:translateZ(13px) translateY(calc(var(--rise) * 62%)) rotateX(calc(var(--open) * -166deg));
+  clip-path:polygon(0 0, 100% 0, 100% 26%, 50% 100%, 0 26%); }
+
+/* the sheet: warm paper, dark ink, the one high-contrast object on the page */
+.letter{ position:absolute; left:50%; top:50%; width:var(--lw); height:var(--lh);
+  transform-style:preserve-3d;
+  transform:translate(-50%,-50%) translateY(calc(var(--rise) * -8%)) translateZ(calc(var(--rise) * 54px))
+            rotateY(calc(var(--flip) * 180deg)); }
+.letter__face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  border-radius:2px; padding:clamp(18px,5%,30px); display:flex; flex-direction:column;
+  background:linear-gradient(168deg,#fdfef7 0%,#f4f6ea 62%,#e9ecdc 100%);
+  box-shadow:0 30px 70px -30px rgba(0,0,0,.8); color:#22331f; }
+.letter__front{ justify-content:space-between; }
+.letter__back{ transform:rotateY(180deg); justify-content:center; gap:clamp(14px,4.5%,22px); }
+.letter__say{ font-size:clamp(13px,4.15%,16px); line-height:1.6; color:#2a3b26; }
+.letter__front .letter__say{ font-family:var(--display); font-style:italic; line-height:1.5; color:#1d2c1a; }
+.letter__say--help{ font-family:var(--sans); font-style:normal; }
+.letter__mark{ display:block; width:100%; height:2px;
+  background:linear-gradient(90deg, #b8912f, rgba(184,145,47,0)); }
+.letter__mark--foot{ background:linear-gradient(270deg, #b8912f, rgba(184,145,47,0)); }
+
+/* the redacted top of a bill: bars, never a figure we would have to invent */
+.doc{ display:grid; gap:clamp(7px,2.4%,11px); }
+.doc--foot{ opacity:.55; }
+.doc__bar{ display:block; height:clamp(7px,2.2%,10px); width:var(--w,50%); border-radius:2px;
+  background:#2a3b26; opacity:.26; }
+.doc__bar--red{ opacity:.72; background:#3d2f1a; }
+.doc__rule{ display:block; height:1px; background:rgba(42,59,38,.35); margin-block:clamp(5px,1.4%,9px); }
+
+/* ---------- the honesty statement, arriving a sentence at a time ---------- */
+.phrase--vow{ font-size:clamp(2.1rem,4.6vw,4rem); max-width:17ch; }
+.vow{ margin:0 auto; max-width:54ch; display:grid; gap:clamp(10px,1.6vh,20px);
+  padding-block:clamp(20px,3vh,32px); align-self:center;
+  border-top:1px solid rgba(231,197,126,.45); border-bottom:1px solid rgba(231,197,126,.45); }
+/* cumulative: sentences arrive and stay, so the finished frame is the whole
+   statement — the one thing on this page that is never half-shown */
+.vow__s{ --r:clamp(0, calc((var(--p,0) * var(--n,6) - var(--i,0) + 0.3) * 2), 1);
+  font-family:var(--display); font-style:italic; font-size:clamp(1.02rem,1.75vw,1.45rem);
+  line-height:1.42; color:var(--cream); text-shadow:0 1px 26px rgba(6,12,9,.8);
+  opacity:var(--r); transform:translateY(calc((1 - var(--r)) * 12px)); }
+.vow__s--no{ position:relative; padding-left:17px; color:var(--gold); }
+.vow__s--no::before{ content:""; position:absolute; left:0; top:.22em; bottom:.22em; width:2px;
+  background:var(--gold); transform:scaleY(var(--r)); transform-origin:top; }
+
+/* ---------- the line itself: it does not move, everything else does ---------- */
+.axis{ position:relative; width:min(880px,94%); height:min(58vh,470px); align-self:center; }
+.axis__rule{ position:absolute; left:0; right:0; top:50%; height:1px; background:var(--gold);
+  box-shadow:0 0 20px rgba(231,197,126,.6);
+  transform:scaleX(clamp(0, calc(var(--p,0) * 7), 1)); }
+.pair{ position:absolute; inset:0; }
+.pair__do,.pair__no{ position:absolute; left:0; right:0; opacity:var(--r,0);
+  font-family:var(--display); font-size:clamp(1.22rem,2.5vw,2rem); line-height:1.18;
+  letter-spacing:-.018em; text-align:center; text-shadow:0 2px 30px rgba(12,22,16,.7); }
+.pair__do{ bottom:calc(50% + clamp(20px,4vh,44px)); color:var(--cream);
+  transform:translateY(calc((1 - var(--r,0)) * -16px)); }
+.pair__no{ top:calc(50% + clamp(20px,4vh,44px)); color:var(--gold); font-style:italic;
+  transform:translateY(calc((1 - var(--r,0)) * 16px)); }
+
+/* ============================================================
+   A REFERRAL, SHOWN — two voices, not a procedure
+   ============================================================ */
+.scene--talk{ display:block; }
+.talk{ position:relative; z-index:3; max-width:min(900px,94%); margin-inline:auto; }
+.talk .phrase{ font-size:clamp(2.1rem,4.4vw,3.6rem); max-width:15ch;
+  margin-bottom:clamp(34px,6vh,74px); }
+.talk__said{ font-family:var(--display); font-style:italic; line-height:1.24;
+  font-size:clamp(1.35rem,2.9vw,2.3rem); color:var(--gold); max-width:20ch;
+  margin-block:clamp(28px,5vh,56px); text-shadow:0 2px 30px rgba(12,22,16,.7); }
+.talk__did{ margin-left:auto; max-width:42ch; padding-left:20px;
+  border-left:1px solid rgba(231,197,126,.38);
+  font-size:clamp(1rem,1.3vw,1.18rem); line-height:1.62; color:rgba(252,254,247,.86);
+  text-shadow:0 1px 22px rgba(6,12,9,.8); }
+.talk__close{ margin:clamp(46px,8vh,96px) auto 0; max-width:36ch; text-align:center;
+  font-family:var(--display); font-size:clamp(1.15rem,2vw,1.6rem); line-height:1.4; color:var(--cream);
+  text-shadow:0 2px 30px rgba(12,22,16,.7); }
+
+/* ============================================================
+   PLAIN COLUMN — prose with nothing else in the frame
+   ============================================================ */
+.scene--flow{ display:block; }
+.scene--flow > * + *{ margin-top:clamp(46px,8vh,104px); }
+.flow__col{ position:relative; z-index:3; max-width:min(680px,92%); margin-inline:auto;
+  display:grid; gap:clamp(40px,7vh,88px); }
+
+/* a band of the places the work happens, drifting past as you go */
+.ribbon{ position:relative; z-index:3; overflow:hidden; padding-block:clamp(6px,1.4vh,14px);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 20%,#000 80%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 20%,#000 80%,transparent); }
+.ribbon__row{ display:flex; width:max-content; white-space:nowrap;
+  font-family:var(--display); letter-spacing:-.02em; }
+.ribbon__row span{ display:inline-flex; align-items:center; }
+.ribbon__row i{ width:8px; height:8px; margin-inline:clamp(16px,2.4vw,38px); flex:none;
+  background:var(--gold); transform:rotate(45deg); opacity:.7; }
+.ribbon__row--a{ font-size:clamp(1.5rem,3.6vw,2.9rem); color:var(--cream);
+  text-shadow:0 2px 30px rgba(12,22,16,.7);
+  transform:translateX(calc(-14% - var(--p,0) * 24%)); }
+.ribbon__row--b{ margin-top:clamp(8px,1.4vh,18px); font-style:italic;
+  font-size:clamp(1rem,2vw,1.55rem); color:var(--ink-faint);
+  transform:translateX(calc(-42% + var(--p,0) * 24%)); }
+
+/* ============================================================
+   THE WORD FOR HELP — the sentence holds, the word changes
+   ============================================================ */
+.odo{ position:relative; z-index:3; max-width:min(900px,94%); margin-inline:auto; text-align:center; }
+.odo__line{ display:grid; justify-items:center; gap:clamp(4px,.8vh,12px);
+  font-family:var(--display); letter-spacing:-.025em; line-height:1.08;
+  font-size:clamp(1.7rem,4.4vw,3.6rem); text-shadow:0 2px 34px rgba(12,22,16,.65); }
+.odo__lead,.odo__tail{ color:var(--cream); }
+.odo__slot{ position:relative; display:block; width:100%; height:1.22em; }
+.odo__slot > span{ position:absolute; left:0; right:0; top:0; font-style:italic; color:var(--gold);
+  opacity:var(--r,0); transform:translateY(calc((1 - var(--r,0)) * .3em)); }
+.odo__say{ margin:clamp(28px,5vh,60px) auto 0; max-width:52ch;
+  font-size:clamp(1rem,1.35vw,1.2rem); line-height:1.62; color:rgba(252,254,247,.86);
+  text-shadow:0 1px 22px rgba(6,12,9,.8); }
+
+/* ============================================================
+   THE ADMISSION — the world holds still for the one thing
+   we cannot dress up
+   ============================================================ */
+.scene--admit .scene__inner{ --a:clamp(0, calc(var(--p,0) * 2.4 - 0.35), 1);
+  opacity:var(--a); transform:translateY(calc((1 - var(--a)) * 22px)); }
+.scene--admit .phrase{ font-size:clamp(2.5rem,6.2vw,5.4rem); }
+.admit__say{ margin-inline:auto; }
 
 .footer__ul{ border-bottom:1px solid rgba(231,197,126,.5); }
 
@@ -421,15 +631,14 @@ img,svg{ display:block; max-width:100%; }
   /* hero: stack the split headline, keep the door behind it */
   .hero{ height:190vh; }
   .hero__ui{ padding:clamp(88px,12vh,120px) var(--pad) clamp(22px,4vh,40px);
-    grid-template-columns:minmax(0,1fr); grid-template-rows:auto 1fr auto auto; row-gap:clamp(14px,2.4vh,26px); }
-  .hero__eye{ grid-area:1/1/2/2; }
-  .hero__head{ grid-area:2/1/3/2; grid-template-columns:1fr; grid-template-rows:auto auto;
+    grid-template-columns:minmax(0,1fr); grid-template-rows:1fr auto auto; row-gap:clamp(14px,2.4vh,26px); }
+  .hero__head{ grid-area:1/1/2/2; grid-template-columns:1fr; grid-template-rows:auto auto;
     align-content:center; gap:6px; }
   .hero__l,.hero__r{ grid-column:1; max-width:100%; text-align:left; justify-self:start;
     font-size:clamp(2.4rem,10.5vw,3.6rem); }
   .hero__l{ grid-row:1; } .hero__r{ grid-row:2; }
-  .hero__foot{ grid-area:3/1/4/2; }
-  .hero__cue{ grid-area:4/1/5/2; justify-self:start; }
+  .hero__foot{ grid-area:2/1/3/2; }
+  .hero__cue{ grid-area:3/1/4/2; justify-self:start; }
 
   /* hold scenes: anchor stops holding, everything flows in one column.
      the anchor and stream drop their own padding, so the 50vh moves here */
@@ -438,7 +647,25 @@ img,svg{ display:block; max-width:100%; }
   .hold__anchor{ position:static; grid-column:1 !important; grid-row:auto; padding-block:0; }
   .hold__stream{ grid-column:1 !important; grid-row:auto; padding-block:0; gap:clamp(30px,5vh,48px); }
   .beat{ max-width:100%; }
-  .vow{ margin-inline:0; }
+
+  /* set pieces: shorter travel, and the frame gives the object more of itself */
+  .stagewrap--env{ height:230vh; }
+  .stagewrap--vow{ height:210vh; }
+  .stagewrap--axis{ height:270vh; }
+  .stagefix{ padding:clamp(80px,11vh,104px) 0 clamp(66px,10vh,90px); }
+  .phrase--stage{ font-size:clamp(1.8rem,6.6vw,2.5rem); max-width:16ch; }
+  .phrase--vow{ font-size:clamp(1.9rem,7.4vw,2.7rem); }
+  .env{ --lw:min(70vw,300px); }
+  .vow{ max-width:100%; }
+  .vow__s{ font-size:clamp(.98rem,3.9vw,1.16rem); }
+  .axis{ height:min(62vh,440px); }
+  .pair__do,.pair__no{ font-size:clamp(1.08rem,4.6vw,1.5rem); }
+  .talk__did{ margin-left:0; }
+  .talk__said{ max-width:100%; }
+  .odo__line{ font-size:clamp(1.6rem,7.6vw,2.6rem); }
+  .odo,.talk__close,.odo__say,.admit__say{ text-align:left !important; }
+  .odo__line{ justify-items:start; }
+  .odo__slot > span{ text-align:left; }
 }
 @media (max-width:560px){
   .footer__grid{ grid-template-columns:1fr; }
@@ -460,4 +687,40 @@ img,svg{ display:block; max-width:100%; }
   .hold__anchor{ position:static; padding-block:0; }
   .hold__stream{ padding-block:0; }
   .scene--hold{ padding-block:50vh; }
+
+  /* Set pieces resolve to their finished state and stop being scroll-linked:
+     no pinning, no 3D, no sequencing. Every sentence they were revealing one
+     at a time is simply present, which is the whole point of them. */
+  [data-scrub]{ --p:1 !important; }
+  .stagewrap{ height:auto !important; }
+  .stagefix{ position:static; height:auto; padding:0; display:block; }
+  .phrase--stage,.phrase--vow{ margin-bottom:30px; }
+  /* the paper was the animation; without it the words are simply the page */
+  .env{ perspective:none; width:auto; height:auto; }
+  .env__3d{ position:static; transform:none; }
+  .env__pocket,.env__flap,.doc{ display:none; }
+  .letter{ position:static; transform:none; width:auto; height:auto; }
+  .letter__face{ position:static; transform:none; backface-visibility:visible;
+    background:none; box-shadow:none; border-radius:0; padding:0; color:inherit;
+    max-width:56ch; }
+  .letter__back{ margin-top:30px; }
+  .letter__say,.letter__front .letter__say{ font-size:clamp(1rem,1.35vw,1.2rem);
+    line-height:1.62; color:rgba(252,254,247,.88); text-shadow:0 1px 22px rgba(6,12,9,.8); }
+  .letter__front .letter__say{ color:var(--cream); }
+  .letter__mark{ margin-bottom:16px; }
+  .letter__mark--foot{ display:none; }
+  .stagewrap--env .phrase--stage{ opacity:1; }
+  .stagesay{ position:static; transform:none; opacity:1 !important; width:auto; margin-top:24px;
+    max-width:56ch; text-align:left; }
+  .seq > *{ --r:1 !important; }
+  .axis{ width:auto; height:auto; }
+  .axis__rule{ position:static; transform:none; margin-block:16px; }
+  .pair{ position:static; margin-bottom:32px; }
+  .pair__do,.pair__no{ position:static; transform:none; text-align:left; max-width:44ch; }
+  .ribbon__row{ transform:none !important; }
+  .odo__line{ justify-items:start; text-align:left; }
+  .odo__slot{ height:auto; display:flex; flex-wrap:wrap; gap:0 .45em; }
+  .odo__slot > span{ position:static; transform:none; }
+  .phrase em.ghost{ color:var(--gold); -webkit-text-stroke:0; }
+  .scene--admit .scene__inner{ opacity:1; transform:none; }
 }
