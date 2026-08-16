@@ -4,12 +4,34 @@ A scroll-driven journey through a painterly landscape, with warm green + gold pa
 
 ## The shape of the page
 
-The homepage is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between, fourteen beats alternate between the established phrase-per-screen rhythm and a denser **hold scene** used five times where a partner needs real depth.
+The homepage is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between, fourteen beats cycle between three registers so the page never settles into one rhythm: the phrase-per-screen scenes, a denser **hold scene** (twice, where a partner needs depth), and a **pinned scene** (three times) where the journey parks and hands the screen to something that is not prose.
 
-    door → real, free, invisible → what we are → [hold] bills and denials
-      → [hold] how a referral works → the honesty statement → [hold] who we send
+    door → real, free, invisible → [pin] the envelope → what we are
+      → [pin] the thread finds the door → the honesty statement → [pin] the line
       → the second track → [hold] who we reach → [hold] what we ask for
       → partner form → students → students form → the door, from the other side
+
+### Pinned scenes
+
+Each is a section taller than the viewport holding a sticky child that fills it;
+scrolling the surplus height scrubs `--t` from 0 to 1. That one variable drives
+everything, and `script.js` sets nothing else:
+
+| Pin | What `--t` does | The point it makes |
+|---|---|---|
+| **The envelope** (`#bills`) | Swings the flap on `rotateX`, lifts the letter out of its pocket, crossfades the jargon into plain English | The bill is written for somebody else, and it never mentions that help exists |
+| **The thread** (`#work`) | Draws four wires out of one origin via `stroke-dashoffset`, lighting each door as it lands | A volunteer names the door, not the answer |
+| **The line** | Slides a horizontal track past a fixed gold rule | You literally cross the line between what a volunteer does and what they never do |
+
+Three rules they are built to. **The letter is clipped downward only** —
+`.env__slot` uses `clip-path:inset(-260% 0 0 0)`, because a mask with percentage
+`mask-position` does not offset the way it reads and silently swallows the whole
+envelope. **Percentages stay measured against `.env`** (the slot is `inset:0`),
+or every number in the geometry shifts basis. **Below 900px and under
+`prefers-reduced-motion` the pin releases**: height goes `auto`, the sticky child
+goes static, and each mechanism renders its finished state — the letter already
+out, the wires already drawn, the lane stacked vertically with its rule turned
+horizontal. Nothing depends on scroll to become readable.
 
 Rules the page is built to: no card grids, no numbered step lists, no section labels, no visible boundary between beats. Each beat hands off to the next.
 

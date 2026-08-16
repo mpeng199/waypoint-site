@@ -461,3 +461,141 @@ img,svg{ display:block; max-width:100%; }
   .hold__stream{ padding-block:0; }
   .scene--hold{ padding-block:50vh; }
 }
+
+/* ============================================================
+   PINNED SCENES — the scroll parks and hands over to something
+   that is not prose. Each one owns the whole viewport for its
+   duration, so the one-block-at-a-time contract holds without
+   any padding of its own: nothing else can share the screen
+   with a sticky element that fills it.
+   ============================================================ */
+.scene--pin{ display:block; min-height:auto; padding:0; height:265vh; }
+.pin__sticky{ position:sticky; top:0; height:100svh; z-index:3;
+  display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  align-items:center; gap:clamp(24px,5vw,80px);
+  max-width:var(--container); margin-inline:auto; padding:0 var(--pad); }
+.pin__art{ position:relative; display:grid; place-items:center; height:min(64vh,540px); }
+
+/* the lines arrive one at a time and the spent ones stay, dimmed:
+   the reader can always see where the beat came from */
+.pin__say{ display:grid; gap:clamp(14px,2.4vh,26px); align-content:center; }
+.pin__line{ font-size:clamp(1.05rem,1.5vw,1.35rem); line-height:1.5; max-width:34ch;
+  color:var(--cream); text-shadow:0 1px 22px rgba(6,12,9,.8);
+  opacity:0; transform:translateY(14px); filter:blur(9px);
+  transition:opacity .6s var(--ease-out), transform .6s var(--ease-out), filter .6s var(--ease-out); }
+.pin__line.on{ opacity:1; transform:none; filter:none; }
+.pin__line.spent{ opacity:.34; }
+.pin__line b{ font-weight:600; color:var(--gold); }
+
+/* ---------- the envelope, opened by scroll ----------
+   Four layers in depth order: back panel, the letter that rises between them,
+   the front pocket the letter has to clear, and the hinged flap. The letter
+   needs a real pocket in front of it — without one it simply slides up a flat
+   rectangle and the words never come out from behind anything. */
+.env{ position:relative; width:min(80%,440px); aspect-ratio:1.6/1;
+  perspective:1500px; transform:rotateX(7deg); }
+
+/* clips the letter at the envelope's bottom edge and nowhere else: a negative
+   top inset leaves the whole upward travel visible. inset:0 also keeps the
+   letter's percentages measured against the envelope, not the clip box. */
+.env__slot{ position:absolute; inset:0; z-index:2; clip-path:inset(-260% 0 0 0); }
+.env__shadow{ position:absolute; left:5%; right:5%; bottom:-10%; height:24%;
+  background:radial-gradient(closest-side, rgba(0,0,0,.6), transparent 76%); filter:blur(13px); }
+.env__back{ position:absolute; inset:0; border-radius:4px; z-index:1;
+  background:linear-gradient(165deg,#d9cbb0,#bfae8c);
+  box-shadow:0 26px 62px -22px rgba(0,0,0,.78), inset 0 0 0 1px rgba(120,100,70,.34); }
+
+/* the letter: tucked down inside at rest, lifted clear by the scroll. Its text
+   sits in the top third so it is in the exposed strip, not behind the pocket. */
+.env__letter{ position:absolute; inset:0 7% auto; height:90%; border-radius:3px;
+  display:grid; align-content:start; justify-items:center; text-align:center; padding-top:7%;
+  background:linear-gradient(#fffdf7,#f7f2e6);
+  box-shadow:0 16px 34px -18px rgba(0,0,0,.55), inset 0 0 0 1px rgba(120,100,70,.18);
+  transform:translateY(calc(48% - var(--t,0) * 100%)); }
+.env__letter > span{ grid-area:1/1; padding:0 9%; }
+.env__jargon{ font-family:var(--sans); font-size:clamp(8.5px,1vw,12px); letter-spacing:.16em;
+  line-height:2.5; color:#93856b; opacity:clamp(0, calc(1.9 - var(--t,0) * 2.6), 1); }
+.env__plain{ font-family:var(--display); font-size:clamp(1.02rem,1.9vw,1.6rem); line-height:1.36;
+  color:#2a2114; opacity:clamp(0, calc(var(--t,0) * 2.8 - 1.5), 1); }
+
+/* the pocket the letter climbs out of */
+.env__front{ position:absolute; inset:40% 0 0; border-radius:0 0 4px 4px; z-index:3;
+  background:linear-gradient(168deg,#f1e8d5 0%,#ddcfb2 62%,#cdbb98 100%);
+  box-shadow:0 -8px 18px -10px rgba(60,48,28,.55), inset 0 0 0 1px rgba(120,100,70,.28); }
+.env__front::before{ content:""; position:absolute; left:0; right:0; top:0; height:1px;
+  background:rgba(255,250,236,.75); }
+
+/* the flap, hinged along the top edge */
+.env__flap{ position:absolute; inset:0; z-index:4; transform-origin:top center;
+  transform:rotateX(calc(var(--t,0) * -170deg)); backface-visibility:hidden;
+  background:linear-gradient(168deg,#f6eedc,#e4d7bb 62%,#d0c09e 100%);
+  clip-path:polygon(0 0, 100% 0, 50% 64%);
+  filter:drop-shadow(0 5px 10px rgba(60,48,28,.42)); }
+
+/* ---------- the thread that finds the door ---------- */
+.paths{ width:100%; height:auto; max-height:min(64vh,520px); overflow:visible; }
+.paths__wires path{ stroke:var(--gold); stroke-width:1.6; opacity:.85;
+  stroke-dasharray:var(--len,900); stroke-dashoffset:calc(var(--len,900) * (1 - var(--draw,0))); }
+.paths__origin{ fill:var(--cream); filter:drop-shadow(0 0 12px rgba(252,254,247,.6));
+  transform-origin:150px 240px; transform:scale(calc(.4 + var(--t,0) * .6)); }
+.paths__ends circle{ fill:var(--green-deep); stroke:var(--gold); stroke-width:2;
+  opacity:var(--lit,0); transition:opacity .45s var(--ease); }
+.paths__ends text{ font-family:var(--sans); font-size:20px; font-weight:500; fill:var(--cream);
+  opacity:var(--lit,0); transition:opacity .45s var(--ease); }
+
+/* ---------- the line you cross ---------- */
+.scene--lane .pin__sticky{ grid-template-columns:minmax(0,1fr); align-content:center;
+  justify-items:center; text-align:center; gap:clamp(18px,3.4vh,38px); }
+.lane__head{ font-size:clamp(1.9rem,3.8vw,3.4rem); max-width:18ch; }
+.lane{ width:100%; overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent); }
+.lane__track{ display:flex; align-items:center; gap:clamp(28px,5vw,64px); width:max-content;
+  transform:translateX(calc(38% - var(--t,0) * 76%)); }
+.lane__side{ list-style:none; display:grid; gap:clamp(9px,1.5vh,16px); margin:0; padding:0; text-align:left; }
+.lane__side li{ font-size:clamp(.98rem,1.3vw,1.15rem); line-height:1.45; white-space:nowrap;
+  color:var(--cream); text-shadow:0 1px 18px rgba(6,12,9,.8); position:relative; padding-left:26px; }
+.lane__side li::before{ position:absolute; left:0; top:-1px; font-weight:700; }
+.lane__side--do li::before{ content:"✓"; color:var(--sage); }
+.lane__side--not li{ color:rgba(252,254,247,.72); }
+.lane__side--not li::before{ content:"✕"; color:#e08658; }
+.lane__rule{ position:relative; width:2px; align-self:stretch; min-height:clamp(190px,32vh,300px);
+  background:linear-gradient(transparent, var(--gold) 18%, var(--gold) 82%, transparent); flex:none; }
+.lane__rule span{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-90deg);
+  font-size:10.5px; letter-spacing:.28em; text-transform:uppercase; color:var(--gold);
+  background:var(--green-deep); padding:5px 10px; white-space:nowrap; }
+.lane__foot{ max-width:60ch; font-size:clamp(.95rem,1.2vw,1.08rem); color:var(--ink-soft);
+  text-shadow:0 1px 20px rgba(6,12,9,.8); }
+
+/* ---------- pinned scenes, narrow and reduced-motion ---------- */
+@media (max-width:900px){
+  .scene--pin{ height:auto; }
+  .pin__sticky{ position:static; height:auto; grid-template-columns:minmax(0,1fr);
+    padding-block:50vh; gap:clamp(26px,5vh,46px); }
+  .pin__art{ height:min(46vh,360px); }
+  .pin__line{ opacity:1; transform:none; filter:none; max-width:100%; }
+  .pin__line.spent{ opacity:1; }
+  .env{ width:min(90%,360px); }
+  .lane{ mask-image:none; -webkit-mask-image:none; }
+  .lane__track{ flex-direction:column; align-items:flex-start; width:100%; transform:none; gap:22px; }
+  .lane__side li{ white-space:normal; }
+  .lane__rule{ width:100%; height:2px; min-height:0; align-self:auto;
+    background:linear-gradient(90deg,transparent,var(--gold) 18%,var(--gold) 82%,transparent); }
+  .lane__rule span{ transform:translate(-50%,-50%); }
+  .scene--lane .pin__sticky{ text-align:left; justify-items:start; }
+}
+@media (prefers-reduced-motion:reduce){
+  .scene--pin{ height:auto; }
+  .pin__sticky{ position:static; height:auto; padding-block:50vh; }
+  .pin__line{ opacity:1 !important; transform:none !important; filter:none !important; }
+  .env__flap{ transform:rotateX(-168deg); }
+  .env__letter{ transform:translateY(-52%); }
+  .env__jargon{ opacity:0; } .env__plain{ opacity:1; }
+  .paths__wires path{ stroke-dashoffset:0; }
+  .paths__ends circle,.paths__ends text{ opacity:1; }
+  .lane__track{ transform:none; flex-direction:column; align-items:flex-start; width:100%; }
+  .lane{ mask-image:none; -webkit-mask-image:none; }
+  .lane__side li{ white-space:normal; }
+  .lane__rule{ width:100%; height:2px; min-height:0;
+    background:linear-gradient(90deg,transparent,var(--gold) 18%,var(--gold) 82%,transparent); }
+  .lane__rule span{ transform:translate(-50%,-50%); }
+}

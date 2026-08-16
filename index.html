@@ -79,7 +79,7 @@
           <span class="hero__r">The help is free. <em>No one told you it's there.</em></span>
         </h1>
         <div class="hero__foot">
-          <p class="hero__lede">New York already built the help. Almost nobody who qualifies for it ever finds out it exists.</p>
+          <p class="hero__lede">New York already built the help. Almost nobody who qualifies ever finds out it exists.</p>
           <div class="hero__cta">
             <a href="#partners" class="btn btn--solid">Let us carry your materials <span class="arr">→</span></a>
             <a href="#students" class="tlink">Join the corps <span class="arr">→</span></a>
@@ -94,7 +94,33 @@
   <section class="scene scene--right">
     <div class="scene__inner focus-in">
       <h2 class="phrase">Real. Free. <em>And invisible.</em></h2>
-      <p class="say">Hospitals in New York are required to offer financial assistance to patients under certain incomes. The state runs an independent appeal when an insurer refuses to pay. Free counselors handle coverage disputes in dozens of languages. None of that is written on the letter in somebody's hand.</p>
+      <p class="say">Hospitals here must offer financial assistance. The state hears appeals when an insurer says no. Counselors take coverage disputes in dozens of languages, for free.</p>
+    </div>
+  </section>
+
+  <!-- ===== PIN 1: the envelope opens as you scroll ===== -->
+  <section class="scene scene--pin" id="bills" data-pin>
+    <div class="pin__sticky">
+      <div class="pin__art">
+        <div class="env" aria-hidden="true">
+          <div class="env__shadow"></div>
+          <div class="env__back"></div>
+          <div class="env__slot">
+            <div class="env__letter">
+              <span class="env__jargon">ADVERSE DETERMINATION<br>PATIENT RESPONSIBILITY<br>AMOUNT NOW DUE</span>
+              <span class="env__plain">They said no.<br>This is yours to pay.</span>
+            </div>
+          </div>
+          <div class="env__front"></div>
+          <div class="env__flap"></div>
+        </div>
+      </div>
+      <div class="pin__say">
+        <p class="pin__line" data-at="0.02">It starts with an envelope nobody wants to open.</p>
+        <p class="pin__line" data-at="0.26">Inside is a language built for somebody else.</p>
+        <p class="pin__line" data-at="0.52">Stripped down, it says: <b>they said no, and this is yours to pay.</b></p>
+        <p class="pin__line" data-at="0.76">What it never says is that help exists, that it is free, and that you might already qualify.</p>
+      </div>
     </div>
   </section>
 
@@ -102,43 +128,35 @@
   <section class="scene scene--left">
     <div class="scene__inner focus-in">
       <h2 class="phrase">So we carry it <em>to people.</em></h2>
-      <p class="say">Waypoint is a trained student volunteer corps. We find New Yorkers buried in medical bills or fighting a denied claim, and we get them to the free professionals who already handle exactly that. We are not building a second system. We are the introduction the first one never makes.</p>
+      <p class="say">We find New Yorkers stuck with a medical bill or a denied claim, and we walk them to the free experts who already handle exactly that.</p>
     </div>
   </section>
 
-  <!-- ===== HOLD: the problem and the help ===== -->
-  <section class="scene scene--hold scene--hold-r" id="bills">
-    <div class="hold">
-      <div class="hold__anchor">
-        <div class="hold__anchor-in focus-in" data-once>
-          <span class="eyebrow">Bills and denials</span>
-          <h2 class="phrase">The envelope nobody <em>wanted to open.</em></h2>
-        </div>
+  <!-- ===== PIN 2: the thread finds the door ===== -->
+  <section class="scene scene--pin scene--paths" id="work" data-pin>
+    <div class="pin__sticky">
+      <div class="pin__art">
+        <svg class="paths" viewBox="0 0 880 480" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <g class="paths__wires" fill="none" stroke-linecap="round">
+            <path d="M150 240 C 380 240, 430 96,  700 96"  />
+            <path d="M150 240 C 380 240, 430 192, 700 192" />
+            <path d="M150 240 C 380 240, 430 288, 700 288" />
+            <path d="M150 240 C 380 240, 430 384, 700 384" />
+          </g>
+          <g class="paths__ends">
+            <circle cx="700" cy="96"  r="6" /><text x="722" y="101">Hospital financial assistance</text>
+            <circle cx="700" cy="192" r="6" /><text x="722" y="197">The state's independent appeal</text>
+            <circle cx="700" cy="288" r="6" /><text x="722" y="293">Free coverage counselors</text>
+            <circle cx="700" cy="384" r="6" /><text x="722" y="389">Prescription cost programmes</text>
+          </g>
+          <circle class="paths__origin" cx="150" cy="240" r="11" />
+        </svg>
       </div>
-      <div class="hold__stream">
-        <p class="beat focus-in"><b>It usually starts with something somebody has been carrying for weeks.</b> A hospital bill for more than a month's rent. A letter saying the insurer will not pay for something that already happened. A prescription quietly stopped because the copay moved and nobody was told there was anywhere to go.</p>
-        <p class="beat focus-in"><b>New York already built the help for this.</b> Hospitals here are required to offer financial assistance to patients under certain incomes. The state runs an independent review when a plan says no and will not change its mind. Free counselors take coverage disputes in dozens of languages, and national nonprofits will file a charity care application on somebody's behalf at no cost at all.</p>
-        <p class="beat focus-in"><b>Almost nobody who qualifies ever uses any of it.</b> Not because they were turned away. Because no one told them it was there. The help is real, it is free, and it is invisible — which makes this a distribution problem rather than a funding one, and distribution is a thing a group of students can genuinely fix.</p>
-        <p class="beat focus-in"><b>So most of what we do is carrying it to where people already are.</b> Materials in library branches, senior centers, faith spaces, and clinic waiting rooms. It is the plainest work we do, it is the highest leverage, and it requires no interpretation of anyone's situation whatsoever.</p>
-        <p class="beat focus-in"><b>And when somebody describes a problem, we name the door.</b> Not whether they qualify, which is never ours to say. Which organisation handles this, what it does, and what it costs, which is nothing. When we are not certain, we route to the free statewide counselors whose job is exactly this, because guessing at a more specific door and getting it wrong costs someone time they may not have.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== HOLD: what a referral actually is ===== -->
-  <section class="scene scene--hold" id="work">
-    <div class="hold">
-      <div class="hold__anchor">
-        <div class="hold__anchor-in focus-in" data-once>
-          <span class="eyebrow">A handoff, not a handover</span>
-          <h2 class="phrase">What a referral looks like <em>when it works.</em></h2>
-        </div>
-      </div>
-      <div class="hold__stream">
-        <p class="beat focus-in"><b>A volunteer listens.</b> Somebody describes a problem in their own words, in whatever language that conversation works best in. A bill they cannot pay. A denial they do not understand. A prescription they have stopped filling and have not mentioned to anyone.</p>
-        <p class="beat focus-in"><b>Then we identify the door, not the answer.</b> A student matches the situation to the organisation that handles it and explains what that organisation does. They do not read the paperwork, they do not say who qualifies, and they never quote a deadline from memory.</p>
-        <p class="beat focus-in"><b>Then we make the connection actually happen.</b> Dialling the helpline together and staying in the chair while it rings. Starting the form on the spot. Introducing somebody to the professional already sitting at the next table. A flyer handed over is not a handoff, and we do not count it as one.</p>
-        <p class="beat focus-in"><b>Nobody leaves holding a pamphlet.</b> They leave with one thing they can act on — a name, a number a person actually answers, a call already placed — and with the knowledge that it cost them nothing and will keep costing nothing.</p>
+      <div class="pin__say">
+        <p class="pin__line" data-at="0.02">Somebody describes the problem in their own words.</p>
+        <p class="pin__line" data-at="0.30">A student names the door. <b>Not the answer, and never whether you qualify.</b></p>
+        <p class="pin__line" data-at="0.62">Then dials it, and stays in the chair while it rings.</p>
+        <p class="pin__line" data-at="0.86">A flyer handed over is not a handoff, and we don't count it as one.</p>
       </div>
     </div>
   </section>
@@ -148,26 +166,34 @@
     <div class="scene__inner focus-in">
       <h2 class="phrase">We find you the expert. We never <em>play one.</em></h2>
       <p class="vow">We are trained student volunteers. We help you find the free programs and professionals in New York that handle medical bills and insurance denials. We are not doctors, lawyers, benefits counselors, or insurance experts. We do not read your bills, fill out your forms, or tell you what you qualify for. We connect you to people who do that, and they do it for free. We never charge for anything.</p>
-      <p class="say say--after">This is printed on everything we hand out and said out loud at every table. It is the first thing we teach and the last thing we would ever bend.</p>
+      <p class="say say--after">Printed on everything we hand out, and said out loud at every table.</p>
     </div>
   </section>
 
-  <!-- ===== HOLD: who we send ===== -->
-  <section class="scene scene--hold scene--hold-r">
-    <div class="hold">
-      <div class="hold__anchor">
-        <div class="hold__anchor-in focus-in" data-once>
-          <span class="eyebrow">Who we send</span>
-          <h2 class="phrase">Trained to know exactly <em>where the line is.</em></h2>
+  <!-- ===== PIN 3: the line you cross ===== -->
+  <section class="scene scene--pin scene--lane" data-pin>
+    <div class="pin__sticky">
+      <h2 class="phrase lane__head">Trained to know exactly <em>where the line is.</em></h2>
+      <div class="lane" aria-hidden="true">
+        <div class="lane__track">
+          <ul class="lane__side lane__side--do">
+            <li>Listens, in your language</li>
+            <li>Names the organisation that handles it</li>
+            <li>Dials the number and sits with you</li>
+            <li>Leaves you one thing you can act on</li>
+          </ul>
+          <div class="lane__rule"><span>the line</span></div>
+          <ul class="lane__side lane__side--not">
+            <li>Never reads or interprets your bill</li>
+            <li>Never fills in a form or drafts an appeal</li>
+            <li>Never says whether you qualify</li>
+            <li>Never quotes a deadline from memory</li>
+            <li>Never takes your paperwork, or a photo of it</li>
+            <li>Never writes your name beside a detail</li>
+          </ul>
         </div>
       </div>
-      <div class="hold__stream">
-        <p class="beat focus-in"><b>Every student is vetted before they meet anyone.</b> Onboarding, parental consent, a background check where the setting calls for one, and whatever additional training you require of your own volunteers. Your rules layered on top of ours, never instead of them.</p>
-        <p class="beat focus-in"><b>They commit by the semester, not by the afternoon.</b> Students join a cohort with a minimum commitment and a real schedule, and we work in stable pairs so that no single volunteer is irreplaceable and no shift depends on one teenager's week going well.</p>
-        <p class="beat focus-in"><b>What they will not do is the part that protects everyone.</b> They do not read or interpret a bill, a denial letter, or any insurance document — not even to help somebody understand what it says. They do not draft or fill in an appeal or an application. They do not tell anyone whether they qualify for anything. They take custody of no documents: no paper, no photographs, nothing emailed for a second look. They write down no name beside any medical or financial detail.</p>
-        <p class="beat focus-in"><b>They never state a deadline, and that rule has a reason.</b> While we were building our routing materials, three official New York sources gave three different answers for the same appeal filing window. If the state's own pages disagree, a sixteen-year-old quoting a number from memory will sometimes be wrong, and being wrong there can cost somebody their appeal entirely. So the volunteer creates urgency without numbers, and the professional confirms the date.</p>
-        <p class="beat focus-in"><b>And no volunteer speaks to anybody about a bill until this has been checked by someone who would know.</b> Our routing sheet and volunteer scripts go to a reviewer with real health-insurance-law knowledge, to confirm that nothing in them states eligibility, quotes a deadline, promises an outcome, or reads like legal advice. Handing out reviewed materials is fine before that. Conversations about somebody's actual situation are not.</p>
-      </div>
+      <p class="lane__foot">And no volunteer speaks to anyone about a bill until someone with real health-insurance-law knowledge has checked our materials.</p>
     </div>
   </section>
 
@@ -175,24 +201,22 @@
   <section class="scene scene--left">
     <div class="scene__inner focus-in">
       <h2 class="phrase">The rest of it <em>is not forgotten.</em></h2>
-      <p class="say">Connecting underserved New Yorkers to any free health resource they are missing — senior centers, benefits counselors, food programs, transit fares — is where Waypoint started and is still half of why it exists. It is our second track, and it is sequenced deliberately behind this one. We open it when we have partners confirmed, a cohort actually showing up, distribution runs completed and logged, a second lead who owns the billing work, and a written report. Running two half-built programmes would cost the people we serve far more than waiting one semester will.</p>
+      <p class="say">Walking people to any free health resource they are missing is where Waypoint started, and it is still half of why we exist. It is our second track, sequenced behind this one — because running two half-built programmes would cost the people we serve more than waiting one semester will.</p>
     </div>
   </section>
 
-  <!-- ===== HOLD: reach (the climax) ===== -->
+  <!-- ===== HOLD: reach ===== -->
   <section class="scene scene--hold scene--reach">
     <div class="hold">
       <div class="hold__anchor">
         <div class="hold__anchor-in focus-in" data-once>
-          <span class="eyebrow">Reach</span>
           <h2 class="phrase">The people you have been trying <em>to reach all year.</em></h2>
         </div>
       </div>
       <div class="hold__stream">
-        <p class="beat focus-in"><b>Our students speak the languages your block speaks.</b> Multilingual volunteers are the point of this, not a bonus feature. A conversation about a bill somebody is frightened of rarely survives being translated by a stranger, and it almost never survives a leaflet.</p>
-        <p class="beat focus-in"><b>Nobody is asked for a status.</b> A hospital cannot consider immigration status when it looks at financial assistance, and the counselors we route to help people regardless of it. Anything that actually touches immigration law goes to an immigration professional rather than a student's best guess, because wrong information there costs a family far more than the appointment was ever worth.</p>
-        <p class="beat focus-in"><b>Behind every referral is a directory we maintain.</b> A curated set of the organisations that handle bills, denials, prior authorisation, prescription costs, and the free services around them, each entry carrying the date it was last checked and a named human on the other end wherever one exists. It is re-verified every semester by someone whose job that is. A directory that sends an eighty-year-old to a disconnected number is worse than no directory at all.</p>
-        <p class="beat focus-in"><b>And you get counts you can actually use.</b> Every quarter we tell you how many people we sent your way and what they were asking about, broken out by the kind of problem rather than by the person. Categories, never names, no medical details, nothing that could identify anyone — and exactly the shape of thing your board or your funder asks you for in the spring.</p>
+        <p class="beat focus-in"><b>Our students speak the languages your block speaks.</b> A conversation about a frightening bill rarely survives a stranger translating it, and almost never survives a leaflet.</p>
+        <p class="beat focus-in"><b>Nobody is asked for a status.</b> A hospital cannot weigh immigration status when it looks at financial assistance, and anything touching immigration law goes to a professional rather than a student's best guess.</p>
+        <p class="beat focus-in"><b>And you get counts you can use.</b> Every quarter: how many we sent you and what they asked about. Categories, never names.</p>
       </div>
     </div>
   </section>
@@ -202,17 +226,15 @@
     <div class="hold">
       <div class="hold__anchor">
         <div class="hold__anchor-in focus-in" data-once>
-          <span class="eyebrow">For partners</span>
           <h2 class="phrase">Not money. Not an endorsement. <em>Your materials.</em></h2>
         </div>
       </div>
       <div class="hold__stream">
-        <p class="beat focus-in"><b>If you already do this work, we would like to carry it.</b> Flyers, referral cards, or a QR code we can put in front of people at libraries, senior centers, faith spaces, and community events. We cover the printing and we do the distribution. We are not asking for money, for an endorsement, or for staff time beyond one conversation.</p>
-        <p class="beat focus-in"><b>And a name we can route to.</b> One person or one line we send people toward, so that a referral is a handoff instead of a hope. In return you get distribution you do not have to staff, and a quarterly count of how many people we sent your way and what they were asking about.</p>
-        <p class="beat focus-in"><b>Twenty minutes of reading, if you can spare it.</b> A look over the one-page routing sheet our volunteers work from, so we know we are not overstating anything. We would far rather be corrected by you now than be wrong in front of somebody who needed us to be right. It is a read and a reply, not a supervision commitment.</p>
-        <!-- SWAP POINT: when a venue or professional partner is secured, this beat is the one to rewrite. -->
-        <p class="beat focus-in"><b>If what you have is a room, that is the other ask.</b> A library branch, a senior center, a community or faith hall. Shelf space for materials, or a small table at something you were already running. We bring the volunteers and the materials, we work inside your supervision and your rules, and any community event we take part in is co-staffed by a certified professional who handles anything regulated.</p>
-        <p class="beat focus-in"><b>And we have not done this yet.</b> That is the honest part. Waypoint has not held its first event, and no volunteer will speak to anybody about a bill until our materials clear that review. Whoever says yes first shapes how the whole thing runs, is named in the first semester report, and is the reason there is a second one.</p>
+        <p class="beat focus-in"><b>If you already do this work, we would like to carry it.</b> Flyers, referral cards, or a QR code we can put in front of people. We cover the printing and we do the distribution.</p>
+        <p class="beat focus-in"><b>And a name we can route to</b>, so a referral is a handoff instead of a hope. In return: distribution you don't have to staff, and a quarterly count.</p>
+        <p class="beat focus-in"><b>Twenty minutes of reading, if you can spare it.</b> A look over our routing sheet, so we know we are not overstating anything. We would far rather be corrected by you now than be wrong in front of somebody who needed us to be right.</p>
+        <!-- SWAP POINT: when a venue or professional partner is secured, rewrite this beat. -->
+        <p class="beat focus-in"><b>And we have not done this yet.</b> Waypoint has not held its first event. Whoever says yes first shapes how the whole thing runs, and is named in the first semester report.</p>
       </div>
     </div>
   </section>
@@ -222,7 +244,7 @@
       <div class="panel">
         <span class="ey">Start a partnership</span>
         <h3>Send us <em>a note.</em></h3>
-        <p>Tell us what you have — materials we can distribute, a person we can route people to, a space, or twenty minutes to read our routing sheet. We will come back with something specific rather than a brochure.</p>
+        <p>Materials we can distribute, a person we can route people to, a space, or twenty minutes to read our routing sheet. We will come back with something specific.</p>
         <form class="form" data-form="partners">
           <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div class="field"><label for="p-org">Organization</label><input id="p-org" name="org" required placeholder="Organisation name" /></div>
@@ -260,9 +282,8 @@
   <!-- ===== STUDENTS ===== -->
   <section class="scene scene--right" id="students">
     <div class="scene__inner focus-in">
-      <span class="eyebrow">For students</span>
       <h2 class="phrase">For the students who <em>show up.</em></h2>
-      <p class="chapter-lede">Join a trained cohort and spend your hours on something that leaves a room different than you found it. We onboard you, the partner adds their own training, and you join a semester cohort with a real schedule. You put materials where people actually are, you listen, you translate, you name the right organisation, and you dial the number and stay in the chair while it rings. You never read anyone's paperwork, never say who qualifies, and never give advice of any kind — that is not what this is, and you will never be asked to make that call alone. <b>Multilingual students especially.</b></p>
+      <p class="chapter-lede">You put materials where people actually are. You listen, you translate, you name the right organisation, and you dial the number and stay in the chair while it rings. You never read anyone's paperwork and never say who qualifies — and you will never be asked to make that call alone. <b>Multilingual students especially.</b></p>
     </div>
   </section>
 

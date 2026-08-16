@@ -173,6 +173,7 @@
       var r = scenes[i].getBoundingClientRect();
       if (r.top > mid || r.bottom < mid) continue;
       var c = scenes[i].classList;
+      if (c.contains("scene--pin")) return { cx: 0.5, amp: 0.012, turn: 1.35 };
       if (c.contains("scene--hold")) return { cx: 0.5, amp: 0.020, turn: 1.15 };
       if (c.contains("scene--center")) return { cx: 0.5, amp: 0.048, turn: 0.72 };
       if (c.contains("scene--left")) return { cx: 0.74, amp: 0.082, turn: 0.54 };
@@ -244,7 +245,7 @@
   }
 
   /* ---------- reading veil: one fixed layer, opacity follows dense text ---------- */
-  var denseScenes = $$(".scene--hold, .scene--vow, .scene--wide");
+  var denseScenes = $$(".scene--hold, .scene--vow, .scene--wide, .scene--pin");
   var veilNow = 0;
   function readVeil() {
     var vh = window.innerHeight, want = 0;
@@ -256,6 +257,51 @@
     }
     veilNow += (want - veilNow) * (reduced ? 1 : 0.09);
     root.style.setProperty("--readVeil", veilNow.toFixed(3));
+  }
+
+  /* ---------- pinned scenes ----------
+     Each pinned section is taller than the viewport and holds a sticky child
+     that fills it. Scrolling through the surplus height scrubs --t from 0 to 1,
+     which is what actually opens the envelope, draws the wires and slides the
+     lane. Lines arrive on their own thresholds and then stay, dimmed, so a
+     reader who stops halfway can still see the beat they came from. */
+  var pins = $$("[data-pin]").map(function (el) {
+    return { el: el, lines: $$(".pin__line", el), wires: $$(".paths__wires path", el), ends: $$(".paths__ends circle, .paths__ends text", el) };
+  });
+
+  /* stroke-dasharray needs the real path length, and only the browser knows it */
+  pins.forEach(function (p) {
+    p.wires.forEach(function (w) {
+      var len = 900;
+      try { len = w.getTotalLength() || 900; } catch (e) {}
+      w.style.setProperty("--len", len.toFixed(1));
+    });
+  });
+
+  function pinFrame() {
+    for (var i = 0; i < pins.length; i++) {
+      var p = pins[i], r = p.el.getBoundingClientRect(), vh = window.innerHeight;
+      var span = p.el.offsetHeight - vh;
+      var t = span > 0 ? clamp(-r.top / span, 0, 1) : (r.top <= 0 ? 1 : 0);
+      p.el.style.setProperty("--t", t.toFixed(4));
+
+      /* a line is on once its threshold is passed, and spent once the next arrives */
+      for (var j = 0; j < p.lines.length; j++) {
+        var at = parseFloat(p.lines[j].getAttribute("data-at")) || 0;
+        var next = j + 1 < p.lines.length ? parseFloat(p.lines[j + 1].getAttribute("data-at")) : 2;
+        p.lines[j].classList.toggle("on", t >= at);
+        p.lines[j].classList.toggle("spent", t >= next);
+      }
+
+      /* the thread reaches one door at a time */
+      for (var k = 0; k < p.wires.length; k++) {
+        var a = 0.10 + k * 0.17, b = a + 0.24;
+        var draw = ramp(t, a, b);
+        p.wires[k].style.setProperty("--draw", draw.toFixed(3));
+        if (p.ends[k * 2]) p.ends[k * 2].style.setProperty("--lit", (draw > 0.82 ? 1 : 0));
+        if (p.ends[k * 2 + 1]) p.ends[k * 2 + 1].style.setProperty("--lit", (draw > 0.82 ? 1 : 0));
+      }
+    }
   }
 
   /* ---------- tubelight nav ---------- */
@@ -286,7 +332,7 @@
   }
 
   /* ---------- one loop drives everything scroll-linked ---------- */
-  function tick() { doorFrame(); chrome(); journey(); navActive(); readVeil(); spiralFade(); drawSpiral(); }
+  function tick() { doorFrame(); chrome(); journey(); pinFrame(); navActive(); readVeil(); spiralFade(); drawSpiral(); }
   /* exposed so the scroll choreography can be driven deterministically in tests,
      where requestAnimationFrame does not run (headless tabs report hidden) */
   window.__waypointTick = tick;
