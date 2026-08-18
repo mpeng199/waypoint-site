@@ -567,7 +567,10 @@ img,svg{ display:block; max-width:100%; }
    rather than at whatever the browser defaults to. */
 .pin__line{ --desc:.16em;
   font-size:clamp(1.25rem,2.05vw,1.92rem); line-height:1.26; letter-spacing:-.018em;
-  color:var(--cream); text-shadow:0 1px 22px rgba(6,12,9,.8);
+  color:var(--cream);
+  /* no text-shadow: over the bright end of the painting a 22px halo reads as a
+     smudged box behind every line, not as legibility. The fixed .readveil is
+     what buys contrast here. */
   transition:opacity .7s var(--ease-out); }
 .pin__line > span{ display:block; overflow:clip;
   padding-bottom:var(--desc); margin-bottom:calc(var(--desc) * -1); }
@@ -578,7 +581,9 @@ img,svg{ display:block; max-width:100%; }
 .pin__line > span:nth-child(2) > span{ transition-delay:.09s; }
 .pin__line > span:nth-child(3) > span{ transition-delay:.18s; }
 .pin__line.on > span > span{ transform:none; }
-.pin__line.spent{ opacity:.3; }
+/* spent lines leave completely. At .3 they stayed on screen as faint ghosts
+   beside the reel — four smudges the eye keeps trying to read. */
+.pin__line.spent{ opacity:0; }
 .pin__line b{ font-weight:inherit; color:var(--gold); }
 
 /* ---------- the letter, translating itself ----------
@@ -638,8 +643,7 @@ img,svg{ display:block; max-width:100%; }
    it means is set in the face the rest of the page speaks in */
 .reel__strip > span:not(.reel__plain){ font-family:var(--sans); font-size:.62em;
   letter-spacing:.14em; text-transform:uppercase; color:rgba(252,254,247,.5); }
-.reel__plain{ font-family:var(--display); color:var(--cream); letter-spacing:-.01em;
-  text-shadow:0 1px 22px rgba(6,12,9,.8); }
+.reel__plain{ font-family:var(--display); color:var(--cream); letter-spacing:-.01em; }
 .reel__row--turn .reel__plain{ color:var(--gold); }
 
 /* the hairline under each row draws itself as that row lands */
