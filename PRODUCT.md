@@ -46,7 +46,9 @@ Success is measured by: community members reaching resources they qualify for, p
 
 The site leads with **Medical Bills & Coverage Navigation** (Phase A) and this is Waypoint's public identity. Three activities, in order of how much time they take: awareness and distribution (~60%), triage and routing (~30%), warm handoff (~10%).
 
-**General Resource Navigation is the second track, and the site says so in the future tense.** It is not cancelled and it is not hidden — it gets a full scene of its own, named as where Waypoint started and as half of why it exists — but it is sequenced behind Phase A and gated on six unlock criteria (confirmed partners, a legal review cleared, an active trained cohort, completed distribution runs, a named second lead, a written impact report). Describing it in the present tense would invite a partner to ask for it today, which is the exact scope creep the narrowing was meant to prevent.
+**General Resource Navigation is the second track, and the site names it without describing the sequencing.** It gets a full scene of its own — *"It was never only about the bill"* — naming it as where Waypoint started and as half of why we exist, and stopping there. The phasing and the reasons behind it are operating decisions, not visitor copy: everyone reading that page is deciding whether to volunteer or to work with us, and neither decision is helped by a roadmap. `check.py` now fails the build on "second track", "sequenced behind" and "half-built" appearing on any page.
+
+Internally none of that changed. It remains sequenced behind Phase A and gated on six unlock criteria (confirmed partners, a legal review cleared, an active trained cohort, completed distribution runs, a named second lead, a written impact report). The site still never offers it as a service available today — that would invite a partner to ask for it now, which is the scope creep the narrowing was meant to prevent — but it says plainly that it is half of what Waypoint is.
 
 The Companionship track is undecided and appears on no public surface. `check.py` fails the build if the word appears at all.
 
