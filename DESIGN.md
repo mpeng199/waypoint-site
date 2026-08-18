@@ -261,8 +261,7 @@ three lines true.
 
 **Below 900px and under `prefers-reduced-motion` the pin releases**: height goes
 `auto`, the sticky child goes static, and each mechanism renders its finished
-state — every reel already landed on its plain meaning, every mask already
-open, the lane stacked vertically with its rule turned horizontal.
+state — every reel already landed on its plain meaning, every mask already open.
 Nothing depends on scroll to become readable.
 
 Rules the page is built to: no card grids, no numbered step lists, no section labels, no visible boundary between beats. Each beat hands off to the next. The doors are the one deliberate exception — a hairline list is a boundary, and it is there because four named things need four rules between them to be four things rather than a paragraph. It stays a list of names, never a grid of cards, and the sequence beside it stays unnumbered.

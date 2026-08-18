@@ -844,7 +844,10 @@ def check_audience_order():
 
     # nav targets must appear in the page in the same order they appear in the nav
     nav = re.search(r'<nav class="nav__links".*?</nav>', src, flags=re.S)
-    targets = re.findall(r'href="#([^"]+)"', nav.group(0)) if nav else []
+    if not nav:
+        bad("audience: no primary nav block, so nav order cannot be checked")
+        return
+    targets = re.findall(r'href="#([^"]+)"', nav.group(0))
     where = [src.index(f'id="{t}"') for t in targets if f'id="{t}"' in src]
     if len(where) == len(targets) and where == sorted(where):
         ok(f"audience: the nav walks the page in order {targets}")
@@ -983,7 +986,11 @@ def check_lane():
     """The line: a hold scene of beats, each stating its own boundary."""
     src = read("index.html")
     css = read("styles.css")
-    section = strip_comments(src.split('scene--lane', 1)[-1].split("</section>", 1)[0])
+    # Find the section by its unique heading phrase
+    if 'where the line is' not in src:
+        bad("lane: cannot find the line section by its heading")
+        return
+    section = strip_comments(src.split('where the line is', 1)[-1].split("</section>", 1)[0])
 
     beats = re.findall(r'<p class="beat focus-in"><b>([^<]+)</b>\s*([^<]+)</p>', section)
     if len(beats) == 5:
@@ -1021,7 +1028,7 @@ def check_lane():
     # organisation: the phrase holds while the beats move past it. This is also
     # what keeps the page's own thread out of the type, since spiralTarget puts
     # a hold scene's thread down the gutter between its two columns.
-    head = src.split('scene--lane', 1)[0][-300:]
+    head = src.split('where the line is', 1)[0][-300:]
     if "scene--hold" in head and "scene--hold-r" in head:
         ok("lane: organised as a hold scene, phrase right and beats left")
     else:

@@ -413,7 +413,7 @@ img,svg{ display:block; max-width:100%; }
   padding:7px 2px; list-style:none; transition:color .3s var(--ease); }
 .vow__more > summary::-webkit-details-marker{ display:none; }   /* Safari's triangle */
 .vow__more > summary::after{ content:""; width:7px; height:7px; flex:none;
-  border-right:1.2px solid currentColor; border-bottom:1.2px solid currentColor;
+  border-right:1.2px solid currentcolor; border-bottom:1.2px solid currentcolor;
   transform:translateY(-2px) rotate(45deg); transition:transform .35s var(--ease); }
 .vow__more[open] > summary::after{ transform:translateY(1px) rotate(-135deg); }
 .vow__more > summary:hover{ color:var(--gold); }
@@ -669,7 +669,6 @@ img,svg{ display:block; max-width:100%; }
     padding-block:50vh; gap:clamp(26px,5vh,46px); }
   /* the notice sets its own height here; a fixed art box crops it */
   .pin__art{ height:auto; }
-  .scene--lane .pin__art{ height:min(46vh,360px); }
   /* no pin, so nothing scrubs: every line is simply in place, masks open */
   .pin__line{ opacity:1; }
   .pin__line.spent{ opacity:1; }
