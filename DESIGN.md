@@ -4,13 +4,267 @@ A scroll-driven journey through a painterly landscape, with warm green + gold pa
 
 ## The shape of the page
 
-The homepage is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between, twelve beats alternate between the established phrase-per-screen rhythm and a denser **hold scene** used four times where a partner needs real depth.
+The homepage is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between, fourteen beats cycle between four registers so the page never settles into one rhythm: the phrase-per-screen scenes, a denser **hold scene** (three times, where the phrase needs to keep its place while substance moves past it), a **pinned scene** (once) where the journey parks and hands the screen to something that is not prose, and one **section you operate** rather than scroll.
 
-    door → the gap → what we are → [hold] a Saturday morning → the honesty statement
-      → [hold] who we send → [hold] who we reach → [hold] what we ask for
-      → partner form → students → students form → the door, from the other side
+    door → real, free, invisible → [pin] the reel → what we are
+      → [doors] where the thread leads → the honesty statement → [hold] the line
+      → the other half
+      → FOR STUDENTS: the corps → students form
+      → FOR PARTNERS: [hold] who we reach → [hold] what we ask for → partner form
+      → the door, from the other side
 
-Rules the page is built to: no card grids, no numbered step lists, no section labels, no visible boundary between beats. Each beat hands off to the next.
+The page addresses two audiences and it now says so. Everything written to
+volunteers is one labelled block, everything written to organisations is
+another, and the partner block sits **last**. A student has to be convinced and
+a partner arrives already knowing what they want, so a student never has to
+scroll past a pitch aimed at somebody else to reach the thing they came for.
+Each block opens with an eyebrow naming its reader — `For students`,
+`For partners`.
+
+This is the second deliberate exception to "no section labels" below. It is
+here because the alternative is worse: two audiences interleaved with nothing
+telling either of them which paragraphs are theirs.
+
+**Four places encode that order and they are edited by hand** — the primary nav,
+the footer's journey column, `script.js`'s `navSections` tracker, and the page
+itself. Nothing looks broken when one of them drifts, so `check.py` asserts the
+nav walks the page in ascending document order, that `#students` precedes
+`#partners`, that both blocks keep their labels, and that `#partners` anchors
+the *first* scene of its block rather than the second — otherwise the nav lands
+one scene past the label meant to introduce it.
+
+### Pinned scenes
+
+Each is a section taller than the viewport holding a sticky child that fills it;
+scrolling the surplus height scrubs `--t` from 0 to 1. That one variable drives
+everything, and `script.js` sets nothing else:
+
+| Pin | What `--t` does | The point it makes |
+|---|---|---|
+| **The reel** (`#bills`) | Rolls four lines of officialese, one at a time, into what they actually mean | The letter is written in a language built for somebody else, and its last line is a door |
+
+#### The reel (`#bills`)
+
+**Reference: the odometer on [leocussen.edu.au](https://www.leocussen.edu.au),
+an Awwwards nominee** — the Leo Cussen Centre for Law, an institution whose job
+is making dense professional material navigable for people who need it, with
+accessibility built in from the start. Its statistics module rolls each digit on
+a vertical strip that settles on a value. Two details there are what make it read
+as engineering rather than as decoration, and both are carried over — one
+literally, one not.
+
+The section's claim is that a denial letter is written in a language built for
+somebody else. So the artwork is four lines lifted off a real notice, each on a
+reel that rolls through the officialese and lands on what it actually means:
+
+    Determination           ADVERSE DETERMINATION      → They said no.
+    Patient responsibility  PATIENT RESPONSIBILITY     → This is yours to pay.
+    Reason code             REASON CODE N130           → No reason you can read.
+    Appeal rights           APPEAL RIGHTS · SEE REVERSE → You are allowed to argue.
+
+The two voices are set to look nothing alike — officialese small, tracked and
+uppercase in Inter; what it means in Fraunces, the face the rest of the page
+speaks in. The last row is the turn and the only gold on the artwork: on a real
+denial it is the one line that points anywhere useful, and it is the smallest
+type on the page. It hands straight to `#work` ("There is a solution for this"), and
+to the counselors there who "argue with insurers for a living".
+
+This replaced a static plate of a denial notice — an accurate picture of a bill,
+which is one order of thought short of the point. A picture of that language
+states the problem; a reel that rolls the language into what it means *performs*
+it, and lands the section somewhere useful.
+
+**What was taken from the reference, and what was not.**
+
+- **The window cannot be resized by its contents.** Theirs buys this with a
+  `visibility:hidden` sizer copy behind the window, because their reel is inline
+  and its width follows its content. This one buys it structurally — block
+  window in a fixed grid column, strip absolutely positioned — which is the same
+  guarantee with no hidden markup. Measured both ways before dropping the sizer:
+  520px either way. Copying it regardless would have been dead weight that
+  looked like craft.
+- **Feathered while moving, crisp when still.** Theirs fades a gradient overlay
+  in and out at the window edges. That cannot be copied literally here: an
+  overlay painted in a flat colour smears against the landscape. This one
+  feathers the **mask** instead, which fades content to transparent whatever is
+  behind it — same intent, correct mechanism for this background.
+
+**One basis for `--line`, and never `em`.** `--line` is both the height of the
+window and the step size of the roll. A custom property is substituted as tokens
+and re-resolved per element, so `1.42em` means one thing on the window and a
+smaller thing on the `.62em` officialese spans; the steps and the window stop
+agreeing and the roll walks off the end of the strip. It shipped that way until
+a render showed two phrases in one window. It is now a `clamp()` in `rem`/`vw`,
+and every strip line is a flex box of exactly `--line`, so type size and step
+size are independent. `check.py` rejects any `em` in it.
+
+**Released states carry the finished frame.** The pin only exists above 900px
+and outside reduced motion. Everywhere else `--t` never moves, so both released
+states pin `--k:1` and every reel renders landed on its plain meaning — a phone
+showing four lines of untranslated officialese would be the section arguing
+against itself. Missed on the narrow breakpoint once; guarded now.
+
+#### Line-mask reveals
+
+The four narration lines used to arrive blurred, which reads as soft focus
+rather than composition. They now arrive the way editorial sites do it: each
+line clipped to its own box and travelling up into place on a stagger, so the
+sentence assembles. Lines are **set by hand** rather than split at runtime — the
+copy is fixed, so the ragging is a typographic decision instead of whatever the
+box happens to do, and it costs no script and no library.
+
+Three details do the work, and they are the three normally got wrong:
+
+1. **`overflow:clip`, not `hidden`.** `hidden` creates a scroll container, so a
+   focused element inside can be scrolled by the browser and the mask silently
+   gains an offset. `clip` cannot scroll at all.
+2. **Descenders.** Clipping at the content edge shears the tails off g, y and p.
+   Bottom padding gives them room, pulled straight back out with an equal
+   negative margin so the line box still measures the same.
+3. **The parked position clears the padding too.** Travelling `100%` leaves the
+   glyph tops showing through that descender allowance; the hidden state is
+   `100%` **plus** the allowance, which is exactly the bottom clip edge.
+
+### The honesty statement — short on screen, full one tap away
+
+The statement is the one piece of copy on the site that exists to stop somebody
+mistaking a student for a professional. It ran seventy-five words set large in
+display italic, which took most of a screen and, being that long, was the part
+people scrolled past.
+
+It is now two pieces. **What stays on screen is the short version** — *"We are
+trained student volunteers — not doctors, not lawyers, not benefits counselors.
+We walk you to the free professionals who are, and we never charge for
+anything."* Twenty-eight words carrying the three things that actually protect
+somebody: who we are, what we are not, and that nobody pays us. This is a
+straight improvement against the brief at the top of this document, which asks
+that a vulnerable reader take the statement in under ten seconds.
+
+**The full wording sits behind a disclosure**, verbatim and never reworded, with
+the "printed on everything we hand out" attribution under it. `check.py` still
+counts the verbatim fragments twice across `index.html` — the disclosure and the
+page footer — so nothing about that contract changed.
+
+Two rules this is built to, and `check.py` enforces both:
+
+- **The visible line has to keep carrying the essentials.** Collapsing the full
+  text is only safe while a shorter one stays on screen, so the check asserts
+  the visible sentence still contains *trained student volunteers*, *not
+  doctors*, and *never charge*. Trim it further and the build fails.
+- **It is a native `<details>`, not the disclosure JS the doors use.** Everywhere
+  else on the site a script failure costs a nicety. Here it would hide a safety
+  statement, so the mechanism has to be one that opens with no script at all.
+  This is the reason to prefer native markup over the fancier pattern that is
+  already in the codebase.
+
+### The line — a hold scene of beats
+
+Four shapes, each failing differently, and the last change removed the section's
+CSS altogether.
+
+A **tick-and-cross checklist** was the most generic possible form. A **numbered
+register** in two halves was handsomer but still a taxonomy — ten items the
+reader must sort into buckets before any of it means anything, in a section that
+follows a scene which has already stated the boundary in prose. **Four indented
+pairs** with a gold dash fixed the content but still handed the reader a shape
+to decode. What it is now is what the reach and partners scenes already were:
+`scene--hold-r` holding a stream of **`.beat`** — a bolded run-in lead and a
+short description, no marks of any kind.
+
+    Listens, in your language.  You describe what you are holding, in your own
+    words. A volunteer never reads it back to you or tells you what it means.
+
+    Names the office that handles it.  They can tell you who takes this kind of
+    problem. They can never tell you whether you qualify for it.
+
+    Dials the number and stays while it rings.  You do the talking. A volunteer
+    sits with you through the wait and never speaks in your place.
+
+    Leaves with nothing.  No photo of your paperwork, no copy of your bill, and
+    no name written down beside any of it.
+
+    And none of it starts until it is checked.  No volunteer speaks to anyone
+    about a bill until someone with real health-insurance-law knowledge has
+    been over our materials.
+
+**The boundary lives in the prose.** Nothing is drawn and nothing is indented:
+each beat states its own limit — *never reads it back to you*, *can never tell
+you whether you qualify* — so the line is made five times over rather than drawn
+once between two columns. `check.py` enforces that every beat carries one,
+because with no rule and no columns the prose is the only place the line exists.
+
+**Why it is a hold and not a pin.** It was a pinned scene scrubbing `--t`, which
+meant the phrase scrolled away from the very statements it was introducing.
+Measured against the partners ask it now behaves identically — phrase parks at
+477px and holds through a 609px window, versus that section's 566px. This is
+also what keeps the page's own thread out of the type: `spiralTarget()` matched
+`scene--pin` first and ran the thread down the centre, whereas a hold scene's
+thread goes in the gutter between the two columns. The explicit `scene--lane`
+override this once needed is gone.
+
+**There is no lane CSS.** The indent, the gold dash, the staged crossing, the
+`--t` thresholds and their reduced-motion resets all went with this change. The
+section is `.beat` and nothing else, which is why it needs no responsive case,
+no released state and no guard against its own motion. `check.py` rejects any
+`.lane__` selector reappearing.
+
+### The doors (`#work`) — the one section you operate
+
+Everywhere else the scroll is the only input. Here it is not: four hairline rows
+name the four places a problem actually goes, centred and alone on the screen,
+each opening onto a sentence about what is behind that door.
+
+This replaced a scroll-drawn fan diagram — four labels on stalks, wires tweened
+from `--t`. It went for two reasons. A label on a stalk cannot say what is behind
+it, so the section named four things and explained none of them; and re-tweening
+four `stroke-dashoffset`s every frame meant any scroll stutter was visible as the
+drawing itself stuttering. Operating a row costs one attribute change.
+
+**Two states, two triggers, and they do not overlap.** Hover only makes the
+header breathe about 8px taller and turn gold — an invitation, nothing more.
+The description opens on a **click** and nothing else, and **nothing is open
+until asked**. Prose revealed on hover arrives while the pointer is only passing
+through and vanishes the moment you move toward it, so it can never actually be
+read; that is a hover state pretending to be a disclosure.
+
+**What stays still.** Because the section's height is its content plus 100vh of
+padding, the block sits at its `padding-top` with no free space to centre in — so
+opening a row pushes only what is below it and never lifts the row you clicked.
+Switching between rows does not move anything at all, and that takes two things
+together:
+
+- **Every blurb reserves the same three lines** (`min-height:calc(1.62em * 3 + …)`
+  on `.ways__blurb`) whether its sentence fills them or not.
+- **The measure is capped at `44ch`**, narrower than the column ever gets before
+  the layout stacks, so the cap always binds and the line count stops depending
+  on the viewport. Without it one blurb takes a fourth line around 1150px while
+  the others keep three — a band nobody thinks to test.
+
+Given equal heights the closing row shrinks on exactly the curve the opening one
+grows on, so `h·f + h·(1−f) = h` at every frame of the swap. Measured: 577px
+closed, 681px with any of the four open.
+
+**Degradation.** The markup ships with **no `aria-expanded` and the panels open**,
+because a disclosure whose only trigger is a click is content nobody can reach if
+the click handler never lands. `script.js` takes the list over in one breath —
+add `.ways--js`, which closes the panels, and write the attribute that says so —
+behind a `.ways--boot` cut so the reader never watches four descriptions animate
+shut on load. Clicking the open row closes it again. Below 900px the heading
+un-constrains its measure and the three-line reserve is released, since tap is
+the only pointer and nothing sits beside the list to be pushed around. There is
+no reduced-motion case: nothing here needs motion to be read, so the global
+`transition-duration` override just makes the row open instantly.
+
+`check.py` guards all of it — the disclosure wiring, that hover opens nothing,
+that the no-JS fallback is intact, and the 156-character blurb budget that keeps
+three lines true.
+
+**Below 900px and under `prefers-reduced-motion` the pin releases**: height goes
+`auto`, the sticky child goes static, and each mechanism renders its finished
+state — every reel already landed on its plain meaning, every mask already open.
+Nothing depends on scroll to become readable.
+
+Rules the page is built to: no card grids, no numbered step lists, no section labels, no visible boundary between beats. Each beat hands off to the next. The doors are the one deliberate exception — a hairline list is a boundary, and it is there because four named things need four rules between them to be four things rather than a paragraph. It stays a list of names, never a grid of cards, and the sequence beside it stays unnumbered.
 
 ## The door (`assets/door.js`)
 
@@ -237,7 +491,7 @@ All form inputs:
 
 ## Verification
 
-`python3 check.py` prints the pass/fail total; add `-v` to list every passing check. It covers dead links and anchors (including fragments into any local page, not just the homepage), missing assets, the honesty statement present verbatim on two surfaces, no surviving references to the removed Schools chapter or the unlaunched Companionship track, no numeric track-record claims, form completeness and labelling, the door's fallback paths and transition invariants, vendored dependency integrity, the asset-size budget, and that `script.js`'s tracked nav sections match the markup. A missing file is reported as a failed check rather than raised, so one absent page never costs you the rest of the report.
+`python3 check.py` prints the pass/fail total; add `-v` to list every passing check. It covers dead links and anchors (including fragments into any local page, not just the homepage), missing assets, the honesty statement present verbatim on two surfaces, no surviving references to the removed Schools chapter or the unlaunched Companionship track, no numeric track-record claims, form completeness and labelling, the door's fallback paths and transition invariants, the reel's roll geometry and released states, the line's paired sentences and its undrawn rule, the doors' disclosure wiring and equal-height contract, vendored dependency integrity, the asset-size budget, and that `script.js`'s tracked nav sections match the markup. A missing file is reported as a failed check rather than raised, so one absent page never costs you the rest of the report.
 
 ## Notes
 

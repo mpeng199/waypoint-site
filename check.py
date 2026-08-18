@@ -3,7 +3,8 @@
 Waypoint site checks.
 
 Guards the things that rot silently: dead links and anchors, missing assets,
-the honesty statement drifting out of a surface that must carry it verbatim,
+the honesty statement drifting out of any surface that must carry it verbatim,
+overclaims about what a volunteer may do with a bill or a denial,
 stale references to programmes we do not run, and the asset-size budget that
 keeps the site fast on a library's wifi.
 
@@ -26,8 +27,20 @@ PAGES = ["index.html", "privacy.html", "terms.html", "partner-pitch.html",
          "cohort-onboarding.html", "students.html", "partners.html", "admin.html"]
 
 # Printed on every flyer, every table sign, and the site. It exists to stop a
-# vulnerable person mistaking a student for a clinician; it does not get reworded.
-HONESTY = ("We are trained student volunteers who connect", "not doctors, nurses, social workers, or benefits counselors")
+# vulnerable person mistaking a student for a professional; it does not get
+# reworded. Source of truth: Mission & Operating Model v2.0, section 8.
+#
+# Fragment rules, learned from how strip_tags() works: each fragment must be a
+# contiguous, tag-free run (a tag mid-fragment becomes a space and breaks the
+# match), and matching is case-sensitive, so fragments start mid-sentence where
+# the surrounding wording may differ.
+HONESTY = ("We are trained student volunteers.",
+           "not doctors, lawyers, benefits counselors, or insurance experts",
+           "do not read your bills, fill out your forms, or tell you what you qualify for")
+
+# The statement is duplicated by hand with no shared source, so the linter is
+# the shared source. index.html carries it twice: the vow scene and the footer.
+HONESTY_SURFACES = {"index.html": 2, "partner-pitch.html": 1, "cohort-onboarding.html": 1}
 
 # Cut from the public site: schools/replication and the Companionship track.
 FORBIDDEN = [
@@ -38,6 +51,24 @@ FORBIDDEN = [
     (r"assets/land\d\.png", "unoptimised PNG landscape (use .webp)"),
     (r"\bTrack [AB]\b", "internal track naming"),
     (r"a working name", "the org name is settled; drop the placeholder hedge"),
+    # The billing vertical's own failure modes. Volunteers never state
+    # eligibility, quote a deadline, promise an outcome, or read like a lawyer.
+    (r"\b\d+\s*%\s*of the federal poverty (?:level|line)\b",
+     "a numeric eligibility threshold; who qualifies is never ours to state"),
+    (r"501\(r\)|26 U\.S\.C\.|Public Health Law\s*(?:§|Section)|N\.Y\. Pub(?:lic)?\.? Health",
+     "a statute citation; describe the role, do not cite the law"),
+    (r"\bfree bill (?:review|audit)\b", "a bill-review service we do not provide"),
+    (r"\b(?:success fee|contingency fee|% of (?:your )?savings)\b",
+     "a fee model; we never charge for anything"),
+    (r"\bmedical debt (?:relief|forgiveness|settlement)\b",
+     "debt work that is neither ours to do nor ours to promise"),
+    # Roadmap vocabulary. Everyone reading these pages is deciding whether to
+    # volunteer or to work with us, and neither decision is helped by knowing
+    # what is sequenced behind what. The phasing is an operating decision and it
+    # lives in PRODUCT.md, which is not a page. Name the work, not the plan.
+    (r"\bsecond track\b", "roadmap vocabulary; name the work, not its position in a plan"),
+    (r"\bsequenced behind\b", "roadmap vocabulary; the reader is not managing our backlog"),
+    (r"\bhalf-built\b", "roadmap vocabulary; an internal justification, not visitor copy"),
 ]
 
 failures, passes = [], []
@@ -67,6 +98,14 @@ def read(p):
 def strip_tags(s):
     s = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", s, flags=re.S | re.I)
     return html.unescape(re.sub(r"<[^>]+>", " ", s))
+
+
+def strip_comments(s):
+    """Markup only. Every check that greps for the absence of something has to
+    run on this: the comment explaining why a thing is absent contains the
+    thing, and matching your own explanation is a false positive that reads
+    exactly like a real one."""
+    return re.sub(r"<!--.*?-->", " ", s, flags=re.S)
 
 
 # ---------------------------------------------------------------- structure
@@ -157,19 +196,23 @@ def check_stage_layers():
 
 # ------------------------------------------------------------------ content
 def check_honesty_statement():
-    for page in ["index.html"]:
+    """Every surface that must carry the statement, carries all of it.
+
+    Checking only index.html let the pitch and onboarding copies drift, which is
+    exactly the failure this statement exists to prevent: the printed leave-behind
+    saying something the site does not."""
+    for page, times in HONESTY_SURFACES.items():
+        if not (ROOT / page).is_file():
+            bad(f"{page}: missing, so the honesty statement cannot be verified")
+            continue
         text = re.sub(r"\s+", " ", strip_tags(read(page)))
         for fragment in HONESTY:
-            if fragment in text:
-                ok(f"{page}: honesty statement fragment present")
+            n = text.count(fragment)
+            if n >= times:
+                ok(f"{page}: honesty fragment present {n}x")
             else:
-                bad(f"{page}: honesty statement altered or missing: {fragment!r}")
-        # it must appear both as the vow and in the footer
-        n = text.count("We are not doctors") + text.count("We are not doctors, nurses")
-        if text.count("not doctors, nurses, social workers, or benefits counselors") >= 2:
-            ok("index.html: honesty statement on two surfaces (vow + footer)")
-        else:
-            bad("index.html: honesty statement should appear in both the vow scene and the footer")
+                bad(f"{page}: honesty statement altered or missing "
+                    f"({n}x, expected {times}x): {fragment!r}")
 
 
 def check_forbidden():
@@ -197,6 +240,70 @@ def check_no_invented_numbers():
         ok("index.html: pre-launch status stated plainly")
     else:
         bad("index.html: the page should say the first event has not happened yet")
+
+
+# ------------------------------------------------------- billing boundaries
+# Students inform and refer. They never read a document, state eligibility,
+# quote a deadline, or promise an outcome. These guards cannot live in
+# FORBIDDEN, because our own boundary sentences contain the same verbs under a
+# negation ("they do not read your bills"). So: split into sentences, drop the
+# ones carrying a negation cue, and only then look for an affirmative claim.
+BILLING_OVERCLAIM = [
+    (r"\b(?:we|our students|students|volunteers)\s+(?:can\s+|will\s+|also\s+|)"
+     r"(?:negotiate|settle|dispute|appeal|reduce|lower|erase|forgive|waive|wipe)\b",
+     "a first-person claim to do the regulated billing work"),
+    (r"\b(?:we|our students|students|volunteers)\s+(?:can\s+|will\s+|)"
+     r"(?:file|submit|complete|fill out|draft)\s+(?:the|your|an?|any)\s+"
+     r"(?:application|appeal|form|paperwork|letter)\b",
+     "a claim to file or draft on somebody's behalf"),
+    (r"\b(?:reduc\w*|lower\w*|eras\w*|forgiv\w*|settl\w*|wip\w*)\s+"
+     r"(?:your|their|the|a|any)\s+(?:hospital\s+|medical\s+)?(?:bill|bills|debt)\b",
+     "an outcome claim about somebody's bill"),
+    (r"\byou (?:will |)(?:qualify|are eligible)\b",
+     "an eligibility determination, which is never ours to make"),
+    (r"\b(?:we|our students|students|volunteers)\s+(?:can\s+|will\s+|)"
+     r"(?:read|review|interpret|look over)\s+(?:your|their|the)\s+"
+     r"(?:bill|bills|denial|letter|paperwork|documents?)\b",
+     "a claim to read documents, which is the first of the eight nevers"),
+]
+NEGATION = re.compile(r"\b(?:never|not|cannot|can't|don't|doesn't|no|without|instead of)\b", re.I)
+
+
+def check_billing_boundaries():
+    for page in PAGES:
+        if not (ROOT / page).is_file():
+            continue
+        text = re.sub(r"\s+", " ", strip_tags(read(page)))
+        hits = []
+        for sentence in re.split(r"(?<=[.!?;])\s+", text):
+            if NEGATION.search(sentence):
+                continue           # a boundary statement, not a claim
+            for pattern, why in BILLING_OVERCLAIM:
+                m = re.search(pattern, sentence, re.I)
+                if m:
+                    hits.append((why, m.group(0)))
+        if hits:
+            bad(f"{page}: overclaims on billing: {hits[:3]}")
+        else:
+            ok(f"{page}: no billing overclaim")
+
+    # the positive half: the primary chapter has to actually be on the page
+    idx = read("index.html")
+    text = re.sub(r"\s+", " ", strip_tags(idx))
+    if 'id="bills"' in idx:
+        ok("index.html: the billing chapter has an anchor")
+    else:
+        bad('index.html: no id="bills"; bills and denials are the primary identity')
+    for phrase in ["financial assistance", "denial"]:
+        if phrase in text:
+            ok(f"index.html: names {phrase!r}")
+        else:
+            bad(f"index.html: must name {phrase!r}")
+    money = re.findall(r"\$\s?\d[\d,]*", text)
+    if money:
+        bad(f"index.html: dollar figures imply an outcome we cannot promise: {money[:3]}")
+    else:
+        ok("index.html: no dollar figures")
 
 
 def check_forms():
@@ -488,10 +595,457 @@ def check_nav_matches_sections():
             bad(f"{page}: nav order {order} does not match the homepage {targets}")
 
 
+# --------------------------------------------------------------- the doors
+# Three lines of prose at the 44ch measure the blurbs are capped to. Anything
+# longer takes a fourth line, and a fourth line is the whole bug: the row that
+# closes and the row that opens only cancel out while every blurb is the same
+# height, and the moment one differs the column beside it starts moving under
+# the pointer. 156 is the budget with a character of slack; the longest blurb
+# written to it lands at 148.
+BLURB_MAX = 156
+
+
+def check_doors():
+    """#work: four doors that open on click without moving what is above them."""
+    src = read("index.html")
+    css = read("styles.css")
+    js = read("script.js")
+
+    items = re.findall(r'<div class="ways__item">(.*?)\n        </div>', src, flags=re.S)
+    if len(items) == 4:
+        ok("doors: four of them")
+    else:
+        bad(f"doors: expected 4, found {len(items)}")
+
+    # every row is a real button wired to the panel it discloses
+    rows = re.findall(r'<button class="ways__row"[^>]*aria-controls="([^"]+)"', src)
+    bodies = set(re.findall(r'<div class="ways__body" id="([^"]+)"', src))
+    if len(rows) == len(bodies) == 4:
+        ok("doors: four rows, four panels")
+    else:
+        bad(f"doors: {len(rows)} rows against {len(bodies)} panels")
+    for target in rows:
+        if target in bodies:
+            ok(f"doors: {target} is disclosed by its own row")
+        else:
+            bad(f"doors: aria-controls={target!r} points at no panel")
+
+    # no-JS has to leave the descriptions readable, so the markup must not claim
+    # a collapsed state and the CSS default must be open. script.js owns both.
+    section = strip_comments(src.split('id="work"', 1)[-1].split("</section>", 1)[0])
+    if "aria-expanded" not in section:
+        ok("doors: markup claims no collapsed state it cannot open")
+    else:
+        bad("doors: aria-expanded is hardcoded in the markup; with the script "
+            "blocked that is a lie and the descriptions become unreachable")
+    if re.search(r"\.ways__body\{[^}]*grid-template-rows:1fr", css) and \
+       re.search(r"\.ways--js \.ways__body\{[^}]*grid-template-rows:0fr", css):
+        ok("doors: panels default open, and only .ways--js closes them")
+    else:
+        bad("doors: the no-JS fallback is gone; a click-only disclosure that "
+            "starts closed hides its content from anyone without the script")
+    if re.search(r'classList\.add\([^)]*"ways--js"', js) and \
+       'setAttribute("aria-expanded", "false")' in js:
+        ok("doors: script.js closes the panels and says so in the same breath")
+    else:
+        bad("doors: script.js must add .ways--js and write aria-expanded together")
+
+    # hover must not open anything: revealing prose on hover means it arrives
+    # while the pointer is passing through and leaves as you move toward it
+    for sel in [r"\.ways__item:hover \.ways__body", r"\.ways__item:hover \.ways__blurb"]:
+        if re.search(sel, css):
+            bad("doors: hover opens the description again; hover is the header "
+                "breathing, the description is a click")
+        else:
+            ok(f"doors: hover does not trigger {sel.split(' ')[-1]}")
+
+    # the equal-height contract, in the two places it actually lives
+    blurbs = re.findall(r'<p class="ways__blurb">([^<]+)</p>', src)
+    if len(blurbs) == 4:
+        ok("doors: every row carries a blurb")
+    else:
+        bad(f"doors: {len(blurbs)} blurbs for 4 rows")
+    for b in blurbs:
+        if len(b) <= BLURB_MAX:
+            ok(f"doors: blurb fits its three reserved lines ({len(b)} chars)")
+        else:
+            bad(f"doors: blurb is {len(b)} chars, over the {BLURB_MAX} that fit "
+                f"three lines: {b[:48]!r}... a fourth line puts the wobble back")
+
+    # anchored to the start of a line: ".ways__blurb{" also occurs inside
+    # ".ways--boot .ways__blurb{", and matching that one reads the wrong body
+    block = re.search(r"^\.ways__blurb\{(.*?)\}", css, flags=re.S | re.M)
+    if not block:
+        bad("doors: no .ways__blurb rule; the height reserve is gone")
+        return
+    body = block.group(1)
+    if re.search(r"max-width:\s*\d+ch", body):
+        ok("doors: the blurb measure is still capped in ch")
+    else:
+        bad("doors: .ways__blurb lost its ch cap, so line count depends on the "
+            "viewport again and the blurbs stop matching around 1150px")
+    if re.search(r"min-height:calc\(1\.62em \* 3", body):
+        ok("doors: three lines still reserved whether the sentence fills them or not")
+    else:
+        bad("doors: .ways__blurb lost its three-line reserve; opening a row now "
+            "changes the section's height")
+
+
+def check_reel():
+    """#bills: four lines of officialese that roll into what they mean."""
+    src = read("index.html")
+    css = read("styles.css")
+
+    section = strip_comments(src.split('id="bills"', 1)[-1].split("</section>", 1)[0])
+    # split into row blocks and read each one, rather than one regex spanning
+    # the whole nested shape: a brittle mega-pattern reports "0 rows" for a
+    # markup reflow that broke nothing
+    parts = re.split(r'<div class="reel__row', section)[1:]
+    rows = []
+    for part in parts:
+        at = re.search(r'style="--at:([.\d]+)"', part)
+        n = re.search(r'<span class="reel__strip" style="--n:(\d+)">', part)
+        strip = part.split('class="reel__strip"', 1)[-1].split("</span>\n            </span>", 1)[0]
+        phrases = re.findall(r"<span[^>]*>([^<]+)</span>", strip)
+        rows.append({"at": float(at.group(1)) if at else None,
+                     "n": int(n.group(1)) if n else None,
+                     "phrases": phrases,
+                     "turn": part.startswith(" reel__row--turn")})
+    if len(rows) == 4:
+        ok("reel: four rows")
+    else:
+        bad(f"reel: expected 4 rows, found {len(rows)}")
+
+    # thresholds have to climb, or two reels roll on top of each other
+    ats = [r["at"] for r in rows if r["at"] is not None]
+    if len(ats) == len(rows) and ats == sorted(ats) and len(set(ats)) == len(ats):
+        ok(f"reel: rows land in order {ats}")
+    else:
+        bad(f"reel: --at values {ats} are not strictly increasing; rows will "
+            f"roll over each other instead of in sequence")
+
+    for r in rows:
+        # a strip must declare the number of lines it actually has, or the roll
+        # lands between two of them and the window shows half of each
+        if r["n"] == len(r["phrases"]):
+            ok(f"reel: --n:{r['n']} matches its {len(r['phrases'])} lines")
+        else:
+            bad(f"reel: a strip declares --n:{r['n']} but holds "
+                f"{len(r['phrases'])} lines; the roll will stop between two of "
+                f"them and show half of each")
+
+    # The row must not resize as it rolls. The reference buys that with a hidden
+    # sizer because its reel is inline; this one buys it structurally, and these
+    # two declarations ARE the guarantee — make the window inline-block or the
+    # strip static and the width starts following whichever phrase is showing.
+    win = re.search(r"\.reel__win\{(.*?)\}", css, flags=re.S)
+    strip = re.search(r"\.reel__strip\{(.*?)\}", css, flags=re.S)
+    if win and "display:block" in win.group(1):
+        ok("reel: the window is a block, so its width is the column's")
+    else:
+        bad("reel: .reel__win is no longer display:block; its width will follow "
+            "whichever phrase is showing and the row will resize mid-roll")
+    # --line is shared by the window and by spans set at .62em. A custom
+    # property is re-resolved per element, so an em value means one thing on
+    # the window and a smaller thing on the officialese lines: the steps and
+    # the window height stop agreeing and the roll walks off the strip. This
+    # one shipped broken until the render showed two phrases in the window.
+    if win:
+        m = re.search(r"--line:([^;]+);", win.group(1))
+        if not m:
+            bad("reel: .reel__win no longer declares --line, which is the step "
+                "size for the roll and the height of the window at once")
+        elif "em" in m.group(1).replace("rem", ""):   # rem is fine, em is not
+            bad(f"reel: --line is {m.group(1).strip()!r} — an em basis is "
+                f"re-resolved on every span, so the strip's steps and the "
+                f"window's height stop agreeing and the roll overshoots")
+        else:
+            ok("reel: --line has one basis, so steps and window height agree")
+    if strip and "position:absolute" in strip.group(1):
+        ok("reel: the strip is out of flow, so it cannot size the window")
+    else:
+        bad("reel: .reel__strip left the flow; the longest phrase in it now sets "
+            "the row width")
+
+    # Both released states must render the reel landed. The pin only exists
+    # above 900px and outside reduced motion; everywhere else --t never moves,
+    # so a reel left at --k:0 shows four lines of officialese and the section
+    # argues against itself. Missed the narrow one once already.
+    for query, label in [(r"@media \(max-width:900px\)", "narrow"),
+                         (r"@media \(prefers-reduced-motion:reduce\)", "reduced motion")]:
+        # styles.css carries several blocks per query, so check them all
+        blocks = re.findall(query + r"\{(.*?)\n\}", css, flags=re.S)
+        if any(re.search(r"\.reel__row\{[^}]*--k:1", b) for b in blocks):
+            ok(f"reel: lands on the plain meaning when the pin is released ({label})")
+        else:
+            bad(f"reel: {label} releases the pin but leaves --k at 0, so the reel "
+                f"shows officialese nobody can scroll past")
+
+    # the payoff: the last row has to turn, and it is the only gold on the artwork
+    if "You are allowed to argue" in section:
+        ok("reel: the last row lands on the door, not on more officialese")
+    else:
+        bad("reel: the turn is gone; the section exists to end somewhere useful")
+    if re.search(r"\.reel__row--turn \.reel__plain\{[^}]*var\(--gold\)", css):
+        ok("reel: gold is spent on the turn")
+    else:
+        bad("reel: the turn is no longer gold, which is the one signal that the "
+            "last line is different from the three above it")
+
+    # illustration, not content
+    if re.search(r'<div class="reel" aria-hidden="true">', src):
+        ok("reel: the artwork is hidden from assistive tech")
+    else:
+        bad('reel: .reel must carry aria-hidden="true"; a screen reader reading '
+            'every officialese phrase the reel passes learns nothing')
+
+    # state is a pure function of --t, so no parked frame is undressed
+    if re.search(r"--k:clamp\(0, calc\(\(var\(--t,0\) - var\(--at\)\)", css):
+        ok("reel: every row's position is a pure function of --t")
+    else:
+        bad("reel: rows no longer derive --k from --t; a parked scroll can land "
+            "on a frame nothing has composed")
+    # feather while moving, crisp when still
+    if re.search(r"--feather:min\(", css) and re.search(r"mask-image:linear-gradient\(180deg, transparent 0,", css):
+        ok("reel: the window feathers while rolling and goes crisp when landed")
+    else:
+        bad("reel: the feather mask is gone; the reel now clips its phrases with "
+            "a hard edge top and bottom while it rolls")
+
+    # the line masks: the three details that make or break the reveal
+    mask = re.search(r"\.pin__line > span\{(.*?)\}", css, flags=re.S)
+    inner = re.search(r"\.pin__line > span > span\{(.*?)\}", css, flags=re.S)
+    if mask and "overflow:clip" in mask.group(1):
+        ok("line masks: overflow:clip, so the mask cannot become a scroll container")
+    else:
+        bad("line masks: .pin__line > span must use overflow:clip, not hidden")
+    if mask and "padding-bottom:var(--desc)" in mask.group(1) \
+            and "margin-bottom:calc(var(--desc) * -1)" in mask.group(1):
+        ok("line masks: descenders have room, and the line box still measures the same")
+    else:
+        bad("line masks: the descender allowance is gone; g, y and p will shear")
+    if inner and "translateY(calc(100% + var(--desc)))" in inner.group(1):
+        ok("line masks: the parked line clears the descender allowance too")
+    else:
+        bad("line masks: parking at plain 100% leaves the glyph tops showing "
+            "through the descender padding")
+
+
+def check_audience_order():
+    """Two audiences, two labelled chapters, and the nav walks them in order.
+
+    Students come first because a student has to be convinced and a partner
+    arrives already knowing what they want. The nav, the footer's journey
+    column, script.js's tracker and the page itself all have to agree on that
+    order — four places, edited by hand, and nothing visibly breaks when one of
+    them drifts.
+    """
+    src = read("index.html")
+
+    # nav targets must appear in the page in the same order they appear in the nav
+    nav = re.search(r'<nav class="nav__links".*?</nav>', src, flags=re.S)
+    if not nav:
+        bad("audience: no primary nav block, so nav order cannot be checked")
+        return
+    targets = re.findall(r'href="#([^"]+)"', nav.group(0))
+    where = [src.index(f'id="{t}"') for t in targets if f'id="{t}"' in src]
+    if len(where) == len(targets) and where == sorted(where):
+        ok(f"audience: the nav walks the page in order {targets}")
+    else:
+        bad(f"audience: the nav order {targets} does not match the page order. "
+            f"A visitor clicking down the nav would jump backwards.")
+
+    # students before partners, as chapters
+    st, pa = src.find('id="students"'), src.find('id="partners"')
+    if -1 < st < pa:
+        ok("audience: the student chapter precedes the partner chapter")
+    else:
+        bad("audience: the partner chapter is no longer last. Everything "
+            "addressed to organisations sits after everything addressed to "
+            "volunteers, so a student never has to scroll past a partner pitch.")
+
+    # each chapter announces itself
+    for anchor_id, label in [("students", "For students"), ("partners", "For partners")]:
+        block = src.split(f'id="{anchor_id}"', 1)[-1].split("</section>", 1)[0]
+        if f'<span class="eyebrow">{label}</span>' in block:
+            ok(f"audience: the {anchor_id} chapter is labelled {label!r}")
+        else:
+            bad(f"audience: the {anchor_id} chapter lost its {label!r} label. The "
+                f"two audiences are only distinguishable if each one says who it "
+                f"is talking to.")
+
+    # the partner anchor has to sit on the chapter's first scene, or the nav
+    # lands one scene past the label it was supposed to introduce
+    if re.search(r'<section class="scene scene--hold scene--reach" id="partners">', src):
+        ok("audience: #partners anchors the top of its chapter")
+    else:
+        bad("audience: #partners moved off the chapter's opening scene, so the "
+            "nav skips the label that introduces it")
+
+
+def check_mobile_budget():
+    """Below 900px a phone must not be asked to re-raster the desktop page.
+
+    None of this is layout. It is measured compositing cost: the script tick
+    runs at 0.03ms, so the jank was never script — it was six stacked
+    full-screen layers, four scaling background images, a blend mode and an
+    animated blur, all of which a desktop GPU absorbs and a phone does not.
+    Every rule below removes one full-screen layer from the per-frame budget,
+    and every one of them is the kind of thing a later edit deletes without
+    noticing, because nothing looks wrong on a laptop when it comes back.
+    """
+    css = read("styles.css")
+    js = read("script.js")
+    blocks = re.findall(r"@media \(max-width:900px\)\{(.*?)\n\}", css, flags=re.S)
+    narrow = "\n".join(blocks)
+
+    for pattern, label, why in [
+        (r"\.stage__grain\{[^}]*display:none", "the grain layer is dropped",
+         "a mix-blend-mode on a fixed full-screen layer makes the compositor read "
+         "back the whole backdrop every frame, for 5% noise nobody can see at 375px"),
+        (r"\.stage__layer\{[^}]*will-change:opacity", "the backdrop promises opacity only",
+         "will-change:transform pins a compositing layer for a property that no "
+         "longer animates here"),
+        (r"\.hero__ui\{[^}]*filter:none", "the hero blur is off",
+         "a scrubbed blur re-rasters the whole hero every frame, across the 190vh "
+         "the hero is tall on a phone"),
+    ]:
+        if re.search(pattern, narrow):
+            ok(f"mobile: {label}")
+        else:
+            bad(f"mobile: {label} — gone. {why}.")
+
+    # the two script-side halves of the same budget
+    if re.search(r"var zoom = !narrow\.matches", js):
+        ok("mobile: journey() stops writing transform to the backdrop")
+    else:
+        bad("mobile: journey() writes a scale to four full-screen background "
+            "layers every frame again; that re-raster is the single biggest "
+            "cost on a phone")
+    if re.search(r"if \(narrow\.matches\) \{\s*if \(spiral\.width\)", js):
+        ok("mobile: the hidden spiral canvas allocates nothing")
+    else:
+        bad("mobile: sresize() allocates a device-pixel-ratio backing store for a "
+            "display:none canvas again — megabytes of GPU memory and a "
+            "full-surface clear every frame for something nobody can see")
+    if 'classList.toggle("door-gone"' in js and re.search(r"\.door-gone \.doorstage\{[^}]*visibility:hidden", css):
+        ok("mobile: the door stops compositing once it has handed over")
+    else:
+        bad("mobile: the doorstage is back to opacity:0 alone, which keeps a "
+            "full-screen WebGL layer alive in the compositor for the whole page")
+
+    # the menu button measured 30x22 — under even the 24px WCAG 2.5.8 minimum
+    if re.search(r"\.nav__tog::after[^{]*\{[^}]*inset:-13px", narrow):
+        ok("mobile: the menu button's hit area is widened past its glyph")
+    else:
+        bad("mobile: .nav__tog is back to a 30x22 hit area — the primary "
+            "navigation control on a phone, under the WCAG 2.5.8 minimum")
+
+
+def check_vow():
+    """The statement: short version visible, full version one tap away."""
+    src = read("index.html")
+    section = strip_comments(src.split("scene--vow", 1)[-1].split("</section>", 1)[0])
+
+    # The full wording now sits inside a disclosure. That is only acceptable
+    # while the visible line still does the job on its own — it is the sentence
+    # that stops somebody mistaking a student for a professional, and it cannot
+    # be behind a tap. Trim it further and this fires.
+    short = re.search(r'<p class="vow">(.*?)</p>', section, flags=re.S)
+    if not short:
+        bad("vow: no visible short statement; the whole point of collapsing the "
+            "full text is that a shorter one stays on screen")
+    else:
+        text = strip_tags(short.group(1))
+        for must, why in [("trained student volunteers", "who we are"),
+                          ("not doctors", "what we are not"),
+                          ("never charge", "that nobody pays us")]:
+            if must in text:
+                ok(f"vow: the visible line still says {why}")
+            else:
+                bad(f"vow: the visible line no longer says {why} ({must!r}). "
+                    f"With the full statement collapsed, this line is the only "
+                    f"thing a frightened person reads before deciding to trust us.")
+
+    # It has to open with no script. This is the one disclosure on the site
+    # where a JS failure would hide a safety statement rather than a nicety.
+    if re.search(r'<details class="vow__more">', section):
+        ok("vow: the full statement is native <details>, so it opens with no JS")
+    else:
+        bad("vow: the full statement is no longer in a <details>. A scripted "
+            "disclosure hides it entirely when the script fails, and this is the "
+            "one piece of copy that must never be unreachable.")
+    body = section.split("<details", 1)[-1]
+    if "We are trained student volunteers." in body:
+        ok("vow: the verbatim statement is inside the disclosure")
+    else:
+        bad("vow: the verbatim statement is not inside the <details>")
+
+
+def check_lane():
+    """The line: a hold scene of beats, each stating its own boundary."""
+    src = read("index.html")
+    css = read("styles.css")
+    # Find the section by its unique heading phrase
+    if 'where the line is' not in src:
+        bad("lane: cannot find the line section by its heading")
+        return
+    section = strip_comments(src.split('where the line is', 1)[-1].split("</section>", 1)[0])
+
+    beats = re.findall(r'<p class="beat focus-in"><b>([^<]+)</b>\s*([^<]+)</p>', section)
+    if len(beats) == 5:
+        ok("lane: five beats")
+    else:
+        bad(f"lane: expected 5 beats, found {len(beats)}. This section has been a "
+            f"checklist, a ten-row register and a set of indented pairs; each "
+            f"failed by giving the reader a shape to decode instead of prose.")
+
+    for lead, body in beats:
+        if lead.endswith("."):
+            ok(f"lane: run-in lead {lead[:32]!r}")
+        else:
+            bad(f"lane: beat lead {lead!r} is not a sentence; .beat is a run-in "
+                f"lead and prose, never a heading over a list")
+        # the section's entire job: every beat has to carry its own boundary,
+        # because nothing is drawn to mark one any more
+        if re.search(r"\b(?:never|no|cannot|until)\b", body, re.I):
+            ok(f"lane: {lead[:26]!r} states its own boundary")
+        else:
+            bad(f"lane: the beat under {lead!r} states no boundary. With no rule "
+                f"and no columns, the prose is the only place the line exists.")
+
+    # every shape this section was cut down from, kept out
+    for pat, why in [(r"\u2713|\u2714", "a tick"), (r"\u2715|\u2717|\u2718", "a cross"),
+                     (r"counter-increment:\s*lane", "a numbered register"),
+                     (r"\.lane__", "bespoke lane styling")]:
+        if re.search(pat, css) or re.search(pat, section):
+            bad(f"lane: {why} is back. The section is .beat and nothing else — "
+                f"the same component the reach and partners scenes use.")
+            break
+    else:
+        ok("lane: no ticks, no numbering, no bespoke styling")
+
+    # organisation: the phrase holds while the beats move past it. This is also
+    # what keeps the page's own thread out of the type, since spiralTarget puts
+    # a hold scene's thread down the gutter between its two columns.
+    head = src.split('where the line is', 1)[0][-300:]
+    if "scene--hold" in head and "scene--hold-r" in head:
+        ok("lane: organised as a hold scene, phrase right and beats left")
+    else:
+        bad("lane: the section is no longer a scene--hold; the phrase scrolls "
+            "away from the statements it introduces, and its thread falls back "
+            "to the pin rule that runs down the middle of the type")
+    if "data-pin" not in head:
+        ok("lane: no longer a pin, so nothing scrubs a heading off its own beats")
+    else:
+        bad("lane: data-pin is back on the line section")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
-               check_forms, check_labels, check_door, check_transition_invariants,
+               check_billing_boundaries, check_forms, check_labels, check_door,
+               check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections]:
         try:

@@ -60,6 +60,7 @@ img,svg{ display:block; max-width:100%; }
    The poster is a finished picture in its own right: if WebGL is
    missing or slow to arrive, this is what the hero looks like.
    ============================================================ */
+.door-gone .doorstage{ visibility:hidden; }   /* handed over: let the compositor drop it */
 .doorstage{ position:fixed; inset:0; z-index:0; pointer-events:none; background:#080f0b;
   opacity:var(--doorShow,1); transition:opacity .25s linear; }
 .doorstage__poster{ position:absolute; inset:0; overflow:hidden; }
@@ -399,6 +400,30 @@ img,svg{ display:block; max-width:100%; }
   text-shadow:0 1px 26px rgba(6,12,9,.8); }
 .say--after{ margin-top:26px; color:var(--ink-soft); font-size:clamp(1rem,1.3vw,1.15rem); }
 
+/* ---------- the statement in full, one tap away ----------
+   The short version above carries the whole safety point on its own; this is
+   the wording that never gets reworded, kept where it cannot cost the scene
+   seventy-five words of screen. <details> rather than the disclosure JS the
+   doors use: this is the one piece of copy on the site that exists to stop
+   somebody mistaking a student for a professional, and it has to open even if
+   no script ever runs. */
+.vow__more{ margin-top:26px; }
+.vow__more > summary{ display:inline-flex; align-items:center; gap:9px; cursor:pointer;
+  font-family:var(--sans); font-size:13px; letter-spacing:.02em; color:var(--ink-soft);
+  padding:7px 2px; list-style:none; transition:color .3s var(--ease); }
+.vow__more > summary::-webkit-details-marker{ display:none; }   /* Safari's triangle */
+.vow__more > summary::after{ content:""; width:7px; height:7px; flex:none;
+  border-right:1.2px solid currentcolor; border-bottom:1.2px solid currentcolor;
+  transform:translateY(-2px) rotate(45deg); transition:transform .35s var(--ease); }
+.vow__more[open] > summary::after{ transform:translateY(1px) rotate(-135deg); }
+.vow__more > summary:hover{ color:var(--gold); }
+.vow__more > summary:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:2px; }
+.vow__body{ padding-top:6px; }
+/* the verbatim statement reads as the document it is: sans, plain, unstyled */
+.vow__full{ max-width:66ch; margin-inline:auto; font-size:clamp(.98rem,1.2vw,1.08rem);
+  line-height:1.68; color:var(--ink-soft); text-shadow:0 1px 20px rgba(6,12,9,.8); }
+.vow__src{ margin-top:16px; font-size:12.5px; letter-spacing:.02em; color:var(--ink-faint); }
+
 .footer__ul{ border-bottom:1px solid rgba(231,197,126,.5); }
 
 /* ============================================================
@@ -417,6 +442,48 @@ img,svg{ display:block; max-width:100%; }
   .footer__grid{ grid-template-columns:1fr 1fr; gap:28px; }
   .facts{ grid-template-columns:1fr 1fr; }
   .field{ grid-column:span 12; }
+
+  /* ---------- touch targets ----------
+     Measured on a 375px viewport: twenty-one controls came in under 40px, the
+     worst of them the menu button at 30x22 — the primary navigation control on
+     a phone, and under even the 24px WCAG 2.5.8 minimum, let alone the 44px
+     Apple and Google both ask for.
+
+     Two techniques, chosen per element. Standalone controls get their hit area
+     widened with a pseudo-element, which leaves the glyph and the layout
+     untouched. Stacked links get real padding instead: expanding those with
+     pseudo-elements would make adjacent targets overlap, which trades a small
+     target for a mis-hit and is worse. */
+  .nav__tog,.tlink,.brand{ position:relative; }
+  .nav__tog::after,.tlink::after,.brand::after{ content:""; position:absolute;
+    inset:-13px -10px; }
+  /* the disclosure and the footer columns are stacked, so they grow instead */
+  .vow__more > summary{ padding-block:12px; }
+  .footer__col a{ padding-block:11px; }   /* 22px line + 22 = the full 44 */
+  .footer__ul{ display:inline-block; padding-block:9px; }
+
+  /* ---------- mobile compositing budget ----------
+     None of this is about layout; it is about how many full-screen layers a
+     phone has to re-raster per frame. The script tick measures 0.03ms, so the
+     jank was never script — it was six stacked fixed layers, four scaling
+     background images, a blend mode and an animated blur, all of which a
+     desktop GPU absorbs and a phone does not. */
+
+  /* A blend mode on a fixed full-screen layer forces the compositor to read
+     back the whole backdrop and re-composite it every frame. At 5% opacity on
+     a 375px screen this grain is not perceptible; it was pure cost. */
+  .stage__grain{ display:none; }
+
+  /* journey() stops writing transform here (see script.js), so the layers keep
+     their crop and never re-raster. will-change drops transform with it —
+     promising a layer for a property that no longer animates just pins GPU
+     memory for nothing. */
+  .stage__layer{ transform:scale(1.05); will-change:opacity; }
+
+  /* opacity and scale are compositor properties and stay. Blur is not: it
+     re-rasters the whole hero and runs a multi-pass filter, scrubbed the entire
+     190vh the hero is tall here. The type still fades and pushes away. */
+  .hero__ui{ filter:none; will-change:opacity,transform; }
 
   /* hero: stack the split headline, keep the door behind it */
   .hero{ height:190vh; }
@@ -460,4 +527,276 @@ img,svg{ display:block; max-width:100%; }
   .hold__anchor{ position:static; padding-block:0; }
   .hold__stream{ padding-block:0; }
   .scene--hold{ padding-block:50vh; }
+}
+
+/* ============================================================
+   PINNED SCENES — the scroll parks and hands over to something
+   that is not prose. Each one owns the whole viewport for its
+   duration, so the one-block-at-a-time contract holds without
+   any padding of its own: nothing else can share the screen
+   with a sticky element that fills it.
+   ============================================================ */
+.scene--pin{ display:block; min-height:auto; padding:0; height:265vh; }
+.pin__sticky{ position:sticky; top:0; height:100svh; z-index:3;
+  display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  align-items:center; gap:clamp(24px,5vw,80px);
+  max-width:var(--container); margin-inline:auto; padding:0 var(--pad); }
+.pin__art{ position:relative; display:grid; place-items:center; height:min(64vh,540px); }
+
+/* ---------- the lines, revealed line by line out of a mask ----------
+   They used to arrive blurred, which reads as soft focus rather than
+   composition. A line mask is the editorial version of the same beat: each
+   line is clipped to its own box and travels up into place, staggered, so the
+   sentence assembles instead of resolving.
+
+   Three details do the work, and all three are the ones normally got wrong:
+
+   1. `overflow:clip`, not `hidden`. `hidden` makes a scroll container, so a
+      focused element inside can be scrolled by the browser and the mask
+      silently gains a scroll offset. `clip` cannot scroll at all.
+   2. Descenders. Clipping at the content edge shears the tails off g, y and p.
+      The fix is bottom padding to give them room, pulled straight back out
+      with an equal negative margin so the line box measures the same.
+   3. The parked position has to clear the padding too. Travelling 100% leaves
+      the glyph tops showing through the descender allowance; the hidden state
+      is 100% PLUS that allowance, which is exactly the bottom clip edge. */
+.pin__say{ display:grid; gap:clamp(20px,3.4vh,38px); align-content:center; }
+/* Bigger and tighter than body copy, but nowhere near the reference's 0.9
+   leading — that belongs to 96px display type. Scaled down to reading sizes it
+   is just collision. What carries over is the intent: set deliberately tight
+   rather than at whatever the browser defaults to. */
+.pin__line{ --desc:.16em;
+  font-size:clamp(1.25rem,2.05vw,1.92rem); line-height:1.26; letter-spacing:-.018em;
+  color:var(--cream); text-shadow:0 1px 22px rgba(6,12,9,.8);
+  transition:opacity .7s var(--ease-out); }
+.pin__line > span{ display:block; overflow:clip;
+  padding-bottom:var(--desc); margin-bottom:calc(var(--desc) * -1); }
+.pin__line > span > span{ display:block;
+  transform:translateY(calc(100% + var(--desc)));
+  transition:transform .95s var(--ease-out); }
+/* the stagger: each line leaves a beat after the one above it */
+.pin__line > span:nth-child(2) > span{ transition-delay:.09s; }
+.pin__line > span:nth-child(3) > span{ transition-delay:.18s; }
+.pin__line.on > span > span{ transform:none; }
+.pin__line.spent{ opacity:.3; }
+.pin__line b{ font-weight:inherit; color:var(--gold); }
+
+/* ---------- the letter, translating itself ----------
+   Lineage: the odometer reel on the Leo Cussen Centre for Law site
+   (leocussen.edu.au), an Awwwards nominee, where each digit of a statistic is
+   a vertical strip that rolls and settles. Two details there are what make it
+   read as engineering rather than as a gimmick, and both are carried over:
+
+   1. THE WINDOW'S WIDTH CANNOT DEPEND ON WHAT IS INSIDE IT. Theirs buys that
+      with a `visibility:hidden` sizer copy, because their reel is inline and
+      its width follows its content. This one buys it structurally instead —
+      block window in a fixed grid column, strip absolutely positioned — which
+      is the same guarantee with no hidden markup. Measured both ways before
+      dropping the sizer: 520px either way. Copying it regardless would have
+      been dead weight that looked like craft.
+   2. THE WINDOW IS FEATHERED WHILE MOVING AND CRISP WHEN STILL. Theirs fades a
+      gradient overlay in and out at the window edges. Ours cannot copy that
+      literally — an overlay painted in a flat colour would smear against the
+      landscape — so it feathers the MASK instead, which fades the content to
+      transparent whatever is behind it. Same intent, correct mechanism here.
+
+   What it replaced was a static plate of a denial notice: an accurate picture
+   of a bill, which is one order of thought short of the point. The claim this
+   section makes is that the letter is written in a language built for somebody
+   else. A picture of that language states it; a reel that rolls the language
+   into what it means DOES it, and lands the section on a door. */
+.reel{ width:min(100%,520px); display:grid; gap:clamp(20px,3.4vh,38px); }
+.reel__row{ display:grid; gap:9px;
+  /* each row's own 0→1, opened out of the section's --t. .22 of the pin is a
+     roll slow enough to read the officialese going past. */
+  --k:clamp(0, calc((var(--t,0) - var(--at)) / .22), 1); }
+.reel__k{ font-size:9.5px; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(252,254,247,.42); }
+
+/* the window. Height is one line exactly, and the sizer is what gives it width */
+/* --line is in rem/vw, NEVER em. A custom property is substituted as tokens
+   and re-resolved per element, so `1.42em` means one thing on the window and a
+   smaller thing on the .66em officialese spans — the strip's steps and the
+   window's height stop agreeing and the roll walks off the end of the strip.
+   Same trap the envelope had with percentage basis: one basis, declared once. */
+.reel__win{ --line:clamp(2.05rem,3.3vw,3.05rem);
+  --feather:min(calc(var(--k) * 7), calc((1 - var(--k)) * 7), 1);
+  position:relative; display:block; overflow:hidden;
+  font-size:clamp(1.28rem,2.15vw,2.05rem); height:var(--line);
+  -webkit-mask-image:linear-gradient(180deg, transparent 0,
+    #000 calc(var(--feather) * 19%), #000 calc(100% - var(--feather) * 19%), transparent 100%);
+  mask-image:linear-gradient(180deg, transparent 0,
+    #000 calc(var(--feather) * 19%), #000 calc(100% - var(--feather) * 19%), transparent 100%); }
+
+/* the strip: n lines stacked, rolled by (n-1) steps across the row's own --k */
+.reel__strip{ position:absolute; inset:0 auto auto 0; display:block; white-space:nowrap;
+  transform:translateY(calc(var(--k) * (var(--n,4) - 1) * var(--line) * -1)); }
+/* every line is the same box whatever size its type is, so the step is exact */
+.reel__strip > span{ display:flex; align-items:center; height:var(--line); }
+/* the two voices, and the whole point is that they do not look alike: the
+   officialese is small, tracked, shouting in a language nobody asked for; what
+   it means is set in the face the rest of the page speaks in */
+.reel__strip > span:not(.reel__plain){ font-family:var(--sans); font-size:.62em;
+  letter-spacing:.14em; text-transform:uppercase; color:rgba(252,254,247,.5); }
+.reel__plain{ font-family:var(--display); color:var(--cream); letter-spacing:-.01em;
+  text-shadow:0 1px 22px rgba(6,12,9,.8); }
+.reel__row--turn .reel__plain{ color:var(--gold); }
+
+/* the hairline under each row draws itself as that row lands */
+.reel__row::after{ content:""; height:1px; background:rgba(252,254,247,.16);
+  transform-origin:left center; transform:scaleX(var(--k,0)); }
+.reel__row--turn::after{ background:var(--gold); }
+
+/* ---------- the line you cross ----------
+   Four shapes, and each one failed differently. A tick-and-cross checklist was
+   the most generic possible form. A numbered register in two halves was
+   handsomer but still a taxonomy — ten items the reader must sort into buckets
+   before any of it means anything. Cutting to four paired sentences fixed the
+   content. Making it a hold scene fixed the organisation.
+
+   This last change removes the section's CSS entirely. Every item is a .beat:
+   a bolded run-in lead and a short description, exactly as the reach and
+   partners scenes do it. The indent, the gold dash, the staged crossing and
+   their reduced-motion resets are all gone, because the boundary belongs in the
+   prose. Each beat states its own — "never reads it back to you", "can never
+   tell you whether you qualify" — so the line is made four times over instead
+   of drawn once. There is nothing left here to style. */
+
+/* ---------- pinned scenes, narrow and reduced-motion ---------- */
+@media (max-width:900px){
+  .scene--pin{ height:auto; }
+  .pin__sticky{ position:static; height:auto; grid-template-columns:minmax(0,1fr);
+    padding-block:50vh; gap:clamp(26px,5vh,46px); }
+  /* the notice sets its own height here; a fixed art box crops it */
+  .pin__art{ height:auto; }
+  /* no pin, so nothing scrubs: every line is simply in place, masks open */
+  .pin__line{ opacity:1; }
+  .pin__line.spent{ opacity:1; }
+  .pin__line > span > span{ transform:none; }
+  .reel{ width:100%; }
+  /* the pin is released here, so nothing scrubs --t: every reel has to render
+     already landed on the plain meaning. Leaving it at 0 shows a phone four
+     lines of untranslated officialese, which is the exact opposite of what the
+     section is for. The bureaucratic label above each one keeps the contrast. */
+  .reel__row{ --k:1; }
+}
+@media (prefers-reduced-motion:reduce){
+  .scene--pin{ height:auto; }
+  .pin__sticky{ position:static; height:auto; padding-block:50vh; }
+  .pin__line{ opacity:1 !important; }
+  .pin__line > span > span{ transform:none !important; }
+  /* every reel renders landed: the plain meaning, not the officialese */
+  .reel__row{ --k:1; }
+}
+
+/* ============================================================
+   THE DOORS (#work) — the four places a problem actually goes,
+   centred and alone on the screen.
+
+   This replaced a scroll-drawn fan diagram. The diagram had two
+   problems the scroll could not fix: four labels on stalks say
+   nothing about what is behind any of them, and every wire was
+   re-tweened on every frame, so any scroll stutter was visible
+   as the drawing itself stuttering. A list you operate costs
+   one attribute change, has room for a sentence under each door,
+   and is the reader's tempo instead of the scroll's.
+
+   TWO STATES, TWO TRIGGERS, and they do not overlap:
+   hover only makes the header breathe a little taller, which is
+   an invitation; the description opens on a click and nothing
+   else. Revealing prose on hover means it arrives when the
+   pointer is only passing through and vanishes the moment you
+   move toward it, so it can never actually be read.
+
+   Nothing is open until asked. Because the section's height is
+   its content plus 100vh of padding, the block sits at its
+   padding-top with no free space to centre in — so opening a row
+   pushes only what is below it and never lifts the row you
+   clicked. Between rows it does not move at all: every blurb
+   reserves the same three lines, and the closing row shrinks on
+   exactly the curve the opening one grows on, so h·f + h·(1−f)
+   = h at every frame of the swap.
+   ============================================================ */
+.scene--ways{ justify-content:center; text-align:center; }
+.ways__wrap{ position:relative; z-index:3; width:100%; max-width:min(780px,100%); margin-inline:auto; }
+.ways__title{ font-size:clamp(1.9rem,3.5vw,3rem); max-width:20ch; margin-inline:auto; }
+.ways{ margin-top:clamp(30px,5vh,54px); text-align:left; }
+.ways__foot{ margin-top:clamp(28px,4vh,46px); display:flex; justify-content:center; }
+
+.ways__item{ border-top:1px solid rgba(252,254,247,.16); }
+.ways__item:last-child{ border-bottom:1px solid rgba(252,254,247,.16); }
+/* --row-pad is the whole hover affordance: the header alone breathes a little
+   taller under the pointer. It is a layout animation on purpose — nothing else
+   makes the rows below give way, which is the movement being asked for — and it
+   is four elements, only while a pointer is actually over one. */
+.ways__row{ --row-pad:clamp(15px,2.1vh,23px);
+  width:100%; display:flex; align-items:center; justify-content:space-between; gap:22px;
+  padding:var(--row-pad) 2px; font:inherit; color:var(--cream); text-align:left;
+  background:none; border:0; cursor:pointer;
+  transition:padding .4s var(--ease-out); }
+.ways__item:hover .ways__row,
+.ways__item:focus-within .ways__row{ padding-block:calc(var(--row-pad) + 8px); }
+.ways__row:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:2px; }
+.ways__name{ font-family:var(--display); font-weight:500; letter-spacing:-.015em; line-height:1.14;
+  font-size:clamp(1.16rem,2vw,1.72rem); text-shadow:0 1px 22px rgba(6,12,9,.75);
+  transition:color .35s var(--ease); }
+
+/* the sign: two bars, and the upright one lies down into the horizontal one.
+   A + that rotates to a − is one transform; swapping glyphs is a repaint you
+   can see land. */
+.ways__sign{ position:relative; flex:none; width:17px; height:17px; color:var(--ink-faint);
+  transition:color .35s var(--ease); }
+.ways__sign::before,.ways__sign::after{ content:""; position:absolute; left:0; right:0; top:50%;
+  height:1.4px; background:currentColor; transform:translateY(-50%);
+  transition:transform .5s var(--ease-out); }
+.ways__sign::after{ transform:translateY(-50%) rotate(90deg); }
+
+/* hover lights the row up; only the open one keeps the − */
+.ways__item:hover .ways__name,
+.ways__item:focus-within .ways__name,
+.ways__row[aria-expanded="true"] .ways__name{ color:var(--gold); }
+.ways__item:hover .ways__sign,
+.ways__item:focus-within .ways__sign,
+.ways__row[aria-expanded="true"] .ways__sign{ color:var(--gold); }
+.ways__row[aria-expanded="true"] .ways__sign::after{ transform:translateY(-50%) rotate(0deg); }
+
+/* 0fr → 1fr is the only height animation that does not thrash layout, and
+   visibility on the same duration keeps a closed blurb out of the a11y tree
+   without cutting the reveal short (it flips at the end going out, and at the
+   start coming in, which is exactly the timing this wants).
+
+   The default here is OPEN, and .ways--js is what closes it. With the script
+   gone this has to degrade to four headings over four readable descriptions —
+   a disclosure whose only trigger is a click is content nobody can reach if
+   the click handler never lands. script.js adds the class and the
+   aria-expanded attributes in the same breath. */
+.ways__body{ display:grid; grid-template-rows:1fr;
+  transition:grid-template-rows .55s var(--ease-out), visibility .55s; }
+.ways__body > div{ overflow:hidden; }
+.ways--js .ways__body{ grid-template-rows:0fr; visibility:hidden; }
+.ways--js .ways__row[aria-expanded="true"] + .ways__body{ grid-template-rows:1fr; visibility:visible; }
+/* the one frame where script.js closes what the markup left open */
+.ways--boot .ways__body,.ways--boot .ways__blurb{ transition:none; }
+
+.ways__blurb{ padding-bottom:clamp(18px,2.6vh,26px);
+  font-size:clamp(.98rem,1.15vw,1.06rem); line-height:1.62; color:var(--ink-soft);
+  text-shadow:0 1px 20px rgba(6,12,9,.8);
+  /* the measure is capped in ch, and 44ch is narrower than this column gets
+     before the layout stacks — so the cap always binds and the line count stops
+     depending on the viewport. Without it one blurb takes a fourth line around
+     1150px while the others keep three, and the swap regains its wobble in
+     exactly the band nobody tests. Every blurb is written to fit these three. */
+  max-width:44ch;
+  min-height:calc(1.62em * 3 + clamp(18px,2.6vh,26px));
+  opacity:1; transform:none;
+  transition:opacity .42s var(--ease-out) .06s, transform .42s var(--ease-out) .06s; }
+.ways--js .ways__blurb{ opacity:0; transform:translateY(7px); }
+.ways--js .ways__row[aria-expanded="true"] + .ways__body .ways__blurb{ opacity:1; transform:none; }
+
+/* ---------- the doors, narrow ---------- */
+@media (max-width:900px){
+  .ways__title{ max-width:100%; }
+  /* tap is the only pointer here, so a row opens to whatever it needs and
+     there is no column beside it left to push around */
+  .ways__blurb{ min-height:0; }
 }

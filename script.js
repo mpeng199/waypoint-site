@@ -9,6 +9,11 @@
   "use strict";
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* Phones pay for this page in compositing, not in script: the tick itself
+     measures 0.03ms. What costs is how many full-screen layers have to be
+     re-rastered per frame. Everything gated on this query is a layer that
+     stops being repainted below 900px. */
+  var narrow = window.matchMedia("(max-width:900px)");
   var clamp = function (v, a, b) { return Math.min(b, Math.max(a, v)); };
   var $ = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
@@ -104,6 +109,10 @@
     var show = Math.max(heroShow, closeShow);
 
     root.style.setProperty("--doorShow", show.toFixed(3));
+    /* opacity:0 still keeps a full-screen layer — a WebGL canvas and six
+       gradient divs — alive in the compositor. visibility lets it be skipped,
+       and flips back the instant the closing scene brings the door round. */
+    root.classList.toggle("door-gone", show < 0.001);
     root.style.setProperty("--worldShow", ramp(t, 0.96, 1).toFixed(3));
 
     // a brief warm swell across the threshold, not a white flash: it only has
@@ -135,9 +144,18 @@
     if (reduced) return;
     var P = progress(), N = layers.length;
     var pos = P * (N - 1);
+    /* Opacity is a compositor property: crossfading the four landscapes is
+       nearly free and it is the part that carries the journey. The slow zoom is
+       not — changing scale on a background-image layer re-rasters it, and there
+       are four of them at full screen. On a phone that is the single biggest
+       cost on the page, and the movement it buys is barely perceptible at
+       375px. The reduced-motion path has always rendered these static, so a
+       still backdrop is a rendering this design already accepts. */
+    var zoom = !narrow.matches;
     layers.forEach(function (l, i) {
       l.style.opacity = clamp(1 - Math.abs(pos - i), 0, 1);
-      l.style.transform = "scale(" + (1.05 + P * 0.5 + i * 0.015) + ")";
+      if (zoom) l.style.transform = "scale(" + (1.05 + P * 0.5 + i * 0.015) + ")";
+      else if (l.style.transform) l.style.transform = "";   // crossing the breakpoint
     });
   }
 
@@ -156,6 +174,15 @@
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
   function sresize() {
     if (!spiral) return;
+    /* .spiral is display:none below 900px. Sizing it anyway allocates a
+       backing store at device pixel ratio — several megabytes of GPU memory for
+       something nobody can see, plus a full-surface clearRect every frame.
+       Dropping sctx also makes drawSpiral bail on its first line. */
+    if (narrow.matches) {
+      if (spiral.width) { spiral.width = 0; spiral.height = 0; }
+      sctx = null;
+      return;
+    }
     sw = window.innerWidth; sh = window.innerHeight;
     spiral.width = sw * dpr; spiral.height = sh * dpr;
     spiral.style.width = sw + "px"; spiral.style.height = sh + "px";
@@ -173,6 +200,14 @@
       var r = scenes[i].getBoundingClientRect();
       if (r.top > mid || r.bottom < mid) continue;
       var c = scenes[i].classList;
+      if (c.contains("scene--pin")) return { cx: 0.5, amp: 0.012, turn: 1.35 };
+      /* two columns, same as a hold scene: the thread narrows to the gutter
+         rather than swinging through the middle of the composition */
+      if (c.contains("scene--ways")) return { cx: 0.5, amp: 0.018, turn: 1.2 };
+      /* the line section is a hold scene now, so this is what steers its
+         thread: down the gutter between the two columns, never through the
+         type. It used to need a scene--lane case above scene--pin for exactly
+         that reason. */
       if (c.contains("scene--hold")) return { cx: 0.5, amp: 0.020, turn: 1.15 };
       if (c.contains("scene--center")) return { cx: 0.5, amp: 0.048, turn: 0.72 };
       if (c.contains("scene--left")) return { cx: 0.74, amp: 0.082, turn: 0.54 };
@@ -244,7 +279,7 @@
   }
 
   /* ---------- reading veil: one fixed layer, opacity follows dense text ---------- */
-  var denseScenes = $$(".scene--hold, .scene--vow, .scene--wide");
+  var denseScenes = $$(".scene--hold, .scene--vow, .scene--wide, .scene--pin, .scene--ways");
   var veilNow = 0;
   function readVeil() {
     var vh = window.innerHeight, want = 0;
@@ -258,9 +293,68 @@
     root.style.setProperty("--readVeil", veilNow.toFixed(3));
   }
 
+  /* ---------- pinned scenes ----------
+     Each pinned section is taller than the viewport and holds a sticky child
+     that fills it. Scrolling through the surplus height scrubs --t from 0 to 1,
+     which is what actually opens the envelope, draws the wires and slides the
+     lane. Lines arrive on their own thresholds and then stay, dimmed, so a
+     reader who stops halfway can still see the beat they came from. */
+  var pins = $$("[data-pin]").map(function (el) {
+    return { el: el, lines: $$(".pin__line", el) };
+  });
+
+  function pinFrame() {
+    for (var i = 0; i < pins.length; i++) {
+      var p = pins[i], r = p.el.getBoundingClientRect(), vh = window.innerHeight;
+      var span = p.el.offsetHeight - vh;
+      var t = span > 0 ? clamp(-r.top / span, 0, 1) : (r.top <= 0 ? 1 : 0);
+      p.el.style.setProperty("--t", t.toFixed(4));
+
+      /* a line is on once its threshold is passed, and spent once the next arrives */
+      for (var j = 0; j < p.lines.length; j++) {
+        var at = parseFloat(p.lines[j].getAttribute("data-at")) || 0;
+        var next = j + 1 < p.lines.length ? parseFloat(p.lines[j + 1].getAttribute("data-at")) : 2;
+        p.lines[j].classList.toggle("on", t >= at);
+        p.lines[j].classList.toggle("spent", t >= next);
+      }
+    }
+  }
+
+  /* ---------- the doors: click one open ----------
+     Hover is handled entirely in CSS and only makes the header breathe; the
+     description is a click, and one row is open at a time. The markup ships
+     with no aria-expanded and the panels open, so a visitor with the script
+     blocked gets four readable descriptions rather than four names and no way
+     to reach what is under them. Taking the list over means both at once:
+     add .ways--js, which closes the panels, and write the attribute that says
+     so. Clicking the open row closes it, so the section can be put back to
+     rest without reloading. */
+  $$(".ways").forEach(function (list) {
+    var rows = $$(".ways__row", list);
+    if (!rows.length) return;
+    rows.forEach(function (row) { row.setAttribute("aria-expanded", "false"); });
+    /* the panels are open in the markup, so taking them over has to be a cut,
+       not a transition: without --boot the reader watches four descriptions
+       animate shut on load. Add both classes, force the closed state to be
+       computed while transitions are off, then hand them back — the value is
+       already 0fr by then, so nothing starts. Two forced reflows rather than a
+       rAF, because a backgrounded tab never fires one. */
+    list.classList.add("ways--js", "ways--boot");
+    void list.offsetHeight;
+    list.classList.remove("ways--boot");
+    void list.offsetHeight;
+    rows.forEach(function (row) {
+      row.addEventListener("click", function () {
+        var wasOpen = row.getAttribute("aria-expanded") === "true";
+        rows.forEach(function (other) { other.setAttribute("aria-expanded", "false"); });
+        if (!wasOpen) row.setAttribute("aria-expanded", "true");
+      });
+    });
+  });
+
   /* ---------- tubelight nav ---------- */
   var lamp = $("#navLamp");
-  var navSections = ["work", "partners", "students"].map(function (id) {
+  var navSections = ["bills", "work", "students", "partners"].map(function (id) {
     return { id: id, el: document.getElementById(id), link: $('.nav__links a[href="#' + id + '"]') };
   }).filter(function (s) { return s.el && s.link; });
 
@@ -286,7 +380,7 @@
   }
 
   /* ---------- one loop drives everything scroll-linked ---------- */
-  function tick() { doorFrame(); chrome(); journey(); navActive(); readVeil(); spiralFade(); drawSpiral(); }
+  function tick() { doorFrame(); chrome(); journey(); pinFrame(); navActive(); readVeil(); spiralFade(); drawSpiral(); }
   /* exposed so the scroll choreography can be driven deterministically in tests,
      where requestAnimationFrame does not run (headless tabs report hidden) */
   window.__waypointTick = tick;
