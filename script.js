@@ -91,6 +91,18 @@
     document.addEventListener("keydown", function (e) {
       if (menuOpen && (e.key === "Escape" || e.key === "Esc")) { e.preventDefault(); setMenu(false); }
     });
+    /* tap the dimmed page to close, which is the gesture a panel implies and
+       the one people reach for before they look for the X. The scrim is the
+       only thing outside the panel that can be hit while it is open — it
+       covers the viewport — so anything landing outside the drawer and the
+       button is that tap. Capture phase, so it closes before the page's own
+       anchor handler can act on whatever is underneath. */
+    document.addEventListener("click", function (e) {
+      if (!menuOpen) return;
+      if (e.target.closest(".nav__links, .nav__tog")) return;
+      e.preventDefault(); e.stopPropagation();
+      setMenu(false);
+    }, true);
     /* the drawer is a max-width:900px element; crossing back to a desktop
        width leaves the body locked and the class on with nothing to show it */
     narrow.addEventListener("change", function (e) { if (!e.matches) setMenu(false); });

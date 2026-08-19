@@ -1072,6 +1072,27 @@ def check_mobile_reads():
         bad("drawer: the closed drawer is only translated off-screen, so its "
             "links keep tabindex 0 and a keyboard user tabs into a menu that "
             "is not open")
+    # a panel, not a takeover — and the scrim is what earns the panel. Without
+    # it the strip of page beside the drawer shows a severed wordmark and two
+    # letters of the headline at full contrast, which is what drove it to
+    # full-screen the first time.
+    if re.search(r"\.nav__links\{[^}]*width:min\(", narrow):
+        ok("drawer: a bounded panel rather than the whole screen")
+    else:
+        bad("drawer: .nav__links has no bounded width — it covers the entire "
+            "viewport instead of sitting over the page as a panel")
+    if re.search(r"\.menu-open body::after\{[^}]*pointer-events:auto", css) and \
+       re.search(r"body::after\{[^}]*position:fixed", css):
+        ok("drawer: a scrim dims the page beside the panel and takes the tap")
+    else:
+        bad("drawer: no scrim. The page beside the panel reads at full "
+            "contrast, showing a wordmark cut in half by the panel edge")
+    if re.search(r'e\.target\.closest\("\.nav__links, \.nav__tog"\)', js):
+        ok("drawer: tapping the dimmed page closes it")
+    else:
+        bad("drawer: the scrim swallows taps without closing the menu, which "
+            "is the first gesture anyone tries on a panel")
+
     # 3. a fixed layer over a document that is still scrolling underneath it
     if "lenis.stop()" in js and 'style.overflow = open ? "hidden"' in js:
         ok("drawer: opening it stops the page, Lenis included")

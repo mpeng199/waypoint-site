@@ -455,32 +455,64 @@ img,svg{ display:block; max-width:100%; }
   :root{ --gap:clamp(84px,20svh,168px); }
 
   /* ---------- the drawer ----------
-     At 82vw it left a 68px strip of page down the left edge, through which you
-     read the left half of the wordmark and the first two letters of the
-     headline. A drawer either covers the page or is a panel over it; a sliver
-     of severed type is neither. It takes the screen.
+     A panel over the page, not a takeover. What made the panel unreadable
+     before was not its width: it was that the 68px of page left beside it
+     showed the left half of the wordmark and the first two letters of the
+     headline at full contrast, so the eye read severed type rather than
+     "there is a page back there". The scrim below is what fixes that, and with
+     it the drawer can be the width it should have been all along.
 
      visibility is the other half. transform alone moves it off-screen while
      leaving it visible to everything that is not the eye: the four links kept
      tabindex 0, so a keyboard or switch user tabbed straight into a menu that
      was not open and could not be seen. Transitioned alongside the transform so
      it flips at the far end going out and immediately coming in. */
-  .nav__links{ position:fixed; inset:0; width:auto; background:rgba(19,35,26,.98);
+  .nav__links{ position:fixed; inset:0 0 0 auto; width:min(78vw,320px);
+    background:rgba(19,35,26,.98);
     backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
     flex-direction:column; align-items:flex-start; justify-content:center;
-    padding:0 clamp(28px,9vw,56px); gap:clamp(8px,2.4svh,24px);
+    padding:0 clamp(24px,7vw,40px); gap:clamp(8px,2.4svh,24px);
+    border-left:1px solid rgba(252,254,247,.14);
+    box-shadow:-30px 0 60px -30px rgba(0,0,0,.7);
     overscroll-behavior:contain;
     transform:translateX(100%); visibility:hidden;
     transition:transform .45s var(--ease), visibility 0s linear .45s; z-index:90; }
   .nav__links.open{ transform:none; visibility:visible; transition:transform .45s var(--ease), visibility 0s; }
-  /* the links are the only tap targets in a full screen of space: 56px tall */
-  .nav__links a{ font-size:clamp(1.15rem,5.4vw,1.5rem); width:100%; padding:clamp(11px,1.8svh,16px) 0; border-radius:4px; }
+  /* the links are the only tap targets in the panel: 48px+ tall */
+  .nav__links a{ font-size:clamp(1.1rem,4.8vw,1.4rem); width:100%; padding:clamp(11px,1.8svh,16px) 0; border-radius:4px; }
+  /* opening the panel moves focus to this link, which is right for a keyboard
+     and invisible to a thumb: :focus-visible is not matched when focus moves
+     programmatically after touch or mouse input, so the ring appears for the
+     people it is for. Gold to match every other control on the site. */
+  .nav__links a:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  /* ---------- the scrim ----------
+     It hangs off body rather than .nav on purpose. .nav is the drawer's own
+     offset parent and gets its backdrop-filter back the instant .menu-open
+     comes off, which would snap a still-fading scrim into the 77px bar on the
+     way out. body has no transform or filter, so a fixed pseudo-element on it
+     is the viewport at every frame of the transition.
+
+     z-index sits above the page (sections and footer are 3, the threshold 4)
+     and below .nav's 100, so the whole header — and the drawer inside it —
+     stays over the top. It carries the tap-to-close target too. */
+  /* .82, not the .6 a scrim usually wants: the point is not to dim the page
+     but to stop the strip beside the panel reading as text. At .66 the cut
+     headline was still plainly legible — "A bi", "A cla" — which is the exact
+     severed-type problem the scrim exists to solve, only greyer. */
+  body::after{ content:""; position:fixed; inset:0; z-index:50;
+    background:rgba(6,12,9,.82); opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity .45s var(--ease), visibility 0s linear .45s; }
+  .menu-open body::after{ opacity:1; visibility:visible; pointer-events:auto;
+    transition:opacity .45s var(--ease), visibility 0s; }
   .nav__tog{ display:block; z-index:95; position:relative; }
-  /* the drawer is opaque and full-screen, so the header would disappear behind
-     it and leave an X alone in an empty field. Lifting the wordmark over it
-     keeps the bar intact while the menu is open, which is also the only thing
-     on that screen that says whose menu it is. */
-  .brand{ z-index:95; }
+  /* the wordmark runs from 22px to about 211px and the panel's left edge lands
+     at 75px, so at any panel width wide enough to hold "Bills & denials" the
+     two cross. Lifting it over the panel puts half a wordmark on the page and
+     half on the drawer; leaving it under cuts it in the same place. It steps
+     out for the duration instead, which is what the X is there to undo. */
+  .menu-open .brand{ opacity:0; pointer-events:none; }
+  .brand{ transition:opacity .3s var(--ease); }
 
   /* ---------- why the bar drops its blur while the menu is open ----------
      backdrop-filter makes an element the containing block for any
