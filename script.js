@@ -57,17 +57,43 @@
   var nav = $(".nav");
   function chrome() { if (nav) nav.classList.toggle("stuck", (window.scrollY || 0) > 40); }
 
-  /* ---------- mobile menu ---------- */
+  /* ---------- mobile menu ----------
+     One setter, because there were three ways to close this and each of them
+     open-coded the same three lines. What none of them did was stop the page:
+     the drawer is a fixed layer over a document that was still scrolling
+     underneath it, so a swipe anywhere on an open menu scrolled the journey
+     behind it and left you somewhere else when it shut. Lenis has to be told
+     as well as the body — it drives the scroll itself, and an overflow:hidden
+     body does not stop it.
+
+     Escape closes it, and focus makes the round trip: into the drawer when it
+     opens, back onto the button that opened it when it shuts. Without the
+     return, closing the menu drops the caret at the top of the document and a
+     keyboard user starts the page again. */
   var tog = $(".nav__tog"), links = $(".nav__links");
+  var menuOpen = false;
+  function setMenu(open) {
+    if (!tog || !links || open === menuOpen) return;
+    menuOpen = open;
+    links.classList.toggle("open", open);
+    tog.classList.toggle("open", open);
+    tog.setAttribute("aria-expanded", String(open));
+    root.classList.toggle("menu-open", open);
+    document.body.style.overflow = open ? "hidden" : "";
+    root.style.overflow = open ? "hidden" : "";
+    if (lenis) { if (open) lenis.stop(); else lenis.start(); }
+    if (open) { var first = links.querySelector("a"); if (first) first.focus(); }
+    else if (document.activeElement && links.contains(document.activeElement)) tog.focus();
+  }
   if (tog && links) {
-    tog.addEventListener("click", function () {
-      var open = links.classList.toggle("open");
-      tog.classList.toggle("open", open);
-      tog.setAttribute("aria-expanded", String(open));
+    tog.addEventListener("click", function () { setMenu(!menuOpen); });
+    links.addEventListener("click", function (e) { if (e.target.closest("a")) setMenu(false); });
+    document.addEventListener("keydown", function (e) {
+      if (menuOpen && (e.key === "Escape" || e.key === "Esc")) { e.preventDefault(); setMenu(false); }
     });
-    links.addEventListener("click", function (e) {
-      if (e.target.closest("a")) { links.classList.remove("open"); tog.classList.remove("open"); tog.setAttribute("aria-expanded", "false"); }
-    });
+    /* the drawer is a max-width:900px element; crossing back to a desktop
+       width leaves the body locked and the class on with nothing to show it */
+    narrow.addEventListener("change", function (e) { if (!e.matches) setMenu(false); });
   }
 
   /* ============================================================
@@ -79,9 +105,26 @@
   var thresh = $(".threshold");
   var doorLive = false;
 
+  /* ---------- a viewport height that does not flinch ----------
+     On a phone the address bar slides away as you scroll and slides back as you
+     reverse, and each move fires resize and changes innerHeight by 60-100px.
+     Anything that divides by it therefore jumps mid-gesture: heroT's span is
+     ~1200px, so the door's whole pass-through shifted about 8% every time the
+     bar moved, in the middle of the one animation the page opens on.
+
+     So the height is sampled once and only re-sampled when the WIDTH changes,
+     which is the only resize a phone can make that is really a new layout —
+     an orientation change or a desktop window drag. */
+  var vhStable = window.innerHeight, vwStable = window.innerWidth;
+  function viewportChanged() {
+    if (window.innerWidth === vwStable) return false;
+    vwStable = window.innerWidth; vhStable = window.innerHeight;
+    return true;
+  }
+
   function heroT() {
     if (!hero) return 1;
-    var span = hero.offsetHeight - window.innerHeight;
+    var span = hero.offsetHeight - vhStable;
     if (span <= 0) return (window.scrollY || 0) > 0 ? 1 : 0;
     return clamp(((window.scrollY || 0) - hero.offsetTop) / span, 0, 1);
   }
@@ -230,15 +273,16 @@
   var openNow = 0;
 
   /* and it only exists while you are actually moving */
-  var spiralAlpha = 0, lastMoveAt = -1e9, lastY = window.scrollY || 0;
+  var spiralAlpha = 0, spiralWant = 0, lastMoveAt = -1e9, lastY = window.scrollY || 0;
   function spiralFade() {
     var y = window.scrollY || 0;
     if (Math.abs(y - lastY) > 0.5) { lastMoveAt = performance.now(); lastY = y; }
     openNow += (closingRoom() - openNow) * (reduced ? 1 : 0.08);
     var leaving = 1 - ramp(openNow, 0.10, 0.62);
-    if (reduced) { spiralAlpha = leaving; }
+    if (reduced) { spiralWant = spiralAlpha = leaving; }
     else {
       var want = (performance.now() - lastMoveAt < 700 ? 1 : 0) * leaving;
+      spiralWant = want;
       spiralAlpha += (want - spiralAlpha) * 0.07;
     }
     root.style.setProperty("--spiralShow", spiralAlpha.toFixed(3));
@@ -280,7 +324,7 @@
 
   /* ---------- reading veil: one fixed layer, opacity follows dense text ---------- */
   var denseScenes = $$(".scene--hold, .scene--vow, .scene--wide, .scene--pin, .scene--ways");
-  var veilNow = 0;
+  var veilNow = 0, veilTarget = 0;
   function readVeil() {
     var vh = window.innerHeight, want = 0;
     for (var i = 0; i < denseScenes.length; i++) {
@@ -289,6 +333,7 @@
       var seen = Math.min(r.bottom, vh) - Math.max(r.top, 0);
       want = Math.max(want, clamp(seen / (vh * 0.55), 0, 1));
     }
+    veilTarget = want;
     veilNow += (want - veilNow) * (reduced ? 1 : 0.09);
     root.style.setProperty("--readVeil", veilNow.toFixed(3));
   }
@@ -379,24 +424,59 @@
     }
   }
 
-  /* ---------- one loop drives everything scroll-linked ---------- */
+  /* ---------- one loop drives everything scroll-linked ----------
+     It used to run flat out for the life of the page: every frame, forever,
+     whether or not anything had changed. That is 11 forced layouts and ~1.1ms
+     of main thread per frame on a desktop and several times that on a phone,
+     spent for nothing the moment the reader stops to actually read — which on
+     this page is most of the time. It also keeps the CPU out of idle, which is
+     the part a battery notices.
+
+     Everything here is either scroll-driven or a lerp settling toward a
+     target, so the loop now asks whether it is still needed and stops when it
+     is not. Scroll, resize and the door handing over all wake it. The door
+     keeps its own loop (assets/door.js) and is unaffected: tick only hands it
+     a value, it decides its own frames. */
+  var SETTLE = 0.0015, looping = false;
+  function busy() {
+    if (performance.now() - lastMoveAt < 900) return true;        // still scrolling, or just stopped
+    if (Math.abs(veilTarget - veilNow) > SETTLE) return true;      // reading veil settling
+    if (Math.abs(spiralWant - spiralAlpha) > SETTLE) return true;  // thread fading
+    if (Math.abs(closingRoom() - openNow) > SETTLE) return true;   // closing scene opening out
+    return false;
+  }
   function tick() { doorFrame(); chrome(); journey(); pinFrame(); navActive(); readVeil(); spiralFade(); drawSpiral(); }
   /* exposed so the scroll choreography can be driven deterministically in tests,
      where requestAnimationFrame does not run (headless tabs report hidden) */
   window.__waypointTick = tick;
+  /* and the loop's own state, for the same reason: in a tab that never fires a
+     frame there is no way to observe whether the loop idles and wakes except to
+     ask it. busy() is the whole stop condition; looping says whether a frame is
+     already owed, which is what makes wake() cheap to call on every scroll. */
+  window.__waypointProbe = function () {
+    return { busy: busy(), looping: looping, veil: veilNow, veilTarget: veilTarget,
+             spiral: spiralAlpha, spiralWant: spiralWant, sinceMove: performance.now() - lastMoveAt };
+  };
 
-  var ticking = false;
-  function onScroll() {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function () { tick(); ticking = false; });
+  function loop() {
+    tick();
+    if (busy()) requestAnimationFrame(loop);
+    else { looping = false; tick(); }   // one last frame on the settled values
   }
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", function () { sresize(); tick(); });
+  function wake() {
+    if (reduced) { tick(); return; }
+    if (looping) return;
+    looping = true;
+    requestAnimationFrame(loop);
+  }
+  window.addEventListener("scroll", wake, { passive: true });
+  /* width-only: see vhStable. A resize that is just the address bar moving
+     needs a frame, not a re-layout of the spiral's backing store. */
+  window.addEventListener("resize", function () { if (viewportChanged()) sresize(); wake(); });
+  window.addEventListener("orientationchange", function () { viewportChanged(); sresize(); wake(); });
 
   if (spiral && spiral.getContext) sresize();
-  if (!reduced) { (function loop() { tick(); requestAnimationFrame(loop); })(); }
-  else { tick(); }
+  wake();
 
   /* ---------- blur-to-focus reveals ---------- */
   var foci = $$(".focus-in");

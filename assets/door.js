@@ -475,8 +475,16 @@ function frame(now) {
 /* exactly one frame, no loop: reduced motion, and verification */
 function still() { guarded(performance.now()); }
 
+/* The address bar sliding away fires resize and changes innerHeight by 60-100px,
+   repeatedly, mid-scroll. Acting on it reallocates the drawing buffer and
+   re-derives fov during the one animation the page opens on. A phone's height
+   is therefore read once and only re-read when the width moves, which is the
+   only resize that is really a new layout. Desktop keeps every resize. */
+let lastW = window.innerWidth, lastH = window.innerHeight;
 function resize() {
-  const w = window.innerWidth, h = window.innerHeight;
+  const w = window.innerWidth;
+  const h = (coarse && w === lastW) ? lastH : window.innerHeight;
+  lastW = w; lastH = h;
   const cap = coarse ? 1.6 : 2;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
   renderer.setSize(w, h, false);
