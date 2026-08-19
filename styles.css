@@ -799,27 +799,59 @@ img,svg{ display:block; max-width:100%; }
    tell you whether you qualify" — so the line is made four times over instead
    of drawn once. There is nothing left here to style. */
 
-/* ---------- pinned scenes, narrow and reduced-motion ---------- */
+/* ---------- pinned scenes, narrow and reduced-motion ----------
+   The pin used to be released on a phone, and releasing it is what made this
+   section unreadable there. Side by side the reel and the commentary are one
+   argument in two voices: the artwork translates a line while the sentence
+   beside it names what just happened. Stacked, they become eight blocks handed
+   over at once, and the sentences stop reading as commentary and start reading
+   as repetition — "Stripped down it says: they said no, and this is yours to
+   pay" arrives directly under a reel that has already said both, in those
+   words. Somebody holding an actual denial notice gets a wall.
+
+   So the phone keeps the pin. It is the mechanism that already does exactly
+   what this section needs: --t scrubs with the scroll, each row rolls out of
+   its officialese in turn, and each sentence arrives on its own threshold and
+   leaves when the next one does. One sentence on screen at a time, and the
+   translation happening underneath it rather than presented finished. */
 @media (max-width:900px){
-  .scene--pin{ height:auto; }
-  .pin__sticky{ position:static; height:auto; grid-template-columns:minmax(0,1fr);
-    padding-block:var(--gap); gap:clamp(26px,5vh,46px); }
-  /* the notice sets its own height here; a fixed art box crops it */
+  /* four beats, and roughly two thirds of a screen of scroll to read each */
+  .scene--pin{ height:250svh; }
+  .pin__sticky{ grid-template-columns:minmax(0,1fr); height:100svh;
+    align-content:center; gap:clamp(20px,4svh,40px); }
+  /* the art is its own height here: a fixed box would centre a 300px reel in
+     500px and push the sentence off the bottom of the sticky */
   .pin__art{ height:auto; }
-  /* no pin, so nothing scrubs: every line is simply in place, masks open */
-  .pin__line{ opacity:1; }
+  .reel{ width:100%; }
+  /* the four sentences share one cell instead of stacking, so the block is one
+     sentence tall rather than four. Without this the spent lines still hold
+     their space and the composition is mostly empty rows waiting their turn —
+     and on a short phone the reel gets pushed out of the sticky entirely. */
+  .pin__say{ display:grid; }
+  .pin__line{ grid-area:1/1; }
+}
+
+/* ---------- the pin needs a viewport to hold ----------
+   A phone on its side has 360px of height and the reel alone is ~290px of it,
+   so there is no room left for the sentence the pin exists to show one of. Below
+   that the section goes back to being a plain stacked read: everything present,
+   nothing scrubbing, the reel rendered already landed. */
+@media (max-height:560px) and (max-width:900px){
+  .scene--pin{ height:auto; }
+  .pin__sticky{ position:static; height:auto; padding-block:var(--gap);
+    gap:clamp(26px,5vh,46px); }
+  .pin__say{ gap:clamp(20px,3.4vh,38px); }
+  .pin__line{ grid-area:auto; opacity:1; }
   .pin__line.spent{ opacity:1; }
   .pin__line > span > span{ transform:none; }
-  .reel{ width:100%; }
-  /* the pin is released here, so nothing scrubs --t: every reel has to render
-     already landed on the plain meaning. Leaving it at 0 shows a phone four
-     lines of untranslated officialese, which is the exact opposite of what the
-     section is for. The bureaucratic label above each one keeps the contrast. */
   .reel__row{ --k:1; }
 }
 @media (prefers-reduced-motion:reduce){
   .scene--pin{ height:auto; }
   .pin__sticky{ position:static; height:auto; padding-block:var(--gap); }
+  /* the phone stacks these into one cell; released, they need their own rows
+     back or all four sentences render on top of each other */
+  .pin__line{ grid-area:auto; }
   .pin__line{ opacity:1 !important; }
   .pin__line > span > span{ transform:none !important; }
   /* every reel renders landed: the plain meaning, not the officialese */

@@ -836,19 +836,49 @@ def check_reel():
         bad("reel: .reel__strip left the flow; the longest phrase in it now sets "
             "the row width")
 
-    # Both released states must render the reel landed. The pin only exists
-    # above 900px and outside reduced motion; everywhere else --t never moves,
-    # so a reel left at --k:0 shows four lines of officialese and the section
-    # argues against itself. Missed the narrow one once already.
-    for query, label in [(r"@media \(max-width:900px\)", "narrow"),
-                         (r"@media \(prefers-reduced-motion:reduce\)", "reduced motion")]:
-        # styles.css carries several blocks per query, so check them all
-        blocks = re.findall(query + r"\{(.*?)\n\}", css, flags=re.S)
-        if any(re.search(r"\.reel__row\{[^}]*--k:1", b) for b in blocks):
-            ok(f"reel: lands on the plain meaning when the pin is released ({label})")
+    # Wherever the pin is released, --t never moves, so a reel left at --k:0
+    # shows four lines of officialese and the section argues against itself.
+    # Derived rather than listed by query: the releasing block is whichever one
+    # makes .pin__sticky static, and that pairing is the invariant. Listing the
+    # queries by hand missed the narrow one once, and then went stale the moment
+    # the release moved to a different query.
+    media = re.findall(r"@media ([^{]+)\{(.*?)\n\}", css, flags=re.S)
+    released = [(q.strip(), b) for q, b in media
+                if re.search(r"\.pin__sticky\{[^}]*position:static", b)]
+    if not released:
+        bad("reel: nothing releases the pin any more — reduced motion and a "
+            "viewport too short to hold a sticky both need a stacked fallback")
+    for q, b in released:
+        if re.search(r"\.reel__row\{[^}]*--k:1", b):
+            ok(f"reel: lands on the plain meaning where the pin is released ({q})")
         else:
-            bad(f"reel: {label} releases the pin but leaves --k at 0, so the reel "
+            bad(f"reel: {q} releases the pin but leaves --k at 0, so the reel "
                 f"shows officialese nobody can scroll past")
+    # and released blocks must give the sentences their own rows back, because
+    # the phone stacks all four into one grid cell
+    for q, b in released:
+        if re.search(r"\.pin__line\{[^}]*grid-area:auto", b):
+            ok(f"lines: released, the sentences get their own rows back ({q})")
+        else:
+            bad(f"lines: {q} releases the pin but leaves .pin__line in the "
+                f"phone's shared cell, so all four sentences render on top of "
+                f"each other")
+
+    # The phone KEEPS the pin, and that is the whole reason the section reads
+    # there. Released, the reel's four translations and the four sentences that
+    # narrate them arrive together, and the narration turns into repetition:
+    # "Stripped down it says: they said no, and this is yours to pay" lands
+    # under a reel that has already said both, in those words.
+    narrow_blocks = [b for q, b in media if q.strip() == "(max-width:900px)"]
+    pinned = any(re.search(r"\.scene--pin\{[^}]*height:[\d.]+svh", b) for b in narrow_blocks)
+    shared_cell = any(re.search(r"\.pin__line\{[^}]*grid-area:1/1", b) for b in narrow_blocks)
+    if pinned and shared_cell:
+        ok("lines: a phone keeps the pin, so one sentence is on screen at a time")
+    else:
+        bad("lines: the phone has released the pin again. That hands a reader "
+            "holding a real denial notice eight blocks at once — four "
+            "translations followed by four sentences restating them — instead "
+            "of one sentence at a time over a reel that is still translating")
 
     # the payoff: the last row has to turn, and it is the only gold on the artwork
     if "You are allowed to argue" in section:
