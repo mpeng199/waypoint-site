@@ -433,43 +433,112 @@ def check_one_block_at_a_time():
     while space-below + space-above >= 100vh at every boundary, which is what
     the matching 50vh paddings below buy. They are the whole mechanism: drop
     any one of them and that pair starts double-booking the screen again.
+
+    Every one of them now reads --gap rather than a literal, so this resolves
+    the variable before measuring. That indirection exists for the phone, which
+    deliberately does NOT keep the desktop contract (a block there is a
+    paragraph, not a screen, and several are taller than the viewport at any
+    padding), so the mobile value is checked against its own rule further down:
+    small enough to have actually fixed the 48%-blank-page problem, large
+    enough to still read as a pause.
     """
     css = read("styles.css")
     GAP = 50.0
 
-    def vhs(pattern, label):
+    def gap_value(scope):
+        """The --gap declaration in effect: 'desktop' from :root, 'mobile' from
+        the max-width:900px block. Returned in vh-equivalent units."""
+        if scope == "desktop":
+            m = re.search(r":root\{(.*?)\n\}", css, re.S)
+            if m:
+                d = re.search(r"--gap:\s*([^;]+);", m.group(1))
+                if d:
+                    v = re.search(r"([\d.]+)vh", d.group(1))
+                    if v:
+                        return float(v.group(1))
+            return None
+        m = re.search(r"@media \(max-width:900px\)\{(.*?)\n\}\n@media", css, re.S)
+        if not m:
+            return None
+        d = re.search(r":root\{\s*--gap:\s*([^;]+);", m.group(1))
+        if not d:
+            return None
+        v = re.search(r"clamp\([^,]+,\s*([\d.]+)svh", d.group(1))
+        return float(v.group(1)) if v else None
+
+    DESKTOP_GAP = gap_value("desktop")
+    MOBILE_GAP = gap_value("mobile")
+
+    def vhs(pattern, label, scope):
+        """Resolve a padding value to vh numbers, following var(--gap) and the
+        calc() multipliers written on top of it."""
         m = re.search(pattern, css)
         if not m:
             bad(f"one-block-at-a-time: cannot find {label}")
             return []
-        found = [float(v) for v in re.findall(r"([\d.]+)vh", m.group(1))]
+        raw = m.group(1)
+        gap = DESKTOP_GAP if scope == "desktop" else MOBILE_GAP
+        found = [float(v) for v in re.findall(r"([\d.]+)vh(?![a-z])", raw)]
+        for mult in re.findall(r"calc\(\s*var\(--gap\)\s*\*\s*([\d.]+)\s*\)", raw):
+            if gap is not None:
+                found.append(gap * float(mult))
+        bare = len(re.findall(r"var\(--gap\)", raw)) - len(
+            re.findall(r"calc\(\s*var\(--gap\)\s*\*", raw))
+        if bare > 0 and gap is not None:
+            found.extend([gap] * bare)
         if not found:
-            bad(f"one-block-at-a-time: {label} no longer carries a vh value")
+            bad(f"one-block-at-a-time: {label} no longer carries a vh value "
+                f"or a resolvable var(--gap)")
         return found
 
     rules = [
-        (r"\n\.scene\{[^}]*?padding:([^;]+);", "scene"),
-        (r"\.hold__anchor\{[^}]*?padding-block:([^;]+);", "hold anchor"),
-        (r"\.hold__stream\{[^}]*?padding-block:([^;]+);", "hold stream"),
-        (r"\n\.footer\{[^}]*?padding:([^;]+);", "footer"),
-        (r"\.scene\{[^}]*?min-height:auto;\s*padding-block:([^;]+);", "mobile scene"),
-        (r"\.scene--hold\{\s*padding:([^;]+);", "mobile hold"),
-        (r"\.scene--hold\{\s*padding-block:([^;]+);", "reduced-motion hold"),
+        (r"\n\.scene\{[^}]*?padding:([^;]+);", "scene", "desktop"),
+        (r"\.hold__anchor\{[^}]*?padding-block:([^;]+);", "hold anchor", "desktop"),
+        (r"\.hold__stream\{[^}]*?padding-block:([^;]+);", "hold stream", "desktop"),
+        (r"\n\.footer\{[^}]*?padding:([^;]+);", "footer", "desktop"),
+        (r"\.scene\{[^}]*?min-height:auto;\s*padding-block:([^;]+);", "mobile scene", "mobile"),
+        (r"\.scene--hold\{\s*padding:([^;]+);", "mobile hold", "mobile"),
+        (r"\.scene--hold\{\s*padding-block:([^;]+);", "reduced-motion hold", "desktop"),
     ]
-    for pattern, label in rules:
-        vals = vhs(pattern, label)
+    for pattern, label, scope in rules:
+        floor = GAP if scope == "desktop" else 0.0
+        vals = vhs(pattern, label, scope)
         if not vals:
             continue
-        if min(vals) >= GAP:
-            ok(f"{label}: keeps >= {GAP:g}vh of clear space either side")
+        if min(vals) >= floor:
+            ok(f"{label}: keeps >= {floor:g}vh of clear space either side"
+               if floor else f"{label}: resolves through --gap ({min(vals):g}svh)")
         else:
             bad(f"{label}: only {min(vals):g}vh of clear space, under the "
-                f"{GAP:g}vh that keeps it off the next section's screen")
+                f"{floor:g}vh that keeps it off the next section's screen")
+
+    # ---- the phone's own rule ----
+    # 50vh either side on a phone was 9,894px of blank screen, 48% of the page,
+    # and it turned a 13-screen read into a 25-screen scroll. The gap has to
+    # come down; it must not come down to nothing, and it must not creep back.
+    if DESKTOP_GAP != GAP:
+        bad(f"--gap on the desktop is {DESKTOP_GAP}vh, not the {GAP:g}vh the "
+            f"one-block-at-a-time contract needs")
+    else:
+        ok(f"--gap resolves to {GAP:g}vh on the desktop")
+    if MOBILE_GAP is None:
+        bad("no mobile --gap: the phone is back on the desktop's 50vh, which "
+            "is half a page of blank screen")
+    elif not 10.0 <= MOBILE_GAP <= 30.0:
+        bad(f"mobile --gap is {MOBILE_GAP:g}svh; under 10 the beats run "
+            f"together, over 30 the blank-screen scroll comes back")
+    else:
+        ok(f"mobile --gap is {MOBILE_GAP:g}svh: a pause, not a screen")
+    mobile_root = re.search(r"@media \(max-width:900px\)\{(.*?)--gap:\s*([^;]+);", css, re.S)
+    if mobile_root and "svh" in mobile_root.group(2):
+        ok("mobile --gap is in svh, so the address bar cannot resize the page")
+    else:
+        bad("mobile --gap must use svh: vh changes as the address bar slides")
 
     # the stream has to clear the screen before its own sticky phrase does,
     # or the phrase is left labelling a beat the reader can no longer see
-    anchor = vhs(r"\.hold__anchor\{[^}]*?padding-block:([^;]+);", "hold anchor")
-    stream = vhs(r"\.hold__stream\{[^}]*?padding-block:([^;]+);", "hold stream")
+    anchor = vhs(r"\.hold__anchor\{[^}]*?padding-block:([^;]+);", "hold anchor", "desktop")
+    stream = vhs(r"\.hold__stream\{[^}]*?padding-block:([^;]+);", "hold stream", "desktop")
     if anchor and stream:
         if stream[-1] > anchor[-1]:
             ok(f"hold phrase outlives its beats ({stream[-1]:g}vh > {anchor[-1]:g}vh)")
@@ -767,19 +836,49 @@ def check_reel():
         bad("reel: .reel__strip left the flow; the longest phrase in it now sets "
             "the row width")
 
-    # Both released states must render the reel landed. The pin only exists
-    # above 900px and outside reduced motion; everywhere else --t never moves,
-    # so a reel left at --k:0 shows four lines of officialese and the section
-    # argues against itself. Missed the narrow one once already.
-    for query, label in [(r"@media \(max-width:900px\)", "narrow"),
-                         (r"@media \(prefers-reduced-motion:reduce\)", "reduced motion")]:
-        # styles.css carries several blocks per query, so check them all
-        blocks = re.findall(query + r"\{(.*?)\n\}", css, flags=re.S)
-        if any(re.search(r"\.reel__row\{[^}]*--k:1", b) for b in blocks):
-            ok(f"reel: lands on the plain meaning when the pin is released ({label})")
+    # Wherever the pin is released, --t never moves, so a reel left at --k:0
+    # shows four lines of officialese and the section argues against itself.
+    # Derived rather than listed by query: the releasing block is whichever one
+    # makes .pin__sticky static, and that pairing is the invariant. Listing the
+    # queries by hand missed the narrow one once, and then went stale the moment
+    # the release moved to a different query.
+    media = re.findall(r"@media ([^{]+)\{(.*?)\n\}", css, flags=re.S)
+    released = [(q.strip(), b) for q, b in media
+                if re.search(r"\.pin__sticky\{[^}]*position:static", b)]
+    if not released:
+        bad("reel: nothing releases the pin any more — reduced motion and a "
+            "viewport too short to hold a sticky both need a stacked fallback")
+    for q, b in released:
+        if re.search(r"\.reel__row\{[^}]*--k:1", b):
+            ok(f"reel: lands on the plain meaning where the pin is released ({q})")
         else:
-            bad(f"reel: {label} releases the pin but leaves --k at 0, so the reel "
+            bad(f"reel: {q} releases the pin but leaves --k at 0, so the reel "
                 f"shows officialese nobody can scroll past")
+    # and released blocks must give the sentences their own rows back, because
+    # the phone stacks all four into one grid cell
+    for q, b in released:
+        if re.search(r"\.pin__line\{[^}]*grid-area:auto", b):
+            ok(f"lines: released, the sentences get their own rows back ({q})")
+        else:
+            bad(f"lines: {q} releases the pin but leaves .pin__line in the "
+                f"phone's shared cell, so all four sentences render on top of "
+                f"each other")
+
+    # The phone KEEPS the pin, and that is the whole reason the section reads
+    # there. Released, the reel's four translations and the four sentences that
+    # narrate them arrive together, and the narration turns into repetition:
+    # "Stripped down it says: they said no, and this is yours to pay" lands
+    # under a reel that has already said both, in those words.
+    narrow_blocks = [b for q, b in media if q.strip() == "(max-width:900px)"]
+    pinned = any(re.search(r"\.scene--pin\{[^}]*height:[\d.]+svh", b) for b in narrow_blocks)
+    shared_cell = any(re.search(r"\.pin__line\{[^}]*grid-area:1/1", b) for b in narrow_blocks)
+    if pinned and shared_cell:
+        ok("lines: a phone keeps the pin, so one sentence is on screen at a time")
+    else:
+        bad("lines: the phone has released the pin again. That hands a reader "
+            "holding a real denial notice eight blocks at once — four "
+            "translations followed by four sentences restating them — instead "
+            "of one sentence at a time over a reel that is still translating")
 
     # the payoff: the last row has to turn, and it is the only gold on the artwork
     if "You are allowed to argue" in section:
@@ -942,6 +1041,139 @@ def check_mobile_budget():
             "navigation control on a phone, under the WCAG 2.5.8 minimum")
 
 
+def check_mobile_reads():
+    """What a phone actually gets: the drawer, the hero's fit, and an idle CPU.
+
+    Every item here is a defect that was live on the site and invisible on a
+    laptop, which is the whole reason it needs a guard. None of them show up in
+    a desktop browser at any width, because three of the four only exist below
+    900px and the fourth only reproduces once the page has been scrolled.
+    """
+    css = read("styles.css")
+    js = read("script.js")
+    idx = read("index.html")
+    blocks = re.findall(r"@media \(max-width:900px\)\{(.*?)\n\}", css, flags=re.S)
+    narrow = "\n".join(blocks)
+
+    # ---- the drawer ----
+    # 1. backdrop-filter on .nav makes it the containing block for its own
+    #    fixed child, so past 40px of scroll the drawer opened as a 375x77 strip
+    if re.search(r"\.menu-open \.nav[^{]*\{[^}]*backdrop-filter:none", css):
+        ok("drawer: the bar drops its blur while the menu is open")
+    else:
+        bad("drawer: .nav keeps backdrop-filter with the menu open, which makes "
+            "it the containing block for the fixed drawer — the menu collapses "
+            "to the height of the bar everywhere except the top of the page")
+    # 2. transform alone hides it from the eye and from nothing else
+    if re.search(r"\.nav__links\{[^}]*visibility:hidden", narrow) and \
+       re.search(r"\.nav__links\.open\{[^}]*visibility:visible", narrow):
+        ok("drawer: closed means closed to the keyboard too")
+    else:
+        bad("drawer: the closed drawer is only translated off-screen, so its "
+            "links keep tabindex 0 and a keyboard user tabs into a menu that "
+            "is not open")
+    # a panel, not a takeover — and the scrim is what earns the panel. Without
+    # it the strip of page beside the drawer shows a severed wordmark and two
+    # letters of the headline at full contrast, which is what drove it to
+    # full-screen the first time.
+    if re.search(r"\.nav__links\{[^}]*width:min\(", narrow):
+        ok("drawer: a bounded panel rather than the whole screen")
+    else:
+        bad("drawer: .nav__links has no bounded width — it covers the entire "
+            "viewport instead of sitting over the page as a panel")
+    if re.search(r"\.menu-open body::after\{[^}]*pointer-events:auto", css) and \
+       re.search(r"body::after\{[^}]*position:fixed", css):
+        ok("drawer: a scrim dims the page beside the panel and takes the tap")
+    else:
+        bad("drawer: no scrim. The page beside the panel reads at full "
+            "contrast, showing a wordmark cut in half by the panel edge")
+    if re.search(r'e\.target\.closest\("\.nav__links, \.nav__tog"\)', js):
+        ok("drawer: tapping the dimmed page closes it")
+    else:
+        bad("drawer: the scrim swallows taps without closing the menu, which "
+            "is the first gesture anyone tries on a panel")
+
+    # 3. a fixed layer over a document that is still scrolling underneath it
+    if "lenis.stop()" in js and 'style.overflow = open ? "hidden"' in js:
+        ok("drawer: opening it stops the page, Lenis included")
+    else:
+        bad("drawer: nothing locks the scroll while the menu is open — a swipe "
+            "on the menu scrolls the journey behind it. Lenis drives the scroll "
+            "itself, so an overflow:hidden body alone does not stop it")
+    # 4. escape, and focus that makes the round trip
+    if re.search(r'e\.key === "Escape"', js) and "tog.focus()" in js:
+        ok("drawer: Escape closes it and focus returns to the button")
+    else:
+        bad("drawer: no Escape, or focus is left in the closed drawer")
+
+    # ---- the hero has to fit a phone on its side ----
+    if re.search(r"@media \(max-height:560px\) and \(max-width:900px\)", css):
+        ok("hero: a short viewport has its own rules")
+    else:
+        bad("hero: nothing handles a short viewport. At 740x360 the four rows "
+            "needed 623px inside a 360px sticky with overflow:hidden, and both "
+            "call-to-action controls were clipped off the bottom with nothing "
+            "on screen to say so")
+    if re.search(r"\.hero__l,\.hero__r\{[^}]*min\(clamp\([^)]*\),\s*[\d.]+svh\)", narrow):
+        ok("hero: the headline yields to viewport height, not just width")
+    else:
+        bad("hero: the headline is sized on width alone again, so a short "
+            "screen cannot shrink it and the buttons go back under the fold")
+    if re.search(r"\.hero\{ height:190svh", narrow) or re.search(r"\.hero\{[^}]*height:[\d.]+svh", narrow):
+        ok("hero: its height is in svh, so the address bar cannot move it")
+    else:
+        bad("hero: .hero is back on vh, which changes as the address bar slides "
+            "and shifts the door's pass-through mid-gesture")
+
+    # ---- the loop must stop when there is nothing to draw ----
+    if "function busy()" in js and re.search(r"if \(busy\(\)\) requestAnimationFrame", js):
+        ok("loop: frames are conditional on something still moving")
+    else:
+        bad("loop: the scroll loop runs unconditionally again — 11 forced "
+            "layouts and ~1.1ms of main thread every frame for the life of the "
+            "page, most of which is spent while the reader is reading")
+    if re.search(r"\(function loop\(\) \{ tick\(\); requestAnimationFrame\(loop\); \}\)\(\)", js):
+        bad("loop: the old unconditional rAF loop is back")
+    else:
+        ok("loop: no unconditional rAF loop")
+    if "window.__waypointProbe" in js:
+        ok("loop: its stop condition is observable, so the idling can be tested")
+    else:
+        bad("loop: no probe — a headless tab never fires rAF, so without one "
+            "there is no way to verify the loop idles and wakes")
+
+    # ---- the address bar must not be treated as a resize ----
+    if "vhStable" in js and "viewportChanged" in js:
+        ok("viewport: height is re-read only when the width really changes")
+    else:
+        bad("viewport: heroT() divides by a live innerHeight again. On a phone "
+            "the address bar changes it by 60-100px mid-scroll, which shifts "
+            "the door's whole pass-through by about 8% every time it moves")
+    door = read("assets/door.js")
+    if re.search(r"coarse && w === lastW", door):
+        ok("viewport: the door ignores address-bar-only resizes")
+    else:
+        bad("viewport: door.js reallocates its drawing buffer every time the "
+            "address bar slides, during the one animation the page opens on")
+
+    # ---- the things that were simply misaligned or out of reach ----
+    if re.search(r"\.ways__foot\{[^}]*justify-content:flex-start", narrow):
+        ok("ways: its button sits on the same axis as the rest of the section")
+    else:
+        bad("ways: the section's button is centred while .scene forces "
+            "text-align:left around it")
+    if re.search(r"\.footer__grid\{[^}]*repeat\(2,minmax\(0,1fr\)\)", narrow):
+        ok("footer: two even columns")
+    else:
+        bad("footer: a bare 1fr floors at min-content, so the contact address "
+            "drags its column wide and starves the other one")
+    if "<wbr" in idx:
+        ok("footer: the contact address has somewhere to wrap")
+    else:
+        bad("footer: the address is one unbreakable token in a 155px column, "
+            "so it breaks mid-word")
+
+
 def check_vow():
     """The statement: short version visible, full version one tap away."""
     src = read("index.html")
@@ -1045,7 +1277,7 @@ def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
                check_billing_boundaries, check_forms, check_labels, check_door,
-               check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_vow, check_lane, check_doors,
+               check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections]:
         try:

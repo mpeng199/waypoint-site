@@ -20,6 +20,10 @@
 
   --container:1280px;
   --pad:clamp(22px,5vw,80px);
+  /* The space either side of every block. On a desktop this is the whole
+     "one block on screen at a time" contract (see .scene) and it has to be
+     50vh. A phone re-derives it: see the RESPONSIVE section. */
+  --gap:50vh;
   --ease:cubic-bezier(.22,.61,.36,1);
   --ease-out:cubic-bezier(.16,1,.3,1);
 }
@@ -207,7 +211,7 @@ img,svg{ display:block; max-width:100%; }
    every block is the smallest even way to buy that, and it is why the numbers
    below (here, on the hold scenes, and above the footer) all say 50vh. Lower
    one and the pair either side of it starts double-booking the screen. */
-.scene{ position:relative; min-height:100svh; display:flex; align-items:center; padding:50vh var(--pad); }
+.scene{ position:relative; min-height:100svh; display:flex; align-items:center; padding:var(--gap) var(--pad); }
 /* the one boundary that needs none of its own: the hero's text is gone by the
    time the door finishes, leaving ~140vh of clear space below it — already over
    the 100vh, so 50vh here would be surplus you scroll through watching nothing.
@@ -267,7 +271,7 @@ img,svg{ display:block; max-width:100%; }
 /* the 50vh is the footer's half of the gap that keeps it off the closing line's
    screen — solid ground you land on before any of the links show up */
 .footer{ position:relative; z-index:3; background:var(--green-deep); border-top:1px solid rgba(252,254,247,.12);
-  padding:50vh 0 36px; }
+  padding:var(--gap) 0 36px; }
 .footer__wrap{ max-width:var(--container); margin-inline:auto; padding-inline:var(--pad); }
 .footer__grid{ display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; padding-bottom:44px; border-bottom:1px solid rgba(252,254,247,.12); }
 .footer__note{ margin-top:20px; max-width:44ch; font-size:14px; color:var(--ink-soft); line-height:1.65; }
@@ -382,8 +386,9 @@ img,svg{ display:block; max-width:100%; }
    of the two on purpose: the beats clear the screen before their own phrase
    does. top:0 + 50vh of padding parks the stuck phrase at the same 50vh as the
    old top:26vh + 24vh did. */
-.hold__anchor{ position:sticky; top:0; grid-column:1; grid-row:1; padding-block:50vh; }
-.hold__stream{ grid-column:2; grid-row:1; display:grid; gap:clamp(46px,8.5vh,104px); padding-block:52vh 60vh; }
+.hold__anchor{ position:sticky; top:0; grid-column:1; grid-row:1; padding-block:var(--gap); }
+.hold__stream{ grid-column:2; grid-row:1; display:grid; gap:clamp(46px,8.5vh,104px);
+  padding-block:calc(var(--gap) * 1.04) calc(var(--gap) * 1.2); }
 .scene--hold-r .hold__anchor{ grid-column:2; }
 .scene--hold-r .hold__stream{ grid-column:1; }
 .scene--hold .phrase{ font-size:clamp(2.1rem,4.1vw,3.8rem); }
@@ -430,16 +435,115 @@ img,svg{ display:block; max-width:100%; }
    RESPONSIVE
    ============================================================ */
 @media (max-width:900px){
-  .nav__links{ position:fixed; inset:0 0 0 auto; width:min(82vw,360px); background:rgba(19,35,26,.97);
-    backdrop-filter:blur(18px); flex-direction:column; align-items:flex-start; justify-content:center; padding:0 40px; gap:24px;
-    transform:translateX(100%); transition:transform .45s var(--ease); border-left:1px solid rgba(252,254,247,.14); z-index:90; }
-  .nav__links.open{ transform:none; }
-  .nav__links a{ font-size:20px; }
-  .nav__tog{ display:block; z-index:95; }
-  .scene{ justify-content:flex-start !important; text-align:left !important; min-height:auto; padding-block:50vh; }
+  /* ---------- the gap, re-derived for a phone ----------
+     The desktop rule is that no two blocks ever share the screen, which costs
+     50vh either side of every one of them. That rule is about full-viewport
+     compositions: on a desktop a block IS a screen, so the space between two
+     of them is the only thing that separates them.
+
+     A phone has neither half of that. min-height drops to auto here, so a
+     block is 200-950px of stacked prose rather than a screen, and several of
+     them (both form panels, two of the hold scenes) are already taller than
+     the viewport — "one at a time" is not available to them at any padding.
+     Keeping 50vh anyway bought 9,894px of blank screen, 48% of the page, and
+     turned a 13-screen read into a 25-screen scroll through nothing.
+
+     So the phone keeps the intent and drops the arithmetic: a gap large
+     enough to read as a deliberate pause between beats (~40% of the screen),
+     not large enough to be a screen of its own. svh, not vh, so the number
+     does not change when the URL bar slides away mid-scroll. */
+  :root{ --gap:clamp(84px,20svh,168px); }
+
+  /* ---------- the drawer ----------
+     A panel over the page, not a takeover. What made the panel unreadable
+     before was not its width: it was that the 68px of page left beside it
+     showed the left half of the wordmark and the first two letters of the
+     headline at full contrast, so the eye read severed type rather than
+     "there is a page back there". The scrim below is what fixes that, and with
+     it the drawer can be the width it should have been all along.
+
+     visibility is the other half. transform alone moves it off-screen while
+     leaving it visible to everything that is not the eye: the four links kept
+     tabindex 0, so a keyboard or switch user tabbed straight into a menu that
+     was not open and could not be seen. Transitioned alongside the transform so
+     it flips at the far end going out and immediately coming in. */
+  .nav__links{ position:fixed; inset:0 0 0 auto; width:min(78vw,320px);
+    background:rgba(19,35,26,.98);
+    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    flex-direction:column; align-items:flex-start; justify-content:center;
+    padding:0 clamp(24px,7vw,40px); gap:clamp(8px,2.4svh,24px);
+    border-left:1px solid rgba(252,254,247,.14);
+    box-shadow:-30px 0 60px -30px rgba(0,0,0,.7);
+    overscroll-behavior:contain;
+    transform:translateX(100%); visibility:hidden;
+    transition:transform .45s var(--ease), visibility 0s linear .45s; z-index:90; }
+  .nav__links.open{ transform:none; visibility:visible; transition:transform .45s var(--ease), visibility 0s; }
+  /* the links are the only tap targets in the panel: 48px+ tall */
+  .nav__links a{ font-size:clamp(1.1rem,4.8vw,1.4rem); width:100%; padding:clamp(11px,1.8svh,16px) 0; border-radius:4px; }
+  /* opening the panel moves focus to this link, which is right for a keyboard
+     and invisible to a thumb: :focus-visible is not matched when focus moves
+     programmatically after touch or mouse input, so the ring appears for the
+     people it is for. Gold to match every other control on the site. */
+  .nav__links a:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  /* ---------- the scrim ----------
+     It hangs off body rather than .nav on purpose. .nav is the drawer's own
+     offset parent and gets its backdrop-filter back the instant .menu-open
+     comes off, which would snap a still-fading scrim into the 77px bar on the
+     way out. body has no transform or filter, so a fixed pseudo-element on it
+     is the viewport at every frame of the transition.
+
+     z-index sits above the page (sections and footer are 3, the threshold 4)
+     and below .nav's 100, so the whole header — and the drawer inside it —
+     stays over the top. It carries the tap-to-close target too. */
+  /* .82, not the .6 a scrim usually wants: the point is not to dim the page
+     but to stop the strip beside the panel reading as text. At .66 the cut
+     headline was still plainly legible — "A bi", "A cla" — which is the exact
+     severed-type problem the scrim exists to solve, only greyer. */
+  body::after{ content:""; position:fixed; inset:0; z-index:50;
+    background:rgba(6,12,9,.82); opacity:0; visibility:hidden; pointer-events:none;
+    transition:opacity .45s var(--ease), visibility 0s linear .45s; }
+  .menu-open body::after{ opacity:1; visibility:visible; pointer-events:auto;
+    transition:opacity .45s var(--ease), visibility 0s; }
+  .nav__tog{ display:block; z-index:95; position:relative; }
+  /* the wordmark runs from 22px to about 211px and the panel's left edge lands
+     at 75px, so at any panel width wide enough to hold "Bills & denials" the
+     two cross. Lifting it over the panel puts half a wordmark on the page and
+     half on the drawer; leaving it under cuts it in the same place. It steps
+     out for the duration instead, which is what the X is there to undo. */
+  .menu-open .brand{ opacity:0; pointer-events:none; }
+  .brand{ transition:opacity .3s var(--ease); }
+
+  /* ---------- why the bar drops its blur while the menu is open ----------
+     backdrop-filter makes an element the containing block for any
+     position:fixed descendant, and the drawer is a fixed child of .nav. So the
+     moment .nav went .stuck — anything past 40px of scroll — inset:0 stopped
+     meaning the viewport and started meaning the 77px bar. The drawer opened
+     as a 375x77 strip with four links inside it, and it did so everywhere on
+     the page except the very top, which is the one place it ever got opened
+     during testing.
+
+     Removing the blur for the duration removes the containing block. Nothing is
+     lost: a full-screen drawer is over the bar already, so the bar has no
+     backdrop left to blur. */
+  .menu-open .nav,.menu-open .nav.stuck{ background:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
+  .scene{ justify-content:flex-start !important; text-align:left !important; min-height:auto; padding-block:var(--gap); }
   .scene__inner{ max-width:100%; }
   .scene--center .scene__cta{ justify-content:flex-start; }
-  .footer__grid{ grid-template-columns:1fr 1fr; gap:28px; }
+  /* the statement runs the full width and the three link groups pair off
+     beneath it. Collapsing all four to one column (which is what the old
+     560px rule did) made a 1,096px footer: eleven links, each its own
+     full-width row, over two screens of nothing but a list. */
+  /* minmax(0,1fr), not 1fr: a bare 1fr floors at min-content, and the one
+     unbreakable token down there — the contact address — dragged its column to
+     200px and left the other on 108, where half the link labels wrapped. Equal
+     halves, and the address is allowed to break instead of setting the width. */
+  .footer__grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:26px 22px; }
+  .footer__grid > :first-child{ grid-column:1/-1; }
+  .footer__note{ max-width:100%; }
+  /* <wbr/> in the address gives the wrap a place to happen; break-word is
+     only the backstop, so nothing else splits mid-word */
+  .footer__col a{ overflow-wrap:break-word; }
   .facts{ grid-template-columns:1fr 1fr; }
   .field{ grid-column:span 12; }
 
@@ -454,13 +558,25 @@ img,svg{ display:block; max-width:100%; }
      untouched. Stacked links get real padding instead: expanding those with
      pseudo-elements would make adjacent targets overlap, which trades a small
      target for a mis-hit and is worse. */
-  .nav__tog,.tlink,.brand{ position:relative; }
-  .nav__tog::after,.tlink::after,.brand::after{ content:""; position:absolute;
+  .nav__tog,.tlink,.brand,.form__legal a{ position:relative; }
+  .nav__tog::after,.tlink::after,.brand::after,.form__legal a::after{ content:""; position:absolute;
     inset:-13px -10px; }
+  /* an inline link's box is its glyphs, not its line box: this one measures
+     16px where the block controls above measure 22-34, so the shared -13px
+     leaves it at 42. It gets its own inset rather than the group's growing,
+     because .tlink sits 14px under the hero button and -15px there would put
+     an invisible hit area over the button's bottom edge. */
+  .form__legal a::after{ inset:-15px -10px; }
   /* the disclosure and the footer columns are stacked, so they grow instead */
   .vow__more > summary{ padding-block:12px; }
   .footer__col a{ padding-block:11px; }   /* 22px line + 22 = the full 44 */
-  .footer__ul{ display:inline-block; padding-block:9px; }
+  /* measured, not guessed: this came back at 39px on a first pass, and a 21px
+     line box needs 12 either side to clear 44.
+     The legal line's inline link is in the pseudo-element group above instead:
+     it is the only control in its paragraph, so nothing can overlap, and
+     padding there would have meant opening the leading of a three-line
+     paragraph to 2.0 — 44px of target bought by wrecking the setting. */
+  .footer__ul{ display:inline-block; padding-block:12px; }
 
   /* ---------- mobile compositing budget ----------
      None of this is about layout; it is about how many full-screen layers a
@@ -485,22 +601,55 @@ img,svg{ display:block; max-width:100%; }
      190vh the hero is tall here. The type still fades and pushes away. */
   .hero__ui{ filter:none; will-change:opacity,transform; }
 
-  /* hero: stack the split headline, keep the door behind it */
-  .hero{ height:190vh; }
-  .hero__ui{ padding:clamp(88px,12vh,120px) var(--pad) clamp(22px,4vh,40px);
-    grid-template-columns:minmax(0,1fr); grid-template-rows:auto 1fr auto auto; row-gap:clamp(14px,2.4vh,26px); }
-  .hero__eye{ grid-area:1/1/2/2; }
+  /* ---------- hero: stack the split headline, keep the door behind it ----------
+     Everything below sizes against the viewport's HEIGHT as well as its width.
+     Width alone is what clipped it: at 740x360 (a phone on its side) the
+     headline took 10.5vw = 77px, the four rows needed 623px inside a 360px
+     sticky with overflow:hidden, and the lede, both call-to-action controls and
+     the scroll cue were cut off the bottom with nothing on screen to say so.
+     A hero whose only button cannot be reached is the one layout bug on the
+     page that costs a conversion outright, so the type yields to svh first. */
+  .hero{ height:190svh; }
+  .hero__ui{ padding:clamp(72px,11svh,120px) var(--pad) clamp(20px,4svh,40px);
+    grid-template-columns:minmax(0,1fr); grid-template-rows:auto 1fr auto auto; row-gap:clamp(10px,2svh,26px);
+    /* the door's light slit lands squarely behind the headline once the
+       composition is one column, and cream on that beam is the worst contrast
+       on the page. A gradient ON the hero UI rather than a layer under it: it
+       inherits the same fade, scale and will-change the type already has, so
+       it costs the compositor nothing extra and cannot outlive the text. */
+    background:linear-gradient(180deg, rgba(8,14,10,.62) 0%, rgba(8,14,10,.34) 42%, rgba(8,14,10,.62) 100%); }
+  /* a 60-character kicker set in tracked uppercase micro-type wrapped to three
+     lines at 360px. Tightened so it holds two, and dropped entirely when the
+     screen is too short to afford them. */
+  .hero__eye{ grid-area:1/1/2/2; font-size:11.5px; letter-spacing:.15em; margin-bottom:0; }
+  /* the gap is free: this row is 1fr and its content is centred inside it, so
+     the space comes out of the row's own slack and never off the page. At the
+     13px it started from, the two halves were a line apart in a headline whose
+     leading is .95 — four lines of one statement rather than two of each. */
   .hero__head{ grid-area:2/1/3/2; grid-template-columns:1fr; grid-template-rows:auto auto;
-    align-content:center; gap:6px; }
-  .hero__l,.hero__r{ grid-column:1; max-width:100%; text-align:left; justify-self:start;
-    font-size:clamp(2.4rem,10.5vw,3.6rem); }
-  .hero__l{ grid-row:1; } .hero__r{ grid-row:2; }
+    align-content:center; gap:clamp(22px,4svh,46px); }
+  .hero__l,.hero__r{ grid-column:1; max-width:100%; justify-self:start;
+    font-size:min(clamp(2.05rem,9.4vw,3.6rem), 7.4svh);
+    /* the desktop sets its own rag with max-width:12ch/11ch, which does
+       nothing once the column is the screen: both halves broke to leave a
+       single orphaned word ("A", "No") ending a line. Balanced wrapping is the
+       one-property version of the hand-ragging, and degrades to normal
+       wrapping where it is not supported. */
+    text-wrap:balance; }
+  .hero__l{ grid-row:1; text-align:left; }
+  /* the desktop composition is a diagonal: the claim top-left, the answer
+     bottom-right, with the doorway between them. Stacked flush left the two
+     became one five-line wall and the turn was lost. Holding the answer to the
+     right edge is the same diagonal in a single column. */
+  .hero__r{ grid-row:2; text-align:right; justify-self:end; }
   .hero__foot{ grid-area:3/1/4/2; }
+  .hero__lede{ font-size:clamp(.95rem,3.6vw,1.1rem); }
+  .hero__cta{ margin-top:clamp(14px,2.4svh,22px); }
   .hero__cue{ grid-area:4/1/5/2; justify-self:start; }
 
   /* hold scenes: anchor stops holding, everything flows in one column.
      the anchor and stream drop their own padding, so the 50vh moves here */
-  .scene--hold{ padding:50vh var(--pad) !important; }
+  .scene--hold{ padding:var(--gap) var(--pad) !important; }
   .hold{ grid-template-columns:minmax(0,1fr); gap:clamp(26px,5vh,44px); }
   .hold__anchor{ position:static; grid-column:1 !important; grid-row:auto; padding-block:0; }
   .hold__stream{ grid-column:1 !important; grid-row:auto; padding-block:0; gap:clamp(30px,5vh,48px); }
@@ -508,9 +657,25 @@ img,svg{ display:block; max-width:100%; }
   .vow{ margin-inline:0; }
 }
 @media (max-width:560px){
-  .footer__grid{ grid-template-columns:1fr; }
   .facts{ grid-template-columns:1fr; }
   .hero__cta{ gap:14px; }
+}
+
+/* ---------- short viewports: a phone on its side, or a squat window ----------
+   Under ~560px of height the hero cannot hold four rows of chrome around a
+   display headline whatever it is sized at. The two rows that exist to decorate
+   the scroll — the kicker and the "scroll to step through" cue — give way so
+   the two that exist to be acted on, the lede and the buttons, stay on screen.
+   Height-only, so it fires in landscape on a phone and never on a tall one. */
+@media (max-height:560px) and (max-width:900px){
+  .hero__ui{ padding-top:clamp(58px,9svh,74px); grid-template-rows:1fr auto; }
+  .hero__eye,.hero__cue{ display:none; }
+  .hero__head{ grid-area:1/1/2/2; gap:6px; }
+  .hero__l,.hero__r{ font-size:min(clamp(1.6rem,6.4vw,2.4rem), 12svh); }
+  .hero__foot{ grid-area:2/1/3/2; }
+  .hero__lede{ font-size:.95rem; }
+  .hero__cta{ margin-top:12px; gap:12px; }
+  .nav__in{ padding-block:12px; }
 }
 
 /* ============================================================
@@ -526,7 +691,7 @@ img,svg{ display:block; max-width:100%; }
   .threshold{ display:none; }
   .hold__anchor{ position:static; padding-block:0; }
   .hold__stream{ padding-block:0; }
-  .scene--hold{ padding-block:50vh; }
+  .scene--hold{ padding-block:var(--gap); }
 }
 
 /* ============================================================
@@ -666,27 +831,59 @@ img,svg{ display:block; max-width:100%; }
    tell you whether you qualify" — so the line is made four times over instead
    of drawn once. There is nothing left here to style. */
 
-/* ---------- pinned scenes, narrow and reduced-motion ---------- */
+/* ---------- pinned scenes, narrow and reduced-motion ----------
+   The pin used to be released on a phone, and releasing it is what made this
+   section unreadable there. Side by side the reel and the commentary are one
+   argument in two voices: the artwork translates a line while the sentence
+   beside it names what just happened. Stacked, they become eight blocks handed
+   over at once, and the sentences stop reading as commentary and start reading
+   as repetition — "Stripped down it says: they said no, and this is yours to
+   pay" arrives directly under a reel that has already said both, in those
+   words. Somebody holding an actual denial notice gets a wall.
+
+   So the phone keeps the pin. It is the mechanism that already does exactly
+   what this section needs: --t scrubs with the scroll, each row rolls out of
+   its officialese in turn, and each sentence arrives on its own threshold and
+   leaves when the next one does. One sentence on screen at a time, and the
+   translation happening underneath it rather than presented finished. */
 @media (max-width:900px){
-  .scene--pin{ height:auto; }
-  .pin__sticky{ position:static; height:auto; grid-template-columns:minmax(0,1fr);
-    padding-block:50vh; gap:clamp(26px,5vh,46px); }
-  /* the notice sets its own height here; a fixed art box crops it */
+  /* four beats, and roughly two thirds of a screen of scroll to read each */
+  .scene--pin{ height:250svh; }
+  .pin__sticky{ grid-template-columns:minmax(0,1fr); height:100svh;
+    align-content:center; gap:clamp(20px,4svh,40px); }
+  /* the art is its own height here: a fixed box would centre a 300px reel in
+     500px and push the sentence off the bottom of the sticky */
   .pin__art{ height:auto; }
-  /* no pin, so nothing scrubs: every line is simply in place, masks open */
-  .pin__line{ opacity:1; }
+  .reel{ width:100%; }
+  /* the four sentences share one cell instead of stacking, so the block is one
+     sentence tall rather than four. Without this the spent lines still hold
+     their space and the composition is mostly empty rows waiting their turn —
+     and on a short phone the reel gets pushed out of the sticky entirely. */
+  .pin__say{ display:grid; }
+  .pin__line{ grid-area:1/1; }
+}
+
+/* ---------- the pin needs a viewport to hold ----------
+   A phone on its side has 360px of height and the reel alone is ~290px of it,
+   so there is no room left for the sentence the pin exists to show one of. Below
+   that the section goes back to being a plain stacked read: everything present,
+   nothing scrubbing, the reel rendered already landed. */
+@media (max-height:560px) and (max-width:900px){
+  .scene--pin{ height:auto; }
+  .pin__sticky{ position:static; height:auto; padding-block:var(--gap);
+    gap:clamp(26px,5vh,46px); }
+  .pin__say{ gap:clamp(20px,3.4vh,38px); }
+  .pin__line{ grid-area:auto; opacity:1; }
   .pin__line.spent{ opacity:1; }
   .pin__line > span > span{ transform:none; }
-  .reel{ width:100%; }
-  /* the pin is released here, so nothing scrubs --t: every reel has to render
-     already landed on the plain meaning. Leaving it at 0 shows a phone four
-     lines of untranslated officialese, which is the exact opposite of what the
-     section is for. The bureaucratic label above each one keeps the contrast. */
   .reel__row{ --k:1; }
 }
 @media (prefers-reduced-motion:reduce){
   .scene--pin{ height:auto; }
-  .pin__sticky{ position:static; height:auto; padding-block:50vh; }
+  .pin__sticky{ position:static; height:auto; padding-block:var(--gap); }
+  /* the phone stacks these into one cell; released, they need their own rows
+     back or all four sentences render on top of each other */
+  .pin__line{ grid-area:auto; }
   .pin__line{ opacity:1 !important; }
   .pin__line > span > span{ transform:none !important; }
   /* every reel renders landed: the plain meaning, not the officialese */
@@ -800,6 +997,9 @@ img,svg{ display:block; max-width:100%; }
 /* ---------- the doors, narrow ---------- */
 @media (max-width:900px){
   .ways__title{ max-width:100%; }
+  /* .scene forces text-align:left here, so a centred button was the one
+     element in the section still sitting on the old axis */
+  .ways__foot{ justify-content:flex-start; }
   /* tap is the only pointer here, so a row opens to whatever it needs and
      there is no column beside it left to push around */
   .ways__blurb{ min-height:0; }
