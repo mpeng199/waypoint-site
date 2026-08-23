@@ -17,13 +17,14 @@ No dependencies. Exits non-zero on the first failing category.
 import html
 import os
 import re
+import importlib
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 VERBOSE = "-v" in sys.argv or "--verbose" in sys.argv
 
-PAGES = ["index.html", "privacy.html", "terms.html", "partner-pitch.html",
+PAGES = ["index.html", "help.html", "privacy.html", "terms.html", "partner-pitch.html",
          "cohort-onboarding.html", "students.html", "partners.html", "admin.html"]
 
 # Printed on every flyer, every table sign, and the site. It exists to stop a
@@ -40,7 +41,8 @@ HONESTY = ("We are trained student volunteers.",
 
 # The statement is duplicated by hand with no shared source, so the linter is
 # the shared source. index.html carries it twice: the vow scene and the footer.
-HONESTY_SURFACES = {"index.html": 2, "partner-pitch.html": 1, "cohort-onboarding.html": 1}
+HONESTY_SURFACES = {"index.html": 2, "help.html": 1, "partner-pitch.html": 1,
+                    "cohort-onboarding.html": 1}
 
 # Cut from the public site: schools/replication and the Companionship track.
 FORBIDDEN = [
@@ -122,7 +124,7 @@ def check_pages_exist():
 
 
 # ------------------------------------------------------------ links/assets
-LOCAL_REF = re.compile(r'(?:href|src)="(?!https?:|mailto:|tel:|data:|#)([^"]+)"')
+LOCAL_REF = re.compile(r'(?:href|src)="(?!https?:|mailto:|tel:|sms:|data:|#)([^"]+)"')
 STYLE_URL = re.compile(r"url\(['\"]?(?!data:|https?:)([^'\")]+)['\"]?\)")
 ANCHOR = re.compile(r'href="#([^"]+)"')
 ID = re.compile(r'\sid="([^"]+)"')
@@ -558,14 +560,22 @@ def check_vendored():
     for page in PAGES:
         if not (ROOT / page).is_file():
             continue
-        hosts = set(re.findall(r'(?:src|href)="https?://([^/"]+)', read(page)))
+        # Only origins the BROWSER fetches on its own count here, because
+        # that is what privacy.html has to disclose: any src=, plus href= on a
+        # <link>. An <a href> to another site fetches nothing and discloses
+        # nothing until the reader chooses to follow it — and the directory is
+        # 84 outbound links to food pantries and legal aid offices, which is
+        # the entire point of the page rather than a leak.
+        src_hosts = set(re.findall(r'\ssrc="https?://([^/"]+)', read(page)))
+        link_hosts = set(re.findall(r'<link\b[^>]*\shref="https?://([^/"]+)', read(page)))
+        hosts = src_hosts | link_hosts
         allowed = {"fonts.googleapis.com", "fonts.gstatic.com", "supabase.com",
                    "resend.com", "www.nyc.gov", "nystateofhealth.ny.gov"}
         rogue = hosts - allowed
         if rogue:
-            bad(f"{page}: unexpected third-party origin(s): {sorted(rogue)}")
+            bad(f"{page}: unexpected third-party origin(s) loaded by the browser: {sorted(rogue)}")
         else:
-            ok(f"{page}: no unexpected third-party origins")
+            ok(f"{page}: no unexpected third-party origins loaded")
     # three.module re-exports the core chunk; both must be vendored together
     mod = read("assets/vendor/three.module.min.js")
     for chunk in set(re.findall(r'from"\./([a-z0-9.]+\.js)"', mod)):
@@ -1273,13 +1283,355 @@ def check_lane():
         bad("lane: data-pin is back on the line section")
 
 
+# ----------------------------------------------------------- the directory
+# help.html is generated, so the first and most important thing to know is
+# whether the file on disk is still what the generator produces. Everything
+# below it is only meaningful if that holds.
+def check_directory_is_generated():
+    """help.html must equal what build_help.py produces, byte for byte.
+
+    Compared, never rewritten. An earlier version of this check just ran the
+    generator, which "passed" by overwriting whatever it found — so a
+    hand-edit was silently reverted and, worse, every check below it then read
+    the regenerated file and saw nothing wrong. A guard that repairs the thing
+    it is meant to be measuring reports success either way.
+
+    If this fails, the change belongs in data/resources.csv or build_help.py,
+    followed by `python3 build_help.py`.
+    """
+    if not (ROOT / "build_help.py").is_file():
+        bad("build_help.py is missing; help.html can no longer be regenerated")
+        return
+    sys.path.insert(0, str(ROOT))
+    try:
+        import build_help
+        importlib.reload(build_help)
+    except Exception as e:
+        bad(f"build_help.py does not import: {type(e).__name__}: {e}")
+        return
+
+    try:
+        build_help.selfcheck()
+        ok("build_help.py: the phone-parser self-check passes")
+    except AssertionError as e:
+        bad(f"build_help.py self-check failed: {e}")
+        return
+
+    rows = build_help.load()
+    fresh = build_help.render(rows)
+    on_disk = read("help.html")
+    if fresh == on_disk:
+        ok(f"help.html matches build_help.py's output ({len(rows)} resources)")
+    else:
+        bad("help.html is not what build_help.py produces. It was hand-edited, "
+            "or data/resources.csv changed without a rebuild — either way the "
+            "next `python3 build_help.py` silently discards the difference. "
+            "Run it.")
+
+    unreachable = [r["Resource Name"] for r in rows
+                   if build_help.contact(r["Phone"])[0] == "none" and not r["Website"]]
+    if unreachable:
+        bad(f"data/resources.csv: no phone and no website: {unreachable[:5]}")
+    else:
+        ok("data/resources.csv: every resource has a way to reach it")
+
+
+def check_directory_reachable():
+    """Every resource must be reachable, and every tel: must actually dial.
+
+    A row nobody can act on is worse than no row: it costs somebody in trouble
+    the time to read it. And a tel: that is neither a short code nor a full
+    +1 number is a number that fails silently at the worst possible moment —
+    this is the guard for the "988 then press 1 / text 838255" class of bug,
+    where stripping non-digits across a whole cell produced +19881838255.
+    """
+    src = read("help.html")
+    rows = re.findall(r'<li class="r"[^>]*>(.*?)</li>', src, flags=re.S)
+    if not rows:
+        bad("help.html: no resource rows at all")
+        return
+    ok(f"help.html: {len(rows)} resource rows present in the HTML")
+
+    unreachable = [r for r in rows if 'href="tel:' not in r
+                   and 'href="sms:' not in r and 'class="visit"' not in r]
+    if unreachable:
+        names = re.findall(r'class="r__name">([^<]+)', "".join(unreachable))
+        bad(f"help.html: {len(unreachable)} resource(s) with no phone and no "
+            f"website, so there is no way to act on them: {names[:5]}")
+    else:
+        ok("help.html: every resource has a phone number or a website")
+
+    tels = set(re.findall(r'href="tel:([^"]+)"', src))
+    bad_tels = [t for t in tels if not re.fullmatch(r"\+1[0-9]{10}|[0-9]{3}", t)]
+    if bad_tels:
+        bad(f"help.html: tel: links that will not dial: {bad_tels}")
+    else:
+        ok(f"help.html: all {len(tels)} phone links are a short code or a full +1 number")
+
+
+def check_directory_emergency():
+    """The emergency strip is a safety surface, not a content block.
+
+    Four numbers, each answering a different emergency, each dialable. 911
+    must be one of them and must be first: somebody scanning this page in a
+    panic reads the first thing in the block.
+    """
+    src = read("help.html")
+    block = re.search(r'<section class="sos".*?</section>', src, flags=re.S)
+    if not block:
+        bad("help.html: the emergency strip is gone")
+        return
+    nums = re.findall(r'href="tel:([^"]+)"', block.group(0))
+    if not nums:
+        bad("help.html: the emergency strip has no phone numbers in it")
+        return
+    if nums[0] == "911":
+        ok("help.html: the emergency strip leads with 911")
+    else:
+        bad(f"help.html: the emergency strip leads with {nums[0]}, not 911")
+    if len(nums) >= 4:
+        ok(f"help.html: {len(nums)} emergency numbers offered")
+    else:
+        bad(f"help.html: only {len(nums)} emergency numbers; danger, self-harm, "
+            f"domestic violence and 'anything else' each need their own")
+    if len(set(nums)) == len(nums):
+        ok("help.html: no emergency number is listed twice")
+    else:
+        bad(f"help.html: an emergency number is duplicated: {nums}. A heuristic "
+            f"once put two copies of 988 and a hospital switchboard here.")
+
+
+def check_directory_no_js_contract():
+    """The page must be usable with JavaScript off.
+
+    The whole reason the rows are generated into the HTML instead of fetched
+    is that the reader may be on a locked-down library terminal, a dying
+    phone, or a connection that drops help.js. So: no row may ship hidden, and
+    the only controls that ship hidden are the ones that genuinely cannot work
+    without a script. Nobody is offered a control that does nothing.
+    """
+    src = read("help.html")
+    rows = re.findall(r'<li class="r"[^>]*>', src)
+    hidden_rows = [r for r in rows if "hidden" in r]
+    if hidden_rows:
+        bad(f"help.html: {len(hidden_rows)} row(s) ship with the hidden "
+            f"attribute, so a reader without JavaScript never sees them")
+    else:
+        ok("help.html: no resource row is hidden in the served HTML")
+
+    for sel, why in [(r'<div class="find__filters" hidden>', "the filter chips"),
+                     (r'<p class="dir__none" hidden>', "the no-matches message"),
+                     (r'<button type="button" class="printbtn" hidden>', "the print button")]:
+        if re.search(sel, src):
+            ok(f"help.html: {why} ships hidden and is revealed by help.js")
+        else:
+            bad(f"help.html: {why} no longer ships hidden — without JavaScript "
+                f"it would be a control that does nothing")
+
+    js = read("help.js")
+    for meth in ["innerHTML", "insertAdjacentHTML", "document.write"]:
+        if meth in js:
+            bad(f"help.js uses {meth}; this script may only hide rows, never "
+                f"build them, or the no-JavaScript page stops matching the real one")
+    ok("help.js builds no markup; it only narrows what is already served")
+
+
+def check_directory_languages():
+    """The seven in-language panels, and the tags that make them speakable."""
+    src = read("help.html")
+    panels = re.findall(r'<section class="langnote" id="lang-([a-z-]+)" lang="([a-z]+)"', src)
+    if len(panels) >= 7:
+        ok(f"help.html: {len(panels)} in-language panels present")
+    else:
+        bad(f"help.html: only {len(panels)} in-language panels; expected 7")
+
+    # Every lang= on the page must be a real subtag. lang="spanish" is not one,
+    # so a screen reader keeps its English voice and reads the label as English
+    # — silently, on the one row of the page aimed at people who do not read it.
+    valid = {"en", "es", "zh", "ru", "ht", "bn", "ko", "ar"}
+    tags = set(re.findall(r'(?<!-)\blang="([^"]+)"', src))
+    rogue = tags - valid
+    if rogue:
+        bad(f"help.html: lang attribute(s) that are not valid subtags: {sorted(rogue)}")
+    else:
+        ok(f"help.html: every lang attribute is a real subtag {sorted(tags)}")
+
+    if 'dir="rtl"' in src:
+        ok("help.html: the Arabic panel is marked right-to-left")
+    else:
+        bad("help.html: no dir=\"rtl\" anywhere, so the Arabic panel renders "
+            "left-to-right")
+
+    # Each panel has to route somewhere a person can actually be helped, and
+    # 311 is the one number that answers in any language at any hour.
+    for key, _ in panels:
+        block = src.split(f'id="lang-{key}"', 1)[-1].split("</section>", 1)[0]
+        if "311" in block:
+            ok(f"help.html: the {key} panel names 311 as the interpreter route")
+        else:
+            bad(f"help.html: the {key} panel does not mention 311. It is the "
+                f"fallback that works even if the translation above it reads badly.")
+
+
+def check_directory_needs():
+    """Every need offered in the index must lead to something.
+
+    The index is a promise: fifteen sentences, each saying "there is help for
+    this". A heading with nothing under it, or a tile pointing at a section
+    that no longer exists, breaks that promise silently.
+    """
+    src = read("help.html")
+    tiles = re.findall(r'<a class="need" href="#n-([a-z-]+)"', src)
+    groups = re.findall(r'<section class="grp" id="n-([a-z-]+)"', src)
+    if tiles and tiles == groups:
+        ok(f"help.html: all {len(tiles)} needs in the index match the sections, in order")
+    else:
+        bad(f"help.html: the need index {tiles} does not match the sections {groups}")
+
+    for g in groups:
+        block = src.split(f'id="n-{g}"', 1)[-1].split("</section>", 1)[0]
+        n = block.count('<li class="r"')
+        if n:
+            ok(f"help.html: '{g}' offers {n} place(s)")
+        else:
+            bad(f"help.html: '{g}' is a heading with nothing under it")
+
+
+def check_directory_a11y():
+    """The basics, on the page most likely to be read by somebody who needs them."""
+    src = read("help.html")
+    if src.count("<h1") == 1:
+        ok("help.html: exactly one h1")
+    else:
+        bad(f"help.html: expected 1 h1, found {src.count('<h1')}")
+    if 'class="skip"' in src:
+        ok("help.html: skip link present")
+    else:
+        bad("help.html: no skip link")
+    if 'aria-live="polite"' in src:
+        ok("help.html: the result count is announced when the list changes")
+    else:
+        bad("help.html: filtering changes the list with no live region, so a "
+            "screen reader user gets no feedback that anything happened")
+
+    ids = re.findall(r'\sid="([^"]+)"', src)
+    dupes = {i for i in ids if ids.count(i) > 1}
+    if dupes:
+        bad(f"help.html: duplicate id(s) {sorted(dupes)[:5]}; every anchor to "
+            f"one of these lands on whichever came first")
+    else:
+        ok(f"help.html: all {len(ids)} ids are unique")
+
+    # Seven resources are filed under two needs and so are rendered twice. The
+    # count the page prints must be resources, not rows, or it overstates the
+    # directory by exactly the number of things we cross-filed.
+    keys = re.findall(r'data-key="([^"]+)"', src)
+    lede = re.search(r"list of <b>(\d+) places</b>", src)
+    if not lede:
+        bad("help.html: the lede no longer states how many places are listed")
+    elif int(lede.group(1)) == len(set(keys)):
+        ok(f"help.html: the lede's count ({lede.group(1)}) is unique resources, "
+           f"not the {len(keys)} rows rendered")
+    else:
+        bad(f"help.html: the lede claims {lede.group(1)} places but there are "
+            f"{len(set(keys))} distinct resources")
+
+
+def check_directory_print():
+    """Paper is a real output: students hand people printed sheets.
+
+    The failure this guards is subtle — print hid the disclosures, which is
+    where the hours, address and languages live, so the sheet carried a name
+    and a number and none of the facts that decide whether somebody can get
+    there.
+    """
+    css = read("help.css")
+    block = re.search(r"@media print\{(.*)\n\}", css, flags=re.S)
+    if not block:
+        bad("help.css: no print stylesheet, so the leave-behind is the screen "
+            "design on paper")
+        return
+    p = block.group(1)
+    if re.search(r"\.r__facts\s*\{[^}]*display:\s*none", p):
+        bad("help.css: print hides the fact list, so the sheet loses the hours, "
+            "the address and the languages")
+    else:
+        ok("help.css: print keeps each resource's hours, address and languages")
+    if re.search(r"\.vowbox\{[^}]*display:\s*none", p) or ".vowbox" not in p:
+        bad("help.css: the honesty statement is not styled for print. A printed "
+            "sheet is exactly where somebody mistakes a student for a professional.")
+    else:
+        ok("help.css: the honesty statement prints")
+    if "break-inside:avoid" in p:
+        ok("help.css: resource cards are kept whole across page breaks")
+    else:
+        bad("help.css: nothing stops a page break splitting a card, leaving a "
+            "phone number on one sheet and its name on another")
+
+    js = read("help.js")
+    if "beforeprint" in js and "afterprint" in js:
+        ok("help.js opens the disclosures for printing and closes them after")
+    else:
+        bad("help.js does not open the disclosures on beforeprint, so Ctrl+P "
+            "produces a sheet with no hours or addresses on it")
+
+
+def check_home_offers_help():
+    """The home page must lead somewhere useful for somebody in trouble.
+
+    This is the whole reorganisation in one check. The page used to answer
+    "the help is real, free and invisible" with a partner pitch, and every
+    call to action on it was addressed to somebody who was not frightened.
+    """
+    src = read("index.html")
+    hero = re.search(r'<div class="hero__cta">(.*?)</div>', src, flags=re.S)
+    if hero and 'href="help.html"' in hero.group(1):
+        first = re.search(r'href="([^"]+)"', hero.group(1)).group(1)
+        if first == "help.html":
+            ok("index.html: the hero's first call to action is finding help")
+        else:
+            bad(f"index.html: the hero leads with {first}, not the directory. "
+                f"The headline is addressed to somebody with a bill they "
+                f"cannot pay; the first button under it should be too.")
+    else:
+        bad("index.html: the hero does not offer the directory at all")
+
+    if re.search(r'<section class="scene[^"]*" id="help">', src):
+        ok("index.html: the resident chapter is present")
+    else:
+        bad("index.html: the resident chapter (#help) is gone")
+
+    # It has to arrive before the page starts talking to organisations.
+    pos_help = src.find('id="help"')
+    pos_students = src.find('id="students"')
+    pos_partners = src.find('id="partners"')
+    if -1 < pos_help < pos_students < pos_partners:
+        ok("index.html: residents, then students, then partners")
+    else:
+        bad("index.html: the resident chapter no longer comes first. Somebody "
+            "in trouble should not scroll past a volunteer pitch and a partner "
+            "pitch to reach the help.")
+
+    langs = re.findall(r'href="help\.html#lang-([a-z-]+)"', src)
+    if len(langs) >= 7:
+        ok(f"index.html: {len(langs)} in-language entry points on the home page")
+    else:
+        bad(f"index.html: only {len(langs)} in-language links; somebody who "
+            f"cannot read the headline needs a way in from here")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
                check_billing_boundaries, check_forms, check_labels, check_door,
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
-               check_asset_budget, check_a11y_basics, check_nav_matches_sections]:
+               check_asset_budget, check_a11y_basics, check_nav_matches_sections,
+               check_directory_is_generated, check_directory_reachable,
+               check_directory_emergency, check_directory_no_js_contract,
+               check_directory_languages, check_directory_needs,
+               check_directory_a11y, check_directory_print,
+               check_home_offers_help]:
         try:
             fn()
         except Missing as e:

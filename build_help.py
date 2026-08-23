@@ -175,6 +175,11 @@ BOROUGHS = [
 # which is true in every language and is the safe fallback if a sentence here
 # reads badly. Get each one read by a speaker before this goes live; the
 # obvious reviewers are the multilingual students the corps is recruiting.
+#
+# One rule these must not break: a phone number stays in Western digits, in
+# every language. Bengali prose would normally write 311 as ৩১১, and that is
+# correct Bengali and useless on a keypad — the person has to match what they
+# read against the buttons on the phone in their hand.
 # ---------------------------------------------------------------------------
 LANGUAGES = [
     {
@@ -231,7 +236,7 @@ LANGUAGES = [
                 "বাসস্থানের সাহায্য, আইনি সাহায্য এবং আর্থিক সাহায্য পাওয়া যায়। "
                 "প্রায় সবই বিনামূল্যে। বেশিরভাগ জায়গা আপনার অভিবাসন অবস্থা "
                 "জিজ্ঞাসা করে না।",
-        "interp": "নিচের তালিকাটি ইংরেজিতে লেখা। ৩১১ নম্বরে ফোন করুন এবং বাংলা "
+        "interp": "নিচের তালিকাটি ইংরেজিতে লেখা। 311 নম্বরে ফোন করুন এবং বাংলা "
                   "দোভাষী চান। এটি বিনামূল্যে, যেকোনো সময়।",
         "cta": "বাংলায় সেবা দেয় এমন জায়গা দেখুন",
     },
@@ -894,11 +899,11 @@ def selfcheck():
         if kind == "call":
             assert re.fullmatch(r"\+1[0-9]{10}|[0-9]{3}", href), \
                 f"{r['Resource Name']}: unusable tel: {href!r} from {r['Phone']!r}"
-    print("selfcheck ok")
 
 
 if __name__ == "__main__":
     selfcheck()
+    print("selfcheck ok")
     rows = load()
     print(f"{len(rows)} resources")
     from collections import Counter

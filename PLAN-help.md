@@ -51,7 +51,7 @@ written for.
 - [x] **S6** Accessibility hardening *(contrast 20/20 pass AA; min-width:0 grid fix; BCP-47 lang tags; 44px targets; 320px & 200%-text verified)*
 - [x] **S7** Language access *(7 in-language panels opening on :target, language bar on both pages, JS follow-through to the filter)* — **translations need a native-speaker review before launch**
 - [x] **S8** Print / leave-behind sheets *(prints whatever the filter shows; disclosures opened for paper; emergency numbers and honesty statement on every sheet)*
-- [ ] **S9** Extend `check.py` to cover the resident surfaces
+- [x] **S9** Extend `check.py` *(9 new guards, 522 checks; each verified to fail when the thing it guards is broken)*
 - [ ] **S10** Browser QA, desktop + phone, iterate
 - [ ] **S11** Polish, commit, PR
 
