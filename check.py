@@ -1462,6 +1462,22 @@ def check_directory_languages():
     else:
         ok(f"help.html: every lang attribute is a real subtag {sorted(tags)}")
 
+    # Every language offered must actually reach a usable share of the
+    # directory. This is the guard for the bug that made the feature nearly
+    # useless: 77 rows record their languages as "Multiple", which matched no
+    # chip, so filtering by Arabic — which no row names explicitly — returned
+    # six places out of a hundred and eighteen and implied the rest could not
+    # help. A chip that reaches almost nothing is worse than no chip.
+    total = src.count('<li class="r"')
+    for key, _tag in [(k, t) for k, t in re.findall(r'data-f="lang" data-v="([a-z-]+)"[^>]*lang="([a-z]+)"', src)]:
+        reach = len(re.findall(r'data-lang="[^"]*(?:\b' + key + r'\b|\bmany\b)[^"]*"', src))
+        if reach >= total * 0.25:
+            ok(f"help.html: the {key} filter reaches {reach} of {total} rows")
+        else:
+            bad(f"help.html: the {key} filter reaches only {reach} of {total} "
+                f"rows. Filtering by it hides most of the directory from "
+                f"exactly the person least able to search it another way.")
+
     if 'dir="rtl"' in src:
         ok("help.html: the Arabic panel is marked right-to-left")
     else:

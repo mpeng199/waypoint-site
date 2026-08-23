@@ -61,7 +61,22 @@ written for.
       Word-start matching, relevance ordering, crisis/DV vernacular, and four
       missing medical-bill resources added — the directory had none)*
 - [x] **S14** Final polish *(no-JS search box, doors guard, start-here ordering; 529 checks)*
+- [x] **S16** Directory data quality *(language filter reached 6 of 118 for Arabic; now 85, with explicitly-named rows floated)*
 - [ ] **S15** Push + PR — not done: outward-facing, waiting on your go-ahead
+
+## Known data weaknesses (source, not code)
+
+- **`Languages` is "Multiple" on 77 of 118 rows**, which records nothing
+  useful. No row names Arabic at all, one names Bengali, one Korean, one
+  Haitian Creole. The filter now treats a vague answer as "reachable through
+  an interpreter" so it hides nothing, and floats the rows that actually name
+  the language — but the real fix is at the source. Worth asking each partner
+  which languages they staff, and recording them.
+- **`Hours` has 51 distinct formats** for 118 rows ("Mon–Fri", "Vary by site",
+  "24/7 online", "By appointment"). Readable, not machine-usable, so there is
+  no "open now" filter and should not be one until the data supports it.
+- **10 rows have no phone number**, only a website. That is correct for a
+  lottery portal or an online screener; it is a gap for anything else.
 
 ## Invariants that must not break
 

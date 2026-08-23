@@ -215,6 +215,7 @@ b,strong{ font-weight:600; }
 .fset{ border:0; padding:0; margin:0; }
 .fset legend{ font-weight:600; font-size:.88rem; color:var(--ink-2);
   text-transform:uppercase; letter-spacing:.06em; padding:0 0 8px; }
+.fset__hint{ font-size:.88rem; color:var(--ink-3); margin:0 0 10px; max-width:60ch; }
 .chips{ display:flex; flex-wrap:wrap; gap:8px; }
 .chip{ font:inherit; font-size:.94rem; font-weight:500; cursor:pointer;
   background:var(--surface); color:var(--ink-2);
@@ -281,6 +282,8 @@ b,strong{ font-weight:600; }
   border:1.5px solid var(--line); border-radius:999px; }
 .grp__top:hover{ background:var(--line-2); }
 
+/* grid, and order-aware: help.js floats the places that name the reader's
+   language to the front of their group when a language chip is on. */
 .rows{ display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); }
 
 /* ------------------------------------------------------------- one row */

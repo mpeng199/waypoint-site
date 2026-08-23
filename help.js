@@ -56,6 +56,12 @@
     return facetsOk(r);
   }
 
+  function namesALanguage(r) {
+    if (!active.lang.length) return false;
+    var has = (r.dataset.lang || "").split(" ");
+    return active.lang.some(function (v) { return has.indexOf(v) !== -1; });
+  }
+
   function facetsOk(r) {
     for (var facet in active) {
       var want = active[facet];
@@ -63,7 +69,13 @@
       var has = (r.dataset[facet] || "").split(" ");
       // OR inside a facet, AND across facets: "Brooklyn or Queens" but
       // "Brooklyn AND Spanish". Anything else surprises people.
-      var hit = want.some(function (v) { return has.indexOf(v) !== -1; });
+      // A language chip also matches a row that works in many languages
+      // through an interpreter — see VAGUE_LANG in build_help.py. Without
+      // this, filtering by a language hides most of the directory.
+      var hit = want.some(function (v) {
+        return has.indexOf(v) !== -1 ||
+               (facet === "lang" && has.indexOf("many") !== -1);
+      });
       if (!hit) return false;
     }
     return true;
@@ -80,6 +92,13 @@
       var ok = loose ? (loosened(r) && facetsOk(r)) : matches(r);
       r.hidden = !ok;
       if (ok && !shown[r._key]) { shown[r._key] = 1; n++; }
+      // With a language chip on, the places that actually NAME that language
+      // lead their group, and the ones reachable only through an interpreter
+      // follow. Nothing is hidden either way — a filter that hides help is
+      // worse than no filter — but "they speak Bengali" and "they can get a
+      // Bengali interpreter" are different answers, and the first one should
+      // not be buried under eighty of the second.
+      r.style.order = namesALanguage(r) ? "-1" : "";
     });
 
     // A group heading over nothing reads as "we have none of this", when the

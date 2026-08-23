@@ -445,14 +445,26 @@ def boroughs_for(row):
     return hits or [k for k, _ in BOROUGHS] + ["citywide"]
 
 
+# "Multiple" is what 77 of the 118 rows say under Languages, and on its own it
+# matched no chip at all — so filtering by Español hid two thirds of the
+# directory, and filtering by العربية, which no row names explicitly, left six
+# places out of a hundred and eighteen. A filter that hides help is worse than
+# no filter.
+#
+# So a vague-but-real answer counts as "many": it is not a promise that they
+# speak Arabic, it is what the directory actually knows, which is that they
+# work in more than one language and usually through an interpreter. The chip
+# matches a named language OR "many", and the filter says so in plain words
+# rather than implying a guarantee it cannot make.
+VAGUE_LANG = re.compile(
+    r"multiple|\d+\+? ?languages|interpret|all languages|language line", re.I)
+
+
 def langs_for(row):
     cell = (row["Languages"] or "").lower()
     hits = [key for key, words in LANG_MATCH.items() if any(w in cell for w in words)]
-    # "175+ languages via interpreter" and friends: an interpreter line covers
-    # every chip we offer, and it is the single most useful fact for somebody
-    # who does not read English.
-    if re.search(r"\d\d\+? languages|interpreter|all languages|language line", cell):
-        hits = [L["key"] for L in LANGUAGES]
+    if VAGUE_LANG.search(cell):
+        hits.append("many")
     return hits
 
 
@@ -641,6 +653,8 @@ def render_row(r, need_key):
         ("How to reach them", r["Access Type"]),
     ]
     facts = [(k, v) for k, v in facts if v and v.lower() not in ("n/a", "-")]
+    facts = [(k, "Multiple languages — ask when you call" if k == "Languages"
+                 and v.strip().lower() == "multiple" else v) for k, v in facts]
     a.append('<details class="r__more"><summary><span>More about this</span></summary>'
              '<div class="r__facts"><dl>')
     for k, v in facts:
@@ -816,7 +830,10 @@ def render(rows):
     for key, label in BOROUGHS:
         A(f'      <button type="button" class="chip" data-f="boro" data-v="{key}" aria-pressed="false">{label}</button>')
     A('    </div></fieldset>')
-    A('    <fieldset class="fset"><legend>Language you speak</legend><div class="chips">')
+    A('    <fieldset class="fset"><legend>Language you speak</legend>')
+    A('      <p class="fset__hint">Shows places that name your language, and '
+      'places that work through interpreters. Ask when you call.</p>')
+    A('      <div class="chips">')
     for L in LANGUAGES:
         A(f'      <button type="button" class="chip" data-f="lang" data-v="{L["key"]}" '
           f'aria-pressed="false" lang="{L["tag"]}">{esc(L["endonym"])}</button>')
