@@ -61,6 +61,12 @@ body.help{
   font-size:clamp(1.0625rem,.98rem + .35vw,1.1875rem);
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
+  /* WCAG 1.4.4: text has to reach 200% without a horizontal scrollbar. At 2x
+     on a 320px screen a single long token — an email address, a hyphenated
+     programme name — is wider than the viewport on its own, and one of them
+     pushes the whole page sideways. Breaking inside a word is ugly and is
+     still the correct answer at that size. */
+  overflow-wrap:break-word;
 }
 
 h1,h2,h3{ font-family:var(--display); font-weight:400; line-height:1.12; margin:0; letter-spacing:-.01em; }
@@ -126,7 +132,7 @@ b,strong{ font-weight:600; }
   padding:clamp(22px,3.4vw,34px); margin-bottom:clamp(28px,5vw,48px); }
 .sos__h{ font-size:clamp(1.35rem,1.2rem + .7vw,1.7rem); color:#FFF; margin-bottom:.7em; }
 .sos__list{ display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
-.sos__list a{ display:flex; flex-direction:column; gap:2px; text-decoration:none;
+.sos__list a{ display:flex; flex-direction:column; gap:2px; text-decoration:none; min-width:0;
   background:var(--surface); border-radius:var(--r-s);
   padding:14px 16px; min-height:60px; justify-content:center;
   transition:transform .16s var(--ease), box-shadow .16s var(--ease); }
@@ -144,7 +150,9 @@ b,strong{ font-weight:600; }
   transition:border-color .18s var(--ease), box-shadow .18s var(--ease); }
 .find__box:focus-within{ border-color:var(--green); box-shadow:0 0 0 4px rgba(30,53,40,.1); }
 .find__box .ico{ width:22px; height:22px; color:var(--ink-3); flex:none; }
-.find__box input{ flex:1; border:0; background:none; font:inherit; color:inherit;
+/* min-width:0, or the flex item refuses to shrink below its placeholder's
+   intrinsic width and takes the search box off the side of the screen. */
+.find__box input{ flex:1; min-width:0; border:0; background:none; font:inherit; color:inherit;
   padding:16px 0; min-height:56px; outline:none; }
 .find__box input::placeholder{ color:var(--ink-3); }
 .find__clear{ border:0; background:var(--line-2); color:var(--ink-2); font:inherit;
@@ -174,7 +182,7 @@ b,strong{ font-weight:600; }
 .needs h2{ font-size:clamp(1.7rem,1.3rem + 1.6vw,2.4rem); margin-bottom:.7em; }
 .needs__grid{ display:grid; gap:12px;
   grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
-.need{ display:grid; grid-template-columns:auto 1fr; gap:4px 14px;
+.need{ display:grid; grid-template-columns:auto minmax(0,1fr); gap:4px 14px; min-width:0;
   align-items:start; text-decoration:none; height:100%;
   background:var(--surface); border:1.5px solid var(--line);
   border-radius:var(--r); padding:18px 18px 16px;
@@ -194,23 +202,31 @@ b,strong{ font-weight:600; }
 .dir__none a{ color:var(--green); font-weight:600; }
 
 .grp{ margin-bottom:clamp(38px,6vw,64px); scroll-margin-top:84px; }
-.grp__head{ display:grid; grid-template-columns:auto 1fr auto; gap:16px;
+.grp__head{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:16px;
   align-items:start; padding-bottom:16px; margin-bottom:20px;
   border-bottom:2px solid var(--line); }
 .grp__head .ico{ width:30px; height:30px; color:var(--green-2); margin-top:4px; }
 .grp__head h2{ font-size:clamp(1.5rem,1.2rem + 1.2vw,2.05rem); }
 .grp__head p{ color:var(--ink-2); font-size:.96rem; margin-top:4px; max-width:60ch; }
 .grp__top{ font-size:.88rem; font-weight:600; color:var(--green);
-  text-decoration:none; white-space:nowrap; padding:8px 12px;
+  text-decoration:none; white-space:nowrap; padding:8px 14px;
+  display:inline-flex; align-items:center; min-height:44px;
   border:1.5px solid var(--line); border-radius:999px; }
 .grp__top:hover{ background:var(--line-2); }
 
 .rows{ display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); }
 
 /* ------------------------------------------------------------- one row */
+/* min-width:0 on every grid child, here and below.
+   A grid item defaults to min-width:auto, which means it refuses to be
+   narrower than its own min-content — and one wide descendant (the two-column
+   fact list, a long programme name) then pushes the whole card, and with it
+   the page, past the edge of the screen. Invisible at 100% text on a laptop;
+   at 200% text on a 320px phone it put the page into horizontal scroll, which
+   is exactly the reader this page exists for. */
 .r{ background:var(--surface); border:1.5px solid var(--line);
   border-radius:var(--r); padding:20px; display:flex; flex-direction:column;
-  gap:12px; scroll-margin-top:84px; }
+  gap:12px; scroll-margin-top:84px; min-width:0; }
 .r__name{ font-size:1.22rem; line-height:1.2; }
 .r__kind{ font-size:.8rem; font-weight:600; letter-spacing:.05em;
   text-transform:uppercase; color:var(--ink-3); margin-top:5px; }
@@ -229,7 +245,7 @@ b,strong{ font-weight:600; }
   transition:background .16s var(--ease); }
 .call:hover{ background:var(--green-2); }
 .call .ico{ width:20px; height:20px; flex:none; }
-.call span{ display:flex; flex-direction:column; line-height:1.2; }
+.call span{ display:flex; flex-direction:column; line-height:1.2; min-width:0; }
 .call small{ font-size:.72rem; font-weight:500; opacity:.8; letter-spacing:.04em;
   text-transform:uppercase; }
 .visit{ display:inline-flex; align-items:center; gap:7px; text-decoration:none;
@@ -240,19 +256,22 @@ b,strong{ font-weight:600; }
 .visit .arr{ color:var(--gold-deep); }
 
 .r__more{ border-top:1px solid var(--line-2); padding-top:12px; }
+/* 44px, not the 32 it was. WCAG's AA floor for a pointer target is 24px and
+   this cleared it, but the reference reader here is somebody in their
+   seventies tapping on a phone, and AAA's 44 is the number written for them. */
 .r__more summary{ cursor:pointer; font-weight:600; font-size:.92rem;
   color:var(--green); list-style:none; display:flex; align-items:center; gap:8px;
-  min-height:32px; }
+  min-height:44px; }
 .r__more summary::-webkit-details-marker{ display:none; }
 .r__more summary::after{ content:""; width:8px; height:8px; flex:none;
   border-right:2px solid currentColor; border-bottom:2px solid currentColor;
   transform:rotate(45deg) translateY(-2px); transition:transform .2s var(--ease); }
 .r__more[open] summary::after{ transform:rotate(-135deg) translateY(-2px); }
 .r__facts{ padding-top:12px; }
-.r__facts dl{ display:grid; grid-template-columns:auto 1fr; gap:6px 14px; margin:0;
-  font-size:.9rem; }
+.r__facts dl{ display:grid; grid-template-columns:minmax(0,auto) minmax(0,1fr);
+  gap:6px 14px; margin:0; font-size:.9rem; }
 .r__facts dt{ font-weight:600; color:var(--ink-3); }
-.r__facts dd{ margin:0; color:var(--ink-2); }
+.r__facts dd{ margin:0; color:var(--ink-2); min-width:0; }
 .r__note{ margin-top:12px; font-size:.9rem; color:var(--ink-2);
   background:var(--line-2); border-radius:var(--r-s); padding:10px 12px; }
 .r__ver{ margin-top:10px; font-size:.8rem; color:var(--ink-3); }
@@ -273,16 +292,19 @@ b,strong{ font-weight:600; }
 .hfoot__in{ max-width:var(--wrap); margin:0 auto; padding:clamp(28px,4vw,44px) var(--pad); }
 .hfoot__say{ max-width:62ch; color:var(--ink-2); }
 .hfoot__links{ display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:18px; }
-.hfoot__links a{ font-weight:500; color:var(--ink); text-underline-offset:3px; }
+.hfoot__links a{ font-weight:500; color:var(--ink); text-underline-offset:3px;
+  display:inline-flex; align-items:center; min-height:44px; overflow-wrap:anywhere; }
 .hfoot__ver{ margin-top:18px; font-size:.86rem; color:var(--ink-3); }
 
 /* ------------------------------------------------------------ responsive */
 @media (max-width:640px){
   .hhead__in{ flex-wrap:wrap; gap:10px; }
-  .hhead__links{ width:100%; overflow-x:auto; padding-bottom:2px; }
-  .hhead__links a{ white-space:nowrap; }
+  /* Wrap rather than scroll sideways. At 200% text these three links are
+     wider than a 320px screen, and a scroll strip hides the last one behind a
+     gesture; stacking them just makes the header taller. */
+  .hhead__links{ width:100%; flex-wrap:wrap; }
   .rows,.needs__grid{ grid-template-columns:1fr; }
-  .grp__head{ grid-template-columns:auto 1fr; }
+  .grp__head{ grid-template-columns:auto minmax(0,1fr); }
   .grp__top{ display:none; }
   .r__do{ flex-direction:column; align-items:stretch; }
   .call,.visit{ justify-content:center; }

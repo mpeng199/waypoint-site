@@ -158,14 +158,20 @@ BOROUGHS = [
 
 # Languages worth their own filter row: the ones the directory actually carries
 # in volume. Anything rarer is still searchable, it just does not get a chip.
+#
+# The third column is a real BCP-47 tag, not our internal key. A chip reading
+# "Español" marked lang="spanish" is marked with nothing — the tag is invalid,
+# so a screen reader keeps its English voice and reads the label as English.
+# Getting this right on the one row of the page addressed to people who do not
+# read English is not a detail.
 LANG_CHIPS = [
-    ("spanish", "Español"),
-    ("chinese", "中文"),
-    ("russian", "Русский"),
-    ("haitian-creole", "Kreyòl"),
-    ("bengali", "বাংলা"),
-    ("korean", "한국어"),
-    ("arabic", "العربية"),
+    ("spanish", "Español", "es"),
+    ("chinese", "中文", "zh"),
+    ("russian", "Русский", "ru"),
+    ("haitian-creole", "Kreyòl Ayisyen", "ht"),
+    ("bengali", "বাংলা", "bn"),
+    ("korean", "한국어", "ko"),
+    ("arabic", "العربية", "ar"),
 ]
 
 LANG_MATCH = {
@@ -323,7 +329,7 @@ def langs_for(row):
     # every chip we offer, and it is the single most useful fact for somebody
     # who does not read English.
     if re.search(r"\d\d\+? languages|interpreter|all languages|language line", cell):
-        hits = [k for k, _ in LANG_CHIPS]
+        hits = [c[0] for c in LANG_CHIPS]
     return hits
 
 
@@ -638,8 +644,9 @@ def render(rows):
         A(f'      <button type="button" class="chip" data-f="boro" data-v="{key}" aria-pressed="false">{label}</button>')
     A('    </div></fieldset>')
     A('    <fieldset class="fset"><legend>Language you speak</legend><div class="chips">')
-    for key, label in LANG_CHIPS:
-        A(f'      <button type="button" class="chip" data-f="lang" data-v="{key}" aria-pressed="false" lang="{key.split("-")[0]}">{label}</button>')
+    for key, label, tag in LANG_CHIPS:
+        A(f'      <button type="button" class="chip" data-f="lang" data-v="{key}" '
+          f'aria-pressed="false" lang="{tag}">{label}</button>')
     A('    </div></fieldset>')
     A('    <fieldset class="fset"><legend>Only show</legend><div class="chips">')
     for key, label in [("free", "Free"), ("open-247", "Open 24/7"),
@@ -713,7 +720,7 @@ def render(rows):
     A('      <li><a href="index.html#students">Volunteer with us</a></li>')
     A('      <li><a href="index.html#partners">For organisations</a></li>')
     A('      <li><a href="privacy.html">Privacy &amp; legal</a></li>')
-    A('      <li><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a></li>')
+    A('      <li><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@<wbr />gmail.com</a></li>')
     A('    </ul>')
     A(f'    <p class="hfoot__ver">{n} resources. Last checked June 2026. '
       'Programs change &mdash; if something here is wrong, please tell us.</p>')
