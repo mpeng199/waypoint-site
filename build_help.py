@@ -780,7 +780,15 @@ def render(rows):
     A('</section>')
 
     # ---- search + filters
-    A('<section class="find" aria-labelledby="find-h">')
+    # The whole search block ships hidden and help.js reveals it, for the same
+    # reason the filter chips do: without a script none of it can work, and a
+    # search field that silently does nothing is worse than no search field.
+    # The <noscript> beside it is the native way to say so — it renders only
+    # when scripts are off, and needs no script of its own to decide that.
+    A('<noscript><p class="noscript-note">Search and filtering need JavaScript, '
+      'which is turned off. Everything is still here: all the places are listed '
+      'below, grouped by what you need. Use the list to jump to a group.</p></noscript>')
+    A('<section class="find" aria-labelledby="find-h" hidden>')
     A('  <h2 id="find-h" class="sr-only">Search and narrow the list</h2>')
     A('  <div class="find__search">')
     A('    <label for="q">Search for what you need</label>')
@@ -792,7 +800,7 @@ def render(rows):
     A('    </div>')
     A('  </div>')
 
-    A('  <div class="find__filters" hidden>')
+    A('  <div class="find__filters">')
     A('    <fieldset class="fset"><legend>Where you are</legend><div class="chips">')
     for key, label in BOROUGHS:
         A(f'      <button type="button" class="chip" data-f="boro" data-v="{key}" aria-pressed="false">{label}</button>')

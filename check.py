@@ -1419,7 +1419,7 @@ def check_directory_no_js_contract():
     else:
         ok("help.html: no resource row is hidden in the served HTML")
 
-    for sel, why in [(r'<div class="find__filters" hidden>', "the filter chips"),
+    for sel, why in [(r'<section class="find"[^>]*\shidden>', "the search and filter block"),
                      (r'<p class="dir__none" hidden>', "the no-matches message"),
                      (r'<button type="button" class="printbtn" hidden>', "the print button")]:
         if re.search(sel, src):
@@ -1427,6 +1427,12 @@ def check_directory_no_js_contract():
         else:
             bad(f"help.html: {why} no longer ships hidden — without JavaScript "
                 f"it would be a control that does nothing")
+
+    if "<noscript>" in src:
+        ok("help.html: a <noscript> note explains what is unavailable and why")
+    else:
+        bad("help.html: no <noscript> note. With scripts off the search block "
+            "vanishes with no explanation of where it went.")
 
     js = read("help.js")
     for meth in ["innerHTML", "insertAdjacentHTML", "document.write"]:
@@ -1620,6 +1626,57 @@ def check_home_offers_help():
             f"cannot read the headline needs a way in from here")
 
 
+# The home page names four routes out of a medical bill. Each one is a promise
+# that the directory can be asked about it, and for a while none of them could
+# be: help.html contained no row mentioning charity care, an external appeal, a
+# denial, an appeal, a medical bill or medical debt, while index.html sent
+# people to the directory for exactly those things. Nothing broke, nothing
+# looked wrong, and the page was simply not true.
+#
+# Adding a door here without a resource behind it fails the build. If a door is
+# renamed, this map has to be updated with it — that is the point, and the
+# failure message says so.
+DOORS = {
+    "Hospital financial assistance": ["financial assistance"],
+    "The state's independent appeal": ["external appeal"],
+    "Free coverage counselors":       ["community health advocates", "health insurance"],
+    "Prescription cost programmes":   ["medication", "prescription"],
+}
+
+
+def check_doors_have_resources():
+    """Every route the home page names must be answerable from the directory."""
+    idx = read("index.html")
+    named = re.findall(r'<span class="ways__name">([^<]+)</span>', idx)
+    if not named:
+        bad("index.html: no doors found, so the promises cannot be checked")
+        return
+
+    helptext = strip_tags(read("help.html")).lower()
+    bills = read("help.html").split('id="n-bills"', 1)
+    bills = strip_tags(bills[-1].split("</section>", 1)[0]).lower() if len(bills) > 1 else ""
+
+    for door in named:
+        door = door.replace("&amp;", "&").strip()
+        terms = DOORS.get(door)
+        if terms is None:
+            bad(f'index.html names the route "{door}" but check.py has no entry '
+                f'for it in DOORS. Add one naming the words that prove the '
+                f'directory can answer it, or the page is promising something '
+                f'nothing backs up.')
+            continue
+        if any(t in bills for t in terms):
+            ok(f'door "{door}" has a resource behind it')
+        elif any(t in helptext for t in terms):
+            bad(f'door "{door}" is answered somewhere in the directory but not '
+                f'under "I got a medical bill" — somebody following that '
+                f'promise from the home page lands in the wrong group')
+        else:
+            bad(f'door "{door}" is named on the home page and NOTHING in the '
+                f'directory answers it. Looked for {terms}.')
+
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -1631,7 +1688,7 @@ def main():
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
                check_directory_a11y, check_directory_print,
-               check_home_offers_help]:
+               check_home_offers_help, check_doors_have_resources]:
         try:
             fn()
         except Missing as e:

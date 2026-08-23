@@ -188,6 +188,12 @@ b,strong{ font-weight:600; }
 .sos__for{ font-size:.9rem; color:var(--ink-2); line-height:1.35; }
 .sos__note{ margin-top:16px; font-size:.94rem; color:rgba(253,246,243,.88); max-width:70ch; }
 
+/* Same call as the emergency panel: a plain bordered card, not a tinted box
+   with an accent stripe down one edge. */
+.noscript-note{ background:var(--line-2); border:1.5px solid var(--line);
+  border-radius:var(--r); padding:18px 22px;
+  margin-bottom:clamp(28px,5vw,44px); max-width:68ch; color:var(--ink-2); }
+
 /* ---------------------------------------------------------- search/filter */
 .find{ margin-bottom:clamp(28px,5vw,44px); }
 .find__search label{ display:block; font-weight:600; margin-bottom:8px; font-size:.98rem; }

@@ -107,7 +107,8 @@
   </ul>
   <p class="sos__note">These lines are free, and they are answered by people trained for exactly this. You can call them without giving your name.</p>
 </section>
-<section class="find" aria-labelledby="find-h">
+<noscript><p class="noscript-note">Search and filtering need JavaScript, which is turned off. Everything is still here: all the places are listed below, grouped by what you need. Use the list to jump to a group.</p></noscript>
+<section class="find" aria-labelledby="find-h" hidden>
   <h2 id="find-h" class="sr-only">Search and narrow the list</h2>
   <div class="find__search">
     <label for="q">Search for what you need</label>
@@ -117,7 +118,7 @@
       <button type="button" class="find__clear" hidden>Clear</button>
     </div>
   </div>
-  <div class="find__filters" hidden>
+  <div class="find__filters">
     <fieldset class="fset"><legend>Where you are</legend><div class="chips">
       <button type="button" class="chip" data-f="boro" data-v="bronx" aria-pressed="false">Bronx</button>
       <button type="button" class="chip" data-f="boro" data-v="brooklyn" aria-pressed="false">Brooklyn</button>

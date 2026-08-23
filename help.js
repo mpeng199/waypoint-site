@@ -202,8 +202,9 @@
     });
   }
 
-  // ---- chips
-  if (filters) filters.hidden = false;
+  // ---- reveal the controls that need this script to exist at all
+  var findBlock = document.querySelector(".find");
+  if (findBlock) findBlock.hidden = false;
   document.addEventListener("click", function (e) {
     var chip = e.target.closest ? e.target.closest(".chip") : null;
     if (chip) {
