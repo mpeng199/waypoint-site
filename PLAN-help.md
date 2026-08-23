@@ -57,8 +57,9 @@ written for.
 - [x] **S12** Link rot sweep *(check_links_live.py; 9 URLs fixed including both
       shelter intake pages, which were 404 behind a WAF 403; Baby Buggy renamed
       to Good+ Foundation)*
-- [ ] **S13** Realistic-query sweep: search the phrases people actually arrive
-      with, fix the vocabulary gaps it finds
+- [x] **S13** Realistic-query sweep *(60 real phrasings; 17 failures -> 4 benign.
+      Word-start matching, relevance ordering, crisis/DV vernacular, and four
+      missing medical-bill resources added — the directory had none)*
 - [ ] **S14** Final polish, PR
 
 ## Invariants that must not break

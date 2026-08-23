@@ -67,7 +67,13 @@ NEEDS = [
         "label": "I got a medical bill, or my insurance said no",
         "blurb": "The free experts who handle hospital bills, denials, and prescription costs.",
         "icon": "bill",
-        "cats": [],
+        # These four sit in their own category because they answer a different
+        # question from "I need to see a doctor". The site's whole public
+        # identity is medical bills and denied claims, and before they were
+        # added the directory held nothing at all on charity care, external
+        # appeals, medical debt or surprise billing — the home page named four
+        # doors and the list could open two of them.
+        "cats": ["Medical Bills & Insurance"],
         "also": [
             "health insurance",
             "medicare help",
@@ -301,20 +307,42 @@ SYNONYMS = [
     ("tenant",          "landlord rent apartment lease"),
     ("shelter",         "homeless nowhere to sleep sleep tonight bed"),
     ("housing",         "rent apartment place to live"),
+    ("affordable housing", "section 8 voucher vouchers housing voucher cityfheps "
+                        "nycha public housing lottery"),
     ("utility",         "con ed electric bill gas bill heat heating pay paying cant pay"),
     ("income support",  "welfare public assistance cash benefits pay paying rent money"),
     ("immigration",     "green card papers undocumented ice deportation asylum visa"),
     ("legal",           "lawyer attorney court sue rights"),
-    ("domestic violence","abuse abusive hitting me partner unsafe at home"),
-    ("crisis",          "suicide hopeless panic emergency help now"),
-    ("substance",       "drugs alcohol addiction overdose drinking recovery"),
+    ("domestic violence","abuse abusive hits me hitting me beat me beats me hurt me "
+                        "hurting me scared afraid threatens threatening husband wife "
+                        "boyfriend girlfriend partner unsafe at home violent assault "
+                        "choked stalking restraining order"),
+    ("dv ",             "hits me scared afraid husband boyfriend partner abuse"),
+    ("survivor",        "abuse assault rape raped attacked scared afraid"),
+    # The four highest-stakes searches on this page returned NOTHING before
+    # these lines existed: "my husband hits me", "im scared of my boyfriend",
+    # "i want to die", "heroin". Somebody types what is happening to them, in
+    # their own words, and the directory answered with a blank page. Nobody
+    # in that state types "domestic violence" or "substance use disorder" —
+    # those are the words the agencies use about them afterwards.
+    ("crisis",          "suicide suicidal want to die kill myself killing myself "
+                        "end my life hopeless cant go on talk to someone "
+                        "someone to talk to lonely panic breakdown emergency help now"),
+    ("substance",       "drugs alcohol addiction overdose drinking recovery heroin "
+                        "fentanyl opioid opioids cocaine crack meth pills detox "
+                        "relapse rehab sober high using"),
+    ("overdose",        "narcan naloxone overdosing heroin fentanyl opioid"),
+    ("addiction",       "heroin fentanyl opioid cocaine meth pills detox rehab drinking"),
     ("mental health",   "depressed depression anxiety therapy counseling"),
     ("senior",          "elderly older adult grandmother grandfather"),
-    ("paratransit",     "access-a-ride wheelchair disabled ride"),
+    ("paratransit",     "access-a-ride access a ride wheelchair disabled ride"),
+    ("rides",           "ride to the doctor ride to appointment transportation "
+                        "get to my appointment"),
     ("transit",         "fair fares metrocard subway bus fare"),
-    ("early childhood", "daycare day care pre-k childcare babysitting"),
+    ("early childhood", "daycare day care pre-k prek 3-k 3k kindergarten childcare "
+                        "babysitting head start preschool nursery"),
     ("youth",           "teen teenager kid young person"),
-    ("job",             "work employment hiring career resume"),
+    ("job",             "work employment hiring career resume training classes"),
     ("esol",            "english classes esl learn english"),
     ("veteran",         "army navy marines air force service member"),
     ("hiv",             "aids positive status testing"),
@@ -323,6 +351,11 @@ SYNONYMS = [
     ("clothing",        "clothes shoes free clothes"),
     ("tax",             "taxes refund filing irs w2"),
     ("identification",  "id card birth certificate documents"),
+    ("citywide info",   "not sure where to start dont know where to start where to begin "
+                        "anything else who do i call"),
+    ("benefits eligibility", "what can i get what am i eligible for do i qualify "
+                        "benefits screener see what i qualify for"),
+    ("social services search", "not sure where to start find services near me"),
 ]
 
 

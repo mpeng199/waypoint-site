@@ -254,7 +254,10 @@ b,strong{ font-weight:600; }
   text-transform:uppercase; letter-spacing:.06em; margin-top:8px; }
 
 /* --------------------------------------------------------- the directory */
-.dir__none{ background:var(--surface); border:1.5px dashed var(--line);
+/* A column so the groups can be reordered by relevance during a search; see
+   help.js. Source order is preserved when nothing is being searched. */
+.dir{ display:flex; flex-direction:column; }
+.dir__none{ order:-9999; background:var(--surface); border:1.5px dashed var(--line);
   border-radius:var(--r); padding:24px; font-size:1.02em; color:var(--ink-2);
   max-width:66ch; }
 .dir__none a{ color:var(--green); font-weight:600; }

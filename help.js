@@ -51,7 +51,7 @@
 
   function matches(r) {
     for (var w = 0; w < words.length; w++) {
-      if (r._find.indexOf(words[w]) === -1) return false;
+      if (!hasWord(r._find, words[w])) return false;
     }
     return facetsOk(r);
   }
@@ -84,11 +84,20 @@
 
     // A group heading over nothing reads as "we have none of this", when the
     // truth is the filter excluded them. Hide the whole section instead.
+    //
+    // And while a search is running, order the surviving groups by how much
+    // of each one matched. Unsearched, the fixed order is deliberate — the
+    // things that get people hurt first, then the rest. Under a search that
+    // order is just wrong: "i want to die" put a sexual assault hotline above
+    // 988 because "safety" is printed before "crisis", and "job training" led
+    // with a health clinic. Most-matched first is what somebody who typed
+    // something specific is asking for.
     var perNeed = Object.create(null);
     groups.forEach(function (g) {
       var live = g.querySelectorAll(".r:not([hidden])").length;
       g.hidden = live === 0;
       perNeed[g.dataset.need] = live;
+      g.style.order = words.length ? String(-live) : "";
     });
 
     // The tile counts are a promise. Leaving them at their full-list numbers
@@ -119,52 +128,65 @@
   // cheaper than the debounce, and rAF does not fire at all in a background
   // tab, which is what made this untestable.
   /* Turning what somebody typed into terms to match on.
-     Three passes, because three different real queries each broke a simpler
-     version of this:
 
-     1. Phrase first. "green card" as two independent words matched 29 rows —
-        every row containing "card" (MetroCard, referral cards) that also
-        happened to contain "green". When the whole phrase appears somewhere,
-        that is what they meant, so use it alone.
-     2. Otherwise every word must appear, in any order, so "free food
-        brooklyn" and "cheap dentist brooklyn" both work.
-     3. But drop words that appear in no row at all. "cant pay my con ed bill"
-        returned nothing because of "my" and "cant". Ignoring a word that
-        matches nothing can only widen the result, and a widened result is
-        always better than the blank page somebody gets otherwise. If no word
-        survives, the query really is unknown and the empty state is honest. */
+     Every word must appear, in any order, so "free food brooklyn" and "cheap
+     dentist brooklyn" both work. Two rules earned by testing real queries:
+
+     1. Words that appear in no row at all are dropped. "cant pay my con ed
+        bill" returned nothing because of "my" and "cant". Ignoring a word
+        that matches nothing can only widen the result, and a widened result
+        beats the blank page somebody gets otherwise. If no word survives, the
+        query really is unknown and the empty state is honest.
+     2. Numbers shorter than three digits are dropped. "section 8" matched 71
+        rows because "8" appears in every street address on the page. 311 and
+        988 are real searches; 8 is not.
+
+     There used to be a phrase-first pass here — if the whole query appeared
+     verbatim in any row, only those rows matched. It was covering for
+     substring matching, and it actively hid better answers: "homeless
+     shelter" appears word-for-word in three descriptions, so it returned
+     those three and never reached the city's actual shelter intake, which
+     matches both words separately. Same for "job training" hiding
+     Workforce1. Matching on word starts removed the reason it existed. */
   var STOP = (" i me my mine we our you your a an the is am are be been it its this that " +
     "to of for and or in on at with from about need needs help please do does did " +
     "how where what who can cant cannot get got some any my im ive have has had " +
     "there here now they them he she his her not no ").split(" ");
 
   function termsFor(raw) {
-    var text = raw.toLowerCase().trim().replace(/[’']/g, "");
+    var text = raw.toLowerCase().trim().replace(/[\u2019']/g, "");
     if (!text) return [];
-    if (rows.some(function (r) { return r._find.indexOf(text) !== -1; })) return [text];
-
     var all = text.split(/[^a-z0-9\-]+/).filter(Boolean);
-    var content = all.filter(function (w) { return STOP.indexOf(w) === -1; });
+    var content = all.filter(function (w) {
+      if (STOP.indexOf(w) !== -1) return false;
+      if (/^\d+$/.test(w) && w.length < 3) return false;
+      // A lone letter matches the start of a quarter of the page. "pre k"
+      // spent its "k" on every word beginning with one.
+      if (w.length < 2) return false;
+      return true;
+    });
     if (!content.length) content = all;
     var useful = content.filter(function (w) {
-      return rows.some(function (r) { return r._find.indexOf(w) !== -1; });
+      return rows.some(function (r) { return hasWord(r._find, w); });
     });
     return useful.length ? useful : content;
   }
 
-  /* Last resort before a blank page.
-     "cant pay my con ed bill" leaves [pay, con, ed, bill] after the stop
-     words, and no single row contains all four. Requiring every word is right
-     for two or three keywords and wrong for a sentence, so when the strict
-     pass empties the page, widen to "any of these words" rather than telling
-     somebody who just described their problem that we have nothing. The
-     count line says which pass they are looking at, so the result is never
-     presented as more precise than it is. */
-  function loosened(r) {
-    for (var w = 0; w < words.length; w++) {
-      if (r._find.indexOf(words[w]) !== -1) return true;
+  /* Match at word starts, not anywhere in the string.
+     Plain substring matching made "ice detained" return 58 rows, because
+     "ice" is inside serv*ice*, off*ice*, just*ice* and pr*ice*s — so somebody
+     whose relative had just been detained got a food pantry and a DV hotline
+     above the immigration lawyers. Anchoring to a word start keeps the useful
+     looseness (a search for "dent" still finds "dental" and "dentist") and
+     drops the noise. */
+  var reCache = {};
+  function hasWord(hay, word) {
+    var re = reCache[word];
+    if (!re) {
+      var esc = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      re = reCache[word] = new RegExp("\\b" + esc);
     }
-    return false;
+    return re.test(hay);
   }
 
   function onType() {
