@@ -48,7 +48,7 @@ written for.
 - [x] **S3** `help.html` resource finder: search, filters, resource rows *(121 rows / 15 groups, help.css, help.js)*
 - [x] **S4** Triage front: "What do you need help with?" + crisis surfacing *(folded into S3: need index + hand-picked emergency strip)*
 - [x] **S5** `index.html` reorganised: residents first *(hero CTA, #help chapter third, nav, skip link, close, footer)*
-- [ ] **S6** Accessibility hardening: contrast, focus, type size, reduced motion
+- [x] **S6** Accessibility hardening *(contrast 20/20 pass AA; min-width:0 grid fix; BCP-47 lang tags; 44px targets; 320px & 200%-text verified)*
 - [ ] **S7** Language access: filter, per-resource languages, in-language entry
 - [ ] **S8** Print / leave-behind sheets
 - [ ] **S9** Extend `check.py` to cover the resident surfaces
