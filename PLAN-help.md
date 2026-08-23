@@ -53,7 +53,7 @@ written for.
 - [x] **S8** Print / leave-behind sheets *(prints whatever the filter shows; disclosures opened for paper; emergency numbers and honesty statement on every sheet)*
 - [x] **S9** Extend `check.py` *(9 new guards, 522 checks; each verified to fail when the thing it guards is broken)*
 - [x] **S10** Browser QA *(1400/900/500/390/320 widths, mobile drawer, keyboard order, every interaction; emergency block regridded 1/2/4)*
-- [ ] **S11** Handoff: document the new build step (the site had none before)
+- [x] **S11** Handoff *(DESIGN.md now documents the directory, the build step, and the four safety decisions; corrected its now-false "No build step" claim)*
 - [ ] **S12** Link rot sweep: 84 outbound URLs — a dead link in a resource
       directory costs somebody in trouble a phone call and their trust
 - [ ] **S13** Realistic-query sweep: search the phrases people actually arrive

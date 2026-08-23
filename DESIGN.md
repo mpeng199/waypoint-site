@@ -475,6 +475,75 @@ All form inputs:
 - All form labels clearly associated with inputs
 - Alt text and ARIA labels on interactive elements
 
+## The directory (`help.html`) — the one generated page
+
+`help.html` is the resident-facing surface: 114 verified NYC resources, grouped
+by the sentence somebody arrives with rather than by the categories the
+agencies use. It is the only page on the site that is generated.
+
+**To change anything in it, edit the source and rebuild:**
+
+```
+python3 build_help.py
+```
+
+- **Resource data** lives in `data/resources.csv` — one row per resource, with
+  the columns the original NYC directory used. Add, correct, or remove rows
+  there.
+- **Everything else** — the fifteen needs and their wording, the search
+  vocabulary, the emergency numbers, the seven in-language panels — lives in
+  tables at the top of `build_help.py`, each with a comment saying what it is
+  for.
+- **Never hand-edit `help.html`.** A fix typed into it survives until the next
+  build and then disappears. `check.py` compares the file against the
+  generator's output and fails if they differ, so this cannot go unnoticed.
+
+### Why generated rather than fetched
+
+The reader is plausibly on a six-year-old Android, on transit data, at a
+locked-down library terminal, or using a screen reader. Fetching JSON and
+templating 121 rows in the browser fails all four. So the rows are baked in
+once, here, and `help.js` only ever *hides* them — the worst case when the
+script fails to load is that somebody sees the whole list, which is what they
+came for. `check.py` enforces both halves of that contract: no row may ship
+hidden, and `help.js` may not build markup.
+
+### Register
+
+Deliberately not `styles.css`. The narrative site is a dark green room you walk
+through — pinned scenes, a WebGL door, inertial scroll. All of that is craft
+aimed at a partner with a laptop and a tax on somebody frightened with a bad
+phone. `help.css` flips it: cream ground, near-black green ink, 18px floor,
+44px targets, nothing moving that you did not touch. The palette and the two
+typefaces are the only things carried across, and they are what keep it
+recognisably the same organisation.
+
+### Things that are safety decisions, not content decisions
+
+- **The emergency strip** (`SOS` in `build_help.py`) is hand-picked. A
+  heuristic over tags and hours previously put a hospital switchboard and two
+  copies of 988 in front of somebody in danger.
+- **Phone numbers stay in Western digits in every language.** Bengali prose
+  would normally write 311 as ৩১১; that is correct Bengali and useless against
+  the keypad in somebody's hand.
+- **The in-language panels have not been reviewed by native speakers.** They
+  are short and carry nothing a reader must act on precisely, and the only
+  instruction any of them gives is "call 311 and ask for an interpreter". Get
+  them read before launch — the multilingual students are the obvious
+  reviewers.
+- **The honesty statement appears on `help.html` and on every printed sheet**,
+  because a leave-behind is exactly where somebody mistakes a student for a
+  professional.
+
+### Print
+
+The printed sheet is a real output — students hand people paper. Whatever the
+filter is showing is what prints, so narrowing to "I need food" in Brooklyn and
+printing gives exactly that sheet. `help.js` opens every disclosure on
+`beforeprint` and closes them after, because on paper the hours, address and
+languages are the useful lines and there is nothing to tap.
+
+
 ## Asset Libraries & References
 
 ### Images
@@ -486,12 +555,12 @@ All form inputs:
 ### External Resources
 
 - **Google Fonts**: Fraunces + Inter (preconnected via `<link rel="preconnect">`). The only third-party origin the site touches, and it is disclosed in `privacy.html`.
-- **Vendored, not CDN**: `assets/vendor/three.module.min.js` + `three.core.min.js` (three.js splits its build — both are required) and `lenis.min.js`, with versions recorded in `assets/vendor/VERSIONS.txt`. No build step; `python3 -m http.server` still serves the site. Vendoring keeps the privacy disclosure honest and means no CDN outage can break the page.
+- **Vendored, not CDN**: `assets/vendor/three.module.min.js` + `three.core.min.js` (three.js splits its build — both are required) and `lenis.min.js`, with versions recorded in `assets/vendor/VERSIONS.txt`. `python3 -m http.server` still serves the site directly — the only generated file is `help.html`, and it is committed, so a clone with no Python run still serves the whole site (see **The directory** below). Vendoring keeps the privacy disclosure honest and means no CDN outage can break the page.
 - **Icons**: Inline SVG for logo (pin marker) and form controls (select dropdown arrow)
 
 ## Verification
 
-`python3 check.py` prints the pass/fail total; add `-v` to list every passing check. It covers dead links and anchors (including fragments into any local page, not just the homepage), missing assets, the honesty statement present verbatim on two surfaces, no surviving references to the removed Schools chapter or the unlaunched Companionship track, no numeric track-record claims, form completeness and labelling, the door's fallback paths and transition invariants, the reel's roll geometry and released states, the line's paired sentences and its undrawn rule, the doors' disclosure wiring and equal-height contract, vendored dependency integrity, the asset-size budget, and that `script.js`'s tracked nav sections match the markup. A missing file is reported as a failed check rather than raised, so one absent page never costs you the rest of the report.
+`python3 check.py` prints the pass/fail total; add `-v` to list every passing check. It covers dead links and anchors (including fragments into any local page, not just the homepage), missing assets, the honesty statement present verbatim on two surfaces, no surviving references to the removed Schools chapter or the unlaunched Companionship track, no numeric track-record claims, form completeness and labelling, the door's fallback paths and transition invariants, the reel's roll geometry and released states, the line's paired sentences and its undrawn rule, the doors' disclosure wiring and equal-height contract, vendored dependency integrity, the asset-size budget, and that `script.js`'s tracked nav sections match the markup. It also covers the resident surfaces: that `help.html` still equals `build_help.py`'s output, that every resource is reachable and every `tel:` will actually dial, that the emergency strip leads with 911 and never repeats a number, the no-JavaScript contract, the seven language panels and their subtags, that every need leads to a section with places in it, that print keeps the hours and the honesty statement, and that the home page still leads with help rather than with a partner pitch. A missing file is reported as a failed check rather than raised, so one absent page never costs you the rest of the report.
 
 ## Notes
 
