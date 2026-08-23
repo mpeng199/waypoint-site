@@ -374,8 +374,13 @@ b,strong{ font-weight:600; }
      gesture; stacking them just makes the header taller. */
   .hhead__links{ width:100%; flex-wrap:wrap; }
   .rows,.needs__grid{ grid-template-columns:1fr; }
+  /* The back-link was hidden here, on the one device where the scroll is
+     longest and there is no other way up. Because the groups interleave, a
+     link at the head of each one is never more than a group away while
+     scrolling — so it moves to its own row under the heading rather than
+     disappearing. */
   .grp__head{ grid-template-columns:auto minmax(0,1fr); }
-  .grp__top{ display:none; }
+  .grp__top{ grid-column:1/-1; justify-self:start; margin-top:4px; }
   .r__do{ flex-direction:column; align-items:stretch; }
   .call,.visit{ justify-content:center; }
 }

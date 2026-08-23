@@ -1510,6 +1510,16 @@ def check_directory_needs():
     else:
         bad(f"help.html: the need index {tiles} does not match the sections {groups}")
 
+    # The back-link must survive the phone. It was display:none under 640px —
+    # on the one device where this page scrolls longest and there is nothing
+    # else to climb back with. Checked once, not per group.
+    if re.search(r"@media \(max-width:640px\)\{.*?\.grp__top\{[^}]*display:\s*none",
+                 read("help.css"), flags=re.S):
+        bad("help.css: .grp__top is hidden on phones, so a reader who has "
+            "scrolled into a group has no way back to the list of needs")
+    else:
+        ok("help.css: the back-link to the needs list survives on a phone")
+
     for g in groups:
         block = src.split(f'id="n-{g}"', 1)[-1].split("</section>", 1)[0]
         n = block.count('<li class="r"')
@@ -1718,10 +1728,19 @@ def main():
                check_directory_languages, check_directory_needs,
                check_directory_a11y, check_directory_print,
                check_home_offers_help, check_doors_have_resources]:
+        before = len(passes) + len(failures)
         try:
             fn()
         except Missing as e:
             bad(f"{fn.__name__}: skipped, {e} is missing")
+        # A check function that reports nothing has stopped checking. This is
+        # not hypothetical: an edit once re-indented two guards into the body
+        # of an `if` that was false, and the suite went on printing "0 failed"
+        # while they no longer ran. Silence is the one failure mode a linter
+        # cannot report on itself, so it is reported here.
+        if len(passes) + len(failures) == before:
+            bad(f"{fn.__name__} ran but asserted nothing, so whatever it "
+                f"guarded is now unguarded")
 
     if VERBOSE:
         for p in passes:
