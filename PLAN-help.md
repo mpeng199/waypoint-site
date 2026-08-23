@@ -54,8 +54,9 @@ written for.
 - [x] **S9** Extend `check.py` *(9 new guards, 522 checks; each verified to fail when the thing it guards is broken)*
 - [x] **S10** Browser QA *(1400/900/500/390/320 widths, mobile drawer, keyboard order, every interaction; emergency block regridded 1/2/4)*
 - [x] **S11** Handoff *(DESIGN.md now documents the directory, the build step, and the four safety decisions; corrected its now-false "No build step" claim)*
-- [ ] **S12** Link rot sweep: 84 outbound URLs — a dead link in a resource
-      directory costs somebody in trouble a phone call and their trust
+- [x] **S12** Link rot sweep *(check_links_live.py; 9 URLs fixed including both
+      shelter intake pages, which were 404 behind a WAF 403; Baby Buggy renamed
+      to Good+ Foundation)*
 - [ ] **S13** Realistic-query sweep: search the phrases people actually arrive
       with, fix the vocabulary gaps it finds
 - [ ] **S14** Final polish, PR
