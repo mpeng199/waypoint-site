@@ -44,10 +44,10 @@ written for.
 ## Sequences
 
 - [x] **S1** Discovery, plan, rebase onto `origin/main` (local main was 28 commits stale)
-- [ ] **S2** Data pipeline: CSV → need taxonomy → build-time generator
-- [ ] **S3** `help.html` resource finder: search, filters, resource rows
-- [ ] **S4** Triage front: "What do you need help with?" + crisis surfacing
-- [ ] **S5** `index.html` reorganised: residents first
+- [x] **S2** Data pipeline: CSV → need taxonomy → build-time generator *(build_help.py, 15 needs, synonym expansion, contact() + self-check)*
+- [x] **S3** `help.html` resource finder: search, filters, resource rows *(121 rows / 15 groups, help.css, help.js)*
+- [x] **S4** Triage front: "What do you need help with?" + crisis surfacing *(folded into S3: need index + hand-picked emergency strip)*
+- [x] **S5** `index.html` reorganised: residents first *(hero CTA, #help chapter third, nav, skip link, close, footer)*
 - [ ] **S6** Accessibility hardening: contrast, focus, type size, reduced motion
 - [ ] **S7** Language access: filter, per-resource languages, in-language entry
 - [ ] **S8** Print / leave-behind sheets
