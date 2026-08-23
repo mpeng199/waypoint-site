@@ -1,0 +1,321 @@
+/* ============================================================
+   help.css — the resident surfaces.
+
+   Deliberately NOT styles.css. That stylesheet is 1000 lines of
+   scroll-choreography for a full-viewport narrative: pinned scenes, a WebGL
+   poster, six stacked compositing layers. All of it is craft aimed at a
+   partner with a laptop, and all of it is a tax on the person this page is
+   for — somebody frightened, possibly on a six-year-old Android, possibly at
+   a library terminal, possibly using a screen reader or 200% text.
+
+   So the whole register flips. The narrative site is a dark green room you
+   walk through. This is a lit page you read: cream ground, near-black green
+   ink, nothing moving that you did not touch. The palette and the two
+   typefaces are the only things carried across, and they are what keep it
+   recognisably the same organisation.
+   ============================================================ */
+
+:root{
+  --ground:#FCFEF7;
+  --surface:#FFFFFF;
+  --ink:#13231A;
+  /* Secondary ink. 8.4:1 on the ground — a "muted" grey that fails AA is the
+     single most common way a directory like this becomes unreadable to the
+     people who need it most, so the muted tone is a dark green, not a grey. */
+  --ink-2:#3D5145;
+  --ink-3:#5A6E61;
+  --green:#1E3528;
+  --green-2:#2C4A38;
+  --gold:#E7C57E;
+  --gold-deep:#8A6A22;
+  --line:#DCE6D8;
+  --line-2:#EDF2EA;
+  /* Urgent is a clay, not a fire-engine red: it has to read as "this one is
+     for right now" without making a frightened person more frightened. */
+  --urgent:#8C3A2B;
+  --urgent-bg:#FBF0EC;
+
+  --display:"Fraunces", Georgia, serif;
+  --sans:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --wrap:1160px;
+  --pad:clamp(18px,4vw,44px);
+  --r:16px;
+  --r-s:10px;
+  --shadow:0 1px 2px rgba(19,35,26,.04), 0 8px 24px -12px rgba(19,35,26,.16);
+  --shadow-up:0 2px 4px rgba(19,35,26,.06), 0 18px 40px -18px rgba(19,35,26,.28);
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
+@media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
+
+body.help{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--sans);
+  /* 18px floor. The reference audience includes people over 70 reading on a
+     phone at arm's length; 16px is a design default, not a decision. */
+  font-size:clamp(1.0625rem,.98rem + .35vw,1.1875rem);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3{ font-family:var(--display); font-weight:400; line-height:1.12; margin:0; letter-spacing:-.01em; }
+p{ margin:0; }
+ul{ margin:0; padding:0; list-style:none; }
+a{ color:inherit; }
+b,strong{ font-weight:600; }
+
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+.sprite{ position:absolute; width:0; height:0; overflow:hidden; }
+
+/* Focus is a real object, not a hairline. Keyboard and switch users are a
+   large slice of this audience and the ring has to survive a cream ground. */
+:where(a,button,input,summary,[tabindex]):focus-visible{
+  outline:3px solid var(--green);
+  outline-offset:3px;
+  border-radius:6px;
+}
+
+.skip{ position:absolute; left:-9999px; top:0; z-index:200;
+  background:var(--green); color:#FBFFF4; padding:14px 20px;
+  font-weight:600; border-radius:0 0 var(--r-s) 0; }
+.skip:focus{ left:0; }
+
+.wrap{ max-width:var(--wrap); margin:0 auto; padding:0 var(--pad) 80px; }
+
+/* ---------------------------------------------------------------- header */
+.hhead{ position:sticky; top:0; z-index:60; background:rgba(252,254,247,.92);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line); }
+.hhead__in{ max-width:var(--wrap); margin:0 auto; padding:12px var(--pad);
+  display:flex; align-items:center; gap:20px; justify-content:space-between; }
+.brand{ display:inline-flex; align-items:center; gap:11px; text-decoration:none; }
+.brand svg{ width:30px; height:30px; flex:none; }
+.brand .pin{ fill:none; stroke:var(--green); stroke-width:2; }
+.brand .pin-dot{ fill:var(--gold); }
+.brand__txt{ font-family:var(--display); font-size:1.24rem; line-height:1;
+  display:flex; flex-direction:column; gap:3px; color:var(--ink); }
+.brand__txt small{ font-family:var(--sans); font-size:.66rem; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ink-3); font-weight:600; }
+.hhead__links{ display:flex; gap:6px; }
+.hhead__links a{ text-decoration:none; font-weight:500; font-size:.95rem;
+  padding:10px 14px; border-radius:999px; color:var(--ink-2);
+  transition:background .18s var(--ease), color .18s var(--ease); }
+.hhead__links a:hover{ background:var(--line-2); color:var(--ink); }
+.hhead__links a[aria-current="page"]{ background:var(--green); color:#FBFFF4; }
+
+/* ------------------------------------------------------------------ lede */
+.lede{ padding:clamp(38px,7vw,76px) 0 clamp(24px,4vw,36px); max-width:34ch; }
+.lede h1{ font-size:clamp(2.3rem,1.5rem + 3.4vw,4rem); margin-bottom:.5em; }
+.lede__say{ max-width:62ch; font-size:1.06em; color:var(--ink-2); }
+.lede{ max-width:none; }
+.lede__say--2{ margin-top:.9em; }
+.lede__say b{ color:var(--ink); }
+
+/* --------------------------------------------------------------- the sos */
+/* A solid panel rather than a tinted box with an accent stripe down one side.
+   Somebody scanning this page in a panic gets one block that is unmistakably
+   a different thing from the directory below it, and the numbers inside it
+   are the only white objects on the page. */
+.sos{ background:var(--urgent); color:#FDF6F3; border-radius:var(--r);
+  padding:clamp(22px,3.4vw,34px); margin-bottom:clamp(28px,5vw,48px); }
+.sos__h{ font-size:clamp(1.35rem,1.2rem + .7vw,1.7rem); color:#FFF; margin-bottom:.7em; }
+.sos__list{ display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+.sos__list a{ display:flex; flex-direction:column; gap:2px; text-decoration:none;
+  background:var(--surface); border-radius:var(--r-s);
+  padding:14px 16px; min-height:60px; justify-content:center;
+  transition:transform .16s var(--ease), box-shadow .16s var(--ease); }
+.sos__list a:hover{ transform:translateY(-2px); box-shadow:var(--shadow-up); }
+.sos__list a:focus-visible{ outline-color:#FFF; }
+.sos__num{ font-family:var(--display); font-size:1.55rem; color:var(--urgent); line-height:1.1; }
+.sos__for{ font-size:.9rem; color:var(--ink-2); line-height:1.35; }
+.sos__note{ margin-top:16px; font-size:.94rem; color:rgba(253,246,243,.88); max-width:70ch; }
+
+/* ---------------------------------------------------------- search/filter */
+.find{ margin-bottom:clamp(28px,5vw,44px); }
+.find__search label{ display:block; font-weight:600; margin-bottom:8px; font-size:.98rem; }
+.find__box{ display:flex; align-items:center; gap:12px; background:var(--surface);
+  border:2px solid var(--line); border-radius:var(--r); padding:0 16px;
+  transition:border-color .18s var(--ease), box-shadow .18s var(--ease); }
+.find__box:focus-within{ border-color:var(--green); box-shadow:0 0 0 4px rgba(30,53,40,.1); }
+.find__box .ico{ width:22px; height:22px; color:var(--ink-3); flex:none; }
+.find__box input{ flex:1; border:0; background:none; font:inherit; color:inherit;
+  padding:16px 0; min-height:56px; outline:none; }
+.find__box input::placeholder{ color:var(--ink-3); }
+.find__clear{ border:0; background:var(--line-2); color:var(--ink-2); font:inherit;
+  font-size:.88rem; font-weight:600; padding:8px 14px; border-radius:999px; cursor:pointer; }
+.find__clear:hover{ background:var(--line); }
+
+.find__filters{ margin-top:18px; display:grid; gap:16px; }
+.fset{ border:0; padding:0; margin:0; }
+.fset legend{ font-weight:600; font-size:.88rem; color:var(--ink-2);
+  text-transform:uppercase; letter-spacing:.06em; padding:0 0 8px; }
+.chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip{ font:inherit; font-size:.94rem; font-weight:500; cursor:pointer;
+  background:var(--surface); color:var(--ink-2);
+  border:1.5px solid var(--line); border-radius:999px;
+  padding:10px 16px; min-height:44px;
+  transition:background .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease); }
+.chip:hover{ border-color:var(--green-2); color:var(--ink); }
+.chip[aria-pressed="true"]{ background:var(--green); border-color:var(--green);
+  color:#FBFFF4; }
+.reset,.linkish{ font:inherit; font-size:.94rem; font-weight:600; cursor:pointer;
+  background:none; border:0; color:var(--green); text-decoration:underline;
+  text-underline-offset:3px; padding:8px 0; justify-self:start; }
+.find__count{ margin-top:16px; font-weight:600; color:var(--ink-2); font-size:.98rem; }
+
+/* ------------------------------------------------------------- the needs */
+.needs{ margin-bottom:clamp(34px,6vw,60px); scroll-margin-top:84px; }
+.needs h2{ font-size:clamp(1.7rem,1.3rem + 1.6vw,2.4rem); margin-bottom:.7em; }
+.needs__grid{ display:grid; gap:12px;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
+.need{ display:grid; grid-template-columns:auto 1fr; gap:4px 14px;
+  align-items:start; text-decoration:none; height:100%;
+  background:var(--surface); border:1.5px solid var(--line);
+  border-radius:var(--r); padding:18px 18px 16px;
+  transition:border-color .18s var(--ease), transform .18s var(--ease),
+             box-shadow .18s var(--ease); }
+.need:hover{ border-color:var(--green-2); transform:translateY(-3px); box-shadow:var(--shadow-up); }
+.need .ico{ width:26px; height:26px; color:var(--green-2); grid-row:1/3; margin-top:2px; }
+.need__t{ font-family:var(--display); font-size:1.16rem; line-height:1.2; color:var(--ink); }
+.need__b{ font-size:.9rem; color:var(--ink-2); line-height:1.45; }
+.need__n{ grid-column:2; font-size:.8rem; font-weight:600; color:var(--gold-deep);
+  text-transform:uppercase; letter-spacing:.06em; margin-top:8px; }
+
+/* --------------------------------------------------------- the directory */
+.dir__none{ background:var(--surface); border:1.5px dashed var(--line);
+  border-radius:var(--r); padding:24px; font-size:1.02em; color:var(--ink-2);
+  max-width:66ch; }
+.dir__none a{ color:var(--green); font-weight:600; }
+
+.grp{ margin-bottom:clamp(38px,6vw,64px); scroll-margin-top:84px; }
+.grp__head{ display:grid; grid-template-columns:auto 1fr auto; gap:16px;
+  align-items:start; padding-bottom:16px; margin-bottom:20px;
+  border-bottom:2px solid var(--line); }
+.grp__head .ico{ width:30px; height:30px; color:var(--green-2); margin-top:4px; }
+.grp__head h2{ font-size:clamp(1.5rem,1.2rem + 1.2vw,2.05rem); }
+.grp__head p{ color:var(--ink-2); font-size:.96rem; margin-top:4px; max-width:60ch; }
+.grp__top{ font-size:.88rem; font-weight:600; color:var(--green);
+  text-decoration:none; white-space:nowrap; padding:8px 12px;
+  border:1.5px solid var(--line); border-radius:999px; }
+.grp__top:hover{ background:var(--line-2); }
+
+.rows{ display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); }
+
+/* ------------------------------------------------------------- one row */
+.r{ background:var(--surface); border:1.5px solid var(--line);
+  border-radius:var(--r); padding:20px; display:flex; flex-direction:column;
+  gap:12px; scroll-margin-top:84px; }
+.r__name{ font-size:1.22rem; line-height:1.2; }
+.r__kind{ font-size:.8rem; font-weight:600; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--ink-3); margin-top:5px; }
+.r__what{ color:var(--ink-2); font-size:.97rem; line-height:1.5; }
+.r__badges{ display:flex; flex-wrap:wrap; gap:6px; }
+.bdg{ font-size:.78rem; font-weight:600; padding:5px 10px; border-radius:999px;
+  letter-spacing:.01em; }
+.bdg--free{ background:#E8F2E4; color:#2A4A22; }
+.bdg--open-247{ background:#FBF1DC; color:#6E5210; }
+.bdg--no-status{ background:#E6EEF5; color:#1F4260; }
+
+.r__do{ display:flex; flex-wrap:wrap; gap:10px; margin-top:auto; padding-top:4px; }
+.call{ display:inline-flex; align-items:center; gap:10px; text-decoration:none;
+  background:var(--green); color:#FBFFF4; border-radius:var(--r-s);
+  padding:11px 18px; min-height:52px; font-weight:600;
+  transition:background .16s var(--ease); }
+.call:hover{ background:var(--green-2); }
+.call .ico{ width:20px; height:20px; flex:none; }
+.call span{ display:flex; flex-direction:column; line-height:1.2; }
+.call small{ font-size:.72rem; font-weight:500; opacity:.8; letter-spacing:.04em;
+  text-transform:uppercase; }
+.visit{ display:inline-flex; align-items:center; gap:7px; text-decoration:none;
+  border:1.5px solid var(--line); border-radius:var(--r-s);
+  padding:11px 16px; min-height:52px; font-weight:600; color:var(--ink);
+  transition:border-color .16s var(--ease), background .16s var(--ease); }
+.visit:hover{ border-color:var(--green-2); background:var(--line-2); }
+.visit .arr{ color:var(--gold-deep); }
+
+.r__more{ border-top:1px solid var(--line-2); padding-top:12px; }
+.r__more summary{ cursor:pointer; font-weight:600; font-size:.92rem;
+  color:var(--green); list-style:none; display:flex; align-items:center; gap:8px;
+  min-height:32px; }
+.r__more summary::-webkit-details-marker{ display:none; }
+.r__more summary::after{ content:""; width:8px; height:8px; flex:none;
+  border-right:2px solid currentColor; border-bottom:2px solid currentColor;
+  transform:rotate(45deg) translateY(-2px); transition:transform .2s var(--ease); }
+.r__more[open] summary::after{ transform:rotate(-135deg) translateY(-2px); }
+.r__facts{ padding-top:12px; }
+.r__facts dl{ display:grid; grid-template-columns:auto 1fr; gap:6px 14px; margin:0;
+  font-size:.9rem; }
+.r__facts dt{ font-weight:600; color:var(--ink-3); }
+.r__facts dd{ margin:0; color:var(--ink-2); }
+.r__note{ margin-top:12px; font-size:.9rem; color:var(--ink-2);
+  background:var(--line-2); border-radius:var(--r-s); padding:10px 12px; }
+.r__ver{ margin-top:10px; font-size:.8rem; color:var(--ink-3); }
+
+/* ----------------------------------------------------------- the honesty */
+/* The most important text on the page, and it is placed where somebody who
+   has just found a phone number will pass it: after the list, before the
+   footer. Never reworded — check_honesty_statement in check.py owns it. */
+.vowbox{ background:var(--green); color:#FBFFF4; border-radius:var(--r);
+  padding:clamp(26px,4vw,44px); margin-top:clamp(20px,4vw,40px); }
+.vowbox h2{ font-size:clamp(1.5rem,1.2rem + 1.2vw,2.1rem); margin-bottom:.6em; }
+.vowbox__full{ font-size:1.06em; line-height:1.65; max-width:68ch;
+  color:rgba(251,255,244,.94); }
+.vowbox__src{ margin-top:1em; font-size:.88rem; color:rgba(251,255,244,.62); }
+
+/* ------------------------------------------------------------------ foot */
+.hfoot{ border-top:1px solid var(--line); background:var(--line-2); }
+.hfoot__in{ max-width:var(--wrap); margin:0 auto; padding:clamp(28px,4vw,44px) var(--pad); }
+.hfoot__say{ max-width:62ch; color:var(--ink-2); }
+.hfoot__links{ display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:18px; }
+.hfoot__links a{ font-weight:500; color:var(--ink); text-underline-offset:3px; }
+.hfoot__ver{ margin-top:18px; font-size:.86rem; color:var(--ink-3); }
+
+/* ------------------------------------------------------------ responsive */
+@media (max-width:640px){
+  .hhead__in{ flex-wrap:wrap; gap:10px; }
+  .hhead__links{ width:100%; overflow-x:auto; padding-bottom:2px; }
+  .hhead__links a{ white-space:nowrap; }
+  .rows,.needs__grid{ grid-template-columns:1fr; }
+  .grp__head{ grid-template-columns:auto 1fr; }
+  .grp__top{ display:none; }
+  .r__do{ flex-direction:column; align-items:stretch; }
+  .call,.visit{ justify-content:center; }
+}
+
+/* --------------------------------------------------------------- motion */
+@media (prefers-reduced-motion:reduce){
+  *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  .need:hover,.sos__list a:hover{ transform:none; }
+}
+
+/* -------------------------------------------------------- high contrast */
+@media (prefers-contrast:more){
+  :root{ --ink-2:#1B2E22; --ink-3:#2B4033; --line:#9FB3A2; }
+  .r,.need,.find__box{ border-width:2px; }
+}
+
+/* ---------------------------------------------------------------- print */
+/* Students hand people paper. A printed page has no Call button, so the
+   number has to become text, and the interface around it has to vanish. */
+@media print{
+  .hhead,.find,.needs,.skip,.hfoot__links,.grp__top,.dir__none{ display:none !important; }
+  body.help{ background:#fff; font-size:10.5pt; }
+  .wrap{ max-width:none; padding:0; }
+  .r,.need,.sos{ break-inside:avoid; box-shadow:none; }
+  .rows{ grid-template-columns:1fr 1fr; gap:8px; }
+  .r{ border:1px solid #999; padding:10px; }
+  .call{ background:none !important; color:#000 !important; padding:0; min-height:0;
+    font-weight:700; }
+  .call .ico,.visit .arr{ display:none; }
+  .visit{ border:0; padding:0; min-height:0; font-size:9pt; }
+  .visit::after{ content:" (" attr(href) ")"; font-weight:400; word-break:break-all; }
+  .r__more{ display:none; }
+  .vowbox{ background:none; color:#000; border:2px solid #000; }
+  .vowbox__full{ color:#000; }
+}
