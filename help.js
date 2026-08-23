@@ -198,7 +198,23 @@
       return;
     }
     if (e.target === clearBtn) { q.value = ""; words = []; apply(); q.focus(); }
+
+    var go = e.target.closest && e.target.closest(".langnote__go");
+    if (go) useLanguage(go.dataset.lang);
   });
+
+  /* The language panels open on :target with no help from here. What this
+     adds is the follow-through: somebody who opened the Spanish panel and
+     tapped "ver los lugares que atienden en español" means the list below
+     should now be the Spanish-speaking places, and the matching chip should
+     show as pressed so they can see why the list got shorter — and turn it
+     off again. */
+  function useLanguage(key) {
+    if (active.lang.indexOf(key) === -1) active.lang.push(key);
+    var chip = document.querySelector('.chip[data-f="lang"][data-v="' + key + '"]');
+    if (chip) chip.setAttribute("aria-pressed", "true");
+    apply();
+  }
 
   function reset() {
     words = [];

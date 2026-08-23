@@ -1037,3 +1037,20 @@ img,svg{ display:block; max-width:100%; }
      plain links, at the top of a panel nobody opened to be sold to. */
   .nav__links a.nav__find{ background:none; color:var(--gold); }
 }
+
+/* ---------- language, on the home page ----------
+   The same seven doors the directory opens with. Somebody who cannot read the
+   English headline above this should not have to scroll past the rest of the
+   page, or reach the directory first, to find a way in. Each one lands on the
+   matching in-language panel of help.html, which opens on :target and needs
+   no JavaScript to do it. */
+.langcue-h{ margin-top:30px; font-size:12.5px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--ink-faint); }
+.langcue{ list-style:none; margin:12px 0 0; padding:0;
+  display:flex; flex-wrap:wrap; gap:8px; }
+.langcue a{ display:inline-flex; align-items:center; min-height:44px;
+  padding:8px 15px; border-radius:100px; font-size:15px; font-weight:500;
+  color:var(--cream); border:1px solid rgba(252,254,247,.28);
+  transition:border-color .25s var(--ease), background .25s var(--ease); }
+.langcue a:hover, .langcue a:focus-visible{ border-color:var(--gold);
+  background:rgba(231,197,126,.14); }

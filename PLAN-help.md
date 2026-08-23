@@ -49,7 +49,7 @@ written for.
 - [x] **S4** Triage front: "What do you need help with?" + crisis surfacing *(folded into S3: need index + hand-picked emergency strip)*
 - [x] **S5** `index.html` reorganised: residents first *(hero CTA, #help chapter third, nav, skip link, close, footer)*
 - [x] **S6** Accessibility hardening *(contrast 20/20 pass AA; min-width:0 grid fix; BCP-47 lang tags; 44px targets; 320px & 200%-text verified)*
-- [ ] **S7** Language access: filter, per-resource languages, in-language entry
+- [x] **S7** Language access *(7 in-language panels opening on :target, language bar on both pages, JS follow-through to the filter)* — **translations need a native-speaker review before launch**
 - [ ] **S8** Print / leave-behind sheets
 - [ ] **S9** Extend `check.py` to cover the resident surfaces
 - [ ] **S10** Browser QA, desktop + phone, iterate

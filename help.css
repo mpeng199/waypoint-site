@@ -115,6 +115,46 @@ b,strong{ font-weight:600; }
 .hhead__links a:hover{ background:var(--line-2); color:var(--ink); }
 .hhead__links a[aria-current="page"]{ background:var(--green); color:#FBFFF4; }
 
+/* ------------------------------------------------------------- language */
+/* First thing under the header, because somebody who cannot read the page
+   should not have to read the page to find their way off it. */
+.langbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px;
+  padding:16px 0 4px; }
+.langbar__h{ font-family:var(--sans); font-size:.86rem; font-weight:600;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); }
+.langbar__list{ display:flex; flex-wrap:wrap; gap:8px; }
+.langbar__list a{ display:inline-flex; align-items:center; min-height:44px;
+  padding:8px 16px; border:1.5px solid var(--line); border-radius:999px;
+  background:var(--surface); text-decoration:none; font-weight:500;
+  font-size:1rem; color:var(--ink);
+  transition:border-color .16s var(--ease), background .16s var(--ease); }
+.langbar__list a:hover{ border-color:var(--green-2); background:var(--line-2); }
+
+/* Closed until its own id is the fragment. No script involved: this is the
+   one entry point on the page whose reader is least likely to have working
+   JavaScript, so it must not depend on any. */
+.langnote{ display:none; }
+.langnote:target{ display:block; }
+.langnote{ background:var(--green); color:#FBFFF4; border-radius:var(--r);
+  padding:clamp(22px,3.4vw,34px); margin:16px 0 8px; scroll-margin-top:84px; }
+.langnote h2{ font-size:clamp(1.5rem,1.3rem + 1vw,2.1rem); margin-bottom:.55em;
+  line-height:1.25; }
+.langnote p{ max-width:64ch; line-height:1.7; color:rgba(251,255,244,.94); }
+.langnote__interp{ margin-top:1em; padding-top:1em;
+  border-top:1px solid rgba(251,255,244,.22); }
+.langnote__do{ margin-top:1.3em; display:flex; flex-wrap:wrap; gap:10px 22px;
+  align-items:center; }
+.langnote__go{ display:inline-flex; align-items:center; min-height:48px;
+  padding:11px 20px; border-radius:var(--r-s); background:var(--gold);
+  color:var(--green-deep); font-weight:600; text-decoration:none; }
+.langnote__go:hover{ background:#F0D69A; }
+.langnote__x{ color:rgba(251,255,244,.72); font-size:.9rem;
+  display:inline-flex; align-items:center; min-height:44px; }
+.langnote:focus-visible, .langnote__go:focus-visible, .langnote__x:focus-visible{
+  outline-color:#FFF; }
+/* An RTL panel keeps its own direction; the page around it stays LTR. */
+.langnote[dir="rtl"] .langnote__do{ flex-direction:row-reverse; }
+
 /* ------------------------------------------------------------------ lede */
 .lede{ padding:clamp(38px,7vw,76px) 0 clamp(24px,4vw,36px); max-width:34ch; }
 .lede h1{ font-size:clamp(2.3rem,1.5rem + 3.4vw,4rem); margin-bottom:.5em; }
@@ -326,7 +366,8 @@ b,strong{ font-weight:600; }
 /* Students hand people paper. A printed page has no Call button, so the
    number has to become text, and the interface around it has to vanish. */
 @media print{
-  .hhead,.find,.needs,.skip,.hfoot__links,.grp__top,.dir__none{ display:none !important; }
+  .hhead,.find,.needs,.skip,.hfoot__links,.grp__top,.dir__none,
+  .langbar,.langnote{ display:none !important; }
   body.help{ background:#fff; font-size:10.5pt; }
   .wrap{ max-width:none; padding:0; }
   .r,.need,.sos{ break-inside:avoid; box-shadow:none; }

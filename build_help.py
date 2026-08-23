@@ -156,22 +156,107 @@ BOROUGHS = [
     ("staten-island", "Staten Island"),
 ]
 
-# Languages worth their own filter row: the ones the directory actually carries
-# in volume. Anything rarer is still searchable, it just does not get a chip.
+# Languages worth their own row: the ones the directory actually carries in
+# volume, and the ones NYC's own language-access rules name. Anything rarer is
+# still searchable, it just does not get a button.
 #
-# The third column is a real BCP-47 tag, not our internal key. A chip reading
-# "Español" marked lang="spanish" is marked with nothing — the tag is invalid,
-# so a screen reader keeps its English voice and reads the label as English.
-# Getting this right on the one row of the page addressed to people who do not
-# read English is not a detail.
-LANG_CHIPS = [
-    ("spanish", "Español", "es"),
-    ("chinese", "中文", "zh"),
-    ("russian", "Русский", "ru"),
-    ("haitian-creole", "Kreyòl Ayisyen", "ht"),
-    ("bengali", "বাংলা", "bn"),
-    ("korean", "한국어", "ko"),
-    ("arabic", "العربية", "ar"),
+# `tag` is a real BCP-47 tag, not our internal key. A button reading "Español"
+# marked lang="spanish" is marked with nothing — the tag is invalid, so a
+# screen reader keeps its English voice and reads the label as English. On the
+# one row of the page addressed to people who do not read English, that is not
+# a detail.
+#
+# ---------------------------------------------------------------------------
+# TRANSLATION STATUS: NOT YET REVIEWED BY A NATIVE SPEAKER.
+#
+# These strings are deliberately short, plain, and free of anything a reader
+# has to act on precisely: no eligibility rules, no deadlines, no promises. The
+# only instruction any of them gives is "call 311 and ask for an interpreter",
+# which is true in every language and is the safe fallback if a sentence here
+# reads badly. Get each one read by a speaker before this goes live; the
+# obvious reviewers are the multilingual students the corps is recruiting.
+# ---------------------------------------------------------------------------
+LANGUAGES = [
+    {
+        "key": "spanish", "endonym": "Español", "tag": "es", "dir": "ltr",
+        "name_en": "Spanish",
+        "title": "Ayuda gratuita en la ciudad de Nueva York",
+        "body": "Esta página tiene una lista de lugares que dan comida, "
+                "atención médica, ayuda con la vivienda, ayuda legal y ayuda "
+                "económica. Casi todo es gratis. La mayoría de estos lugares "
+                "no preguntan por su estatus migratorio.",
+        "interp": "La lista está escrita en inglés. Llame al 311 y pida un "
+                  "intérprete de español. Es gratis, a cualquier hora.",
+        "cta": "Ver los lugares que atienden en español",
+    },
+    {
+        "key": "chinese", "endonym": "中文", "tag": "zh", "dir": "ltr",
+        "name_en": "Chinese",
+        "title": "纽约市的免费帮助",
+        "body": "本页列出了提供食物、医疗、住房帮助、法律帮助和经济援助的机构。"
+                "几乎全部免费。大多数机构不会询问您的移民身份。",
+        "interp": "下面的列表是英文的。请拨打 311 并要求中文口译员。"
+                  "这项服务免费，任何时间都可以使用。",
+        "cta": "查看提供中文服务的机构",
+    },
+    {
+        "key": "russian", "endonym": "Русский", "tag": "ru", "dir": "ltr",
+        "name_en": "Russian",
+        "title": "Бесплатная помощь в Нью-Йорке",
+        "body": "На этой странице собраны места, где можно получить еду, "
+                "медицинскую помощь, помощь с жильём, юридическую и денежную "
+                "помощь. Почти всё бесплатно. Большинство из них не "
+                "спрашивают об иммиграционном статусе.",
+        "interp": "Список ниже составлен на английском языке. Позвоните по "
+                  "номеру 311 и попросите переводчика на русский язык. Это "
+                  "бесплатно и круглосуточно.",
+        "cta": "Показать места, где помогают на русском языке",
+    },
+    {
+        "key": "haitian-creole", "endonym": "Kreyòl Ayisyen", "tag": "ht", "dir": "ltr",
+        "name_en": "Haitian Creole",
+        "title": "Èd gratis nan vil New York",
+        "body": "Paj sa a gen yon lis kote ki bay manje, swen sante, èd pou "
+                "lojman, èd legal, ak èd lajan. Prèske tout bagay gratis. Pifò "
+                "nan yo pa mande estati imigrasyon ou.",
+        "interp": "Lis ki anba a ekri an anglè. Rele 311 epi mande yon "
+                  "entèprèt kreyòl ayisyen. Li gratis, nenpòt lè.",
+        "cta": "Gade kote ki sèvi moun ki pale kreyòl",
+    },
+    {
+        "key": "bengali", "endonym": "বাংলা", "tag": "bn", "dir": "ltr",
+        "name_en": "Bengali",
+        "title": "নিউ ইয়র্ক সিটিতে বিনামূল্যে সাহায্য",
+        "body": "এই পাতায় এমন জায়গার তালিকা আছে যেখানে খাবার, স্বাস্থ্যসেবা, "
+                "বাসস্থানের সাহায্য, আইনি সাহায্য এবং আর্থিক সাহায্য পাওয়া যায়। "
+                "প্রায় সবই বিনামূল্যে। বেশিরভাগ জায়গা আপনার অভিবাসন অবস্থা "
+                "জিজ্ঞাসা করে না।",
+        "interp": "নিচের তালিকাটি ইংরেজিতে লেখা। ৩১১ নম্বরে ফোন করুন এবং বাংলা "
+                  "দোভাষী চান। এটি বিনামূল্যে, যেকোনো সময়।",
+        "cta": "বাংলায় সেবা দেয় এমন জায়গা দেখুন",
+    },
+    {
+        "key": "korean", "endonym": "한국어", "tag": "ko", "dir": "ltr",
+        "name_en": "Korean",
+        "title": "뉴욕시의 무료 지원",
+        "body": "이 페이지에는 음식, 의료, 주거 지원, 법률 지원, 재정 지원을 "
+                "제공하는 기관이 나와 있습니다. 거의 모두 무료입니다. 대부분의 "
+                "기관은 이민 신분을 묻지 않습니다.",
+        "interp": "아래 목록은 영어로 되어 있습니다. 311로 전화해서 한국어 "
+                  "통역사를 요청하세요. 무료이며 언제든지 이용할 수 있습니다.",
+        "cta": "한국어로 도와주는 기관 보기",
+    },
+    {
+        "key": "arabic", "endonym": "العربية", "tag": "ar", "dir": "rtl",
+        "name_en": "Arabic",
+        "title": "مساعدة مجانية في مدينة نيويورك",
+        "body": "تضم هذه الصفحة قائمة بأماكن تقدم الطعام والرعاية الصحية "
+                "والمساعدة في السكن والمساعدة القانونية والمساعدة المالية. "
+                "جميعها تقريبًا مجانية. ومعظمها لا يسأل عن وضعك من ناحية الهجرة.",
+        "interp": "القائمة أدناه مكتوبة بالإنجليزية. اتصل بالرقم 311 واطلب "
+                  "مترجمًا للغة العربية. هذه الخدمة مجانية ومتاحة في أي وقت.",
+        "cta": "عرض الأماكن التي تقدم خدمات بالعربية",
+    },
 ]
 
 LANG_MATCH = {
@@ -329,7 +414,7 @@ def langs_for(row):
     # every chip we offer, and it is the single most useful fact for somebody
     # who does not read English.
     if re.search(r"\d\d\+? languages|interpreter|all languages|language line", cell):
-        hits = [c[0] for c in LANG_CHIPS]
+        hits = [L["key"] for L in LANGUAGES]
     return hits
 
 
@@ -566,7 +651,7 @@ def render(rows):
     A('<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />')
     A('<link rel="stylesheet" href="help.css" />')
     A('</head>')
-    A('<body class="help">')
+    A('<body class="help" id="top">')
     A('<a class="skip" href="#needs">Skip to the list of help</a>')
     # one copy of the phone glyph, referenced by every Call button below
     A('<svg class="sprite" aria-hidden="true"><symbol id="i-phone" viewBox="0 0 24 24" '
@@ -593,6 +678,36 @@ def render(rows):
     A('</header>')
 
     A('<main class="wrap">')
+
+    # ---- language, first thing on the page
+    #
+    # The panels open on :target, so this whole feature is CSS. A reader who
+    # cannot read the English around it is the least likely person on earth to
+    # be running a modern browser with working JavaScript on good signal, and
+    # making them the one group whose entry point needs a script would be
+    # exactly backwards. help.js additionally applies the language filter when
+    # one of these is opened; it is not needed for the panel to appear.
+    A('<section class="langbar" aria-labelledby="langbar-h">')
+    A('  <h2 id="langbar-h" class="langbar__h">Get help in your language</h2>')
+    A('  <ul class="langbar__list">')
+    for L in LANGUAGES:
+        A(f'    <li><a href="#lang-{L["key"]}" lang="{L["tag"]}" '
+          f'data-lang="{L["key"]}"{" dir=rtl" if L["dir"] == "rtl" else ""}>'
+          f'{esc(L["endonym"])}</a></li>')
+    A('  </ul>')
+    A('</section>')
+
+    for L in LANGUAGES:
+        rtl = ' dir="rtl"' if L["dir"] == "rtl" else ""
+        A(f'<section class="langnote" id="lang-{L["key"]}" lang="{L["tag"]}"{rtl} '
+          f'data-lang="{L["key"]}" aria-labelledby="lang-h-{L["key"]}">')
+        A(f'  <h2 id="lang-h-{L["key"]}">{esc(L["title"])}</h2>')
+        A(f'  <p>{esc(L["body"])}</p>')
+        A(f'  <p class="langnote__interp">{esc(L["interp"])}</p>')
+        A(f'  <p class="langnote__do"><a class="langnote__go" href="#dir" '
+          f'data-lang="{L["key"]}">{esc(L["cta"])}</a>')
+        A(f'  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>')
+        A('</section>')
 
     # ---- title
     A('<div class="lede">')
@@ -644,9 +759,9 @@ def render(rows):
         A(f'      <button type="button" class="chip" data-f="boro" data-v="{key}" aria-pressed="false">{label}</button>')
     A('    </div></fieldset>')
     A('    <fieldset class="fset"><legend>Language you speak</legend><div class="chips">')
-    for key, label, tag in LANG_CHIPS:
-        A(f'      <button type="button" class="chip" data-f="lang" data-v="{key}" '
-          f'aria-pressed="false" lang="{tag}">{label}</button>')
+    for L in LANGUAGES:
+        A(f'      <button type="button" class="chip" data-f="lang" data-v="{L["key"]}" '
+          f'aria-pressed="false" lang="{L["tag"]}">{esc(L["endonym"])}</button>')
     A('    </div></fieldset>')
     A('    <fieldset class="fset"><legend>Only show</legend><div class="chips">')
     for key, label in [("free", "Free"), ("open-247", "Open 24/7"),

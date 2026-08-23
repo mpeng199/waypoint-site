@@ -14,7 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="help.css" />
 </head>
-<body class="help">
+<body class="help" id="top">
 <a class="skip" href="#needs">Skip to the list of help</a>
 <svg class="sprite" aria-hidden="true"><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4 5.2 2 2 0 0 1 6 3Z"/></symbol><symbol id="i-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H4l2.2-2.6A8 8 0 1 1 21 12Z"/></symbol></svg>
 <header class="hhead">
@@ -31,6 +31,67 @@
   </div>
 </header>
 <main class="wrap">
+<section class="langbar" aria-labelledby="langbar-h">
+  <h2 id="langbar-h" class="langbar__h">Get help in your language</h2>
+  <ul class="langbar__list">
+    <li><a href="#lang-spanish" lang="es" data-lang="spanish">Español</a></li>
+    <li><a href="#lang-chinese" lang="zh" data-lang="chinese">中文</a></li>
+    <li><a href="#lang-russian" lang="ru" data-lang="russian">Русский</a></li>
+    <li><a href="#lang-haitian-creole" lang="ht" data-lang="haitian-creole">Kreyòl Ayisyen</a></li>
+    <li><a href="#lang-bengali" lang="bn" data-lang="bengali">বাংলা</a></li>
+    <li><a href="#lang-korean" lang="ko" data-lang="korean">한국어</a></li>
+    <li><a href="#lang-arabic" lang="ar" data-lang="arabic" dir=rtl>العربية</a></li>
+  </ul>
+</section>
+<section class="langnote" id="lang-spanish" lang="es" data-lang="spanish" aria-labelledby="lang-h-spanish">
+  <h2 id="lang-h-spanish">Ayuda gratuita en la ciudad de Nueva York</h2>
+  <p>Esta página tiene una lista de lugares que dan comida, atención médica, ayuda con la vivienda, ayuda legal y ayuda económica. Casi todo es gratis. La mayoría de estos lugares no preguntan por su estatus migratorio.</p>
+  <p class="langnote__interp">La lista está escrita en inglés. Llame al 311 y pida un intérprete de español. Es gratis, a cualquier hora.</p>
+  <p class="langnote__do"><a class="langnote__go" href="#dir" data-lang="spanish">Ver los lugares que atienden en español</a>
+  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>
+</section>
+<section class="langnote" id="lang-chinese" lang="zh" data-lang="chinese" aria-labelledby="lang-h-chinese">
+  <h2 id="lang-h-chinese">纽约市的免费帮助</h2>
+  <p>本页列出了提供食物、医疗、住房帮助、法律帮助和经济援助的机构。几乎全部免费。大多数机构不会询问您的移民身份。</p>
+  <p class="langnote__interp">下面的列表是英文的。请拨打 311 并要求中文口译员。这项服务免费，任何时间都可以使用。</p>
+  <p class="langnote__do"><a class="langnote__go" href="#dir" data-lang="chinese">查看提供中文服务的机构</a>
+  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>
+</section>
+<section class="langnote" id="lang-russian" lang="ru" data-lang="russian" aria-labelledby="lang-h-russian">
+  <h2 id="lang-h-russian">Бесплатная помощь в Нью-Йорке</h2>
+  <p>На этой странице собраны места, где можно получить еду, медицинскую помощь, помощь с жильём, юридическую и денежную помощь. Почти всё бесплатно. Большинство из них не спрашивают об иммиграционном статусе.</p>
+  <p class="langnote__interp">Список ниже составлен на английском языке. Позвоните по номеру 311 и попросите переводчика на русский язык. Это бесплатно и круглосуточно.</p>
+  <p class="langnote__do"><a class="langnote__go" href="#dir" data-lang="russian">Показать места, где помогают на русском языке</a>
+  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>
+</section>
+<section class="langnote" id="lang-haitian-creole" lang="ht" data-lang="haitian-creole" aria-labelledby="lang-h-haitian-creole">
+  <h2 id="lang-h-haitian-creole">Èd gratis nan vil New York</h2>
+  <p>Paj sa a gen yon lis kote ki bay manje, swen sante, èd pou lojman, èd legal, ak èd lajan. Prèske tout bagay gratis. Pifò nan yo pa mande estati imigrasyon ou.</p>
+  <p class="langnote__interp">Lis ki anba a ekri an anglè. Rele 311 epi mande yon entèprèt kreyòl ayisyen. Li gratis, nenpòt lè.</p>
+  <p class="langnote__do"><a class="langnote__go" href="#dir" data-lang="haitian-creole">Gade kote ki sèvi moun ki pale kreyòl</a>
+  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>
+</section>
+<section class="langnote" id="lang-bengali" lang="bn" data-lang="bengali" aria-labelledby="lang-h-bengali">
+  <h2 id="lang-h-bengali">নিউ ইয়র্ক সিটিতে বিনামূল্যে সাহায্য</h2>
+  <p>এই পাতায় এমন জায়গার তালিকা আছে যেখানে খাবার, স্বাস্থ্যসেবা, বাসস্থানের সাহায্য, আইনি সাহায্য এবং আর্থিক সাহায্য পাওয়া যায়। প্রায় সবই বিনামূল্যে। বেশিরভাগ জায়গা আপনার অভিবাসন অবস্থা জিজ্ঞাসা করে না।</p>
+  <p class="langnote__interp">নিচের তালিকাটি ইংরেজিতে লেখা। ৩১১ নম্বরে ফোন করুন এবং বাংলা দোভাষী চান। এটি বিনামূল্যে, যেকোনো সময়।</p>
+  <p class="langnote__do"><a class="langnote__go" href="#dir" data-lang="bengali">বাংলায় সেবা দেয় এমন জায়গা দেখুন</a>
+  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>
+</section>
+<section class="langnote" id="lang-korean" lang="ko" data-lang="korean" aria-labelledby="lang-h-korean">
+  <h2 id="lang-h-korean">뉴욕시의 무료 지원</h2>
+  <p>이 페이지에는 음식, 의료, 주거 지원, 법률 지원, 재정 지원을 제공하는 기관이 나와 있습니다. 거의 모두 무료입니다. 대부분의 기관은 이민 신분을 묻지 않습니다.</p>
+  <p class="langnote__interp">아래 목록은 영어로 되어 있습니다. 311로 전화해서 한국어 통역사를 요청하세요. 무료이며 언제든지 이용할 수 있습니다.</p>
+  <p class="langnote__do"><a class="langnote__go" href="#dir" data-lang="korean">한국어로 도와주는 기관 보기</a>
+  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>
+</section>
+<section class="langnote" id="lang-arabic" lang="ar" dir="rtl" data-lang="arabic" aria-labelledby="lang-h-arabic">
+  <h2 id="lang-h-arabic">مساعدة مجانية في مدينة نيويورك</h2>
+  <p>تضم هذه الصفحة قائمة بأماكن تقدم الطعام والرعاية الصحية والمساعدة في السكن والمساعدة القانونية والمساعدة المالية. جميعها تقريبًا مجانية. ومعظمها لا يسأل عن وضعك من ناحية الهجرة.</p>
+  <p class="langnote__interp">القائمة أدناه مكتوبة بالإنجليزية. اتصل بالرقم 311 واطلب مترجمًا للغة العربية. هذه الخدمة مجانية ومتاحة في أي وقت.</p>
+  <p class="langnote__do"><a class="langnote__go" href="#dir" data-lang="arabic">عرض الأماكن التي تقدم خدمات بالعربية</a>
+  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>
+</section>
 <div class="lede">
   <h1>Find free help in New York City</h1>
   <p class="lede__say">This is a list of <b>114 places</b> that help New Yorkers with food, medical bills, housing, health care, legal problems and more. Nearly all of them are free. Most do not ask about immigration status.</p>
