@@ -51,7 +51,7 @@ NEEDS = [
     {
         "key": "food",
         "label": "I need food",
-        "blurb": "Pantries, hot meals, and help signing up for SNAP.",
+        "blurb": "Pantries, hot meals, and help signing up for food stamps (SNAP).",
         "icon": "bowl",
         "cats": ["Food & Nutrition"],
     },
@@ -106,14 +106,14 @@ NEEDS = [
     {
         "key": "family",
         "label": "I need help with my kids, or I'm a young person alone",
-        "blurb": "Childcare, youth drop-in centres, and shelter for young people.",
+        "blurb": "Childcare, youth drop-in centers, and shelter for young people.",
         "icon": "family",
         "cats": ["Youth & Family"],
     },
     {
         "key": "senior",
         "label": "I'm an older adult, or I care for one",
-        "blurb": "Meals, centres, and help for older New Yorkers.",
+        "blurb": "Meals, centers, and help for older New Yorkers.",
         "icon": "senior",
         "cats": ["Senior Services"],
     },
@@ -134,7 +134,7 @@ NEEDS = [
     {
         "key": "getting-there",
         "label": "I need help getting there",
-        "blurb": "Half-price transit, rides to medical appointments, and paratransit.",
+        "blurb": "Half-price MetroCard, rides to medical appointments, and Access-A-Ride.",
         "icon": "bus",
         "cats": ["Transportation"],
     },
@@ -148,7 +148,7 @@ NEEDS = [
     {
         "key": "start",
         "label": "I'm not sure where to start",
-        "blurb": "One call or one screen that points you to everything else.",
+        "blurb": "One phone number, or one website, that points you to everything else.",
         "icon": "compass",
         "cats": ["Multi-Service / Navigation"],
     },
@@ -926,7 +926,7 @@ def render(rows):
     A('    <ul class="hfoot__links">')
     A('      <li><a href="index.html">About Waypoint</a></li>')
     A('      <li><a href="index.html#students">Volunteer with us</a></li>')
-    A('      <li><a href="index.html#partners">For organisations</a></li>')
+    A('      <li><a href="index.html#partners">For organizations</a></li>')
     A('      <li><a href="privacy.html">Privacy &amp; legal</a></li>')
     A('      <li><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@<wbr />gmail.com</a></li>')
     A('    </ul>')
