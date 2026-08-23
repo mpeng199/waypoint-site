@@ -6,15 +6,19 @@ brand
 
 ## Users
 
-**The website is built for two audiences, in this order.** The others still matter to the programme; they are simply not who the site is written to convert.
+**The website is built for three audiences, in this order.** The others still matter to the programme; they are simply not who the site is written to convert.
 
-**1. Resource holders — the organisations whose help we distribute — primary.** Consumer assistance programmes, charity-care nonprofits, legal services, prescription assistance programmes, agency helplines. They have a real, chronic problem: eligible people never hear about them. The single thing they must believe by the end of the page: *these students can put my materials in front of people I have never reached, and they will not overstate what I do.* We are offering distribution, not requesting a favour, and the page has to read that way.
+**1. Community members — the people the programme exists for — primary since August 2026.** Seniors, low-income and immigrant New Yorkers who need help now. Until then this site did not serve them at all: it held a verified directory of NYC resources and put none of it online, so a resident could not reach a single one of them from here. `help.html` is that directory, and it is now the destination the home page leads with. The single thing they must be able to do: **find a real phone number for the right free help, in under a minute, without giving us anything.** Design constraints follow from who they actually are — an old phone, transit data, possibly a library terminal with JavaScript off, possibly a screen reader, possibly no English. Hence: every row served in the HTML, no scroll-jacking, no WebGL, 44px targets, an 18px floor, seven in-language entry points, and a printable sheet for the ones who have no device at all.
 
-**1b. Venue hosts (libraries, senior centers, NYC Aging programmes, faith spaces, FQHC outreach) — the second ask.** Shelf space for reviewed materials, or a small table at programming they already run. Lower stakes than the original co-host ask, and deliberately sequenced behind at least one confirmed resource partner: naming a real partner is what makes this ask land.
+**2. Resource holders — the organisations whose help we distribute.** Consumer assistance programmes, charity-care nonprofits, legal services, prescription assistance programmes, agency helplines. They have a real, chronic problem: eligible people never hear about them. The single thing they must believe by the end of the page: *these students can put my materials in front of people I have never reached, and they will not overstate what I do.* We are offering distribution, not requesting a favour, and the page has to read that way.
 
-**2. Students (14–18) — secondary.** Seeking meaningful volunteer work that matters. Want clear structure, reliable commitment windows (semester cohorts), peer community, and credibility. One strong chapter and a form, not a co-equal half of the site.
+**2b. Venue hosts (libraries, senior centers, NYC Aging programmes, faith spaces, FQHC outreach) — the second ask.** Shelf space for reviewed materials, or a small table at programming they already run. Lower stakes than the original co-host ask, and deliberately sequenced behind at least one confirmed resource partner: naming a real partner is what makes this ask land.
 
-**Community members (seniors, low-income, immigrant NYC residents):** End users of the service, reached in person at events rather than through this website. Need plain-language clarity on who students are, what students can/cannot do, and how to get connected. Often multilingual; may have limited health literacy or distrust of institutions. The honesty statement is written for them even though they are unlikely to read the site.
+**3. Students (14–18).** Seeking meaningful volunteer work that matters. Want clear structure, reliable commitment windows (semester cohorts), peer community, and credibility. One strong chapter and a form, not a co-equal half of the site.
+
+**On the ordering above.** Community members were previously listed last, described as "reached in person at events rather than through this website", and the site was written accordingly — the headline spoke to somebody with a bill they could not pay and every button under it asked that person for their organisation's letterhead. That was the reorganisation of August 2026. Partners and students keep their chapters and their forms, unchanged and still necessary; they simply no longer come first on a page about frightened people.
+
+The honesty statement is still written for community members, and now they can actually read it: it appears on `help.html` and on every printed sheet, because a leave-behind is exactly where somebody mistakes a student for a professional.
 
 **Funders & fiscal sponsors:** deliberately deferred until there is a track record to show. No funding chapter on the site yet.
 
@@ -45,6 +49,8 @@ Success is measured by: community members reaching resources they qualify for, p
 ## Scope of the programme, as described publicly
 
 The site leads with **Medical Bills & Coverage Navigation** (Phase A) and this is Waypoint's public identity. Three activities, in order of how much time they take: awareness and distribution (~60%), triage and routing (~30%), warm handoff (~10%).
+
+**August 2026, and this is a scope decision worth re-confirming:** `help.html` lists the whole verified directory — food, housing, legal, benefits, and the rest — not only the billing resources. The distinction that keeps this inside the boundary is that the directory *points at other organisations' help*; it does not offer Waypoint's navigation service for those categories. The page says so in its own words ("We do not run any of the programs on this page. We help people find them"), and no form, no routing and no volunteer commitment attaches to any of it. A partner reading it should understand that we distribute their materials, not that we staff a general-purpose helpline. If that reads as further than intended, the fix is to narrow what `data/resources.csv` publishes, not to hide the page.
 
 **General Resource Navigation is the second track, and the site names it without describing the sequencing.** It gets a full scene of its own — *"It was never only about the bill"* — naming it as where Waypoint started and as half of why we exist, and stopping there. The phasing and the reasons behind it are operating decisions, not visitor copy: everyone reading that page is deciding whether to volunteer or to work with us, and neither decision is helped by a roadmap. `check.py` now fails the build on "second track", "sequenced behind" and "half-built" appearing on any page.
 
@@ -91,6 +97,8 @@ Status is stated plainly: **Waypoint has not held its first event.** The site tu
 The August 2026 redesign takes its **mechanics** from technically ambitious sites (a real-time 3D hero, inertial scrolling, scroll-choreographed chapters) while explicitly rejecting their **register**. The anti-reference above still stands: no neutral grotesque, no luxury pacing, no startup gloss. Fraunces + Inter, the green/gold/cream palette, the painterly landscapes and the plain warm voice are unchanged, and they are what keep the site from reading as a health-tech product.
 
 Concretely, "not slick" is enforced by: no card grids, no numbered step lists, no section labels, no stock photography, no numeric bragging, and a page whose loudest single moment is a statement about what we refuse to do.
+
+**These constraints are scoped to the narrative journey (`index.html`), not to `help.html`.** The directory is a different kind of object and needs the opposite affordances: 118 resources have to be scannable, so they are rows in a grid, each group carries a heading, and the whole page is labelled. The resident chapter on the home page still obeys the rule — it is a flowing list of sentences, not a mosaic of tiles.
 
 ---
 
