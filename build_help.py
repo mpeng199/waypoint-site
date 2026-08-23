@@ -667,8 +667,19 @@ HONESTY = (
 
 def render(rows):
     n = len(rows)
-    by_need = {need["key"]: [r for r in rows if need["key"] in r["_needs"]]
-               for need in NEEDS}
+    # Within a group, anything tagged start-here leads.
+    #
+    # Rows otherwise render in CSV order, which was carefully ordered — every
+    # group already opened with the right resource. But that makes the order an
+    # accident of when a row was typed: the four medical-bill resources were
+    # appended, so "I got a medical bill" opened with a membership programme
+    # and put Community Health Advocates, which is the single best first call
+    # for a bill, eighth. The tag already existed in the data for exactly this.
+    def ordered(key):
+        group = [r for r in rows if key in r["_needs"]]
+        return sorted(group, key=lambda r: 0 if "start-here" in r["Tags"] else 1)
+
+    by_need = {need["key"]: ordered(need["key"]) for need in NEEDS}
     p = []
     A = p.append
     A('<!DOCTYPE html>')

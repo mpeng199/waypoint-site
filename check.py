@@ -1502,6 +1502,19 @@ def check_directory_needs():
         else:
             bad(f"help.html: '{g}' is a heading with nothing under it")
 
+        # If anything in the group is marked start-here, it has to be what the
+        # group opens with. Rows otherwise fall in CSV order, which makes the
+        # first thing somebody reads an accident of when it was typed — that is
+        # how "I got a medical bill" came to open with a membership programme
+        # and bury Community Health Advocates eighth.
+        first = re.search(r'<li class="r"[^>]*data-find="([^"]*)"', block)
+        marked = 'start-here' in block
+        if marked and first and "start-here" not in first.group(1):
+            bad(f"help.html: '{g}' has a start-here resource but does not open "
+                f"with it, so the best first call is not the first thing read")
+        elif marked:
+            ok(f"help.html: '{g}' opens with its start-here resource")
+
 
 def check_directory_a11y():
     """The basics, on the page most likely to be read by somebody who needs them."""

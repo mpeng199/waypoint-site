@@ -60,7 +60,8 @@ written for.
 - [x] **S13** Realistic-query sweep *(60 real phrasings; 17 failures -> 4 benign.
       Word-start matching, relevance ordering, crisis/DV vernacular, and four
       missing medical-bill resources added — the directory had none)*
-- [ ] **S14** Final polish, PR
+- [x] **S14** Final polish *(no-JS search box, doors guard, start-here ordering; 529 checks)*
+- [ ] **S15** Push + PR — not done: outward-facing, waiting on your go-ahead
 
 ## Invariants that must not break
 
