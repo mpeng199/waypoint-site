@@ -53,7 +53,12 @@ written for.
 - [x] **S8** Print / leave-behind sheets *(prints whatever the filter shows; disclosures opened for paper; emergency numbers and honesty statement on every sheet)*
 - [x] **S9** Extend `check.py` *(9 new guards, 522 checks; each verified to fail when the thing it guards is broken)*
 - [ ] **S10** Browser QA, desktop + phone, iterate
-- [ ] **S11** Polish, commit, PR
+- [ ] **S11** Handoff: document the new build step (the site had none before)
+- [ ] **S12** Link rot sweep: 84 outbound URLs — a dead link in a resource
+      directory costs somebody in trouble a phone call and their trust
+- [ ] **S13** Realistic-query sweep: search the phrases people actually arrive
+      with, fix the vocabulary gaps it finds
+- [ ] **S14** Final polish, PR
 
 ## Invariants that must not break
 
