@@ -228,5 +228,35 @@
     if (needs) needs.scrollIntoView({ block: "start" });
   }
 
+  /* ---- printing.
+     Whatever is on screen is what prints: the rows the filter hid carry the
+     hidden attribute, so a sheet printed after narrowing to "I need food" in
+     Brooklyn is exactly those places and nothing else. That is the leave-
+     behind students actually need, and it costs no separate print view.
+
+     The one thing screen and paper disagree about is the details disclosure.
+     On screen "More about this" is closed, because a row that states its
+     hours, address and languages up front is a row nobody scans. On paper
+     those are the most useful lines on the sheet and there is nothing to tap,
+     so every disclosure is opened for the print and put back afterwards.
+     beforeprint covers Ctrl+P as well as the button. */
+  var reopened = [];
+  window.addEventListener("beforeprint", function () {
+    reopened = [];
+    Array.prototype.forEach.call(document.querySelectorAll(".r__more"), function (d) {
+      if (!d.open) { d.open = true; reopened.push(d); }
+    });
+  });
+  window.addEventListener("afterprint", function () {
+    reopened.forEach(function (d) { d.open = false; });
+    reopened = [];
+  });
+
+  var printBtn = document.querySelector(".printbtn");
+  if (printBtn) {
+    printBtn.hidden = false;
+    printBtn.addEventListener("click", function () { window.print(); });
+  }
+
   apply();
 })();

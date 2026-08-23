@@ -215,7 +215,19 @@ b,strong{ font-weight:600; }
 .reset,.linkish{ font:inherit; font-size:.94rem; font-weight:600; cursor:pointer;
   background:none; border:0; color:var(--green); text-decoration:underline;
   text-underline-offset:3px; padding:8px 0; justify-self:start; }
-.find__count{ margin-top:16px; font-weight:600; color:var(--ink-2); font-size:.98rem; }
+.find__foot{ margin-top:16px; display:flex; flex-wrap:wrap; gap:12px 20px;
+  align-items:center; justify-content:space-between; }
+.find__count{ font-weight:600; color:var(--ink-2); font-size:.98rem; }
+.printbtn{ display:inline-flex; align-items:center; gap:9px; font:inherit;
+  font-size:.94rem; font-weight:600; cursor:pointer; min-height:44px;
+  padding:9px 16px; border:1.5px solid var(--line); border-radius:999px;
+  background:var(--surface); color:var(--ink);
+  transition:border-color .16s var(--ease), background .16s var(--ease); }
+.printbtn:hover{ border-color:var(--green-2); background:var(--line-2); }
+.printbtn .ico{ width:18px; height:18px; }
+
+/* Screen-invisible, paper-only. */
+.printhead{ display:none; }
 
 /* ------------------------------------------------------------- the needs */
 .needs{ margin-bottom:clamp(34px,6vw,60px); scroll-margin-top:84px; }
@@ -367,18 +379,89 @@ b,strong{ font-weight:600; }
    number has to become text, and the interface around it has to vanish. */
 @media print{
   .hhead,.find,.needs,.skip,.hfoot__links,.grp__top,.dir__none,
-  .langbar,.langnote{ display:none !important; }
-  body.help{ background:#fff; font-size:10.5pt; }
+  .langbar,.langnote,.sprite{ display:none !important; }
+
+  body.help{ background:#fff; color:#000; font-size:9.5pt; line-height:1.35; }
   .wrap{ max-width:none; padding:0; }
-  .r,.need,.sos{ break-inside:avoid; box-shadow:none; }
-  .rows{ grid-template-columns:1fr 1fr; gap:8px; }
-  .r{ border:1px solid #999; padding:10px; }
-  .call{ background:none !important; color:#000 !important; padding:0; min-height:0;
-    font-weight:700; }
-  .call .ico,.visit .arr{ display:none; }
-  .visit{ border:0; padding:0; min-height:0; font-size:9pt; }
-  .visit::after{ content:" (" attr(href) ")"; font-weight:400; word-break:break-all; }
-  .r__more{ display:none; }
-  .vowbox{ background:none; color:#000; border:2px solid #000; }
-  .vowbox__full{ color:#000; }
+  a{ text-decoration:none; color:#000; }
+
+  /* The page's own h1 is the printed title — printing a second one under it
+     just says the same thing twice. What paper needs that the screen does not
+     is the attribution: who collected this, that we do not run any of it, and
+     when it was last checked. */
+  .lede{ padding:0 0 6pt; }
+  .lede h1{ font-size:19pt; margin-bottom:0; }
+  .lede__say{ display:none; }
+  .printhead{ display:block; margin:0 0 10pt; padding-bottom:6pt;
+    border-bottom:1.5pt solid #000; }
+  .printhead__s{ font-size:8pt; max-width:none; }
+
+  /* The emergency numbers lead the sheet, as they lead the screen. */
+  .sos{ background:none !important; color:#000 !important; border:1.5pt solid #000;
+    border-radius:0; padding:6pt 8pt; margin:0 0 10pt; break-inside:avoid; }
+  .sos__h{ color:#000 !important; font-size:11pt; margin-bottom:4pt; }
+  .sos__list{ grid-template-columns:1fr 1fr 1fr 1fr; gap:6pt; }
+  .sos__list a{ background:none; padding:0; min-height:0; }
+  .sos__num{ color:#000; font-size:11pt; }
+  .sos__for{ color:#000; font-size:7.5pt; }
+  .sos__note{ color:#000 !important; font-size:7.5pt; margin-top:5pt; }
+
+  .grp{ margin:0 0 10pt; break-inside:auto; }
+  .grp__head{ border-bottom:1pt solid #000; padding-bottom:3pt; margin-bottom:6pt;
+    grid-template-columns:auto 1fr; break-after:avoid; }
+  .grp__head .ico{ width:14pt; height:14pt; }
+  .grp__head h2{ font-size:12.5pt; }
+  .grp__head p{ font-size:8pt; color:#000; }
+
+  /* Two columns of cards, each kept whole across the page break. A row split
+     down the middle by a page break is a phone number on one sheet and the
+     name it belongs to on another. */
+  .rows{ grid-template-columns:1fr 1fr; gap:6pt; }
+  .r{ border:0.75pt solid #666; border-radius:0; padding:6pt 7pt; gap:4pt;
+     break-inside:avoid; }
+  .r__name{ font-size:10.5pt; }
+  .r__kind{ font-size:7pt; margin-top:2pt; }
+  .r__what{ font-size:8pt; color:#000; }
+  .r__badges{ gap:3pt; }
+  .bdg{ background:none !important; color:#000 !important; font-size:7pt;
+    border:0.5pt solid #666; padding:1pt 4pt; }
+
+  /* Stacked, so the number and the address are two lines rather than two
+     things fighting over one. */
+  .r__do{ display:block; padding-top:2pt; }
+  .visit__t{ display:none; }
+  .call{ background:none !important; color:#000 !important; padding:0;
+    min-height:0; font-weight:700; font-size:10pt; }
+  .call .ico,.visit .arr,.printbtn{ display:none !important; }
+  .call small{ font-size:7pt; opacity:1; }
+  .visit{ display:block; border:0; padding:0; min-height:0; font-size:7.5pt;
+    font-weight:400; }
+  .visit::after{ content:attr(href); word-break:break-all; }
+
+  /* On paper the hours, address and languages are the useful lines and there
+     is nothing to tap, so help.js opens every disclosure before printing. */
+  .r__more{ border-top:0.5pt solid #999; padding-top:3pt; }
+  .r__more summary{ display:none; }
+  .r__facts{ padding-top:0; }
+  .r__facts dl{ font-size:7.5pt; gap:1pt 6pt; }
+  .r__facts dt{ color:#000; }
+  .r__facts dd{ color:#000; }
+  .r__note{ background:none; padding:0; margin-top:3pt; font-size:7.5pt; color:#000; }
+  .r__ver{ display:none; }
+
+  /* The honesty statement prints on every sheet it can reach. It is the one
+     piece of copy that exists to stop somebody mistaking a student for a
+     professional, and a leave-behind is exactly where that happens. */
+  .vowbox{ background:none !important; color:#000 !important;
+    border:1.5pt solid #000; border-radius:0; padding:7pt 9pt; margin-top:10pt;
+    break-inside:avoid; }
+  .vowbox h2{ font-size:11pt; }
+  .vowbox__full{ color:#000 !important; font-size:8.5pt; max-width:none; }
+  .vowbox__src{ color:#000 !important; font-size:7.5pt; }
+
+  .hfoot{ background:none; border-top:1pt solid #000; }
+  .hfoot__in{ padding:6pt 0 0; }
+  .hfoot__say,.hfoot__ver{ font-size:7.5pt; color:#000; }
+
+  @page{ margin:12mm 10mm; }
 }

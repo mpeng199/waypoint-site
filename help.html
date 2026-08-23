@@ -142,7 +142,10 @@
     </div></fieldset>
     <button type="button" class="reset" hidden>Start over</button>
   </div>
-  <p class="find__count" role="status" aria-live="polite"></p>
+  <div class="find__foot">
+    <p class="find__count" role="status" aria-live="polite"></p>
+    <button type="button" class="printbtn" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6M7 19H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>Print this list</button>
+  </div>
 </section>
 <nav class="needs" id="needs" aria-labelledby="needs-h">
   <h2 id="needs-h">What do you need help with?</h2>
@@ -239,6 +242,9 @@
     </a></li>
   </ul>
 </nav>
+<div class="printhead" aria-hidden="true">
+  <p class="printhead__s">Collected by Waypoint, a student volunteer corps. We do not run any of these programs &mdash; we help people find them. Checked June 2026; programs change.</p>
+</div>
 <div class="dir" id="dir">
 <p class="dir__none" hidden>Nothing here matched that. Try a different word, or <button type="button" class="linkish reset">show everything again</button>. If you cannot find it, call <a href="tel:311">311</a> &mdash; they will point you somewhere, in your language, at any hour.</p>
 <section class="grp" id="n-safety" data-need="safety" aria-labelledby="h-safety">
@@ -260,7 +266,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18006214673"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-621-4673</span></a>
-<a class="visit" href="https://www.nyc.gov/nychope" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/nychope" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-621-4673 (800-621-HOPE); TTY 866-604-5350</dd>
@@ -285,7 +291,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nyc.gov/site/ocdv/programs/family-justice-centers.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/ocdv/programs/family-justice-centers.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -310,7 +316,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18006214673"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-621-4673</span></a>
-<a class="visit" href="https://www.safehorizon.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.safehorizon.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-621-4673 (DV) / 866-689-4357 (crime victims)</dd>
@@ -334,7 +340,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12123496009"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-349-6009</span></a>
-<a class="visit" href="https://sanctuaryforfamilies.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://sanctuaryforfamilies.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-349-6009</dd>
@@ -358,7 +364,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12127141141"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-714-1141</span></a>
-<a class="visit" href="https://avp.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://avp.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-714-1141</dd>
@@ -382,7 +388,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18007997233"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-799-7233</span></a>
-<a class="visit" href="https://www.thehotline.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.thehotline.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-799-7233 / text START to 88788</dd>
@@ -406,7 +412,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18006564673"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-656-4673</span></a>
-<a class="visit" href="https://www.rainn.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.rainn.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-656-4673 (800-656-HOPE)</dd>
@@ -430,7 +436,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18888887702"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>888-888-7702</span></a>
-<a class="visit" href="https://www.iamwomankind.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.iamwomankind.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>888-888-7702</dd>
@@ -454,7 +460,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18006645880"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-664-5880</span></a>
-<a class="visit" href="https://www.vipmujeres.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.vipmujeres.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-664-5880</dd>
@@ -490,7 +496,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:988"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>988</span></a>
-<a class="visit" href="https://nyc988.cityofnewyork.us" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://nyc988.cityofnewyork.us" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>988 (call or text)</dd>
@@ -515,7 +521,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:988"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>988</span></a>
-<a class="visit" href="https://988lifeline.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://988lifeline.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>988</dd>
@@ -540,7 +546,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call call--text" href="sms:741741"><svg class="ico" aria-hidden="true"><use href="#i-text"/></svg><span><small>Text</small>Text HOME to 741741</span></a>
-<a class="visit" href="https://www.crisistextline.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.crisistextline.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>Text HOME to 741741</dd>
@@ -565,7 +571,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12126843264"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-684-3264</span></a>
-<a class="visit" href="https://www.naminycmetro.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.naminycmetro.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-684-3264</dd>
@@ -589,7 +595,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12126733000"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-673-3000</span></a>
-<a class="visit" href="https://samaritansnyc.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://samaritansnyc.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-673-3000</dd>
@@ -613,7 +619,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18778467369"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>877-846-7369</span></a>
-<a class="visit" href="https://oasas.ny.gov" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://oasas.ny.gov" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>877-846-7369 (877-8-HOPENY) / text 467369</dd>
@@ -637,7 +643,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18006624357"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-662-4357</span></a>
-<a class="visit" href="https://www.samhsa.gov/find-help/national-helpline" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.samhsa.gov/find-help/national-helpline" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-662-4357 (800-662-HELP)</dd>
@@ -661,7 +667,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18778467369"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>877-846-7369</span></a>
-<a class="visit" href="https://oasas.ny.gov/harm-reduction" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://oasas.ny.gov/harm-reduction" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>877-846-7369</dd>
@@ -686,7 +692,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18664887386"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>866-488-7386</span></a>
-<a class="visit" href="https://www.thetrevorproject.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.thetrevorproject.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>866-488-7386 / text START to 678-678</dd>
@@ -710,7 +716,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18775658860"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>877-565-8860</span></a>
-<a class="visit" href="https://translifeline.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://translifeline.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>877-565-8860</dd>
@@ -734,7 +740,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span></p>
 <div class="r__do">
 <a class="call" href="tel:988"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>988</span></a>
-<a class="visit" href="https://www.veteranscrisisline.net" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.veteranscrisisline.net" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>988 then press 1 / text 838255</dd>
@@ -770,7 +776,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://finder.nyc.gov/foodhelp/locations" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://finder.nyc.gov/foodhelp/locations" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -795,7 +801,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call call--text" href="sms:726879"><svg class="ico" aria-hidden="true"><use href="#i-text"/></svg><span><small>Text</small>Text FOOD to 726879</span></a>
-<a class="visit" href="https://www.plentifulapp.com" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.plentifulapp.com" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>Text FOOD to 726879</dd>
@@ -819,7 +825,7 @@
 <p class="r__what">Coordinates ~800 NYC food pantries/kitchens and offers free SNAP enrollment help and free tax prep.</p>
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
-<a class="visit" href="https://www.foodbanknyc.org/find-food/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.foodbanknyc.org/find-food/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Who it is for</dt><dd>Anyone in need</dd>
@@ -841,7 +847,7 @@
 <p class="r__what">Map of soup kitchens, food pantries, community fridges and mobile markets currently distributing food.</p>
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
-<a class="visit" href="https://www.cityharvest.org/food-map/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.cityharvest.org/food-map/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Who it is for</dt><dd>Anyone in need</dd>
@@ -864,7 +870,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12129240167"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-924-0167</span></a>
-<a class="visit" href="https://www.holyapostlessoupkitchen.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.holyapostlessoupkitchen.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-924-0167</dd>
@@ -889,7 +895,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+17185740058"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>718-574-0058</span></a>
-<a class="visit" href="https://www.breadandlife.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.breadandlife.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>718-574-0058</dd>
@@ -913,7 +919,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+19177209700"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>917-720-9700</span></a>
-<a class="visit" href="https://nycommonpantry.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://nycommonpantry.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>917-720-9700</dd>
@@ -937,7 +943,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12123623662"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-362-3662</span></a>
-<a class="visit" href="https://www.wscah.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.wscah.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-362-3662</dd>
@@ -961,7 +967,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+17189724446"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>718-972-4446</span></a>
-<a class="visit" href="https://www.masbia.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.masbia.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>718-972-4446</dd>
@@ -985,7 +991,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12126743456"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-674-3456</span></a>
-<a class="visit" href="https://www.bowery.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.bowery.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-674-3456</dd>
@@ -1009,7 +1015,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12122948100"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-294-8100</span></a>
-<a class="visit" href="https://www.glwd.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.glwd.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-294-8100</dd>
@@ -1034,7 +1040,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+17185571399"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>718-557-1399</span></a>
-<a class="visit" href="https://www.nyc.gov/site/hra/help/snap-benefits-food-program.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/hra/help/snap-benefits-food-program.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>718-557-1399</dd>
@@ -1059,7 +1065,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18005225006"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-522-5006</span></a>
-<a class="visit" href="https://www.health.ny.gov/prevention/nutrition/wic/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.health.ny.gov/prevention/nutrition/wic/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-522-5006 (Growing Up Healthy Hotline)</dd>
@@ -1084,7 +1090,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://access.nyc.gov/programs/emergency-food-assistance/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://access.nyc.gov/programs/emergency-food-assistance/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -1120,7 +1126,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dhs/index.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dhs/index.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -1145,7 +1151,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+17185036400"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>718-503-6400</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dhs/shelter/families/families-shelter.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dhs/shelter/families/families-shelter.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>718-503-6400</dd>
@@ -1169,7 +1175,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dhs/shelter/adults/adults-shelter.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dhs/shelter/adults/adults-shelter.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -1194,7 +1200,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nyc.gov/site/hra/help/homebase.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/hra/help/homebase.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -1219,7 +1225,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12127762000"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-776-2000</span></a>
-<a class="visit" href="https://www.coalitionforthehomeless.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.coalitionforthehomeless.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-776-2000</dd>
@@ -1243,7 +1249,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18005334098"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-533-4098</span></a>
-<a class="visit" href="https://www.breakingground.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.breakingground.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-533-4098</dd>
@@ -1268,7 +1274,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+17185571399"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>718-557-1399</span></a>
-<a class="visit" href="https://access.nyc.gov/programs/one-shot-deal/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://access.nyc.gov/programs/one-shot-deal/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>718-557-1399 (interview 929-273-1872)</dd>
@@ -1293,7 +1299,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://housingconnect.nyc.gov" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://housingconnect.nyc.gov" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -1329,7 +1335,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+16466922273"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>646-692-2273</span></a>
-<a class="visit" href="https://www.nyccare.nyc" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyccare.nyc" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>646-692-2273 (646-NYC-CARE)</dd>
@@ -1354,7 +1360,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18005036897"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-503-6897</span></a>
-<a class="visit" href="https://www.needymeds.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.needymeds.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-503-6897</dd>
@@ -1378,7 +1384,7 @@
 <p class="r__what">Comprehensive directory of pharmaceutical patient-assistance programs for free/low-cost brand-name medications.</p>
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
-<a class="visit" href="https://www.rxassist.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.rxassist.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Who it is for</dt><dd>Uninsured/underinsured patients</dd>
@@ -1402,7 +1408,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dca/consumers/get-free-financial-counseling.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dca/consumers/get-free-financial-counseling.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -1427,7 +1433,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18553555777"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>855-355-5777</span></a>
-<a class="visit" href="https://nystateofhealth.ny.gov" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://nystateofhealth.ny.gov" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>855-355-5777</dd>
@@ -1452,7 +1458,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18886145400"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>888-614-5400</span></a>
-<a class="visit" href="https://www.cssny.org/programs/entry/community-health-advocates" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.cssny.org/programs/entry/community-health-advocates" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>888-614-5400</dd>
@@ -1477,7 +1483,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18007010501"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-701-0501</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dfta/services/health-insurance-assistance.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dfta/services/health-insurance-assistance.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-701-0501 / Aging Connect 212-244-6469</dd>
@@ -1514,7 +1520,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+16466922273"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>646-692-2273</span></a>
-<a class="visit" href="https://www.nyccare.nyc" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyccare.nyc" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>646-692-2273 (646-NYC-CARE)</dd>
@@ -1539,7 +1545,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18446924692"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>844-692-4692</span></a>
-<a class="visit" href="https://www.nychealthandhospitals.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nychealthandhospitals.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>844-692-4692 (844-NYC-4NYC)</dd>
@@ -1564,7 +1570,7 @@
 <p class="r__badges"><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18446924692"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>844-692-4692</span></a>
-<a class="visit" href="https://www.nychealthandhospitals.org/gotham-health/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nychealthandhospitals.org/gotham-health/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>844-692-4692</dd>
@@ -1589,7 +1595,7 @@
 <p class="r__badges"><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12127491820"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-749-1820</span></a>
-<a class="visit" href="https://ryanhealth.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://ryanhealth.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-749-1820</dd>
@@ -1614,7 +1620,7 @@
 <p class="r__badges"><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18444342778"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>844-434-2778</span></a>
-<a class="visit" href="https://institute.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://institute.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>844-434-2778</dd>
@@ -1638,7 +1644,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12122717200"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-271-7200</span></a>
-<a class="visit" href="https://callen-lorde.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://callen-lorde.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-271-7200</dd>
@@ -1663,7 +1669,7 @@
 <p class="r__badges"><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18662468259"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>866-246-8259</span></a>
-<a class="visit" href="https://www.chnnyc.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.chnnyc.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>866-246-8259</dd>
@@ -1687,7 +1693,7 @@
 <p class="r__badges"><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12123796998"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-379-6998</span></a>
-<a class="visit" href="https://www.cbwchc.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.cbwchc.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-379-6998</dd>
@@ -1711,7 +1717,7 @@
 <p class="r__badges"><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+17189916700"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>718-991-6700</span></a>
-<a class="visit" href="https://www.urbanhealthplan.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.urbanhealthplan.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>718-991-6700</dd>
@@ -1735,7 +1741,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+17187842240"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>718-784-2240</span></a>
-<a class="visit" href="https://thefloatinghospital.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://thefloatinghospital.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>718-784-2240</dd>
@@ -1759,7 +1765,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+13473967959"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>347-396-7959</span></a>
-<a class="visit" href="https://www.nyc.gov/site/doh/services/sexual-health-clinics.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/doh/services/sexual-health-clinics.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>347-396-7959</dd>
@@ -1784,7 +1790,7 @@
 <p class="r__badges"><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12129657000"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-965-7000</span></a>
-<a class="visit" href="https://www.ppgny.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.ppgny.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-965-7000</dd>
@@ -1807,7 +1813,7 @@
 <p class="r__what">Federal tool to locate the nearest federally qualified health center offering sliding-scale primary care.</p>
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
-<a class="visit" href="https://findahealthcenter.hrsa.gov" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://findahealthcenter.hrsa.gov" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Who it is for</dt><dd>Anyone</dd>
@@ -1830,7 +1836,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18005036897"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-503-6897</span></a>
-<a class="visit" href="https://www.needymeds.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.needymeds.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-503-6897</dd>
@@ -1854,7 +1860,7 @@
 <p class="r__what">Comprehensive directory of pharmaceutical patient-assistance programs for free/low-cost brand-name medications.</p>
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
-<a class="visit" href="https://www.rxassist.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.rxassist.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Who it is for</dt><dd>Uninsured/underinsured patients</dd>
@@ -1878,7 +1884,7 @@
 <p class="r__badges"><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12129989800"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-998-9800</span></a>
-<a class="visit" href="https://dental.nyu.edu/patientcare.html" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://dental.nyu.edu/patientcare.html" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-998-9800</dd>
@@ -1903,7 +1909,7 @@
 <p class="r__badges"><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12123056100"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-305-6100</span></a>
-<a class="visit" href="https://www.dental.columbia.edu/patient-care" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.dental.columbia.edu/patient-care" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-305-6100</dd>
@@ -1927,7 +1933,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12123671100"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-367-1100</span></a>
-<a class="visit" href="https://www.gmhc.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.gmhc.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-367-1100 (hotline 800-243-7692)</dd>
@@ -1952,7 +1958,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+13474737400"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>347-473-7400</span></a>
-<a class="visit" href="https://www.housingworks.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.housingworks.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>347-473-7400</dd>
@@ -1988,7 +1994,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18003540365"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-354-0365</span></a>
-<a class="visit" href="https://www.nyc.gov/site/actionnyc/index.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/actionnyc/index.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-354-0365 (or 311, say &#x27;ActionNYC&#x27;)</dd>
@@ -2013,7 +2019,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18887447900"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>888-744-7900</span></a>
-<a class="visit" href="https://cccsny.org/services/immigration-legal-services" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://cccsny.org/services/immigration-legal-services" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>888-744-7900 (help line) / 347-921-0631 (legal clinics)</dd>
@@ -2037,7 +2043,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12126135000"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-613-5000</span></a>
-<a class="visit" href="https://nylag.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://nylag.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-613-5000</dd>
@@ -2061,7 +2067,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12129410920"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-941-0920</span></a>
-<a class="visit" href="https://www.cpc-nyc.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.cpc-nyc.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-941-0920</dd>
@@ -2086,7 +2092,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+19294158745"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>929-415-8745</span></a>
-<a class="visit" href="https://www.nmic.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nmic.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>929-415-8745</dd>
@@ -2110,7 +2116,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12125773300"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-577-3300</span></a>
-<a class="visit" href="https://legalaidnyc.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://legalaidnyc.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-577-3300</dd>
@@ -2135,7 +2141,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+19176614500"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>917-661-4500</span></a>
-<a class="visit" href="https://www.legalservicesnyc.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.legalservicesnyc.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>917-661-4500</dd>
@@ -2159,7 +2165,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.righttocounselnyc.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.righttocounselnyc.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311 (ask for Tenant Helpline)</dd>
@@ -2183,7 +2189,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12129624795"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-962-4795</span></a>
-<a class="visit" href="https://housingcourtanswers.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://housingcourtanswers.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-962-4795 / 718-557-1379</dd>
@@ -2207,7 +2213,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12129790611"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-979-0611</span></a>
-<a class="visit" href="https://www.metcouncilonhousing.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.metcouncilonhousing.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-979-0611</dd>
@@ -2231,7 +2237,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12126267383"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-626-7383</span></a>
-<a class="visit" href="https://www.citybarjusticecenter.org/legal-hotline/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.citybarjusticecenter.org/legal-hotline/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-626-7383</dd>
@@ -2254,7 +2260,7 @@
 <p class="r__what">Directory of 600+ free legal-service providers plus 4,000+ know-your-rights and self-help resources.</p>
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
-<a class="visit" href="https://www.lawhelpny.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.lawhelpny.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Who it is for</dt><dd>Anyone who can&#x27;t afford a lawyer</dd>
@@ -2277,7 +2283,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12127256422"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-725-6422</span></a>
-<a class="visit" href="https://www.immigrantdefenseproject.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.immigrantdefenseproject.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-725-6422</dd>
@@ -2301,7 +2307,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18005667636"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-566-7636</span></a>
-<a class="visit" href="https://dos.ny.gov/office-new-americans" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://dos.ny.gov/office-new-americans" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-566-7636</dd>
@@ -2337,7 +2343,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+17185571399"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>718-557-1399</span></a>
-<a class="visit" href="https://www.nyc.gov/site/hra/help/cash-assistance.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/hra/help/cash-assistance.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>718-557-1399</dd>
@@ -2362,7 +2368,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+17185571399"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>718-557-1399</span></a>
-<a class="visit" href="https://access.nyc.gov/programs/home-energy-assistance-program-heap/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://access.nyc.gov/programs/home-energy-assistance-program-heap/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>718-557-1399</dd>
@@ -2387,7 +2393,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dca/consumers/file-your-taxes.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dca/consumers/file-your-taxes.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -2412,7 +2418,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dca/consumers/get-free-financial-counseling.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dca/consumers/get-free-financial-counseling.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -2437,7 +2443,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18553555777"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>855-355-5777</span></a>
-<a class="visit" href="https://nystateofhealth.ny.gov" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://nystateofhealth.ny.gov" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>855-355-5777</dd>
@@ -2462,7 +2468,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18886145400"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>888-614-5400</span></a>
-<a class="visit" href="https://www.cssny.org/programs/entry/community-health-advocates" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.cssny.org/programs/entry/community-health-advocates" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>888-614-5400</dd>
@@ -2487,7 +2493,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18007010501"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-701-0501</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dfta/services/health-insurance-assistance.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dfta/services/health-insurance-assistance.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-701-0501 / Aging Connect 212-244-6469</dd>
@@ -2512,7 +2518,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nyc.gov/site/fairfares/index.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/fairfares/index.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -2537,7 +2543,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18007721213"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-772-1213</span></a>
-<a class="visit" href="https://www.ssa.gov" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.ssa.gov" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-772-1213</dd>
@@ -2573,7 +2579,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://access.nyc.gov/programs/runaway-and-homeless-youth-drop-in-centers/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://access.nyc.gov/programs/runaway-and-homeless-youth-drop-in-centers/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -2597,7 +2603,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12129419090"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-941-9090</span></a>
-<a class="visit" href="https://door.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://door.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-941-9090</dd>
@@ -2622,7 +2628,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12126130300"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-613-0300</span></a>
-<a class="visit" href="https://www.covenanthouse.org/homeless-shelters/new-york" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.covenanthouse.org/homeless-shelters/new-york" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-613-0300</dd>
@@ -2646,7 +2652,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12122060574"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-206-0574</span></a>
-<a class="visit" href="https://www.aliforneycenter.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.aliforneycenter.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-206-0574</dd>
@@ -2670,7 +2676,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18007086600"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-708-6600</span></a>
-<a class="visit" href="https://www.safehorizon.org/streetwork/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.safehorizon.org/streetwork/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-708-6600</dd>
@@ -2694,7 +2700,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18007862929"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>800-786-2929</span></a>
-<a class="visit" href="https://www.1800runaway.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.1800runaway.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>800-786-2929 (1-800-RUNAWAY)</dd>
@@ -2718,7 +2724,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.schools.nyc.gov/enrollment/enroll-grade-by-grade/pre-k-and-3-k" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.schools.nyc.gov/enrollment/enroll-grade-by-grade/pre-k-and-3-k" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -2755,7 +2761,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12122446469"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-244-6469</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dfta/index.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dfta/index.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-244-6469 (212-AGING-NYC)</dd>
@@ -2780,7 +2786,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12122446469"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-244-6469</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dfta/services/find-help.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dfta/services/find-help.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-244-6469</dd>
@@ -2805,7 +2811,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12122446469"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-244-6469</span></a>
-<a class="visit" href="https://www.nyc.gov/site/dfta/services/in-home-services.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/dfta/services/in-home-services.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-244-6469</dd>
@@ -2829,7 +2835,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12126301853"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-630-1853</span></a>
-<a class="visit" href="https://www.nyc.gov/site/hra/help/adult-protective-services.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/hra/help/adult-protective-services.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-630-1853 (or 311)</dd>
@@ -2866,7 +2872,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12123377200"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-337-7200</span></a>
-<a class="visit" href="https://easternusa.salvationarmy.org/greater-new-york/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://easternusa.salvationarmy.org/greater-new-york/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-337-7200</dd>
@@ -2889,7 +2895,7 @@
 <p class="r__what">Provides diapers, clothing, cribs, strollers and children&#x27;s essentials to families in need via partner agencies.</p>
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
-<a class="visit" href="https://babybuggy.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://babybuggy.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Who it is for</dt><dd>Families with babies/children in need</dd>
@@ -2913,7 +2919,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+17184021212"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>718-402-1212</span></a>
-<a class="visit" href="https://thehopeline.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://thehopeline.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>718-402-1212</dd>
@@ -2937,7 +2943,7 @@
 <p class="r__what">Directory to find member diaper banks distributing free diapers across NYC and the state.</p>
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
-<a class="visit" href="https://postpartumny.org/diaperbanksnys/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://postpartumny.org/diaperbanksnys/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Who it is for</dt><dd>Families needing diapers</dd>
@@ -2961,7 +2967,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12122285000"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-228-5000</span></a>
-<a class="visit" href="https://www.newyorkcares.org/coatdrive" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.newyorkcares.org/coatdrive" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-228-5000</dd>
@@ -2998,7 +3004,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nyc.gov/site/sbs/careers/wf1-career-centers.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/sbs/careers/wf1-career-centers.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -3023,7 +3029,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://application.nycsyep.com" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://application.nycsyep.com" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -3047,7 +3053,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nypl.org/education/adults/esol" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nypl.org/education/adults/esol" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -3084,7 +3090,7 @@
 <p class="r__badges"><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18773372017"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>877-337-2017</span></a>
-<a class="visit" href="https://new.mta.info/accessibility/paratransit" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://new.mta.info/accessibility/paratransit" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>877-337-2017</dd>
@@ -3109,7 +3115,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:511"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>511</span></a>
-<a class="visit" href="https://new.mta.info/fares/reduced-fare" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://new.mta.info/fares/reduced-fare" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>511</dd>
@@ -3133,7 +3139,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+18446666270"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>844-666-6270</span></a>
-<a class="visit" href="https://www.medanswering.com" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.medanswering.com" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>844-666-6270</dd>
@@ -3170,7 +3176,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12124165250"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-416-5250</span></a>
-<a class="visit" href="https://www.nyc.gov/site/veterans/index.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/veterans/index.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-416-5250</dd>
@@ -3195,7 +3201,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span></p>
 <div class="r__do">
 <a class="call" href="tel:+12126867500"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>212-686-7500</span></a>
-<a class="visit" href="https://www.va.gov/new-york-harbor-health-care/" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.va.gov/new-york-harbor-health-care/" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>212-686-7500</dd>
@@ -3232,7 +3238,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://portal.311.nyc.gov" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://portal.311.nyc.gov" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311 (or 212-639-9675)</dd>
@@ -3257,7 +3263,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://access.nyc.gov" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://access.nyc.gov" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -3281,7 +3287,7 @@
 <p class="r__what">Free national directory to search food, housing, health, financial and other free/low-cost programs by ZIP code.</p>
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
-<a class="visit" href="https://www.findhelp.org/find-social-services/new-york" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.findhelp.org/find-social-services/new-york" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Who it is for</dt><dd>Anyone</dd>
@@ -3305,7 +3311,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:211"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>211</span></a>
-<a class="visit" href="https://www.211nys.org" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.211nys.org" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>211 (or 1-800-899-1479)</dd>
@@ -3330,7 +3336,7 @@
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
 <a class="call" href="tel:311"><svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg><span><small>Call</small>311</span></a>
-<a class="visit" href="https://www.nyc.gov/site/idnyc/index.page" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://www.nyc.gov/site/idnyc/index.page" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Phone</dt><dd>311</dd>
@@ -3354,7 +3360,7 @@
 <p class="r__what">Community-maintained directory of mutual-aid groups and free resources across NYC.</p>
 <p class="r__badges"><span class="bdg bdg--free">Free</span><span class="bdg bdg--open-247">Open 24/7</span><span class="bdg bdg--no-status">No immigration status asked</span></p>
 <div class="r__do">
-<a class="visit" href="https://resources.mutualaid.nyc" rel="noopener">Open website<span class="arr" aria-hidden="true">&#8599;</span></a>
+<a class="visit" href="https://resources.mutualaid.nyc" rel="noopener"><span class="visit__t">Open website</span><span class="arr" aria-hidden="true">&#8599;</span></a>
 </div>
 <details class="r__more"><summary><span>More about this</span></summary><div class="r__facts"><dl>
 <dt>Who it is for</dt><dd>Anyone</dd>

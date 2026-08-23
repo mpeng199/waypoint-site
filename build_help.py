@@ -587,7 +587,8 @@ def render_row(r, need_key):
                  f'<span><small>Text</small>{esc(label)}</span></a>')
     if r["Website"]:
         a.append(f'<a class="visit" href="{esc(r["Website"])}" rel="noopener">'
-                 f'Open website<span class="arr" aria-hidden="true">&#8599;</span></a>')
+                 f'<span class="visit__t">Open website</span>'
+                 f'<span class="arr" aria-hidden="true">&#8599;</span></a>')
     a.append("</div>")
 
     # details
@@ -771,7 +772,15 @@ def render(rows):
     A('    </div></fieldset>')
     A('    <button type="button" class="reset" hidden>Start over</button>')
     A('  </div>')
-    A('  <p class="find__count" role="status" aria-live="polite"></p>')
+    A('  <div class="find__foot">')
+    A('    <p class="find__count" role="status" aria-live="polite"></p>')
+    A('    <button type="button" class="printbtn" hidden>'
+      '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
+      'stroke="currentColor" stroke-width="1.7" stroke-linecap="round" '
+      'stroke-linejoin="round"><path d="M7 9V3h10v6M7 19H5a2 2 0 0 1-2-2v-5a2 2 '
+      '0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>'
+      'Print this list</button>')
+    A('  </div>')
     A('</section>')
 
     # ---- the needs index
@@ -790,6 +799,16 @@ def render(rows):
     A('</nav>')
 
     # ---- the directory
+    #
+    # The printed sheet is a real output here, not an afterthought: students
+    # hand people paper at a table, and the person they hand it to may have no
+    # phone to open this on. It carries its own heading because a printout
+    # with no source on it is a photocopy of nothing.
+    A('<div class="printhead" aria-hidden="true">')
+    A('  <p class="printhead__s">Collected by Waypoint, a student volunteer '
+      'corps. We do not run any of these programs &mdash; we help people find '
+      'them. Checked June 2026; programs change.</p>')
+    A('</div>')
     A('<div class="dir" id="dir">')
     A('<p class="dir__none" hidden>Nothing here matched that. Try a different word, '
       'or <button type="button" class="linkish reset">show everything again</button>. '
