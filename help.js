@@ -1,16 +1,17 @@
 /* help.js — narrows a directory that is already fully rendered.
 
-   Everything on this page works before this file loads: 121 rows in 15
+   Everything on this page works before this file loads: every resource, in
    labelled groups, every phone number a real tel: link, the need index a set
    of plain anchors. That is the contract. This script only ever *hides*
    things, so the worst case when it fails to load, fails to parse, or is
    blocked outright is that somebody sees the whole list — which is the thing
    they came for anyway.
 
-   Hence the two `hidden` attributes in the markup: the filter chips and the
-   "no matches" line are the only controls that genuinely need JavaScript, so
-   they ship hidden and this file reveals them. Nobody is offered a control
-   that cannot work. */
+   Hence the `hidden` attributes in the markup: the search-and-filter block,
+   the "no matches" line and the print button are the controls that genuinely
+   need JavaScript, so they ship hidden and this file reveals them, with a
+   <noscript> beside them saying where they went. Nobody is offered a control
+   that cannot work. check.py enforces both halves. */
 (function () {
   "use strict";
 
@@ -21,25 +22,37 @@
   var groups = Array.prototype.slice.call(dir.querySelectorAll(".grp"));
   var needTiles = Array.prototype.slice.call(document.querySelectorAll(".need"));
   var q = document.getElementById("q");
-  var filters = document.querySelector(".find__filters");
   var countEl = document.querySelector(".find__count");
   var noneEl = document.querySelector(".dir__none");
   var clearBtn = document.querySelector(".find__clear");
   var resetBtn = document.querySelector(".find__filters .reset");
 
-  // Search text, built once. data-find carries only the vocabulary that is not
-  // already on screen (tags, internal category); the rest comes from the row
-  // itself, so "food stamps" finds SNAP and "eviction" finds a tenant hotline
-  // without a synonym table to maintain.
+  // Search text, built once from the row's CONTENT — deliberately not its
+  // textContent, which also carries the interface. Every row has a button
+  // reading "Call" and one reading "Open website", and a disclosure reading
+  // "More about this", so searching for any of those words matched all 125
+  // rows; so did "checked" and "2026", from the verification line. Words the
+  // page says about itself are not facts about the resource.
+  //
+  // data-find adds what is NOT on screen: the internal tags and category, and
+  // the plain-English phrases SYNONYMS attaches — which is how "food stamps"
+  // finds SNAP and "kicked out" finds an eviction hotline.
+  var CONTENT = [".r__name", ".r__kind", ".r__what", ".r__badges",
+                 ".r__facts dl", ".r__note"];
   rows.forEach(function (r) {
-    r._find = (r.textContent + " " + (r.dataset.find || ""))
+    var parts = [];
+    CONTENT.forEach(function (sel) {
+      var el = r.querySelector(sel);
+      if (el) parts.push(el.textContent);
+    });
+    r._find = (parts.join(" ") + " " + (r.dataset.find || ""))
       .toLowerCase().replace(/\s+/g, " ");
     r._key = r.dataset.key;
   });
 
-  // Unique resources, not rendered rows: seven are filed under two needs, so
-  // counting <li> elements would tell somebody there are 121 places when the
-  // directory holds 114.
+  // Unique resources, not rendered rows: a few are filed under two needs, so
+  // counting <li> elements would overstate the directory by exactly the number
+  // of things we cross-filed.
   var TOTAL = (function () {
     var seen = Object.create(null), n = 0;
     rows.forEach(function (r) { if (!seen[r._key]) { seen[r._key] = 1; n++; } });
@@ -141,11 +154,11 @@
     if (resetBtn) resetBtn.hidden = !narrowed;
   }
 
-  // ---- search. Filtering runs straight off the keystroke: it is a
-  // hidden-attribute pass over 121 rows against a prebuilt string, ~1ms on a
-  // slow phone. Coalescing that into a frame would be debouncing something
-  // cheaper than the debounce, and rAF does not fire at all in a background
-  // tab, which is what made this untestable.
+  // ---- search. Filtering runs straight off the keystroke: a hidden-attribute
+  // pass over every row against a prebuilt string, ~1ms on a slow phone.
+  // Coalescing that into a frame would be debouncing something cheaper than
+  // the debounce, and rAF does not fire at all in a background tab, which is
+  // what made it untestable.
   /* Turning what somebody typed into terms to match on.
 
      Every word must appear, in any order, so "free food brooklyn" and "cheap
