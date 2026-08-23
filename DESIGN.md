@@ -477,9 +477,9 @@ All form inputs:
 
 ## The directory (`help.html`) — the one generated page
 
-`help.html` is the resident-facing surface: 114 verified NYC resources, grouped
-by the sentence somebody arrives with rather than by the categories the
-agencies use. It is the only page on the site that is generated.
+`help.html` is the resident-facing surface: the whole verified NYC resource
+directory, grouped by the sentence somebody arrives with rather than by the
+categories the agencies use. `python3 build_help.py` prints the current count. It is the only page on the site that is generated.
 
 **To change anything in it, edit the source and rebuild:**
 
@@ -502,7 +502,7 @@ python3 build_help.py
 
 The reader is plausibly on a six-year-old Android, on transit data, at a
 locked-down library terminal, or using a screen reader. Fetching JSON and
-templating 121 rows in the browser fails all four. So the rows are baked in
+templating every row in the browser fails all four. So the rows are baked in
 once, here, and `help.js` only ever *hides* them — the worst case when the
 script fails to load is that somebody sees the whole list, which is what they
 came for. `check.py` enforces both halves of that contract: no row may ship

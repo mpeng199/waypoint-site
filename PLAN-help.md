@@ -75,6 +75,12 @@ written for.
 - **`Hours` has 51 distinct formats** for 118 rows ("Mon–Fri", "Vary by site",
   "24/7 online", "By appointment"). Readable, not machine-usable, so there is
   no "open now" filter and should not be one until the data supports it.
+- **Staten Island has one borough-specific resource in the whole directory**,
+  and that one lists all five boroughs anyway. Manhattan has 16, Brooklyn 10,
+  the Bronx 9, Queens 8. A Staten Island resident filtering to their borough
+  sees almost nothing but citywide hotlines. The filter now floats local
+  results above citywide ones so the shape of that is at least visible, but
+  the gap is real and only more outreach fixes it.
 - **10 rows have no phone number**, only a website. That is correct for a
   lottery portal or an online screener; it is a gap for anything else.
 
@@ -83,7 +89,8 @@ written for.
 - The honesty statement, verbatim, on every surface that offers help.
 - The eight nevers: no volunteer reads a document, states eligibility, quotes
   a deadline, or predicts an outcome. Directory copy must not imply otherwise.
-- No numeric track-record claims. "114 resources" is a count of the directory,
-  not a claim about people helped — keep that distinction sharp.
+- No numeric track-record claims. The count on help.html is a count of the
+  directory, not a claim about people helped — keep that distinction sharp.
+  Counts in prose go stale; prefer naming the source over repeating a number.
 - No "Companionship", no schools/replication.
 - `python3 check.py` green before every commit. Baseline: 378 passed.

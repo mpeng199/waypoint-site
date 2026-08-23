@@ -69,10 +69,28 @@
     return facetsOk(r);
   }
 
-  function namesALanguage(r) {
-    if (!active.lang.length) return false;
-    var has = (r.dataset.lang || "").split(" ");
-    return active.lang.some(function (v) { return has.indexOf(v) !== -1; });
+  /* Is this row a closer match than the generic ones that also survived?
+     Two facets have the same shape of problem: most rows answer them
+     generically. 97 of the rows serve every borough, and most record their
+     languages as "Multiple". Filtering by Staten Island or by Bengali is
+     therefore honest but barely narrows anything — so the rows that answer
+     SPECIFICALLY lead their group, and the generic ones follow.
+
+     Nothing is hidden either way. "They are in your borough" and "they cover
+     the whole city" are both useful; they are just not the same answer. */
+  function isCloserMatch(r) {
+    if (active.lang.length) {
+      var langs = (r.dataset.lang || "").split(" ");
+      if (active.lang.some(function (v) { return langs.indexOf(v) !== -1; })) return true;
+    }
+    if (active.boro.length) {
+      var boros = (r.dataset.boro || "").split(" ");
+      // A citywide row carries every borough plus the "citywide" marker, so
+      // the absence of that marker is what makes a row local.
+      if (boros.indexOf("citywide") === -1 &&
+          active.boro.some(function (v) { return boros.indexOf(v) !== -1; })) return true;
+    }
+    return false;
   }
 
   function facetsOk(r) {
@@ -105,13 +123,7 @@
       var ok = loose ? (loosened(r) && facetsOk(r)) : matches(r);
       r.hidden = !ok;
       if (ok && !shown[r._key]) { shown[r._key] = 1; n++; }
-      // With a language chip on, the places that actually NAME that language
-      // lead their group, and the ones reachable only through an interpreter
-      // follow. Nothing is hidden either way — a filter that hides help is
-      // worse than no filter — but "they speak Bengali" and "they can get a
-      // Bengali interpreter" are different answers, and the first one should
-      // not be buried under eighty of the second.
-      r.style.order = namesALanguage(r) ? "-1" : "";
+      r.style.order = isCloserMatch(r) ? "-1" : "";
     });
 
     // A group heading over nothing reads as "we have none of this", when the

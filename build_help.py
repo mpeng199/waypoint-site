@@ -4,7 +4,7 @@
 Why a build step on a site with no build step: the audience for this page is
 somebody on an old phone, on transit data, possibly with a screen reader, and
 possibly with JavaScript blocked by a locked-down library terminal. Fetching a
-JSON file and templating 114 rows in the browser fails all four of those. So
+JSON file and templating every row in the browser fails all four of those. So
 the rows are baked into the HTML here, once, and the browser's only job is to
 hide the ones that do not match. The page works with JS off; it just shows
 everything.
