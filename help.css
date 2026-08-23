@@ -171,7 +171,13 @@ b,strong{ font-weight:600; }
 .sos{ background:var(--urgent); color:#FDF6F3; border-radius:var(--r);
   padding:clamp(22px,3.4vw,34px); margin-bottom:clamp(28px,5vw,48px); }
 .sos__h{ font-size:clamp(1.35rem,1.2rem + .7vw,1.7rem); color:#FFF; margin-bottom:.7em; }
-.sos__list{ display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+/* Fixed 1 / 2 / 4, not auto-fit. There are exactly four numbers here and
+   auto-fit gave three columns plus an orphan at most desktop widths, which
+   reads as though the fourth were an afterthought. It is 311 — the one that
+   answers in any language. */
+.sos__list{ display:grid; gap:10px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+@media (min-width:1080px){ .sos__list{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media (max-width:560px){ .sos__list{ grid-template-columns:1fr; } }
 .sos__list a{ display:flex; flex-direction:column; gap:2px; text-decoration:none; min-width:0;
   background:var(--surface); border-radius:var(--r-s);
   padding:14px 16px; min-height:60px; justify-content:center;

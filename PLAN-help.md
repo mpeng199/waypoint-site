@@ -52,7 +52,7 @@ written for.
 - [x] **S7** Language access *(7 in-language panels opening on :target, language bar on both pages, JS follow-through to the filter)* — **translations need a native-speaker review before launch**
 - [x] **S8** Print / leave-behind sheets *(prints whatever the filter shows; disclosures opened for paper; emergency numbers and honesty statement on every sheet)*
 - [x] **S9** Extend `check.py` *(9 new guards, 522 checks; each verified to fail when the thing it guards is broken)*
-- [ ] **S10** Browser QA, desktop + phone, iterate
+- [x] **S10** Browser QA *(1400/900/500/390/320 widths, mobile drawer, keyboard order, every interaction; emergency block regridded 1/2/4)*
 - [ ] **S11** Handoff: document the new build step (the site had none before)
 - [ ] **S12** Link rot sweep: 84 outbound URLs — a dead link in a resource
       directory costs somebody in trouble a phone call and their trust
