@@ -263,6 +263,19 @@ BILLING_OVERCLAIM = [
      "an outcome claim about somebody's bill"),
     (r"\byou (?:will |)(?:qualify|are eligible)\b",
      "an eligibility determination, which is never ours to make"),
+    # Never quote a filing deadline, on any surface. From the cohort training
+    # doc: while those materials were being written, three official New York
+    # sources gave three different answers for the same appeal filing window.
+    # It does not matter which was right — being wrong here can cost somebody
+    # their appeal entirely, and a page is quoted from far more confidently
+    # than a volunteer is. The professional confirms the deadline; the site
+    # creates urgency without numbers ("call today, not next week").
+    (r"\bwithin\s+\d+\s*(?:calendar\s+|business\s+|)(?:days?|weeks?|months?|years?)\b",
+     "a filing deadline; three official sources disagreed on the appeal window"),
+    (r"\byou have\s+\d+\s*(?:calendar\s+|business\s+|)(?:days?|weeks?|months?)\b",
+     "a filing deadline stated to the reader"),
+    (r"\b\d+[- ](?:day|week|month)\s+(?:deadline|window|limit)\b",
+     "a named filing window"),
     (r"\b(?:we|our students|students|volunteers)\s+(?:can\s+|will\s+|)"
      r"(?:read|review|interpret|look over)\s+(?:your|their|the)\s+"
      r"(?:bill|bills|denial|letter|paperwork|documents?)\b",

@@ -62,6 +62,13 @@ written for.
       missing medical-bill resources added — the directory had none)*
 - [x] **S14** Final polish *(no-JS search box, doors guard, start-here ordering; 529 checks)*
 - [x] **S16** Directory data quality *(language filter reached 6 of 118 for Arabic; now 85, with explicitly-named rows floated)*
+- [x] **S17** Runtime code review *(search was indexing button chrome; mobile
+      back-link restored; suite now fails if a check asserts nothing)*
+- [x] **S18** Docs realigned *(PRODUCT.md audience order, the "no card grids"
+      scope, the directory-breadth scope decision; copy at reading grade 4.2)*
+- [x] **S19** Deadline guard *(the cohort training doc says three official NY
+      sources gave three different answers for the same appeal window — the
+      site now cannot state one, on any page)*
 - [ ] **S15** Push + PR — not done: outward-facing, waiting on your go-ahead
 
 ## Known data weaknesses (source, not code)
