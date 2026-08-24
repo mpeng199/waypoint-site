@@ -91,6 +91,27 @@ written for.
 - **10 rows have no phone number**, only a website. That is correct for a
   lottery portal or an online screener; it is a gap for anything else.
 
+## Where this stopped, 23 Aug 2026, 10pm
+
+21 commits on `claude/website-accessibility-redesign-2b15ac`, **not pushed** —
+that is outward-facing and was never asked for. `git push -u origin
+claude/website-accessibility-redesign-2b15ac` when wanted.
+
+`python3 check.py` — 537 passing, 0 failing. `python3 build_help.py` — clean,
+and re-running it leaves `help.html` byte-identical, so the committed file is
+the generator's output.
+
+**Three things still need a human decision**, all recorded above and in the
+summary artifact: the push, a native-speaker review of the seven translations,
+and whether publishing every resource category (rather than only billing) is
+further than intended.
+
+**Every guard added this day was break-tested** — deliberately tripped to
+confirm it fails when the thing it protects fails. That habit caught a bug in
+the checker itself: two guards had been silently re-indented out of service
+while the suite went on reporting "0 failed". `check.py` now fails if any
+check function runs and asserts nothing.
+
 ## Invariants that must not break
 
 - The honesty statement, verbatim, on every surface that offers help.
