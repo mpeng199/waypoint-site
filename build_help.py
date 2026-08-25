@@ -1394,7 +1394,14 @@ SYNONYMS = [
     # those are the words the agencies use about them afterwards.
     ("crisis",          "suicide suicidal want to die kill myself killing myself "
                         "end my life hopeless cant go on talk to someone "
-                        "someone to talk to lonely panic breakdown emergency help now"),
+                        "someone to talk to lonely panic breakdown emergency help now "
+                        # what people type instead of the clinical word
+                        # "cant get out of bed" put the word BED on every
+                        # crisis row and buried the shelters under them, which
+                        # is what a person typing "i need a bed" is asking for
+                        "crying cant stop crying hearing voices seeing things "
+                        "paranoid cant sleep cannot face the day no energy "
+                        "falling apart"),
     ("substance",       "drugs alcohol addiction overdose drinking recovery heroin "
                         "fentanyl opioid opioids cocaine crack meth pills detox "
                         "relapse rehab sober high using"),

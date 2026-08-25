@@ -3252,6 +3252,60 @@ def check_one_typo_does_not_empty_the_page():
            "page's commonest spelling wins, and the correction is announced")
 
 
+def check_every_category_page_answers_its_own_questions():
+    """A search on a category page searches that page. It has to find things.
+
+    The front page is not the only search on this site: each of the seventeen
+    has its own box, scoped to its own resources, and a query that comes back
+    empty there is a dead end even when the answer exists two pages over.
+    Sixty-nine obvious questions, four or five per page. Five used to fail:
+
+      "baby formula" on the food page, where WIC hands out infant formula and
+      the row never said the word.
+      "vaccine" on the doctor page, where every clinic gives them.
+      "expungement" on the record page, because New York seals records rather
+      than expunging them and nobody types "sealing".
+      "i cant stop crying" and "hearing voices" on the crisis page, which are
+      what people type instead of the clinical word.
+    """
+    import build_help
+    K = _js_constants()
+    if not K:
+        return
+    rows = build_help.load()
+    PROBES = {
+        "safety": ["restraining order", "my partner hits me"],
+        "crisis": ["i cant stop crying", "hearing voices", "detox"],
+        "food": ["hot meal", "halal", "baby formula"],
+        "housing": ["eviction", "shelter tonight", "no heat"],
+        "bills": ["surprise bill", "charity care"],
+        "doctor": ["dentist", "vaccine", "no insurance"],
+        "legal": ["deportation", "green card", "criminal record"],
+        "money": ["cash assistance", "utility bill", "tax help"],
+        "family": ["daycare", "school suspension"],
+        "senior": ["dementia", "home care", "medicare"],
+        "clothes": ["winter coat", "diapers", "period products"],
+        "work": ["job training", "english classes"],
+        "getting-there": ["metrocard", "ride to the doctor"],
+        "veterans": ["va benefits", "veteran housing"],
+        "disability": ["wheelchair", "ssi", "benefits denied"],
+        "record": ["job with a record", "expungement"],
+        "start": ["i dont know where to start", "one number"],
+    }
+    empty, n = [], 0
+    for key, queries in PROBES.items():
+        page_rows = build_help.ordered(rows, key)
+        model = _search_model(page_rows, K)
+        for q in queries:
+            n += 1
+            if not model(q):
+                empty.append(f"help-{key}.html: {q!r} finds nothing on the page")
+    for e in empty[:6]:
+        bad(e)
+    if not empty:
+        ok(f"all {n} obvious questions find something on the page they belong to")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -4138,7 +4192,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_one_typo_does_not_empty_the_page, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_one_typo_does_not_empty_the_page, check_every_category_page_answers_its_own_questions, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
