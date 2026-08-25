@@ -577,6 +577,32 @@ One `h1` per page, no level skipped, on all twenty pages
 (`check_heading_order`). Footer column labels are `h2` with a class, not `h4`
 chosen for its size.
 
+### Tap targets
+
+**44px minimum on every control**, not the 24 of WCAG 2.5.8: this is read on a
+phone by somebody who is frightened, often one-handed, often in a hurry. The
+exception is a link inside a sentence — the 911 in a translated paragraph —
+which 2.5.8 exempts and which cannot grow without breaking the line.
+
+Stacked links get **real padding**, not a widened pseudo-element: growing them
+invisibly makes adjacent targets overlap, which trades a small target for a
+mis-hit. Standalone controls (the wordmark on a phone) get the pseudo-element,
+which leaves the glyph and the layout untouched. `check_tap_targets` names
+seven controls and fails on any under 44.
+
+### Reflow
+
+At 320px with text at 200% — the narrowest screen at the largest type — no
+page may scroll or be dragged sideways. `html, body { overflow-x: clip }` on
+the narrative side: `hidden` on one axis coerces the other from `visible` to
+`auto`, which makes body its own scroll container and leaves the document
+element scrolling instead. `clip` clips without creating a scroll container,
+so every `position: sticky` on the page keeps working.
+
+Nothing is hidden by a physical offset. `left: -9999px` is off the *end* on a
+right-to-left page, not off-screen — it made help-ur.html 10,695px wide. The
+skip link and the spam honeypot are clipped to a 1px box instead.
+
 ### Text Sizing & Readability
 
 - Minimum font-size: 12px for labels (uppercase, high contrast)
@@ -619,6 +645,19 @@ change mid-journey with nothing to say why.
 | Arabic, Urdu | leading 1.9, `dir="rtl"` | glyphs hang well below the baseline |
 | Chinese, Korean | measure 44ch, not 68 | no word spaces for the eye to rest on |
 | CJK, Bengali, Arabic, Urdu | `<b>` not `<em>` | Fraunces has a drawn italic; these have none, and a browser asked for one slants by matrix |
+
+Per-script CSS may set **typography and nothing else** — leading, tracking,
+word breaking, the measure. Never padding, margin, gap, radius or box size:
+those are the page's rhythm, and a language page is the English page in
+another language, not another design of it. Measured at 1280px, Spanish,
+Chinese, Bengali and Arabic come back with the same 26px from the language row
+to the masthead, the same 37px to the emergency panel, the same 60px to the
+promise, and the same 24px card padding and 16px radius as English.
+(`check_language_spacing_is_shared`)
+
+Month names and date spans are per-language too (`i18n.MONTHS`,
+`i18n.DATE_SPAN`) — Chinese and Korean put the year first, Spanish takes "de".
+A date is the one thing on that line a reader actually checks.
 
 Right-to-left is nearly free because the whole stylesheet is written in logical
 properties. The four things that must **not** mirror — a phone number, an
