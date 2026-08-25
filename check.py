@@ -1811,6 +1811,96 @@ def _stem(w):
     return w
 
 
+# ------------------------------------------------------------- reading level
+# Flesch-Kincaid, on the copy this site writes about itself. Not on the
+# resources: their descriptions come from the agencies that run them and are
+# edited where they are wrong, not rewritten to hit a number.
+#
+# The measure is crude and it is mostly measuring sentence length, which is
+# exactly the thing worth measuring here. Four of the page intros scored
+# between 11 and 15 not because the words were hard — they were "benefits",
+# "rent", "meals" — but because each was one thirty-to-forty-five word
+# sentence, and a long sentence is what a frightened person stops reading.
+_VOWELS = "aeiouy"
+
+
+def _syllables(word):
+    w = re.sub(r"[^a-z]", "", word.lower())
+    if not w:
+        return 0
+    n, prev = 0, False
+    for ch in w:
+        v = ch in _VOWELS
+        if v and not prev:
+            n += 1
+        prev = v
+    if w.endswith("e") and n > 1:
+        n -= 1
+    return max(1, n)
+
+
+def reading_grade(text):
+    text = re.sub(r"\s+", " ", text).strip()
+    sentences = [s for s in re.split(r"[.!?]+", text) if s.strip()]
+    words = [w for w in re.split(r"[^A-Za-z']+", text) if w]
+    if not sentences or not words:
+        return None
+    syl = sum(_syllables(w) for w in words)
+    return round(0.39 * (len(words) / len(sentences))
+                 + 11.8 * (syl / len(words)) - 15.59, 1)
+
+
+def check_reading_level():
+    """The copy the site writes about itself has to be readable."""
+    import build_help
+    CEILING = 9.0
+
+    # Only on prose. The formula is a ratio of words to sentences and
+    # syllables to words, and on a five-word noun phrase both ratios are
+    # nonsense — "Immigration" scores grade 32 as a one-word sentence. A
+    # heading is checked for what actually goes wrong with headings: length.
+    MIN_WORDS = 18
+
+    over = []
+    for need in build_help.NEEDS:
+        for field in ("blurb", "intro"):
+            text = need[field]
+            if len(re.findall(r"[A-Za-z']+", text)) < MIN_WORDS:
+                continue
+            g = reading_grade(text)
+            if g is not None and g > CEILING:
+                over.append(f'{need["key"]}/{field}: grade {g} — {text[:70]!r}')
+
+    g = reading_grade(build_help.HONESTY)
+    if g is not None and g > CEILING:
+        over.append(f"the honesty statement is at grade {g}")
+
+    # Headings: a rail entry is read at a glance and wraps to three lines on a
+    # phone if it runs long.
+    LABEL_MAX = 52
+    for key, buckets in build_help.GROUPS.items():
+        for bk, label, _ in buckets:
+            if len(label) > LABEL_MAX:
+                over.append(f"{key}/{bk}: bucket label is {len(label)} characters "
+                            f"({LABEL_MAX} is the ceiling) — {label!r}")
+    for need in build_help.NEEDS:
+        if len(need["short"]) > 26:
+            over.append(f'{need["key"]}: the short name is {len(need["short"])} '
+                        f'characters, too long for a chip — {need["short"]!r}')
+
+    if over:
+        for x in over:
+            bad("reading level: " + x)
+    else:
+        whole = reading_grade(" ".join(
+            [n["blurb"] for n in build_help.NEEDS]
+            + [n["intro"] for n in build_help.NEEDS]
+            + [build_help.HONESTY]))
+        ok(f"the prose the site writes about itself is at or below grade "
+           f"{CEILING:.0f} (all of it together: {whole}), and every heading "
+           "fits its chip")
+
+
 def check_page_weight():
     """What a reader on transit data actually downloads.
 
@@ -2577,6 +2667,7 @@ def main():
                check_page_furniture, check_home_names_the_same_needs,
                check_critical_queries, check_no_sideways_scroll,
                check_checked_date_is_derived, check_page_weight,
+               check_reading_level,
                check_directory_a11y, check_directory_print,
                check_home_offers_help, check_doors_have_resources]:
         before = len(passes) + len(failures)

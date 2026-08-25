@@ -220,9 +220,10 @@ COPY = {
     "housing": dict(
         short="Housing & shelter",
         h1a="I need somewhere to stay, or", h1b="I might lose my home.",
-        intro="Shelter for tonight, help stopping an eviction, money toward rent you "
-              "have fallen behind on, and the free lawyers New York gives tenants. If "
-              "you have a court paper about your apartment, call someone here today.",
+        intro="Shelter for tonight. Help stopping an eviction. Money toward rent "
+              "you have fallen behind on. And the free lawyers New York gives "
+              "tenants. If you have a court paper about your apartment, call "
+              "somebody on this page today.",
         ph="Try: shelter, eviction, rent",
         seo="Free housing help in New York City: shelter intake, eviction prevention, "
             "free tenant lawyers, emergency rent money, and affordable housing."),
@@ -280,9 +281,9 @@ COPY = {
     "senior": dict(
         short="Older adults",
         h1a="I'm an older adult,", h1b="or I care for one.",
-        intro="Meals, centers where there are people to talk to, help with Medicare and "
-              "the rent, and someone to call if an older person is being harmed or "
-              "taken advantage of.",
+        intro="Meals. Centres where there are people to talk to. Help with "
+              "Medicare and with the rent. And someone to call if an older person "
+              "is being harmed, or taken advantage of.",
         ph="Try: meals, senior center, medicare",
         seo="Free help for older New Yorkers: meals and Citymeals, senior centers, "
             "Medicare and rent help, and protection for adults at risk."),
@@ -308,9 +309,9 @@ COPY = {
     "getting-there": dict(
         short="Getting there",
         h1a="I need help", h1b="getting there.",
-        intro="Half-price MetroCards for New Yorkers with low incomes, rides to medical "
-              "appointments, and Access-A-Ride if a disability makes the subway or bus "
-              "impossible.",
+        intro="Half-price MetroCards, if you do not earn much. Rides to medical "
+              "appointments. And Access-A-Ride, for when the subway and the bus "
+              "are not possible for you.",
         ph="Try: fair fares, access-a-ride",
         seo="Help getting around New York City on a low income: Fair Fares half-price "
             "MetroCards, reduced fares, Access-A-Ride, and free rides to medical "
@@ -327,9 +328,10 @@ COPY = {
     "disability": dict(
         short="Disability",
         h1a="I have a disability,", h1b="or I care for someone who does.",
-        intro="Benefits and how to keep them, getting around a city that was not "
-              "built for you, accessible housing, care at home, and what to do "
-              "when a service is cut off or an accommodation is refused.",
+        intro="Benefits, and how to keep them. Getting around a city that was "
+              "not built for you. Care at home, and somewhere to live. And what "
+              "to do when a service is cut off, or when somebody refuses to make "
+              "a change you need.",
         ph="Try: ssi, access-a-ride, home care",
         seo="Free help for disabled New Yorkers: benefits and appeals, Access-A-Ride "
             "and reduced fares, accessible and supportive housing, care at home, "
@@ -338,9 +340,10 @@ COPY = {
         short="After jail or prison",
         h1a="I have a criminal record,", h1b="or I'm coming home.",
         intro="A record follows people into every job application and every "
-              "apartment viewing, and New York has organisations that exist for "
-              "exactly that. Jobs that start in days, housing, health care, and "
-              "lawyers who seal records and fight discrimination.",
+              "apartment viewing. New York has organisations that exist for "
+              "exactly that. Jobs that start within days. Housing. Health care. "
+              "And lawyers who seal records, and who take on the people who turn "
+              "you down for one.",
         ph="Try: job, seal my record, housing",
         seo="Free reentry help in New York City after jail or prison: paid "
             "transitional jobs, housing, health care, family support, and lawyers "
@@ -634,7 +637,7 @@ GROUPS = {
          ["young", "dating", "youth", "teen"]),
         ("counsel",   "Counseling, and someone to keep talking to",
          ["counsel", "therapy", "response", "treatment", "advocacy"]),
-        ("legal",     "Legal help, orders of protection, and money owed to you",
+        ("legal",     "A lawyer, an order of protection, money owed to you",
          ["legal", "court", "order of protection", "immigration",
           "compensation", "victim services"]),
         ("community", "Help in your language, or from your community",
