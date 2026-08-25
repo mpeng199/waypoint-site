@@ -1739,6 +1739,25 @@ def haystack(r):
     return " ".join(extra).lower()
 
 
+
+_DIALABLE = re.compile(r"(?<![0-9])(911|988|311)(?![0-9])")
+
+
+def dial(text):
+    """Make the numbers in a translated sentence tappable.
+
+    The panels said "llame al 911" and "311 ke liye call karein" as plain
+    text, on a site where every other number on every other page is a link
+    you tap. The reader who most needs the number to be one tap away — no
+    English, a phone, possibly an emergency — was the one being asked to
+    memorise three digits and go find the dialler.
+
+    esc() first, then this, because this is the one place that puts HTML
+    back in. The lookarounds keep it off the digits inside a longer number.
+    """
+    return _DIALABLE.sub(r'<a class="dialn" href="tel:\1">\1</a>', text)
+
+
 def needwords(keys):
     """The ten-language query vocabulary for a set of needs, as one string.
 
@@ -2024,9 +2043,9 @@ def langbar_frag(target="#dir"):
             f'<section class="langnote" id="lang-{L["key"]}" lang="{L["tag"]}"{rtl} '
             f'data-lang="{L["key"]}" aria-labelledby="lang-h-{L["key"]}">',
             f'  <h2 id="lang-h-{L["key"]}">{esc(L["title"])}</h2>',
-            f'  <p>{esc(L["body"])}</p>',
-            f'  <p class="langnote__sos">{esc(L["sos"])}</p>',
-            f'  <p class="langnote__interp">{esc(L["interp"])}</p>',
+            f'  <p>{dial(esc(L["body"]))}</p>',
+            f'  <p class="langnote__sos">{dial(esc(L["sos"]))}</p>',
+            f'  <p class="langnote__interp">{dial(esc(L["interp"]))}</p>',
         ]
         # The sixteen kinds of help, named in this language, each opening its
         # own page. This is the difference between a notice that acknowledges
@@ -2034,7 +2053,7 @@ def langbar_frag(target="#dir"):
         # reader who cannot read English is told in their language that the
         # list below is in English, and then left with it.
         out += [
-            f'  <p class="langnote__search">{esc(L["search"])}</p>',
+            f'  <p class="langnote__search">{dial(esc(L["search"]))}</p>',
             f'  <h3 class="langnote__h3">{esc(L["browse"])}</h3>',
             '  <ul class="langneeds">',
         ]

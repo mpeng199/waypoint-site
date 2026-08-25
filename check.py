@@ -2279,6 +2279,34 @@ def check_heading_order():
             ok(f"{page}: {len(hs)} headings, one h1, no level skipped")
 
 
+def check_language_numbers_dial():
+    """The numbers in a translated panel have to be tappable, like every other
+    number on the site.
+
+    They were plain text: "llame al 911", "311 ke liye call karein". Every
+    number on every English part of this site is one tap. The reader who most
+    needs it not to be — no English, a phone, possibly an emergency — was the
+    one being asked to memorise three digits and go find the dialler.
+    """
+    want = ("911", "988", "311")
+    panel = re.compile(r'<section class="langnote"[^>]*id="lang-([a-z]+)"(.*?)</section>', re.S)
+    missing, seen = [], 0
+    for page in RESIDENT_PAGES:
+        src = read(page)
+        for key, body in panel.findall(src):
+            seen += 1
+            for n in want:
+                # the number appears in the panel's prose and must be a link
+                if re.search(rf"(?<![0-9]){n}(?![0-9])", re.sub(r"<a[^>]*>.*?</a>", "", body)):
+                    missing.append(f"{page}: the {key} panel prints {n} as text, not a link")
+                elif f'href="tel:{n}"' not in body:
+                    missing.append(f"{page}: the {key} panel never gives the reader {n}")
+    for m in sorted(set(missing))[:12]:
+        bad(m)
+    if not missing:
+        ok(f"all {seen} language panels dial 911, 988 and 311 rather than printing them")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3034,7 +3062,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_focus_ring, check_heading_order,
+               check_theme_is_shared, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

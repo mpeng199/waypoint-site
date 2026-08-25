@@ -169,6 +169,14 @@ b,strong{ font-weight:600; }
 .langnote__go:hover{ background:var(--gold-lit); }
 .langnote__x{ color:var(--ink-soft); font-size:.9rem;
   display:inline-flex; align-items:center; min-height:44px; }
+/* The numbers inside a translated sentence are links, and have to look like
+   one to a reader who cannot read the sentence around them. Gold on the deep
+   green panel, underlined, at the weight of the surrounding text. */
+.dialn{ color:var(--gold-lit); font-weight:600;
+  text-decoration:underline; text-underline-offset:3px;
+  text-decoration-thickness:2px; }
+.dialn:hover{ color:#FFF; }
+
 /* An RTL panel keeps its own direction; the page around it stays LTR. */
 .langnote[dir="rtl"] .langnote__do{ flex-direction:row-reverse; }
 
