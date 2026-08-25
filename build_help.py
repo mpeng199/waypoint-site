@@ -2643,6 +2643,29 @@ def render_language(L, rows, by_need):
     return "\n".join(p) + "\n"
 
 
+def carryover_frag():
+    """The line that follows somebody here from a page in their own language.
+
+    They tapped "I need food" on help-bn.html and landed on an English page.
+    The Bengali filter is already applied and the chip is pressed, but the
+    words around it changed language mid-journey, which is the moment a
+    reader decides the site was not really for them.
+
+    All ten ship hidden and help.js unhides the one the URL names — the same
+    contract as the search box: a control that needs JavaScript ships hidden
+    and says so, and nothing that matters depends on it. Somebody with no
+    JavaScript never sees this, and never sees the filter it explains either.
+    """
+    out = []
+    for L in LANGUAGES:
+        U = i18n.UI[L["key"]]
+        rtl = ' dir="rtl"' if L["dir"] == "rtl" else ''
+        out.append(f'<aside class="enote enote--carry" data-lang="{L["key"]}" '
+                   f'lang="{L["tag"]}"{rtl} hidden>'
+                   f'<p class="enote__p">{dial(esc(U["english"]))}</p></aside>')
+    return out
+
+
 def render_category(need, rows):
     """One kind of help, on its own page: a rail you can skim, the resources
     broken into buckets, and every neighbouring kind of help one tap away."""
@@ -2740,6 +2763,7 @@ def render_category(need, rows):
     A('</aside>')
 
     A('<div class="cat__main">')
+    p += carryover_frag()
     p += search_frag(esc(need["ph"]),
                      "Searches every place on this page.")
     A('<div class="printhead" aria-hidden="true">')

@@ -2538,17 +2538,32 @@ def check_language_round_trip():
             bad(f"{page} links to no category page at all")
     ok("every link from the ten language pages carries its language with it")
 
+    # and the page they land on says, in their language, what just happened
+    for page in CATEGORY_PAGES:
+        src = read(page)
+        n = len(re.findall(r'class="enote enote--carry"[^>]*hidden', src))
+        if n != len(build_help.LANGUAGES):
+            bad(f"{page} carries {n} of the ten in-language lines for somebody "
+                f"arriving from a translated page; the words around them change "
+                f"language mid-journey with nothing to say why")
+    ok("every category page can say, in any of the ten, why the words changed")
+
     js = read("help.js")
     if re.search(r"lang=\(\[a-z-\]\{2,20\}\)", js) and "useLanguage(" in js:
         ok("help.js reads ?lang= on arrival and presses the matching chip")
     else:
         bad("help.js no longer applies ?lang= on arrival, so every link from "
             "the ten language pages lands on an unfiltered English page")
-    if "if (chip) useLanguage" not in js:
+    # The value has to be one of the ten before anything is done with it.
+    # Written as an early return now rather than an if, so this asks whether
+    # a chip is looked up and bailed on, not for one particular spelling.
+    guard = re.search(r"querySelector\('\.chip\[data-f=\"lang\"\][^\n]*\n"
+                      r"\s*(if \(!chip\) return;|if \(chip\))", js)
+    if guard:
+        ok("help.js ignores a ?lang= that is not one of the ten")
+    else:
         bad("help.js applies ?lang= without checking the value is one of the "
             "ten; that is a URL, and a URL is not to be trusted")
-    else:
-        ok("help.js ignores a ?lang= that is not one of the ten")
 
 
 def check_language_print():

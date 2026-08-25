@@ -717,7 +717,11 @@
     var m = /[?&]lang=([a-z-]{2,20})/.exec(location.search);
     if (!m) return;
     var chip = document.querySelector('.chip[data-f="lang"][data-v="' + m[1] + '"]');
-    if (chip) useLanguage(m[1]);
+    if (!chip) return;
+    useLanguage(m[1]);
+    /* and say, in their language, why the words around them just changed */
+    var note = document.querySelector('.enote--carry[data-lang="' + m[1] + '"]');
+    if (note) note.removeAttribute("hidden");
   })();
 
   /* The follow-through: the list below should now be the places that speak
