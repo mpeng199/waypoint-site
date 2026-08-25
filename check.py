@@ -3031,6 +3031,7 @@ def check_tap_targets():
     """
     css = read("help.css") + "\n" + read("tokens.css")
     CONTROLS = [(r"\.jump a\{", "the jump row"),
+                (r"\.helplinks a\{", "the resident links on the home page"),
                 (r"\.chip\{", "a filter chip"),
                 (r"\.langbar__list a\{", "a language link"),
                 (r"\.langbar__here\{", "the language you are on"),

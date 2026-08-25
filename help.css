@@ -432,7 +432,9 @@ b,strong{ font-weight:600; }
 .crumb a:hover{ text-decoration:underline; text-underline-offset:3px; }
 .crumb__back{ color:var(--gold-deep); }
 .crumb a:hover .crumb__back{ transform:translateX(-4px); }
-.crumb__sep{ color:var(--line); }
+/* --line is 1.26:1 against the page: the separator was there and nobody
+   could see it, so the breadcrumb read as two words with a gap. */
+.crumb__sep{ color:var(--ink-3); }
 
 /* minmax(0,1fr), never a bare 1fr, and min-width:0 on both children.
    A grid track is max-content wide by default and a grid item refuses to
