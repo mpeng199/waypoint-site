@@ -2882,6 +2882,39 @@ def check_language_sentence_length():
        f"the English pages are held to")
 
 
+def check_hreflang_is_reciprocal():
+    """The eleven front pages are one document in eleven languages, and a
+    search engine only believes that if every one of them says so.
+
+    A hreflang set that is not reciprocal is discarded: a Spanish speaker
+    searching in Spanish then gets whichever page the crawler indexed first,
+    which for this site is the English one — the page they cannot read.
+    """
+    import build_help
+    group = ["help.html"] + [build_help.lang_page(L["key"])
+                             for L in build_help.LANGUAGES]
+    want = {"x-default": "help.html", "en": "help.html"}
+    for L in build_help.LANGUAGES:
+        want[L["tag"]] = build_help.lang_page(L["key"])
+
+    for page in group:
+        src = read(page)
+        got = dict(re.findall(r'<link rel="alternate" hreflang="([^"]+)" '
+                              r'href="([^"]+)" />', src))
+        missing = {k: v for k, v in want.items() if got.get(k) != v}
+        if missing:
+            bad(f"{page} names {len(got)} of the {len(want)} pages in its "
+                f"language group (missing or wrong: {sorted(missing)[:3]}) — "
+                f"a set that is not reciprocal is thrown away")
+        canon = re.search(r'<link rel="canonical" href="([^"]+)" />', src)
+        if not canon:
+            bad(f"{page} has no canonical, so the group has no anchor")
+        elif canon.group(1) != page:
+            bad(f"{page} says its canonical is {canon.group(1)!r}")
+    ok(f"all {len(group)} front pages name the whole language group and "
+       f"themselves, with an x-default")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3643,7 +3676,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

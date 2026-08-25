@@ -1980,7 +1980,24 @@ PIN = ('<svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C
        '<circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>')
 
 
-def head(title, desc, skip_href, skip_label):
+def alternates(self_href):
+    """Every page in the language group points at every other, itself included.
+
+    A hreflang set that is not reciprocal is ignored: a Spanish speaker
+    searching in Spanish gets whichever page the crawler happened to index,
+    which for this site means the English one. x-default names where somebody
+    lands when none of the eleven matches their browser.
+    """
+    out = [f'<link rel="alternate" hreflang="x-default" href="help.html" />',
+           f'<link rel="alternate" hreflang="en" href="help.html" />']
+    for L in LANGUAGES:
+        out.append(f'<link rel="alternate" hreflang="{L["tag"]}" '
+                   f'href="{lang_page(L["key"])}" />')
+    out.append(f'<link rel="canonical" href="{self_href}" />')
+    return out
+
+
+def head(title, desc, skip_href, skip_label, alts=None):
     return [
         '<!DOCTYPE html>', '<html lang="en">', '<head>',
         '<meta charset="UTF-8" />',
@@ -1991,6 +2008,7 @@ def head(title, desc, skip_href, skip_label):
         f'<meta property="og:title" content="{esc(title)}" />',
         f'<meta property="og:description" content="{esc(desc)}" />',
         '<meta property="og:type" content="website" />',
+        *(alts or []),
         '<link rel="preconnect" href="https://fonts.googleapis.com" />',
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />',
         FONTS,
@@ -2311,7 +2329,7 @@ def render_overview(rows):
               "A plain-language directory of free and low-cost help in New York City: "
               "food, medical bills, housing, health care, legal help, and more. Most of "
               "these do not ask about immigration status.",
-              "#needs", "Skip to what you need help with")
+              "#needs", "Skip to what you need help with", alternates("help.html"))
     p += header_frag()
     A('<main class="wrap">')
     p += langbar_frag()
@@ -2565,10 +2583,8 @@ def render_language(L, rows, by_need):
          f'<meta property="og:title" content="'
          f'{esc(U["title_a"] + i18n.TITLE_JOIN.get(L["key"], " ") + U["title_b"])}" />',
          '<meta property="og:type" content="website" />',
-         '<link rel="alternate" hreflang="en" href="help.html" />']
-    for O in LANGUAGES:
-        p.append(f'<link rel="alternate" hreflang="{O["tag"]}" '
-                 f'href="{lang_page(O["key"])}" />')
+         ]
+    p += alternates(lang_page(L["key"]))
     p += ['<link rel="preconnect" href="https://fonts.googleapis.com" />',
           '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />',
           FONTS,
