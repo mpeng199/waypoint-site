@@ -790,6 +790,47 @@ The count sits directly under the box that changes it. The scope note beside it
 no longer repeats the number standing next to it, which is one fewer place for
 a count to go stale.
 
+#### How a row is scored
+
+Six fields, weighted, best match per word:
+
+| field | weight | what it is |
+|---|---|---|
+| name | 6 | the organisation's name |
+| kind | 4 | the subcategory line under it |
+| tags | 3 | including whole sentences somebody would type |
+| alias | 2 | synonyms the row's own words fired, plus its needs' ten-language vocabulary |
+| body | 1 | the description |
+| **cat** | **0.6** | synonyms its *category* fired — below the description on purpose |
+
+Then three multipliers:
+
+- **Exact ×1.5, prefix ×1, stem ×0.7.** A whole word beats a word start beats a
+  match that needed the stemmer. "free counseling" used to open with Right to
+  Counsel — the eviction lawyers — because stripping `-ing` leaves `counsel`,
+  and English does not distinguish the legal root from the therapeutic one.
+- **Inverse document frequency**, floored at 0.15. A word in half the rows is
+  worth almost nothing; a word in one row is worth its full weight. Without it
+  "free eyeglasses" opened with *Free* Naloxone and *Free* Eviction Defense,
+  because "free" sat in their names and "eyeglasses" sat in somebody's alias.
+- **Whole-phrase bonus +14**, if the query appears verbatim in the name, the
+  alias **or the tags**. Tags are where this directory puts the exact sentence
+  a reader types.
+
+`check_critical_queries` models all of this in Python and asserts that 77
+named searches come back **first**, not merely somewhere. Every constant is
+read out of `help.js` by `_js_constants`, so the model cannot drift from the
+code without changing with it or failing for a missing name. It is still a
+model of another language's behaviour: it was checked against the live page on
+twenty-two queries and agrees with the browser on all of them.
+
+The `cat` field exists because a category is coarse. "Housing & Shelter"
+contains the word *shelter*, so every row filed under it fired the shelter
+synonyms, and Ronald McDonald House — which is for the family of a child in
+cancer treatment — came back first for "somewhere to sleep tonight". Dropping
+the category outright costs nineteen rows every synonym they have, including
+the childcare ones whose names never say "childcare".
+
 
 The people this is for do not type "domestic violence" or "substance use
 disorder" — those are the words the agencies use about them afterwards. They

@@ -187,6 +187,37 @@ Still needs a human: **a native speaker of each language should read their own
 page end to end.** Nothing in `i18n.py` is machine output, and nothing in it
 has been read by somebody who speaks the language.
 
+## The afternoon of 25 August
+
+Three wrong phone numbers and two dead links, found by opening pages a script
+cannot read:
+
+- **Adult Protective Services** — who you call when an older or disabled adult
+  is being neglected or exploited — printed 212-630-1853. The City's own APS
+  page says 718-557-1399 and does not mention the 212 number anywhere.
+- **Immigrant Defense Project** printed 212-725-6422. Their hotline page prints
+  (646) 760-0599 — and says to expect a callback in two working days, which the
+  row had been describing as a hotline.
+- **SNAP** and **ActionNYC** both pointed at nyc.gov pages that answer 200 and
+  render "you have reached an outdated or non-existing page" from JavaScript.
+  Every link check this project has run called them reachable.
+
+Nine resources added, all nine numbers confirmed on the organisations' own
+sites: CHASI and the Pride Center and the JCC pantry on Staten Island (which
+had ten rows in a directory of 340, three of them actually based there); the
+River Fund, Commonpoint, Urban Upbound and NICE in Queens; CaringKind's
+dementia helpline; Advocates for Children's education helpline; ICNA Relief's
+six halal pantries, on a page where "kosher" returned three results and
+"halal" returned none.
+
+Ten search bugs, found by typing a hundred and twenty realistic phrasings into
+the built page rather than by reading the code. See DESIGN.md for the scoring
+that came out of it.
+
+Rows dated August went from 278 to 339 of 351. The twelve that still read June
+have a real number on a site that will not answer a script and does not print
+it where a browser can read it either.
+
 ## The quarterly pass a person has to do
 
 Two things in this project cannot be automated from here, and pretending
