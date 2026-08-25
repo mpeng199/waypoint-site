@@ -91,8 +91,8 @@ UI["spanish"] = {
                 "página. Ayudamos a la gente a encontrarlos.",
     "foot_links": ["Buscar ayuda", "Sobre Waypoint", "Ser voluntario",
                    "Para organizaciones", "Privacidad y aviso legal"],
-    "foot_ver": "{n} recursos. Comprobado por última vez en {when}. Los "
-                "programas cambian: si algo aquí está mal, díganoslo.",
+    "foot_ver": "{n} recursos. Última comprobación: {when}. Los programas "
+                "cambian: si algo aquí está mal, díganoslo.",
     "langbar_h": "Reciba ayuda en su idioma",
     "english_h": "Sobre el idioma",
     "home": 'Waypoint, página principal',
@@ -225,7 +225,7 @@ UI["haitian-creole"] = {
     "sos": ["Ou an danje, oswa yon moun blese grav",
             "Ou pa santi ou an sekirite ak tèt ou, oswa ou bezwen pale ak yon "
             "moun kounye a",
-            "Yon moun lakay ou oswa mari ou ap fè ou mal oswa ap fè ou pè",
+            "Yon moun lakay ou oswa patnè ou ap fè ou mal oswa ap fè ou pè",
             "Nenpòt lòt bagay. Gratis, nenpòt lè, nan lang ou"],
     "sos_note": "Liy sa yo gratis, epi se moun ki fòme espesyalman pou sa ki "
                 "reponn. Ou ka rele san bay non ou.",
@@ -552,7 +552,7 @@ UI["urdu"] = {
 BLURBS = {}
 
 BLURBS["spanish"] = {
-    "safety": "Le hace daño o le amenaza alguien de su casa, o su pareja.",
+    "safety": "Alguien de su casa, o su pareja, le hace daño o le amenaza.",
     "crisis": "No se siente seguro consigo mismo, está desbordado, o tiene problemas con el alcohol o las drogas.",
     "food": "Despensas, comidas calientes y ayuda para inscribirse en cupones de alimentos (SNAP).",
     "housing": "Un lugar donde dormir esta noche, ayuda con el desalojo y vivienda asequible.",
@@ -592,7 +592,7 @@ BLURBS["french"] = {
 }
 
 BLURBS["polish"] = {
-    "safety": "Ktoś w domu albo partner rani lub grozi.",
+    "safety": "Ktoś w domu albo partner rani cię lub ci grozi.",
     "crisis": "Brak poczucia bezpieczeństwa ze sobą, przytłoczenie albo problem z alkoholem lub narkotykami.",
     "food": "Punkty z żywnością, ciepłe posiłki i pomoc w zapisaniu się na bony żywnościowe (SNAP).",
     "housing": "Nocleg na dziś, pomoc przy eksmisji i tanie mieszkania.",
@@ -612,7 +612,7 @@ BLURBS["polish"] = {
 }
 
 BLURBS["haitian-creole"] = {
-    "safety": "Yon moun lakay ou, oswa mari ou, ap fè ou mal oswa ap menase ou.",
+    "safety": "Yon moun lakay ou, oswa patnè ou, ap fè ou mal oswa ap menase ou.",
     "crisis": "Ou pa santi ou an sekirite ak tèt ou, ou depase, oswa ou gen pwoblèm ak alkòl oswa dwòg.",
     "food": "Depo manje, manje cho, ak èd pou enskri nan koupon manje (SNAP).",
     "housing": "Kote pou dòmi aswè a, èd kont degèpisman, ak lojman ki pa chè.",
@@ -770,8 +770,8 @@ MONTHS = {
 
 # ("one month", "a span") — Chinese and Korean put the year first.
 DATE_SPAN = {
-    "spanish": ('{a} de {y}', '{a} a {b} de {y}'),
-    "french": ('{a} {y}', '{a} à {b} {y}'),
+    "spanish": ('{a} de {y}', '{a}–{b} de {y}'),
+    "french": ('{a} {y}', 'de {a} à {b} {y}'),
     "polish": ('{a} {y}', '{a}–{b} {y}'),
     "haitian-creole": ('{a} {y}', '{a}–{b} {y}'),
     "russian": ('{a} {y}', '{a}–{b} {y}'),
