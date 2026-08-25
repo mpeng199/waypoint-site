@@ -2954,6 +2954,38 @@ def check_language_spacing_is_shared():
         ok(f"all {seen} per-script rules touch typography only, never spacing")
 
 
+def check_page_cannot_be_dragged_sideways():
+    """At 320px with text at 200%, no page may pan.
+
+    index.html could be dragged 78 pixels into nothing. No text was lost — the
+    overflow is a sticky column in one of the hold scenes — but a page sliding
+    under your thumb while you are trying to scroll down is its own kind of
+    broken, and WCAG 1.4.10 does not care that what slid off was empty.
+
+    overflow-x:hidden was already on body and did not stop it. hidden on one
+    axis coerces the other from visible to auto, which makes body its own
+    scroll container and leaves the document element scrolling instead. `clip`
+    is the value that exists for this: it clips without creating a scroll
+    container, so overflow-y stays genuinely visible and every position:sticky
+    on the page keeps working. It has to be on both elements, because either
+    one can end up being the one that scrolls.
+    """
+    for sheet in ("styles.css", "help.css"):
+        src = read(sheet)
+        broken = re.search(r"(?:^|[\s,])(html|body)[^{}]*\{[^}]*overflow-x:\s*hidden", src, re.M)
+        if broken:
+            bad(f"{sheet} sets overflow-x:hidden on {broken.group(1)}. That "
+                f"coerces overflow-y to auto, makes it its own scroll container "
+                f"and leaves the document element scrolling — use clip")
+    st = read("styles.css")
+    if re.search(r"html,\s*body\{[^}]*overflow-x:\s*clip", st):
+        ok("the narrative page cannot be dragged sideways, and its sticky "
+           "scenes still stick")
+    else:
+        bad("styles.css no longer clips the page horizontally; at 320px with "
+            "text at 200% it can be dragged 78px into nothing")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3715,7 +3747,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

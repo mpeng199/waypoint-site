@@ -28,8 +28,23 @@ body{
   font-family:var(--sans); background:var(--green-deep); color:var(--cream);
   --focus:var(--gold-lit);   /* the whole narrative side is a dark room */
   line-height:1.6; font-size:17px; -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility; overflow-x:hidden;
+  text-rendering:optimizeLegibility;
 }
+
+/* At 320px with text at 200% — the narrowest screen at the largest type —
+   this page could be dragged 78 pixels sideways into nothing. No text was
+   lost; the overflow is a sticky column in one of the hold scenes. But the
+   page sliding under your thumb while you are trying to scroll down is its
+   own kind of broken, and it is a WCAG 1.4.10 failure either way.
+
+   overflow-x:hidden was already on body and did not stop it: hidden on one
+   axis coerces the other from visible to auto, which makes body its own
+   scroll container and leaves the document element scrolling instead. clip
+   is the value that exists for this — it clips without creating a scroll
+   container, so overflow-y stays genuinely visible and every position:sticky
+   on the page keeps working. On both elements, because either one can be the
+   one that scrolls. */
+html, body{ overflow-x:clip; }
 a{ color:inherit; text-decoration:none; }
 em{ font-style:italic; }
 img,svg{ display:block; max-width:100%; }
