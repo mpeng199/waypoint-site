@@ -2341,31 +2341,45 @@ def check_heading_order():
 
 
 def check_language_numbers_dial():
-    """The numbers in a translated panel have to be tappable, like every other
+    """The numbers on a translated page have to be tappable, like every other
     number on the site.
 
     They were plain text: "llame al 911", "311 ke liye call karein". Every
     number on every English part of this site is one tap. The reader who most
     needs it not to be — no English, a phone, possibly an emergency — was the
     one being asked to memorise three digits and go find the dialler.
+
+    This used to read the `langnote` panels, which the ten full language pages
+    replaced. It looped over nothing and passed. It now reads the pages.
     """
-    want = ("911", "988", "311")
-    panel = re.compile(r'<section class="langnote"[^>]*id="lang-([a-z]+)"(.*?)</section>', re.S)
+    import build_help
+
+    want = ("911", "988", "311", "988")
+    # Anything that looks like a number a person would dial, once the links
+    # are taken out of the page. Three digits alone, or a ten-digit number in
+    # any of the shapes the descriptions use.
+    loose = re.compile(r"(?<![\d>-])(?:911|988|311|\d{3}[-.\s]\d{3}[-.\s]\d{4})"
+                       r"(?![\d<-])")
     missing, seen = [], 0
-    for page in RESIDENT_PAGES:
+    for key in build_help.LANG_SLUG:
+        page = build_help.lang_page(key)
+        if not os.path.exists(page):
+            bad(f"{page} is missing")
+            continue
+        seen += 1
         src = read(page)
-        for key, body in panel.findall(src):
-            seen += 1
-            for n in want:
-                # the number appears in the panel's prose and must be a link
-                if re.search(rf"(?<![0-9]){n}(?![0-9])", re.sub(r"<a[^>]*>.*?</a>", "", body)):
-                    missing.append(f"{page}: the {key} panel prints {n} as text, not a link")
-                elif f'href="tel:{n}"' not in body:
-                    missing.append(f"{page}: the {key} panel never gives the reader {n}")
+        # Take the anchors out whole — what is left is text nobody can tap.
+        text = re.sub(r"<a\b[^>]*>.*?</a>", " ", src, flags=re.S)
+        text = re.sub(r"<[^>]+>", " ", text)
+        for hit in sorted(set(loose.findall(text))):
+            missing.append(f"{page} prints {hit} as text, not a link")
+        for n in ("911", "988", "311"):
+            if f'href="tel:{n}"' not in src:
+                missing.append(f"{page} never gives the reader {n}")
     for m in sorted(set(missing))[:12]:
         bad(m)
     if not missing:
-        ok(f"all {seen} language panels dial 911, 988 and 311 rather than printing them")
+        ok(f"all {seen} language pages dial their numbers rather than printing them")
 
 
 def check_one_header():
@@ -4389,6 +4403,191 @@ def check_no_english_month_on_a_language_page():
             ok(f"{f} dates itself in its own language")
 
 
+def check_the_emergency_strip_is_always_open():
+    """The four numbers at the top of every resident page are the 3am block.
+
+    Somebody reading them is not going to notice a small-print "Mon-Fri" and
+    wait until Monday. Every row the strip draws from has to be answered
+    around the clock, and any row whose name promises 24 hours has to have
+    hours that agree with its own name.
+    """
+    import build_help
+
+    rows = build_help.load()
+    by_name = {r["Resource Name"]: r for r in rows}
+    allday = re.compile(r"24[/ ]?7|24 ?hours|24-hour|around the clock", re.I)
+
+    for name, _why in build_help.SOS:
+        r = by_name.get(name)
+        if not r:
+            bad(f"the emergency strip names {name!r}, which is not in the data")
+        elif not allday.search(r["Hours"]):
+            bad(f"the emergency strip offers {name!r}, whose hours read "
+                f"{r['Hours']!r}. A number on that strip is one somebody dials "
+                f"at 3am; it has to be answered then.")
+        else:
+            ok(f"emergency strip: {name} is answered around the clock")
+
+    for r in rows:
+        if allday.search(r["Resource Name"]) and not allday.search(r["Hours"]):
+            bad(f"{r['Resource Name']!r} promises 24 hours in its own name but "
+                f"its hours read {r['Hours']!r}")
+
+
+def check_outbound_links_are_safe():
+    """Every link off this site opens in the same tab, with rel="noopener".
+
+    Same tab because the back button is the one control every reader already
+    knows, and a new tab takes it away from them. noopener because a page we
+    do not control should never get a handle on the one the reader came from.
+    """
+    blank, bare = [], []
+    for f in sorted(str(q) for q in Path(".").glob("*.html")):
+        for tag in re.findall(r"<a\b[^>]*>", read(f)):
+            if 'target="_blank"' in tag and "noopener" not in tag:
+                blank.append(f"{f}: {tag[:90]}")
+            m = re.search(r'href="(https?://[^"]+)"', tag)
+            if m and "noopener" not in tag:
+                bare.append(f"{f}: {m.group(1)[:70]}")
+    for x in sorted(set(blank))[:6]:
+        bad(f"a link opens a new tab with no rel=noopener — {x}")
+    for x in sorted(set(bare))[:6]:
+        bad(f"an outbound link has no rel=noopener — {x}")
+    if not blank and not bare:
+        ok("every outbound link stays in the tab and carries rel=noopener")
+
+
+def check_every_website_is_https():
+    """A directory that sends somebody to http:// is sending them somewhere a
+    network can read and rewrite. Every site we name supports https."""
+    import build_help
+
+    bad_ones = [r["Resource Name"] for r in build_help.load()
+                if r["Website"].startswith("http://")]
+    if bad_ones:
+        for n in bad_ones[:8]:
+            bad(f"{n!r} is listed with an http:// address; use https://")
+    else:
+        ok("every website in the directory is https")
+
+
+def check_the_skip_link_works():
+    """The first thing a keyboard reaches on every page.
+
+    Three ways it stops working and none of them are visible: it gets
+    display:none (which takes it out of the tab order entirely), it loses the
+    :focus rule that brings it on screen, or it points at an id that a later
+    edit renamed. This checks all three.
+    """
+    css = read("help.css") + read("styles.css")
+    rule = re.search(r"\.skip\{([^}]*)\}", css)
+    if not rule:
+        bad("there is no .skip rule any more")
+        return
+    if re.search(r"display\s*:\s*none|visibility\s*:\s*hidden", rule.group(1)):
+        bad("the skip link is display:none, which takes it out of the tab "
+            "order — it is not hidden from sight, it is gone. Use the "
+            "clip-path pattern the rest of the site uses.")
+    else:
+        ok(".skip is clipped, not removed")
+    if not re.search(r"\.skip:focus\b", css):
+        bad("the skip link has no :focus rule, so it never comes on screen")
+    else:
+        ok(".skip:focus brings it back on screen")
+
+    for f in sorted(str(q) for q in Path(".").glob("*.html")):
+        src = read(f)
+        # 2.4.1 is about bypassing a block of repeated content. A page with no
+        # site header has no repeated block to bypass — the redirect stubs and
+        # the internal pages are not exempted by choice, they have nothing to
+        # skip.
+        if 'class="sitehead"' not in src:
+            continue
+        m = re.search(r'<a class="skip" href="#([^"]+)"', src)
+        if not m:
+            bad(f"{f} carries the site header but has no skip link, so a "
+                f"keyboard reader tabs the whole bar on every page")
+        elif f'id="{m.group(1)}"' not in src:
+            bad(f"{f}'s skip link points at #{m.group(1)}, which is not on the "
+                f"page — it would send a keyboard reader nowhere")
+        else:
+            ok(f"{f} skips to #{m.group(1)}")
+
+
+def check_category_pages_keep_their_jump_nav():
+    """Seventeen kinds of help, and seven groups inside each one, is too much
+    to scroll past.
+
+    Two navs do that work and both are the page's table of contents: help.html
+    opens with `.jump`, a link per kind of help, and every category page opens
+    with `.rail__nav`, a link per group on it. On a phone either one is the
+    difference between finding the right block and giving up. Each has to be
+    there, not hidden, and to name every target the page actually has — a nav
+    that names six of seven groups leaves the seventh with nothing that
+    reaches it.
+    """
+    import build_help
+
+    langs = {build_help.lang_page(k) for k in build_help.LANG_SLUG}
+
+    def one(page, cls, prefix):
+        src = read(page)
+        nav = re.search(rf'<nav class="{cls}"([^>]*)>(.*?)</nav>', src, re.S)
+        if not nav:
+            bad(f"{page} has lost its {cls} nav, which is the only thing on "
+                f"the page that takes a reader to a section")
+            return
+        if re.search(r"\bhidden\b", nav.group(1)):
+            bad(f"{page}'s {cls} nav carries hidden, which is the same as not "
+                f"having one for everybody who can see the page")
+            return
+        links = set(re.findall(rf'href="#({prefix}[^"]*)"', nav.group(2)))
+        targets = set(re.findall(rf'id="({prefix}[^"]*)"', src))
+        if not links:
+            bad(f"{page}'s {cls} nav has no links in it")
+        elif links - targets:
+            bad(f"{page}'s {cls} nav points at {sorted(links - targets)}, "
+                f"which is not on the page")
+        elif targets - links:
+            bad(f"{page} has {sorted(targets - links)} that the {cls} nav "
+                f"never names, so nothing takes a reader there")
+        else:
+            ok(f"{page} jumps to all {len(links)} of its sections")
+
+    one("help.html", "jump", "n-")
+    for page in sorted(str(q) for q in Path(".").glob("help-*.html")):
+        if page not in langs:
+            one(page, "rail__nav", "g-")
+
+
+def check_header_spacing_lives_in_one_place():
+    """The two halves may choose the header's colours. They may not choose its
+    spacing.
+
+    That is the whole reason the header tokens are split the way they are:
+    tokens.css owns the measurements so the bar is the same height, the same
+    padding and the same gaps on the dark half and the light one, and a reader
+    moving between them sees nothing move. A stylesheet that redefines one of
+    the spacing tokens breaks that silently — the bar still looks fine on the
+    page you are editing.
+    """
+    spacing = ["--head-pad", "--head-row", "--head-gap", "--head-h",
+               "--head-wrap", "--head-gutter"]
+    for f in ("help.css", "styles.css"):
+        src = read(f)
+        # a definition, not a var() read
+        for tok in spacing:
+            if re.search(rf"{tok}\s*:", src):
+                bad(f"{f} sets {tok}. The header's measurements live in "
+                    f"tokens.css so that both halves get the same ones; a "
+                    f"stylesheet that redefines one moves the bar on its half "
+                    f"only. Set colours here, measurements there.")
+            else:
+                ok(f"{f} leaves {tok} to tokens.css")
+    if not re.search(r"--head-pad\s*:", read("tokens.css")):
+        bad("tokens.css no longer defines --head-pad")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -4399,6 +4598,10 @@ def main():
                check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_one_typo_does_not_empty_the_page, check_every_category_page_answers_its_own_questions, check_also_tags_are_real_needs, check_the_data_itself, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_the_promises_are_still_there,
                check_no_english_month_on_a_language_page,
+               check_the_emergency_strip_is_always_open,
+               check_outbound_links_are_safe, check_every_website_is_https,
+               check_the_skip_link_works, check_category_pages_keep_their_jump_nav,
+               check_header_spacing_lives_in_one_place,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

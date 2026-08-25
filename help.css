@@ -108,7 +108,6 @@ b,strong{ font-weight:600; }
   --head-ink-3:var(--ink-3);
   --head-hover:var(--line-2);
   --head-dot:var(--gold);      /* on cream the mark wants a counter */
-  --head-dot:var(--gold);      /* on cream the mark wants a counter */
   --head-shadow:none;
 }
 /* transparent until you have scrolled: over cream, indistinguishable from the

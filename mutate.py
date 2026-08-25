@@ -52,7 +52,42 @@ MUTATIONS = [
   "build_help.py", "when=checked_in(rows, L[\"key\"])", "when=checked(rows)"),
  ("index.html can be dragged sideways again",
   "styles.css", "html, body{ overflow-x:clip; }", "body{ overflow-x:hidden; }"),
+ # ---- round two: areas the first twelve never touched
+ ("the skip link stops being reachable",
+  "help.css", ".skip{ position:absolute;", ".skip{ display:none; position:absolute;"),
+ ("an Arabic page loses its direction",
+  "build_help.py", '{" dir=\\"rtl\\"" if rtl else ""}>', '>'),
+ ("a language page claims to be English",
+  "build_help.py", '<html lang="{L["tag"]}"{" dir=', '<html lang="en"{" dir='),
+ ("an outbound link stops being sandboxed",
+  "build_help.py", 'href="{esc(r["Website"])}" rel="noopener"',
+  'href="{esc(r["Website"])}" target="_blank"'),
+ ("a crisis line stops saying it is always open",
+  "data/resources.csv", '"24/7/365"', '"Varies"'),
+ ("a resource is listed twice",
+  "data/resources.csv", '"Safe Horizon","Domestic',
+  '"NYC HOPE — 24-Hour DV Hotline (Safe Horizon)","Domestic'),
+ ("a category page loses its jump nav",
+  "build_help.py", 'A(\'  <nav class="jump" aria-label="Jump to a kind of help"><ul>\')',
+  'A(\'  <nav class="jump" aria-label="Jump to a kind of help" hidden><ul>\')'),
+ ("the two halves stop sharing header spacing",
+  "help.css", ".sitehead{\n  position:sticky; top:0;",
+  ".sitehead{\n  --head-pad:22px;\n  position:sticky; top:0;"),
+ ("a website link drops to plain http",
+  "data/resources.csv", "https://988lifeline.org", "http://988lifeline.org"),
+ ("phone numbers in translated prose stop dialling",
+  "build_help.py", "return _DIALABLE.sub(r'<a class=\"dialn\" href=\"tel:\\1\">\\1</a>', text)",
+  "return text"),
+ ("a description turns into one long sentence",
+  "data/resources.csv", "A free pantry on Staten Island",
+  "A free pantry located on Staten Island which, subject to availability and "
+  "in accordance with applicable eligibility criteria, may be able to provide "
+  "groceries to individuals and families who have been determined to be in "
+  "need of nutritional assistance at the present time"),
+ ("the search stops matching what people actually call things",
+  "help.js", "W_ALIAS = 2", "W_ALIAS = 0"),
 ]
+
 
 def snapshot():
     for f in FILES:
@@ -65,26 +100,39 @@ def restore():
 def run(cmd):
     return subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=600)
 
+# A mutation only means something against a green baseline. It also catches
+# leftover damage from a run that was interrupted before it could restore —
+# without this, the next run snapshots the damage and "restores" to it.
+base = run("python3 check.py")
+if not re.search(r"(?<!\d)0 failed", base.stdout):
+    sys.exit("check.py is already failing. Fix that first — or, if a previous "
+             "run was interrupted: git checkout -- . && python3 build_help.py")
+
 snapshot()
 caught, missed = [], []
-for name, path, old, new in MUTATIONS:
+try:
+  for name, path, old, new in MUTATIONS:
     # Bytes, not text. Text mode converted the CSV's CRLF line endings to LF
     # on write, so a restore from a snapshot taken after that point put a
     # silently different file back.
-    src = open(path, "rb").read()
-    o, n2 = old.encode(), new.encode()
-    if o not in src:
-        missed.append((name, "MUTATION DID NOT APPLY"))
-        continue
-    open(path, "wb").write(src.replace(o, n2))
-    run("python3 build_help.py")
-    r = run("python3 check.py")
-    # "10 failed" contains "0 failed" — the substring test scored ten
-    # real catches as misses.
-    failed = not re.search(r"(?<!\d)0 failed", r.stdout)
-    (caught if failed else missed).append((name, ""))
-    restore()
-    run("python3 build_help.py")
+     src = open(path, "rb").read()
+     o, n2 = old.encode(), new.encode()
+     if o not in src:
+         missed.append((name, "MUTATION DID NOT APPLY"))
+         continue
+     open(path, "wb").write(src.replace(o, n2))
+     run("python3 build_help.py")
+     r = run("python3 check.py")
+     # "10 failed" contains "0 failed" — the substring test scored ten
+     # real catches as misses.
+     failed = not re.search(r"(?<!\d)0 failed", r.stdout)
+     (caught if failed else missed).append((name, ""))
+     restore()
+     run("python3 build_help.py")
+
+finally:
+  restore()
+  run("python3 build_help.py")
 
 print(f"\ncaught {len(caught)} of {len(MUTATIONS)}")
 for n,_ in caught: print("   caught  ", n)
