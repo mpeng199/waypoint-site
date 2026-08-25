@@ -1820,6 +1820,9 @@ CRITICAL_QUERIES = [
     ("i need a therapist", "NAMI-NYC Helpline"),
     ("special education", "Advocates for Children — education helpline"),
     ("my child was suspended", "Advocates for Children — education helpline"),
+    ("halal", "ICNA Relief NY food pantries"),
+    ("day laborer", "NICE — New Immigrant Community Empowerment"),
+    ("tps", "ActionNYC Immigration Legal Hotline"),
 ]
 
 # The stop list and the stemmer, kept in step with help.js by hand. Both are

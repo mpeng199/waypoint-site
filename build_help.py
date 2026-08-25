@@ -1369,7 +1369,12 @@ SYNONYMS = [
                         "no hot water lights turned off disconnected"),
     ("income support",  "welfare public assistance cash benefits pay paying rent money"),
     ("immigration",     "green card papers undocumented ice deportation asylum visa "
-                        "raid detained knocked on my door came to my work"),
+                        "raid detained knocked on my door came to my work "
+                        # searched and found nothing: the initialisms people
+                        # actually use, and the consulate route to an ID
+                        "tps temporary protected status daca work permit "
+                        "consulate embassy my country's consulate matricula "
+                        "citizenship naturalization"),
     ("know your rights","ice at my door immigration agents raid detained arrested "
                         "do i have to open the door what do i say"),
     ("legal",           "lawyer attorney court sue rights arrested charged "
@@ -1413,7 +1418,9 @@ SYNONYMS = [
     ("early childhood", "daycare day care pre-k prek 3-k 3k kindergarten childcare "
                         "babysitting head start preschool nursery"),
     ("youth",           "teen teenager kid young person"),
-    ("job",             "work employment hiring career resume training classes"),
+    ("job",             "work employment hiring career resume training classes "
+                        "day laborer day labourer jornalero paid in cash "
+                        "street corner construction"),
     ("esol",            "english classes esl learn english"),
     ("veteran",         "army navy marines air force service member"),
     ("hiv",             "aids positive status testing hiv test std sti"),
