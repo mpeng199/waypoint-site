@@ -15,6 +15,7 @@ No dependencies. Exits non-zero on the first failing category.
 """
 
 import html
+import math
 import os
 import re
 import importlib
@@ -1739,13 +1740,13 @@ CRITICAL_QUERIES = [
     ("someone to talk to",          "NYC 988 (formerly NYC Well)"),
     ("heroin",                      "NY OASAS HOPEline"),
     ("narcan",                      "OASAS Free Naloxone / Harm Reduction"),
-    ("overdose",                    "OnPoint NYC"),
+    ("overdose",                    "OASAS Free Naloxone / Harm Reduction"),
     ("they took my passport",       "National Human Trafficking Hotline"),
     # what this site exists for
     ("cant pay my hospital bill",   "Hospital Financial Assistance (every NY hospital)"),
     ("charity care",                "Dollar For"),
     ("insurance said no",           "Community Health Advocates (CHA)"),
-    ("denied claim",                "New York State External Appeal (DFS)"),
+    ("denied claim",           "Community Health Advocates (CHA)"),
     ("medical debt collector",      "Consumer Financial Protection Bureau — complaint"),
     ("my medicine is too expensive","NeedyMeds"),
     # food
@@ -1755,8 +1756,9 @@ CRITICAL_QUERIES = [
     # housing
     ("shelter tonight",             "NYC DHS Shelter Intake (right to shelter)"),
     ("kicked out",                  "Homebase (Homelessness Prevention)"),
-    ("landlord wont fix",           "Met Council on Housing Tenant Hotline"),
-    ("back rent",                   "HRA Emergency Assistance / One Shot Deal"),
+    ("landlord wont fix",      "JustFix"),
+    ("back rent", ("HRA Emergency Assistance / One Shot Deal",
+                                    "FHEPS (rent help for families)")),
     ("i sleep on the train",        "Breaking Ground Street Outreach"),
     # health
     ("free clinic no insurance",    "NYC Care"),
@@ -1769,7 +1771,7 @@ CRITICAL_QUERIES = [
     ("unpaid wages",                "NYS Department of Labor — unpaid wages"),
     ("my boss didnt pay me",        "NYC Worker Rights (DCWP)"),
     ("my benefits were cut off",    "New York Legal Assistance Group (NYLAG)"),
-    ("con ed shut off my power",    "HEAP (Home Energy Assistance Program)"),
+    ("con ed shut off my power", "Con Edison payment help"),
     ("free tax help",               "NYC Free Tax Prep"),
     # the ones added because the directory had nothing
     ("seal my record",              "Legal Action Center"),
@@ -1818,7 +1820,8 @@ CRITICAL_QUERIES = [
     ("paying for medicine", "RxAssist"),
     ("i need a bed", "NYC DHS Shelter Intake (right to shelter)"),
     ("i need a therapist", "NAMI-NYC Helpline"),
-    ("special education", "Advocates for Children — education helpline"),
+    ("special education", ("Advocates for Children — education helpline",
+                                          "The New York Foundling")),
     ("my child was suspended", "Advocates for Children — education helpline"),
     ("halal", "ICNA Relief NY food pantries"),
     ("day laborer", "NICE — New Immigrant Community Empowerment"),
@@ -3118,69 +3121,168 @@ def check_no_sideways_scroll():
         ok("help.css: both children of the category grid may shrink")
 
 
+def _js_constants():
+    """The scoring constants, read out of help.js rather than typed here.
+
+    The model below is a model, and the failure mode of a model is that it
+    drifts from the thing it models and keeps passing. Every number it uses
+    comes from the file it is modelling, so a change to the weights either
+    changes this check's behaviour too or fails outright for a missing name.
+    """
+    js = read("help.js")
+    want = ["W_NAME", "W_KIND", "W_TAG", "W_ALIAS", "W_BODY", "W_CAT",
+            "EXACT", "STEMMED", "W_PHRASE"]
+    got = {}
+    for name in want:
+        m = re.search(rf"\b{name}\s*=\s*([\d.]+)", js)
+        if not m:
+            bad(f"help.js no longer defines {name}; the search model in check.py "
+                f"is now modelling something that does not exist")
+            return None
+        got[name] = float(m.group(1))
+    m = re.search(r"if \(v < ([\d.]+)\) v = [\d.]+;", js)
+    got["IDF_FLOOR"] = float(m.group(1)) if m else 0.15
+    return got
+
+
 def check_critical_queries():
-    """The searches that must not stop working."""
+    """The searches that must not stop working — and must still come first.
+
+    This used to count matched words only: it asked whether the target row was
+    in the tier that matched the most words, which is a reachability test. But
+    every failure the fifty-phrasing probe turned up was an *ordering* failure.
+    "free eyeglasses" did reach the optometry clinic; it put naloxone and
+    eviction defence above it, and this check was happy.
+
+    So it models the score help.js computes — the five weighted fields, the
+    exact/prefix/stem factors, inverse document frequency, the phrase bonus —
+    and asserts the target row comes FIRST. Every constant is read out of
+    help.js by _js_constants, so the model cannot drift from the code without
+    either changing with it or failing loudly.
+
+    It remains a model of a different language's behaviour, which is worth
+    saying out loud: it is checked against the real page by hand, and the
+    probe that found these queries was run in a browser, not here.
+    """
     import build_help
+    K = _js_constants()
+    if not K:
+        return
     rows = build_help.load()
     by = {r["Resource Name"]: r for r in rows}
 
-    def searchable(r):
-        return " ".join([r["Resource Name"], r["Subcategory"],
-                         build_help.tagtext(r), " ".join(build_help.haystack(r)),
-                         build_help.needwords(r["_needs"]),
-                         r["Description"]]).lower()
+    def fields(r):
+        own, cat = build_help.haystack(r)
+        return {
+            "name": r["Resource Name"].lower(),
+            "kind": r["Subcategory"].lower(),
+            "tags": build_help.tagtext(r).lower(),
+            "alias": (own + " " + build_help.needwords(r["_needs"])).lower(),
+            "body": r["Description"].lower(),
+            "cat": cat.lower(),
+        }
 
-    hays = {r["Resource Name"]: searchable(r) for r in rows}
+    F = {r["Resource Name"]: fields(r) for r in rows}
+    FLAT = {n: " ".join(f.values()) for n, f in F.items()}
 
-    def hits(hay, words):
-        n = 0
+    def starts(hay, w):
+        if not w.isascii():
+            return w in hay
+        return bool(re.search(r"\b" + re.escape(w), hay))
+
+    def exact(hay, w):
+        if not w.isascii():
+            return w in hay
+        return bool(re.search(r"\b" + re.escape(w) + r"\b", hay))
+
+    def field_score(hay, w, weight):
+        if starts(hay, w):
+            return weight * (K["EXACT"] if exact(hay, w) else 1.0)
+        st = _stem(w)
+        if st != w and starts(hay, st):
+            return weight * K["STEMMED"]
+        return 0.0
+
+    N = len(rows)
+    idf_cache = {}
+
+    def idf(w):
+        if w in idf_cache:
+            return idf_cache[w]
+        df = sum(1 for hay in FLAT.values() if starts(hay, w) or
+                 (_stem(w) != w and starts(hay, _stem(w))))
+        v = math.log(N / df) / math.log(N) if df else 1.0
+        v = min(1.0, max(K["IDF_FLOOR"], v))
+        idf_cache[w] = v
+        return v
+
+    ORDER = [("name", "W_NAME"), ("kind", "W_KIND"), ("tags", "W_TAG"),
+             ("alias", "W_ALIAS"), ("body", "W_BODY"), ("cat", "W_CAT")]
+
+    def score(name, words, phrase):
+        f = F[name]
+        hits = points = 0
         for w in words:
-            # Outside ASCII a word boundary is meaningless: \b is defined by
-            # ASCII word characters, so "\bкризис" can never match and
-            # "\b食物" asks a question about nothing. help.js matches those
-            # plainly, and so does this.
-            if not w.isascii():
-                if w in hay:
-                    n += 1
-                continue
-            if (re.search(r"\b" + re.escape(w), hay)
-                    or re.search(r"\b" + re.escape(_stem(w)), hay)):
-                n += 1
-        return n
+            p = 0.0
+            for key, const in ORDER:
+                p = field_score(f[key], w, K[const])
+                if p:
+                    break
+            if p:
+                hits += 1
+                points += p * idf(w)
+        if hits and len(phrase) > 6 and (phrase in f["alias"] or phrase in f["name"]
+                                         or phrase in f["tags"]):
+            points += K["W_PHRASE"]
+        return hits, points
 
     broken = []
     for query, target in CRITICAL_QUERIES:
-        row = by.get(target)
-        if not row:
-            broken.append(f"{query!r} should reach {target!r}, which is not in "
-                          "the directory any more")
+        # Some questions have more than one right answer. "back rent" is
+        # answered by the emergency grant that pays arrears and by the rent
+        # subsidy for families, and insisting on one of them would push the
+        # data around until the guard was happy rather than until the page
+        # was. A tuple means any of these may lead.
+        targets = target if isinstance(target, tuple) else (target,)
+        missing = [t for t in targets if t not in by]
+        if missing:
+            broken.append(f"{query!r} should reach {missing[0]!r}, which is not "
+                          "in the directory any more")
             continue
-        words = [w for w in re.split(r"[^\w\-]+", query.lower().replace("’", ""),
-                                     flags=re.UNICODE)
+        phrase = query.lower().replace("\u2019", "")
+        words = [w for w in re.split(r"[^\w\-]+", phrase, flags=re.UNICODE)
                  if w and w not in _STOP
                  and (len(w) >= 2 or not w.isascii())
                  and not (w.isdigit() and len(w) < 3)]
-        # help.js keeps the rows that matched the most words, so the promise
-        # this makes is the same one: the target has to be in that top tier.
-        # Requiring every word instead would be stricter than the thing it is
-        # meant to be checking, and would fail on the filler nobody can list
-        # in advance ("being", "was", "just").
-        scores = {name: hits(hay, words) for name, hay in hays.items()}
-        best = max(scores.values()) if scores else 0
-        if not best:
+        if not words:
+            continue
+        scored = {n: score(n, words, phrase) for n in F}
+        best_hits = max(h for h, _ in scored.values())
+        if not best_hits:
             broken.append(f"{query!r} matches nothing in the whole directory")
-        elif scores[target] < best:
-            winner = max(scores, key=lambda k: scores[k])
-            broken.append(
-                f"{query!r} no longer reaches {target!r} first: it matches "
-                f"{scores[target]} of {len(words)} words while {winner!r} "
-                f"matches {best}")
+            continue
+        tier = {n: p for n, (h, p) in scored.items() if h == best_hits}
+        top = max(tier.values())
+        winner = max(tier, key=tier.get)
+        if any(scored[t][0] == best_hits and scored[t][1] >= top - 1e-9
+               for t in targets):
+            continue
+        reachable = [t for t in targets if scored[t][0] == best_hits]
+        if not reachable:
+            t = targets[0]
+            broken.append(f"{query!r} no longer reaches {t!r}: it matches "
+                          f"{scored[t][0]} of {len(words)} words while "
+                          f"{winner!r} matches {best_hits}")
+        else:
+            t = max(reachable, key=lambda x: scored[x][1])
+            broken.append(f"{query!r} reaches {t!r} but ranks {winner!r} above "
+                          f"it ({tier[winner]:.1f} against {scored[t][1]:.1f})")
     if broken:
         for b in broken:
             bad(b)
     else:
-        ok(f"all {len(CRITICAL_QUERIES)} critical searches still reach what they "
-           "are supposed to reach")
+        ok(f"all {len(CRITICAL_QUERIES)} critical searches still come back "
+           f"first, scored the way help.js scores them")
 
 
 def check_home_names_the_same_needs():

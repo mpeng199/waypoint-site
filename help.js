@@ -378,8 +378,15 @@
               fieldScore(row.cat || "", w, W_CAT);
       if (p) { hits++; points += p * idf(w); }
     }
+    /* Tags count for this too. A row's tags are where somebody writing this
+       directory puts the exact sentence a reader types — "cant pay my rent",
+       "job with a felony", "my child was suspended" — and until now those
+       phrases scored as three separate words while the alias field got the
+       whole-phrase bonus. So the row that had been given the sentence lost to
+       a row that happened to contain its words. */
     if (hits && phrase && phrase.length > 6 &&
-        (row.alias.indexOf(phrase) !== -1 || row.name.indexOf(phrase) !== -1)) {
+        (row.alias.indexOf(phrase) !== -1 || row.name.indexOf(phrase) !== -1 ||
+         row.tags.indexOf(phrase) !== -1)) {
       points += W_PHRASE;
     }
     return { hits: hits, points: points };
