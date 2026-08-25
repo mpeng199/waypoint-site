@@ -1911,6 +1911,30 @@ def check_reading_level():
                     over.append(f'{r["Resource Name"]}: {field} says {term!r}'
                                 + (f' — say {plain!r}' if plain else ""))
 
+    # A claim with a clock on it. The site already refuses to quote a filing
+    # deadline; the same reasoning applies to "free through the end of the
+    # year" and "locations were changing in 2026", which go stale in silence
+    # and are then read in February by somebody who believes them.
+    DATED = re.compile(r"\b(through the end of|by the end of|expires?|"
+                       r"as of 20\d\d|in 20\d\d|through 20\d\d|closes on)\b", re.I)
+    for r in rows:
+        for field in ("Description", "Notes"):
+            m = DATED.search(r[field] or "")
+            if m:
+                over.append(f'{r["Resource Name"]}: {field} makes a claim with a '
+                            f'clock on it — {m.group(0)!r}')
+
+    # A slash between two words is a punctuation mark the reader has to
+    # interpret, on a page read by people whose second language is English.
+    # 24/7 and HIV/AIDS are fixed phrases and stay.
+    ALLOWED_SLASH = {"24/7", "HIV/AIDS"}
+    for r in rows:
+        for field in ("Description", "Notes"):
+            for m in re.finditer(r"\w+/\w+", r[field] or ""):
+                if m.group(0) not in ALLOWED_SLASH:
+                    over.append(f'{r["Resource Name"]}: {field} has '
+                                f'{m.group(0)!r} — say it with a word')
+
     if over:
         for x in over:
             bad("reading level: " + x)
