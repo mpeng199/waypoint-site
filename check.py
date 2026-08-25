@@ -2343,7 +2343,12 @@ def check_one_header():
         if not m:
             bad(f"{page}: no shared header — this page is still its own component")
             continue
-        block = m.group(1)
+        # only the rule that actually thickens the border counts. The first draft
+    # searched the whole block, and .enote appears in it twice — so removing
+    # it from the border-width rule left the other mention behind and the
+    # check passed on a card that had gone back to a hairline.
+    thick = re.findall(r"([^{}]+)\{[^{}]*border-width:\s*2px", block)
+    block = " , ".join(thick)
         # the lockup, to the pixel: one pin path, one wordmark, one strapline
         for want, what in [('class="pin"', "the pin"),
                            ('class="pin-dot"', "the pin's centre"),
@@ -2488,7 +2493,12 @@ def check_language_header():
         if not m:
             bad(f"{page} has no shared header")
             continue
-        block = m.group(1)
+        # only the rule that actually thickens the border counts. The first draft
+    # searched the whole block, and .enote appears in it twice — so removing
+    # it from the border-width rule left the other mention behind and the
+    # check passed on a card that had gone back to a hairline.
+    thick = re.findall(r"([^{}]+)\{[^{}]*border-width:\s*2px", block)
+    block = " , ".join(thick)
         got = [t for t in tabs.findall(block) if "brand" not in t[1]]
         got = [t for t in got if t[2] != "Waypoint"]
         if len(got) != 5:
@@ -3033,7 +3043,12 @@ def check_high_contrast_covers_the_cards():
     if not m:
         bad("help.css no longer has a higher-contrast block at all")
         return
-    block = m.group(1)
+    # only the rule that actually thickens the border counts. The first draft
+    # searched the whole block, and .enote appears in it twice — so removing
+    # it from the border-width rule left the other mention behind and the
+    # check passed on a card that had gone back to a hairline.
+    thick = re.findall(r"([^{}]+)\{[^{}]*border-width:\s*2px", block)
+    block = " , ".join(thick)
     for sel, what in [(".r", "a resource card"), (".cl", "a cluster card"),
                       (".jump a", "the jump row"), (".find__box", "the search box"),
                       (".enote", "the language note"),
