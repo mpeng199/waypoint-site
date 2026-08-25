@@ -103,6 +103,10 @@ NEEDS = [
         "blurb": "Cash assistance, the heating bill, free tax filing, and benefits.",
         "icon": "wallet",
         "cats": ["Benefits & Financial Assistance"],
+        # A half-price MetroCard is help paying for things, and it belongs to
+        # transport. Cross-referenced so it appears here without being able to
+        # lead the page, which is what happened while it was filed here.
+        "also": ["fair fares", "half-price fares", "reduced-fare"],
     },
     {
         "key": "family",

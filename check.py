@@ -1911,6 +1911,18 @@ def check_reading_level():
                     over.append(f'{r["Resource Name"]}: {field} says {term!r}'
                                 + (f' — say {plain!r}' if plain else ""))
 
+    # Who qualifies is never ours to state — it is the first of the eight
+    # nevers, and "for eligible low-income individuals" tells somebody they
+    # may not be before anybody has looked at their situation. The Who Can
+    # Access column carries that, one tap down, phrased as a description of
+    # who the programme is for rather than a judgement about the reader.
+    WHO = re.compile(r"\b(eligible|eligibility|qualifying)\b", re.I)
+    for r in rows:
+        m = WHO.search(r["Description"] or "")
+        if m:
+            over.append(f'{r["Resource Name"]}: the description says '
+                        f'{m.group(0)!r} — who qualifies is not ours to state')
+
     # A claim with a clock on it. The site already refuses to quote a filing
     # deadline; the same reasoning applies to "free through the end of the
     # year" and "locations were changing in 2026", which go stale in silence
