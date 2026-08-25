@@ -1639,6 +1639,58 @@ def check_directory_no_js_contract():
            "anchor on a real category page")
 
 
+# The numbers this site writes into prose are a standing hazard. "Fifteen
+# kinds of help" was true for about four hours. Guard the whole class rather
+# than the instance.
+SPELLED = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
+           "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+           "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16,
+           "seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20}
+
+
+def check_no_stale_counts():
+    """Prose on a resident page must not count things the build already counts.
+
+    Two numbers on this site are allowed to be written down, because both are
+    generated from the data every build: the directory's total, and each
+    category page's own total. Everything else — how many kinds of help there
+    are, how many languages, how many places under a heading — goes stale the
+    first time somebody adds one, and it goes stale silently, in a sentence
+    nobody re-reads.
+    """
+    import build_help
+    n_needs = len(build_help.NEEDS)
+    n_langs = len(build_help.LANGUAGES)
+    words = "|".join(SPELLED)
+    countish = re.compile(
+        rf"\b({words})\b\s+(kinds? of help|languages?|headings?|clusters?|"
+        r"pages?|categor(?:y|ies))", re.I)
+
+    found = []
+    for page in RESIDENT_PAGES + ["index.html"]:
+        text = strip_tags(strip_comments(read(page)))
+        for m in countish.finditer(text):
+            said, what = SPELLED[m.group(1).lower()], m.group(2).lower()
+            truth = n_langs if "language" in what else n_needs
+            if said != truth:
+                found.append(f"{page}: says {m.group(0)!r}, but there are {truth}")
+            else:
+                found.append(f"{page}: {m.group(0)!r} happens to be right today, "
+                             "and is written in prose where nothing will update it")
+    if found:
+        for f in found:
+            bad(f)
+    else:
+        ok("no resident page counts in prose something the build already counts")
+
+    # The two counts that ARE allowed have to be the generated ones.
+    rows = build_help.load()
+    if re.search(r"list of <b>%d places</b>" % len(rows), read("help.html")):
+        ok(f"the one count in the front page's prose is the generated {len(rows)}")
+    else:
+        bad("the front page's total is not the generated count")
+
+
 def check_directory_clusters():
     """The front page is fifteen clusters, each a way in to one page.
 
@@ -2151,7 +2203,7 @@ def main():
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
-               check_directory_clusters,
+               check_directory_clusters, check_no_stale_counts,
                check_directory_a11y, check_directory_print,
                check_home_offers_help, check_doors_have_resources]:
         before = len(passes) + len(failures)

@@ -314,6 +314,7 @@ b,strong{ font-weight:600; }
 .jump{ margin:clamp(18px,2.6vw,26px) 0 clamp(20px,3vw,30px);
   padding-bottom:2px; }
 .jump ul{ display:flex; flex-wrap:wrap; gap:8px; }
+.jump li{ display:flex; }
 .jump a{ display:inline-flex; align-items:center; min-height:40px;
   padding:6px 14px; border:1.5px solid var(--line); border-radius:var(--r-pill);
   background:var(--surface); font-size:.9rem; font-weight:500;
@@ -584,12 +585,48 @@ b,strong{ font-weight:600; }
 
 /* ------------------------------------------------------------ responsive */
 @media (max-width:640px){
-  .hhead__in{ flex-wrap:wrap; gap:10px; }
+  .hhead__in{ flex-wrap:wrap; gap:8px; padding-top:10px; padding-bottom:10px; }
   /* Wrap rather than scroll sideways. At 200% text these three links are
      wider than a 320px screen, and a scroll strip hides the last one behind a
      gesture; stacking them just makes the header taller. */
-  .hhead__links{ width:100%; flex-wrap:wrap; }
+  .hhead__links{ width:100%; flex-wrap:wrap; gap:4px; }
+  .hhead__links a{ padding:10px 13px; }
   .rows,.clusters__grid,.sibs ul{ grid-template-columns:1fr; }
+
+  /* Ten languages is four rows of pills and a quarter of the screen on a
+     phone, ahead of everything. It has to stay first and it has to stay
+     complete — hiding a language from the people who read it is exactly
+     backwards — so it gets tighter instead of shorter. 44px stays: that is
+     the smallest a touch target may be. */
+  .langbar{ gap:6px 12px; padding:12px 0 2px; }
+  .langbar__list{ gap:6px; }
+  .langbar__list a{ padding:6px 13px; font-size:.95rem; }
+  .langnote{ padding:20px 18px; }
+  .langneeds{ grid-template-columns:1fr; }
+
+  /* Get to the emergency numbers inside the first screen and a bit. */
+  .mast{ padding:26px 20px 28px; }
+  .mast h1{ font-size:clamp(1.9rem,7.5vw,2.5rem); }
+  .mast__say{ margin-top:14px; }
+
+  /* Four cards, one per row, at 150px each is most of a screen for four phone
+     numbers. Number and reason share a row instead. */
+  .sos{ padding:18px 18px 20px; }
+  .sos__list a{ display:grid; grid-template-columns:minmax(0,auto) minmax(0,1fr);
+    align-items:center; gap:4px 12px; padding:10px 13px; }
+  /* A ten-digit number set at the same size as "911" takes two thirds of the
+     row and squeezes the reason into four lines. It only has to be the biggest
+     thing in its own row, not the biggest thing on the page. */
+  .sos__num{ font-size:1.22rem; white-space:nowrap; }
+  .sos__for{ font-size:.85rem; }
+
+  /* Sixteen chips is a screen of chips before the thing they point at. Two
+     columns, tighter, and it becomes a table of contents that saves ten
+     screens of scrolling instead of costing one. */
+  .jump ul{ display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+  .jump a{ flex:1; min-height:44px; padding:6px 11px; font-size:.84rem;
+    line-height:1.2; }
+  .cl{ padding:16px 16px 18px; }
   /* The back-link was hidden here, on the one device where the scroll is
      longest and there is no other way up. Because the groups interleave, a
      link at the head of each one is never more than a group away while

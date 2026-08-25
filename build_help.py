@@ -1680,7 +1680,7 @@ def index_json(rows):
     """The compact index the front page's search runs against.
 
     The front page no longer carries every resource — that is the whole point
-    of splitting the directory into fifteen pages — so search needs its own
+    of splitting the directory into one page per need — so search needs its own
     copy of the facts. Keys are one letter because this ships on every visit
     to the busiest page on the site: at 118 resources it is about 40 KB, and
     it stays roughly linear as the directory grows, which the full markup does
@@ -1748,7 +1748,7 @@ def render_overview(rows):
     A('<hr class="rule" />')
 
     A('<noscript><p class="noscript-note">Search needs JavaScript, which is turned '
-      'off. Nothing is lost: every one of the fifteen headings below opens a page '
+      'off. Nothing is lost: every heading below opens a page '
       'with all of that kind of help on it, and every phone number on this page '
       'dials.</p></noscript>')
     p += search_frag("Try: food, rent, dentist, lawyer",
@@ -1768,8 +1768,11 @@ def render_overview(rows):
     A('<div class="clusters" id="needs">')
     A('  <div class="clusters__head">')
     A('    <h2 id="needs-h">What do you need help with?</h2>')
-    A('    <p class="clusters__say">Fifteen kinds of help. Each one shows a few '
-      'places, and opens a page with all of them.</p>')
+    # No count in this sentence. It said "Fifteen kinds of help" and there
+    # were sixteen by the time anyone looked, which is what every number
+    # written into prose eventually does. The grid below is the count.
+    A('    <p class="clusters__say">Each one shows a few places, and opens a '
+      'page with all of them.</p>')
     A('  </div>')
     A('  <nav class="jump" aria-label="Jump to a kind of help"><ul>')
     for need in NEEDS:
@@ -1990,9 +1993,9 @@ def build():
     """Write the front page and one page per need.
 
     Splitting the directory was not cosmetic. One page carrying every resource
-    was 250 KB of markup and fifteen headings deep, and the person it is for
+    was 250 KB of markup and sixteen headings deep, and the person it is for
     opens it frightened, on a phone, looking for one phone number. Now the
-    front page is a way in — fifteen clusters, three examples each — and each
+    front page is a way in — one cluster per need, three examples each — and each
     kind of help gets a page built to be skimmed: a rail of what is on it,
     resources in named buckets rather than one run of forty, and every
     neighbouring kind of help one tap away.
