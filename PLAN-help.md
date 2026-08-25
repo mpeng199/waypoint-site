@@ -5,120 +5,121 @@ residents who need help*, make every resource we offer extremely easy to
 navigate, model the information architecture on Community Health Advocates,
 keep it modern.
 
-## The finding that shapes everything
+**Extended (user, 2026-08-24):** make the two halves of the site read as one
+theme; review the translations properly and make them consistent throughout;
+expand the directory by deep research, verifying that every programme is real;
+cluster "find help" into manageable chunks with an expand-to-a-page option;
+and make the resident side consistent with the narrative side.
 
-We hold a verified directory of **114 NYC resources** across 14 categories
-(`data/resources.csv`, last verified 2026-06-30). **None of it is on the
-site.** 96 of the 114 are explicitly undocumented-friendly and 81 are free.
-That directory is "the resources we offer", and today a resident cannot reach
-a single one of them from this website.
+## The finding that shaped the first half
 
-Meanwhile `index.html` is a scroll-choreographed narrative with a WebGL door,
-inertial scroll and four pinned scenes, written to convert *partners* and
-*students*. It is good at that job. It is the wrong artefact for a frightened
-68-year-old with a bill, on an old Android, in Cantonese.
+We held a verified directory of NYC resources and **published none of it**.
+The headline spoke to somebody with a bill they could not pay and every button
+under it asked that person for their organisation's letterhead. So: give
+residents their own front door and put the directory behind it, and keep the
+narrative for the audiences it was written for.
 
-So this is not a re-skin. It is: **give residents their own front door and put
-the directory behind it**, and keep the narrative for the audiences it was
-written for.
+## Where it stands, 311 resources and 38 commits on
 
-## Decisions
-
-1. **`help.html` is the new centre of the site** — the resource finder. Built
-   from the CSV at build time, so all 114 resources are in the HTML and the
-   page works with JavaScript off, on a slow phone, in a screen reader. JS
-   only filters what is already there.
-2. **Need-shaped entry, not category-shaped.** Residents do not search
-   "Multi-Service / Navigation". They arrive with "I can't pay this bill" or
-   "I need food today". The 14 CSV categories map to plain-language needs.
-3. **`index.html` leads with residents.** The narrative survives, demoted
-   below a resident entry point. Partners and students keep their chapters.
-4. **No scroll-jacking, no WebGL, no inertial scroll on any resident
-   surface.** Those are craft for a partner with a MacBook, and a tax on
-   everyone else.
-5. **Print is a first-class output.** Students hand people paper at tables.
-6. **PRODUCT.md's "no card grids" constraint is scoped to the narrative
-   journey**, not to a directory of 114 resources. A directory needs scannable
-   rows. Flagging this explicitly rather than quietly breaking the rule.
+- **`help.html` is a way in, not the directory.** One cluster per kind of
+  help, three real places with real numbers under each, and a link to that
+  kind of help's own page.
+- **Seventeen category pages**, each built to be skimmed: a rail of what is on
+  it, resources in named buckets, a Start here block, and every neighbouring
+  kind of help one tap away.
+- **311 verified resources** across 17 categories, every one of them
+  checked against a first-party source on 24-25 August 2026.
+- **Ten languages** — Local Law 30's ten — each panel naming every kind of
+  help in that language.
+- **One palette.** `tokens.css` is the only place a brand hue exists.
+- **`python3 check.py`: 1826 passed, 0 failed.**
 
 ## Sequences
 
-- [x] **S1** Discovery, plan, rebase onto `origin/main` (local main was 28 commits stale)
-- [x] **S2** Data pipeline: CSV → need taxonomy → build-time generator *(build_help.py, 15 needs, synonym expansion, contact() + self-check)*
-- [x] **S3** `help.html` resource finder: search, filters, resource rows *(121 rows / 15 groups, help.css, help.js)*
-- [x] **S4** Triage front: "What do you need help with?" + crisis surfacing *(folded into S3: need index + hand-picked emergency strip)*
-- [x] **S5** `index.html` reorganised: residents first *(hero CTA, #help chapter third, nav, skip link, close, footer)*
-- [x] **S6** Accessibility hardening *(contrast 20/20 pass AA; min-width:0 grid fix; BCP-47 lang tags; 44px targets; 320px & 200%-text verified)*
-- [x] **S7** Language access *(7 in-language panels opening on :target, language bar on both pages, JS follow-through to the filter)* — **translations need a native-speaker review before launch**
-- [x] **S8** Print / leave-behind sheets *(prints whatever the filter shows; disclosures opened for paper; emergency numbers and honesty statement on every sheet)*
-- [x] **S9** Extend `check.py` *(9 new guards, 522 checks; each verified to fail when the thing it guards is broken)*
-- [x] **S10** Browser QA *(1400/900/500/390/320 widths, mobile drawer, keyboard order, every interaction; emergency block regridded 1/2/4)*
-- [x] **S11** Handoff *(DESIGN.md now documents the directory, the build step, and the four safety decisions; corrected its now-false "No build step" claim)*
-- [x] **S12** Link rot sweep *(check_links_live.py; 9 URLs fixed including both
-      shelter intake pages, which were 404 behind a WAF 403; Baby Buggy renamed
-      to Good+ Foundation)*
-- [x] **S13** Realistic-query sweep *(60 real phrasings; 17 failures -> 4 benign.
-      Word-start matching, relevance ordering, crisis/DV vernacular, and four
-      missing medical-bill resources added — the directory had none)*
-- [x] **S14** Final polish *(no-JS search box, doors guard, start-here ordering; 529 checks)*
-- [x] **S16** Directory data quality *(language filter reached 6 of 118 for Arabic; now 85, with explicitly-named rows floated)*
-- [x] **S17** Runtime code review *(search was indexing button chrome; mobile
-      back-link restored; suite now fails if a check asserts nothing)*
-- [x] **S18** Docs realigned *(PRODUCT.md audience order, the "no card grids"
-      scope, the directory-breadth scope decision; copy at reading grade 4.2)*
-- [x] **S19** Deadline guard *(the cohort training doc says three official NY
-      sources gave three different answers for the same appeal window — the
-      site now cannot state one, on any page)*
-- [ ] **S15** Push + PR — not done: outward-facing, waiting on your go-ahead
+- [x] **S1** Discovery, plan, rebase onto `origin/main`
+- [x] **S2** Data pipeline: CSV → need taxonomy → build-time generator
+- [x] **S3** `help.html` resource finder: search, filters, resource rows
+- [x] **S4** Triage front: need index + hand-picked emergency strip
+- [x] **S5** `index.html` reorganised: residents first
+- [x] **S6** Accessibility hardening
+- [x] **S7** Language access (7 panels)
+- [x] **S8** Print / leave-behind sheets
+- [x] **S9** Extend `check.py`
+- [x] **S10** Browser QA at five widths
+- [x] **S11** Handoff docs
+- [x] **S12** Link rot sweep (`check_links_live.py`)
+- [x] **S13** Realistic-query sweep
+- [x] **S14** Final polish
+- [x] **S16** Directory data quality
+- [x] **S17** Runtime code review
+- [x] **S18** Docs realigned
+- [x] **S19** Deadline guard
+- [x] **S20** **One theme.** `tokens.css`; the directory's masthead is the
+      painted valley the door opens onto; same lockup, same nav pill, same
+      gold-italic headings, same deep-green footer. Neither stylesheet may
+      restate a brand hue.
+- [x] **S21** **Clustering.** The directory split into a front page of
+      clusters plus one page per need. Front-page search runs off a compact
+      index in the document; category pages still hide rows that are already
+      there.
+- [x] **S22** **Deep research.** 118 → 311 resources. Sources: nyc.gov's own
+      programme API, then organisation-by-organisation verification.
+- [x] **S23** **Translations.** Seven languages → the ten Local Law 30 names.
+      Panels now navigate the whole directory rather than describing it.
+- [x] **S24** **Second query sweep.** Loose fallback restored, relevance
+      ranking, phrase bonus, stemmer; five data gaps closed.
+- [x] **S25** **A11y and print.** 320px at 200% text no longer scrolls
+      sideways; contrast audited across every new component; the printed sheet
+      had a blank where its count should be.
+- [x] **S26** **Third research push.** Community organisations by borough and
+      by language.
+- [ ] **S15** Push + PR — still not done. Outward-facing; waiting on a
+      go-ahead.
+
+## What still needs a human
+
+1. **The push.** 38 commits sit on
+   `claude/website-accessibility-redesign-2b15ac`, unpushed.
+   `git push -u origin claude/website-accessibility-redesign-2b15ac`.
+2. **A native-speaker review of the ten in-language panels.** They are short,
+   plain, and carry nothing a reader must act on precisely — the only
+   instructions are 911, 988 and 311 — but nobody who speaks these languages
+   has read them. The multilingual students are the obvious reviewers.
+3. **Whether publishing every category is further than intended.** The
+   directory now spans 17 categories including reentry and
+   disability. `PRODUCT.md` records the reasoning; the fix, if it reads as too
+   far, is to narrow what `data/resources.csv` publishes, not to hide pages.
+4. **Hudson Guild.** Researched, written up, then dropped: hudsonguild.org
+   refuses connections on 443 from three separate network paths and its number
+   came from a third-party listing. Worth a phone call.
 
 ## Known data weaknesses (source, not code)
 
-- **`Languages` is "Multiple" on 77 of 118 rows**, which records nothing
-  useful. No row names Arabic at all, one names Bengali, one Korean, one
-  Haitian Creole. The filter now treats a vague answer as "reachable through
-  an interpreter" so it hides nothing, and floats the rows that actually name
-  the language — but the real fix is at the source. Worth asking each partner
-  which languages they staff, and recording them.
-- **`Hours` has 51 distinct formats** for 118 rows ("Mon–Fri", "Vary by site",
-  "24/7 online", "By appointment"). Readable, not machine-usable, so there is
-  no "open now" filter and should not be one until the data supports it.
-- **Staten Island has one borough-specific resource in the whole directory**,
-  and that one lists all five boroughs anyway. Manhattan has 16, Brooklyn 10,
-  the Bronx 9, Queens 8. A Staten Island resident filtering to their borough
-  sees almost nothing but citywide hotlines. The filter now floats local
-  results above citywide ones so the shape of that is at least visible, but
-  the gap is real and only more outreach fixes it.
-- **10 rows have no phone number**, only a website. That is correct for a
-  lottery portal or an online screener; it is a gap for anything else.
-
-## Where this stopped, 23 Aug 2026, 10pm
-
-21 commits on `claude/website-accessibility-redesign-2b15ac`, **not pushed** —
-that is outward-facing and was never asked for. `git push -u origin
-claude/website-accessibility-redesign-2b15ac` when wanted.
-
-`python3 check.py` — 537 passing, 0 failing. `python3 build_help.py` — clean,
-and re-running it leaves `help.html` byte-identical, so the committed file is
-the generator's output.
-
-**Three things still need a human decision**, all recorded above and in the
-summary artifact: the push, a native-speaker review of the seven translations,
-and whether publishing every resource category (rather than only billing) is
-further than intended.
-
-**Every guard added this day was break-tested** — deliberately tripped to
-confirm it fails when the thing it protects fails. That habit caught a bug in
-the checker itself: two guards had been silently re-indented out of service
-while the suite went on reporting "0 failed". `check.py` now fails if any
-check function runs and asserts nothing.
+- **Languages is still vague on most rows.** Named-language coverage improved
+  a lot with the community organisations — Chinese, Bengali, Korean, Urdu and
+  Polish now have real numbers behind them — but most rows still say
+  "Multiple", which records nothing useful. The filter treats a vague answer
+  as "reachable through an interpreter" so it hides nothing, and floats the
+  rows that name the language. The real fix is to ask each partner which
+  languages they staff.
+- **Hours are not machine-usable.** Dozens of distinct formats. Readable, not
+  filterable, and there should be no "open now" filter until the data supports
+  one.
+- **Staten Island is thin but no longer empty.** Project Hospitality and the
+  Community Health Center of Richmond are now in, and the filter floats local
+  results above citywide ones so the shape of the gap stays visible.
+- **Some rows have no phone**, only a website. Correct for a lottery portal or
+  an online screener; a gap for anything else. `merge_rows.py` refuses a row
+  with neither.
 
 ## Invariants that must not break
 
 - The honesty statement, verbatim, on every surface that offers help.
 - The eight nevers: no volunteer reads a document, states eligibility, quotes
-  a deadline, or predicts an outcome. Directory copy must not imply otherwise.
-- No numeric track-record claims. The count on help.html is a count of the
-  directory, not a claim about people helped — keep that distinction sharp.
-  Counts in prose go stale; prefer naming the source over repeating a number.
+  a deadline, or predicts an outcome.
+- No numeric track-record claims. The counts on the resident pages count the
+  directory, not people helped — and they are generated, never typed.
 - No "Companionship", no schools/replication.
-- `python3 check.py` green before every commit. Baseline: 378 passed.
+- Every guard added is break-tested: deliberately tripped to confirm it fails
+  when the thing it protects fails.
+- `python3 check.py` green before every commit.
