@@ -1691,6 +1691,41 @@ def check_no_stale_counts():
         bad("the front page's total is not the generated count")
 
 
+def check_home_names_the_same_needs():
+    """The narrative page and the directory must name the same things.
+
+    They are two halves of one site and a reader crosses between them: the
+    home page's list is the first thing somebody in trouble sees, and if it
+    offers eight of sixteen kinds of help, the other eight do not exist as far
+    as that reader is concerned. Worse, if it words them differently, the two
+    halves read as two organisations with overlapping lists.
+    """
+    import build_help
+    src = read("index.html")
+    block = re.search(r'<ul class="helplinks">.*?</ul>', src, re.S)
+    if not block:
+        bad("index.html: the list of what the directory holds is gone")
+        return
+    hrefs = re.findall(r'href="(help-[a-z\-]+\.html)"', block.group(0))
+    want = [build_help.page_for(n["key"]) for n in build_help.NEEDS]
+    if hrefs != want:
+        missing = [h for h in want if h not in hrefs]
+        bad(f"index.html lists {len(hrefs)} of the {len(want)} kinds of help"
+            + (f"; missing {missing}" if missing else "; in a different order"))
+    else:
+        ok(f"index.html names all {len(want)} kinds of help, in the same order")
+
+    labels = [html.unescape(x) for x in
+              re.findall(r'href="help-[a-z\-]+\.html">([^<]+)</a>', block.group(0))]
+    wrong = [(a, b) for a, b in zip(labels, [n["label"] for n in build_help.NEEDS])
+             if a != b]
+    if wrong:
+        bad(f"index.html words a kind of help differently from the directory: "
+            f"{wrong[:2]}")
+    else:
+        ok("index.html words each kind of help exactly as the directory does")
+
+
 def check_page_furniture():
     """Two small things that only show up on a phone, and both look like bugs.
 
@@ -2237,7 +2272,7 @@ def main():
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
                check_directory_clusters, check_no_stale_counts,
-               check_page_furniture,
+               check_page_furniture, check_home_names_the_same_needs,
                check_directory_a11y, check_directory_print,
                check_home_offers_help, check_doors_have_resources]:
         before = len(passes) + len(failures)

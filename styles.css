@@ -1003,11 +1003,17 @@ img,svg{ display:block; max-width:100%; }
    they scan a mosaic anyway. Two columns on a wide screen, one on a phone —
    the columns are a `columns` flow, so the eight items keep their reading
    order down the first column and never reshuffle. */
-.helplinks{ list-style:none; margin:30px 0 0; padding:0; max-width:52ch;
-  columns:2; column-gap:44px; }
+/* Every kind of help the directory has, named the way the directory names it.
+   Two lists that describe the same thing in different words are two products.
+   A list, deliberately, not a grid of cards: this is still the journey, and
+   the journey does not have card grids in it. */
+.helplinks{ list-style:none; margin:30px 0 0; padding:0; max-width:none;
+  columns:2; column-gap:52px; }
+@media (min-width:1180px){ .helplinks{ columns:3; } }
 .helplinks li{ break-inside:avoid; margin-bottom:2px; }
 .helplinks a{ display:inline-flex; align-items:baseline; gap:10px;
-  padding:9px 0; font-size:clamp(1rem,1.25vw,1.12rem); font-weight:500;
+  padding:7px 0; font-size:clamp(.98rem,1.05vw,1.06rem); font-weight:500;
+  line-height:1.35;
   color:var(--cream); text-shadow:0 1px 18px rgba(12,22,16,.7);
   border-bottom:1px solid transparent; transition:border-color .25s var(--ease), color .25s; }
 .helplinks a::after{ content:"→"; color:var(--gold); opacity:0; transform:translateX(-5px);
@@ -1029,7 +1035,8 @@ img,svg{ display:block; max-width:100%; }
 }
 
 /* ---------- language, on the home page ----------
-   The same seven doors the directory opens with. Somebody who cannot read the
+   The same ten doors the directory opens with — the ten citywide languages
+   Local Law 30 names. Somebody who cannot read the
    English headline above this should not have to scroll past the rest of the
    page, or reach the directory first, to find a way in. Each one lands on the
    matching in-language panel of help.html, which opens on :target and needs

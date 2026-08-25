@@ -332,8 +332,24 @@ COPY = {
             "lines, benefit screeners, and directories — in any language, at any hour."),
 }
 
+# One apostrophe, everywhere. The narrative page sets "I'm not safe where I
+# live" with a typographic apostrophe because that is what prose does; the
+# directory was setting the same sentence with a typewriter one, and the two
+# halves of the site were quietly using different punctuation for the same
+# words. Normalised at the source rather than at each call site, so it holds
+# for anything added later — and never applied to a URL, where an apostrophe
+# is a character and not a quotation mark.
+CURLY = str.maketrans({"'": "\u2019"})
+
+
+def prose(s):
+    return (s or "").translate(CURLY)
+
+
 for _need in NEEDS:
     _need.update(COPY[_need["key"]])
+    for _f in ("label", "blurb", "short", "h1a", "h1b", "intro", "ph", "seo"):
+        _need[_f] = prose(_need[_f])
 assert set(COPY) == {n["key"] for n in NEEDS}, "COPY and NEEDS disagree"
 
 
@@ -1211,6 +1227,9 @@ def load():
         row = {k: (v or "").strip() for k, v in row.items()}
         if not row.get("Resource Name"):
             continue
+        for _f in ("Resource Name", "Subcategory", "Description", "Who Can Access",
+                   "Notes", "Cost", "Hours", "Languages", "Address / Location"):
+            row[_f] = prose(row.get(_f, ""))
         row["_needs"] = needs_for(row)
         row["_boroughs"] = boroughs_for(row)
         row["_langs"] = langs_for(row)
@@ -1847,14 +1866,15 @@ def render_category(need, rows):
     lead = [r for r in primary if "start-here" in r["Tags"]]
     rest = [r for r in primary if r not in lead]
 
-    buckets = GROUPS.get(key, [("more", "Places that help", [])])
+    buckets = [(bk, prose(lb), w) for bk, lb, w in
+               GROUPS.get(key, [("more", "Places that help", [])])]
     filed = {b[0]: [] for b in buckets}
     for r in rest:
         filed[group_for(r, key)].append(r)
     live = [(bk, label) for bk, label, _ in buckets if filed[bk]]
     if lead:
         live = [("lead", "Start here" if len(lead) == 1
-                 else "Start here — the first calls to make")] + live
+                 else "Start here \u2014 the first calls to make")] + live
         filed["lead"] = lead
 
     p = []
