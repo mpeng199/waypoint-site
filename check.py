@@ -1893,6 +1893,17 @@ def check_reading_level():
     # Subcategory (internal filing) and in the Tags (search vocabulary); in the
     # prose somebody reads, each has an ordinary-English version and the
     # ordinary-English version is what ships.
+    # An abbreviation the reader has to already expand. DV is the one that
+    # kept coming back — it is what the field calls domestic violence, and it
+    # is not what anybody living through it calls it.
+    ABBREV = re.compile(r"\b(DV|FQHC|ESOL|HSE|TANF|CBO|LEP|SUD)\b")
+    for r in rows:
+        for field in ("Description", "Notes"):
+            m = ABBREV.search(r[field] or "")
+            if m:
+                over.append(f'{r["Resource Name"]}: {field} uses the abbreviation '
+                            f'{m.group(0)!r} without saying what it is')
+
     JARGON = {
         "sliding scale": "a price based on what you earn",
         "federally qualified": "community health centre",
