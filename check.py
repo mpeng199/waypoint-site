@@ -3119,6 +3119,18 @@ def check_directory_languages():
         if U["vow"] not in plain:
             bad(f"{page} does not carry the honesty statement in {L['name_en']}")
 
+        # 7b. the names only a screen reader hears are in the language too.
+        #     A blind Korean reader met "Waypoint home" and "Primary" spoken
+        #     in English on a Korean page, which is exactly the reader this
+        #     page exists for.
+        for m in re.finditer(r'aria-label="([^"]+)"', src):
+            v = html.unescape(m.group(1))
+            if v in (U["home"], U["nav_label"], U["langbar_h"]):
+                continue
+            if re.fullmatch(r"[\x00-\x7F]+", v) and L["tag"] not in ("es", "fr", "pl", "ht"):
+                bad(f"{page}: aria-label={v!r} is in English; a screen reader "
+                    f"speaks it on a page that is not")
+
         # 8a. no English month names. The footer read "Last checked
         #     June-August 2026" on all ten pages, in English, under a sentence
         #     in Bengali — and a date is the one thing on that line a reader

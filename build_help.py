@@ -2460,12 +2460,13 @@ def lang_header_frag(L, U):
             ("index.html#partners", U["nav"][4], "")]
     out = ['<header class="sitehead">',
            '  <div class="sitehead__in">',
-           f'    <a class="brand" href="{lang_page(L["key"])}" aria-label="Waypoint">',
+           f'    <a class="brand" href="{lang_page(L["key"])}" '
+           f'aria-label="{esc(U["home"])}">',
            f'      {PIN}',
            '      <span class="brand__txt" dir="ltr">Waypoint'
            '<small>Student Health Corps</small></span>',
            '    </a>',
-           f'    <nav class="sitehead__links" aria-label="{esc(U["nav"][0])}">',
+           f'    <nav class="sitehead__links" aria-label="{esc(U["nav_label"])}">',
            '      <span class="nav-lamp" id="navLamp" aria-hidden="true">'
            '<i class="nav-lamp__bar"></i></span>']
     for href, label, extra in tabs:
@@ -2652,7 +2653,8 @@ def render_language(L, rows, by_need):
     # ---- footer ----
     A('<footer class="hfoot">')
     A('  <div class="hfoot__in">')
-    A(f'    <a class="brand" href="{lang_page(L["key"])}" aria-label="Waypoint">{PIN}'
+    A(f'    <a class="brand" href="{lang_page(L["key"])}" '
+      f'aria-label="{esc(U["home"])}">{PIN}'
       '<span class="brand__txt" dir="ltr">Waypoint'
       '<small>Student Health Corps</small></span></a>')
     A(f'    <p class="hfoot__say">{esc(U["foot_say"])}</p>')

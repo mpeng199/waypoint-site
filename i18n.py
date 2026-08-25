@@ -95,6 +95,8 @@ UI["spanish"] = {
                 "programas cambian: si algo aquí está mal, díganoslo.",
     "langbar_h": "Reciba ayuda en su idioma",
     "english_h": "Sobre el idioma",
+    "home": 'Waypoint, página principal',
+    "nav_label": 'Navegación principal',
     "skip": "Ir a la lista",
     "here": "está leyendo esta página",
 }
@@ -146,6 +148,8 @@ UI["french"] = {
                 "changent — si quelque chose ici est faux, dites-le-nous.",
     "langbar_h": "De l’aide dans votre langue",
     "english_h": "À propos de la langue",
+    "home": 'Waypoint, page d’accueil',
+    "nav_label": 'Navigation principale',
     "skip": "Aller à la liste",
     "here": "vous lisez cette page",
 }
@@ -200,6 +204,8 @@ UI["polish"] = {
                 "zmieniają — jeśli coś tu jest nieaktualne, daj nam znać.",
     "langbar_h": "Pomoc w twoim języku",
     "english_h": "O języku",
+    "home": 'Waypoint, strona główna',
+    "nav_label": 'Nawigacja główna',
     "skip": "Przejdź do listy",
     "here": "czytasz tę stronę",
 }
@@ -245,6 +251,8 @@ UI["haitian-creole"] = {
                 "si gen yon bagay ki pa kòrèk isit la, tanpri di nou.",
     "langbar_h": "Jwenn èd nan lang ou",
     "english_h": "Sou lang lan",
+    "home": 'Waypoint, paj dakèy',
+    "nav_label": 'Navigasyon prensipal',
     "skip": "Ale nan lis la",
     "here": "w ap li paj sa a",
 }
@@ -294,6 +302,8 @@ UI["russian"] = {
                 "— если здесь что-то не так, сообщите нам.",
     "langbar_h": "Помощь на вашем языке",
     "english_h": "О языке",
+    "home": 'Waypoint, главная страница',
+    "nav_label": 'Основная навигация',
     "skip": "Перейти к списку",
     "here": "вы читаете эту страницу",
 }
@@ -335,6 +345,8 @@ UI["chinese"] = {
                 "任何不准确的地方，请告诉我们。",
     "langbar_h": "用您的语言获取帮助",
     "english_h": "关于语言",
+    "home": 'Waypoint 首页',
+    "nav_label": '主导航',
     "skip": "跳到列表",
     "here": "您正在阅读本页",
 }
@@ -381,6 +393,8 @@ UI["korean"] = {
                 "잘못된 내용이 있으면 알려 주십시오.",
     "langbar_h": "사용하시는 언어로 도움 받기",
     "english_h": "언어 안내",
+    "home": 'Waypoint 홈',
+    "nav_label": '기본 메뉴',
     "skip": "목록으로 건너뛰기",
     "here": "지금 이 페이지를 보고 계십니다",
 }
@@ -429,6 +443,8 @@ UI["bengali"] = {
                 "কিছু ভুল থাকলে আমাদের জানান।",
     "langbar_h": "আপনার ভাষায় সাহায্য নিন",
     "english_h": "ভাষা সম্পর্কে",
+    "home": 'Waypoint, প্রথম পাতা',
+    "nav_label": 'প্রধান নেভিগেশন',
     "skip": "তালিকায় যান",
     "here": "আপনি এই পাতাটি পড়ছেন",
 }
@@ -473,6 +489,8 @@ UI["arabic"] = {
                 "غير صحيح فأخبرنا.",
     "langbar_h": "احصل على المساعدة بلغتك",
     "english_h": "عن اللغة",
+    "home": 'Waypoint، الصفحة الرئيسية',
+    "nav_label": 'التنقل الرئيسي',
     "skip": "انتقل إلى القائمة",
     "here": "أنت تقرأ هذه الصفحة",
 }
@@ -521,6 +539,8 @@ UI["urdu"] = {
                 "یہاں کچھ غلط ہو تو ہمیں بتائیں۔",
     "langbar_h": "اپنی زبان میں مدد حاصل کریں",
     "english_h": "زبان کے بارے میں",
+    "home": 'Waypoint، مرکزی صفحہ',
+    "nav_label": 'مرکزی نیویگیشن',
     "skip": "فہرست پر جائیں",
     "here": "آپ یہ صفحہ پڑھ رہے ہیں",
 }
