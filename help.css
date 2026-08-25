@@ -152,7 +152,7 @@ b,strong{ font-weight:600; }
   font-weight:600; }
 .langnote__h3{ margin-top:1.4em; font-size:1.12rem; color:var(--gold); }
 .langneeds{ margin-top:.7em; display:grid; gap:2px;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); }
+  grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr)); }
 .langneeds a{ display:flex; align-items:center; min-height:44px;
   padding:8px 12px; border-radius:var(--r-s); text-decoration:none;
   color:var(--ink-strong); line-height:1.35;
@@ -328,7 +328,8 @@ b,strong{ font-weight:600; }
 .jump{ margin:clamp(18px,2.6vw,26px) 0 clamp(20px,3vw,30px);
   padding-bottom:2px; }
 .jump ul{ display:flex; flex-wrap:wrap; gap:8px; }
-.jump li{ display:flex; }
+.jump li{ display:flex; min-width:0; }
+.jump a{ min-width:0; }
 .jump a{ display:inline-flex; align-items:center; min-height:40px;
   padding:6px 14px; border:1.5px solid var(--line); border-radius:var(--r-pill);
   background:var(--surface); font-size:.9rem; font-weight:500;
@@ -337,7 +338,7 @@ b,strong{ font-weight:600; }
 .jump a:hover{ border-color:var(--green-2); background:var(--line-2); color:var(--ink); }
 
 .clusters__grid{ display:grid; gap:14px;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); }
+  grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); }
 .cl{ display:flex; flex-direction:column; height:100%; min-width:0;
   background:var(--surface); border:1.5px solid var(--line);
   border-radius:var(--r); padding:clamp(18px,2.2vw,24px);
@@ -420,18 +421,26 @@ b,strong{ font-weight:600; }
 .crumb a:hover .crumb__back{ transform:translateX(-4px); }
 .crumb__sep{ color:var(--line); }
 
-.cat{ display:grid; gap:clamp(20px,3vw,40px); align-items:start; }
+/* minmax(0,1fr), never a bare 1fr, and min-width:0 on both children.
+   A grid track is max-content wide by default and a grid item refuses to
+   shrink below its own min-content, so at 320px with text at 200% the rail's
+   longest chip made the whole page 437px wide and the reader got a horizontal
+   scrollbar — on the narrowest screen, at the largest text, which is exactly
+   the combination this page exists to survive. */
+.cat{ display:grid; grid-template-columns:minmax(0,1fr);
+  gap:clamp(20px,3vw,40px); align-items:start; }
 @media (min-width:940px){
   .cat{ grid-template-columns:236px minmax(0,1fr); }
   .cat__rail{ position:sticky; top:78px; }
 }
-.cat__main{ min-width:0; }
+.cat__rail,.cat__main{ min-width:0; }
 .rail__h{ font-family:var(--sans); font-size:.8rem; font-weight:600;
   letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3);
   margin-bottom:10px; }
 .rail__nav ul{ display:flex; flex-wrap:wrap; gap:6px; }
-.rail__nav li{ display:flex; }
-.rail__nav a{ flex:1; display:flex; align-items:center; justify-content:space-between;
+.rail__nav li{ display:flex; min-width:0; }
+.rail__nav a{ flex:1; min-width:0; display:flex; flex-wrap:wrap;
+  align-items:center; justify-content:space-between;
   gap:10px; min-height:44px; padding:8px 14px; border-radius:var(--r-pill);
   border:1.5px solid var(--line); background:var(--surface);
   font-size:.9rem; font-weight:500; color:var(--ink-2); text-decoration:none;
@@ -453,8 +462,10 @@ b,strong{ font-weight:600; }
   border-top:1px solid var(--line); }
 .sibs h2{ font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem); margin-bottom:.7em; }
 .sibs ul{ display:grid; gap:8px;
-  grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); }
+  grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr)); }
+.sibs li{ min-width:0; }
 .sibs a{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:12px;
+  min-width:0;
   align-items:center; min-height:52px; padding:10px 14px;
   border:1.5px solid var(--line); border-radius:var(--r-s);
   background:var(--surface); text-decoration:none; color:var(--ink);
@@ -504,7 +515,8 @@ b,strong{ font-weight:600; }
 
 /* grid, and order-aware: help.js floats the places that name the reader's
    language to the front of their group when a language chip is on. */
-.rows{ display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); }
+.rows{ display:grid; gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr)); }
 
 /* ------------------------------------------------------------- one row */
 /* min-width:0 on every grid child, here and below.

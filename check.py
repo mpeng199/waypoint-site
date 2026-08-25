@@ -1785,6 +1785,53 @@ def _stem(w):
     return w
 
 
+def check_no_sideways_scroll():
+    """The two CSS mistakes that make this page scroll sideways.
+
+    WCAG 1.4.10 is not a formality here: at 320px with text at 200% — the
+    narrowest screen at the largest text, which is precisely the combination
+    this directory exists to survive — a page that scrolls horizontally is a
+    page where half of every sentence is off the edge and the reader has to
+    drag it back for each line.
+
+    Both causes are grid defaults. A track is max-content wide unless told
+    otherwise, and a grid item refuses to shrink below its own min-content
+    unless told otherwise. One long chip in the rail made the whole page
+    437px wide.
+    """
+    css = read("help.css")
+    body = re.sub(r"/\*.*?\*/", " ", css, flags=re.S)
+
+    bare = re.findall(r"repeat\(auto-fill,\s*minmax\((\d+px)\s*,", body)
+    if bare:
+        bad(f"help.css: repeat(auto-fill, minmax({bare[0]}, ...)) — a fixed "
+            "minimum wider than the screen makes the track wider than the "
+            "screen. Use minmax(min(Npx,100%), 1fr).")
+    else:
+        ok("help.css: every auto-fill grid can shrink below its own minimum")
+
+    tight = re.sub(r"\s+", "", body)
+    for sel in (".cat", ".cat__rail", ".cat__main"):
+        if sel not in tight:
+            bad(f"help.css: {sel} is gone; the category layout has changed shape")
+
+    if re.search(r"\.cat\{[^}]*grid-template-columns:minmax\(0,1fr\)", tight):
+        ok("help.css: the category grid's single column is bounded")
+    else:
+        bad("help.css: the category grid no longer declares "
+            "grid-template-columns:minmax(0,1fr), so one long word in the rail "
+            "can widen the whole page")
+
+    shrinks = [sel for sel in (".cat__rail", ".cat__main")
+               if not re.search(r"(^|[,{}])[^{}]*" + re.escape(sel) +
+                                r"[^{}]*\{[^}]*min-width:0", tight)]
+    if shrinks:
+        bad(f"help.css: {shrinks} has no min-width:0, so it cannot shrink below "
+            "its own content and the page scrolls sideways at 320px")
+    else:
+        ok("help.css: both children of the category grid may shrink")
+
+
 def check_critical_queries():
     """The searches that must not stop working."""
     import build_help
@@ -2437,7 +2484,7 @@ def main():
                check_directory_languages, check_directory_needs,
                check_directory_clusters, check_no_stale_counts,
                check_page_furniture, check_home_names_the_same_needs,
-               check_critical_queries,
+               check_critical_queries, check_no_sideways_scroll,
                check_directory_a11y, check_directory_print,
                check_home_offers_help, check_doors_have_resources]:
         before = len(passes) + len(failures)
