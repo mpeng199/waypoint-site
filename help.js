@@ -103,7 +103,12 @@
   var STOP = (" i me my mine we our you your a an the is am are be been it its this that " +
     "to of for and or in on at with from about need needs help please do does did " +
     "how where what who can cant cannot get got some any my im ive have has had " +
-    "there here now they them he she his her not no ").split(" ");
+    "there here now they them he she his her not no " +
+    /* "being" carries nothing and was deciding results: "i am being evicted"
+       and "my daughter is being abused" both opened with Adult Protective
+       Services, which says "being harmed" in its description, over the
+       eviction lawyers and the domestic violence line. */
+    "being ").split(" ");
 
   /* Match at word starts, not anywhere in the string.
      Plain substring matching made "ice detained" return 58 rows, because
@@ -152,7 +157,12 @@
     var cut = [["ing", 3], ["ies", 3], ["ed", 2], ["es", 2], ["s", 1], ["ly", 2]];
     for (var i = 0; i < cut.length; i++) {
       var suf = cut[i][0];
-      if (word.length - cut[i][1] >= 4 &&
+      /* Three characters left, not four. At four, "paying" did not reduce to
+         "pay", so "help paying for a funeral" could not reach the row that
+         says "when a family cannot pay for one". Three still refuses "using"
+         (leaves "us") and "dying" (leaves "dy"), which are the shapes that
+         over-stem. */
+      if (word.length - cut[i][1] >= 3 &&
           word.slice(-suf.length) === suf) {
         out = word.slice(0, -suf.length);
         break;
@@ -272,6 +282,14 @@
      find something. Weighted equally, a meal-delivery service outranked
      Lighthouse Guild on the query "im blind". Explicit beats attached. */
   var W_NAME = 6, W_KIND = 4, W_TAG = 3, W_ALIAS = 2, W_BODY = 1;
+  /* Below the row's own description on purpose. These are the words a row
+     inherits from its CATEGORY, and a category is coarse: "Housing & Shelter"
+     contains "shelter", so Ronald McDonald House — a place for the family of
+     a child in cancer treatment — used to come back first for "somewhere to
+     sleep tonight", ahead of the City's shelter intake. Category vocabulary
+     can still find a row nothing else would; it can no longer outrank a row
+     that actually says the word. */
+  var W_CAT = 0.6;
   /* A whole word beats a word start. Prefix matching is what lets "dent"
      find "dentist", and it is also why "who do i call" opened with
      Callen-Lorde. */
@@ -297,6 +315,45 @@
     return hasExact(hay, w) ? weight * EXACT : weight;
   }
 
+  /* How much a word is worth depends on how rare it is.
+
+     "free eyeglasses" opened with naloxone and eviction defence. Both of
+     those have "free" in their NAME, which is the heaviest field, and the
+     one row that knows about eyeglasses has it only in its body. So a word
+     in three hundred rows outscored the word that meant something.
+     "help paying for a funeral" did the same thing and answered with the
+     Mayor's Office to Prevent Gun Violence.
+
+     Inverse document frequency, computed once from the rows on the page:
+     a word in nearly every row is worth almost nothing, a word in one row is
+     worth its full weight. Floored at 0.35 so a common word still breaks a
+     tie, and capped at 1 so nothing scores above its field weight and the
+     ordering above stays the ordering. */
+  var idfCorpus = null, idfCache = {};
+  function idfOver(corpus) {
+    /* Computed over every row the page holds, not over what a filter has left,
+       so narrowing to Brooklyn does not change what a word is worth. The
+       corpus is already an array of one flattened string per row — the same
+       strings the filter searches — so this counts documents, not fields. */
+    if (idfCorpus !== corpus) { idfCorpus = corpus; idfCache = {}; }
+  }
+  function idf(w) {
+    if (idfCache[w] !== undefined) return idfCache[w];
+    var c = idfCorpus, n = (c && c.length) || 0;
+    if (n < 2) return 1;                     // nothing to compare against
+    var df = 0;
+    for (var i = 0; i < n; i++) if (hasWord(c[i], w)) df++;
+    var v = df ? Math.log(n / df) / Math.log(n) : 1;
+    /* 0.15, not 0.35. At 0.35 a word in half the rows still scored 6 x 1.5 x
+       0.35 = 3.15 when it sat in a NAME, which beat the one row that knew
+       what an eyeglass was scoring 2 x 1.5 x 1.0 = 3 from its alias. The
+       floor exists so a common word can still break a tie, not so it can win
+       one. */
+    if (v < 0.15) v = 0.15;
+    if (v > 1) v = 1;
+    return (idfCache[w] = v);
+  }
+
   function score(row, ws, phrase) {
     var hits = 0, points = 0;
     for (var i = 0; i < ws.length; i++) {
@@ -305,8 +362,9 @@
               fieldScore(row.kind, w, W_KIND) ||
               fieldScore(row.tags, w, W_TAG) ||
               fieldScore(row.alias, w, W_ALIAS) ||
-              fieldScore(row.body, w, W_BODY);
-      if (p) { hits++; points += p; }
+              fieldScore(row.body, w, W_BODY) ||
+              fieldScore(row.cat || "", w, W_CAT);
+      if (p) { hits++; points += p * idf(w); }
     }
     if (hits && phrase && phrase.length > 6 &&
         (row.alias.indexOf(phrase) !== -1 || row.name.indexOf(phrase) !== -1)) {
@@ -330,6 +388,7 @@
 
   function rank(rows, ws, phrase) {
     if (!ws.length) return { keep: rows.map(function (r) { return r.ref; }), loose: false };
+    idfOver(mode.all ? mode.all() : null);
     var scored = rows.map(function (r) {
       var s = score(r, ws, phrase);
       return { r: r, hits: s.hits, points: s.points };
@@ -407,9 +466,10 @@
       it.alias = ((it.s || "") + " " +
         (it.k2 || [it.g]).map(function (k) { return ix.nw[k] || ""; }).join(" "))
         .toLowerCase().replace(/\s+/g, " ");
+      it.cat = (it.sc || "").toLowerCase();
       it.body = (it.d || "").toLowerCase();
       it._find = (it.name + " " + it.kind + " " + it.tags + " " +
-                  it.alias + " " + it.body);
+                  it.alias + " " + it.body + " " + it.cat);
       it.ref = it;
     });
     var corpus = items.map(function (it) { return it._find; });
@@ -507,6 +567,7 @@
       terms: function (raw) { return termsFor(raw, corpus); },
       home: function () { return clusters; },
       phrase: function () { return phrase; },
+      all: function () { return corpus; },
       jump: jump,
       total: TOTAL,
     };
@@ -543,10 +604,11 @@
       r.tags = (r.dataset.tags || "").toLowerCase().replace(/\s+/g, " ");
       r.alias = ((r.dataset.find || "") + " " + pageWords)
         .toLowerCase().replace(/\s+/g, " ");
+      r.cat = (r.dataset.cat || "").toLowerCase().replace(/\s+/g, " ");
       r.body = BODY.map(function (sel) { return textOf(r, sel); })
         .join(" ").toLowerCase().replace(/\s+/g, " ");
       r._find = r.name + " " + r.kind + " " + r.tags + " " + r.alias +
-                " " + r.body;
+                " " + r.body + " " + r.cat;
       r._key = r.dataset.key;
       r.ref = r;
     });
@@ -619,6 +681,7 @@
       terms: function (raw) { return termsFor(raw, corpus); },
       home: function () { return document.querySelector(".cat__main"); },
       phrase: function () { return phrase; },
+      all: function () { return corpus; },
       jump: null,
       total: TOTAL,
     };

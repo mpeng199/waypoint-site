@@ -1806,6 +1806,17 @@ CRITICAL_QUERIES = [
     ("i got court papers",          "Housing Court Help Center"),
     ("con ed shut off",             "Con Edison payment help"),
     ("i cant sleep since the baby", "Postpartum depression help (NYC Health)"),
+    # Found by typing fifty realistic phrasings into the built page and
+    # reading what came back. Each of these returned nothing, or returned
+    # something from a different part of somebody's life.
+    ("free eyeglasses", "SUNY College of Optometry — University Eye Center"),
+    ("my mom has dementia", "CaringKind — dementia helpline"),
+    ("period products", "Free period products (schools and shelters)"),
+    ("help paying for a funeral", "HRA Burial Assistance"),
+    ("somewhere to sleep tonight", "NYC DHS Shelter Intake (right to shelter)"),
+    ("i am being evicted", "Right to Counsel — Free Eviction Defense"),
+    ("paying for medicine", "RxAssist"),
+    ("i need a bed", "NYC DHS Shelter Intake (right to shelter)"),
 ]
 
 # The stop list and the stemmer, kept in step with help.js by hand. Both are
@@ -3109,7 +3120,7 @@ def check_critical_queries():
 
     def searchable(r):
         return " ".join([r["Resource Name"], r["Subcategory"],
-                         build_help.tagtext(r), build_help.haystack(r),
+                         build_help.tagtext(r), " ".join(build_help.haystack(r)),
                          build_help.needwords(r["_needs"]),
                          r["Description"]]).lower()
 

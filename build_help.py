@@ -1358,7 +1358,9 @@ SYNONYMS = [
     ("medicare",        "medicare part b senior insurance"),
     ("eviction",        "evicted landlord kicked out lose my apartment"),
     ("tenant",          "landlord rent apartment lease"),
-    ("shelter",         "homeless nowhere to sleep sleep tonight bed"),
+    ("shelter",         "homeless nowhere to sleep sleep tonight bed "
+                    "somewhere to sleep somewhere to stay place to sleep "
+                    "no place to stay nowhere to go"),
     ("housing",         "rent apartment place to live"),
     ("affordable housing", "section 8 voucher vouchers housing voucher cityfheps "
                         "nycha public housing lottery"),
@@ -1408,6 +1410,20 @@ SYNONYMS = [
     ("reproductive",    "abortion terminate a pregnancy pregnancy options "
                         "birth control pregnancy test prenatal"),
     ("abortion",        "abortion pregnancy options terminate"),
+    # Words the probe found people typing that the index did not hold. Each
+    # of these returned nothing, or returned something from a different part
+    # of life: "free eyeglasses" answered with naloxone and eviction defence,
+    # "my pet needs a vet" answered with the Veterans Crisis Line.
+    ("glasses",         "eyeglasses spectacles eye exam vision eyesight cant see "
+                        "blurry reading glasses optometrist"),
+    ("hearing",         "hearing aid hearing aids deaf hard of hearing cant hear"),
+    ("dementia",        "alzheimers alzheimer memory loss forgetting confused "
+                        "my mother forgets my father forgets wandering caregiver"),
+    ("period",          "menstrual pads tampons period products sanitary supplies"),
+    ("burial",          "funeral cremation bury buried died passed away "
+                        "cost of a funeral funeral costs help paying for a funeral "
+                        "cant afford a funeral"),
+    ("pet",             "dog cat animal veterinarian pet food"),
     ("diaper",          "baby supplies formula newborn"),
     ("coat",            "winter clothes jacket warm"),
     ("clothing",        "clothes shoes free clothes"),
@@ -1729,14 +1745,37 @@ def haystack(r):
     # that fire the immigration trigger attached "green card" to 29 unrelated
     # rows, so a search for "green card" returned a food pantry and a DV
     # hotline before it reached a single immigration lawyer.
-    base = " ".join([
-        r["Resource Name"], r["Subcategory"], r["Tags"], r["Category"],
-    ]).lower()
-    extra = []
+    own = " ".join([r["Resource Name"], r["Subcategory"], r["Tags"]]).lower()
+    cat = (r["Category"] or "").lower()
+    strong, weak = [], []
     for trigger, words in SYNONYMS:
-        if trigger in base:
-            extra.append(words)
-    return " ".join(extra).lower()
+        if _fires(trigger, own):
+            strong.append(words)
+        elif _fires(trigger, cat):
+            weak.append(words)
+    return " ".join(strong).lower(), " ".join(weak).lower()
+
+
+def haystacks(r):
+    """The row's own vocabulary, and the vocabulary its category implies.
+
+    They are kept apart because a category is a coarse thing. "Housing &
+    Shelter" contains the word "shelter", so every row filed under it fired
+    the shelter synonyms — and Ronald McDonald House, which is a place for
+    the family of a child in cancer treatment, came back first for "somewhere
+    to sleep tonight", ahead of the City's shelter intake.
+
+    Dropping the category outright costs too much: nineteen rows would lose
+    every synonym they have, including the childcare ones whose names never
+    say "childcare". So category-derived words still count — they are just
+    scored below the row's own description in help.js, where they can find a
+    row nothing else would and can never outrank a row that actually says the
+    word.
+
+    The trigger is word-start matched, like every other match on this site:
+    plain substring is what once made "ice" fire on serv-ice and off-ice.
+    """
+    return haystack(r)
 
 
 
@@ -1833,7 +1872,8 @@ def render_row(r, need_key):
              f' data-lang="{esc(" ".join(r["_langs"]))}"'
              f' data-flags="{esc(" ".join(r["_flags"]))}"'
              f' data-tags="{esc(tagtext(r))}"'
-             f' data-find="{esc(haystack(r))}">')
+             f' data-find="{esc(haystack(r)[0])}"'
+             f' data-cat="{esc(haystack(r)[1])}">')
     a.append('<div class="r__head">')
     a.append(f'<h3 class="r__name">{esc(r["Resource Name"])}</h3>')
     if r["Subcategory"]:
@@ -2305,7 +2345,8 @@ def index_json(rows):
             "f": " ".join(r["_flags"]),
             "b": " ".join(r["_boroughs"]),
             "l": " ".join(r["_langs"]),
-            "s": haystack(r),
+            "s": haystack(r)[0],
+            "sc": haystack(r)[1],
         })
     doc = {
         "needs": {nd["key"]: nd["short"] for nd in NEEDS},
