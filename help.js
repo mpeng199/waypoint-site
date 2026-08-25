@@ -39,6 +39,7 @@
 
   var active = { boro: [], lang: [], flags: [] };
   var words = [];
+  var dropped = [];
 
   /* ---------------------------------------------------------------- shared */
 
@@ -76,13 +77,45 @@
      looseness (a search for "dent" still finds "dental" and "dentist") and
      drops the noise. */
   var reCache = {};
-  function hasWord(hay, word) {
+  function starts(hay, word) {
     var re = reCache[word];
     if (!re) {
       var esc = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       re = reCache[word] = new RegExp("\\b" + esc);
     }
     return re.test(hay);
+  }
+
+  /* Prefix matching only works one way. "dent" finds "dentist" because the
+     query is a prefix of the word on the page — but "abused" finds nothing,
+     because the page says "abuse", and "my daughter is being abused" is not a
+     query that may return a housing lottery.
+
+     So the query word is also tried with a common English ending removed.
+     Deliberately crude: no dictionary, no real stemmer, four suffixes, and
+     only when at least four letters survive — enough for abus(ed), evict(ed),
+     deni(ed), wage(s), meal(s), class(es), and short of anything that starts
+     matching words it should not. */
+  var stemCache = {};
+  function stem(word) {
+    if (word in stemCache) return stemCache[word];
+    var out = word;
+    var cut = [["ing", 3], ["ies", 3], ["ed", 2], ["es", 2], ["s", 1], ["ly", 2]];
+    for (var i = 0; i < cut.length; i++) {
+      var suf = cut[i][0];
+      if (word.length - cut[i][1] >= 4 &&
+          word.slice(-suf.length) === suf) {
+        out = word.slice(0, -suf.length);
+        break;
+      }
+    }
+    return (stemCache[word] = out);
+  }
+
+  function hasWord(hay, word) {
+    if (starts(hay, word)) return true;
+    var st = stem(word);
+    return st !== word && starts(hay, st);
   }
 
   function termsFor(raw, corpus) {
@@ -101,6 +134,14 @@
     var useful = content.filter(function (w) {
       return corpus.some(function (hay) { return hasWord(hay, w); });
     });
+    // Say which words went nowhere. Dropping a word that matches nothing can
+    // only widen the result and beats the blank page — but doing it silently
+    // is how "free wifi" returned a hundred and seventy-four places that are
+    // free and none that have wifi, with no hint that half the question had
+    // been thrown away.
+    dropped = useful.length ? content.filter(function (w) {
+      return useful.indexOf(w) === -1;
+    }) : [];
     return useful.length ? useful : content;
   }
 
@@ -147,6 +188,132 @@
     return false;
   }
 
+  /* How well a row answers the query, and whether it answers it at all.
+
+     Two things this has to get right, both learned from watching real
+     phrasings fail:
+
+     1. EVERY word matching is the ideal, and it is often too much to ask.
+        "i cant pay my hospital bill" returned nothing, because no single row
+        contains "pay" and "hospital" and "bill"; so did "landlord wont fix
+        anything" and "my benefits were cut off". A blank page is the worst
+        possible answer for somebody who has just typed a sentence about their
+        life. So: all-words if anything matches, otherwise most-words-matched.
+        Nothing is invented — every row shown really does match part of what
+        they typed — and the count says plainly that it is not exact.
+
+     2. WHERE the word matched decides the order. "i need food today" matched
+        forty-two rows and opened with a benefits screener, because "food"
+        appears in its description. A word in the resource's name is a much
+        stronger signal than the same word in a paragraph about it, and a page
+        that opens with the wrong three answers has failed even when the right
+        one is eleventh. */
+  /* Four fields, four weights. What a resource is CALLED is the strongest
+     signal, what it calls itself next, the alternative words we attached to
+     it next, and a paragraph about it weakest.
+
+     The alias field earns its own weight rather than sharing the subcategory's
+     because it is deliberately generous — every row tagged "disability"
+     carries the words "blind", "deaf" and "wheelchair" so that those searches
+     find something. Weighted equally, a meal-delivery service outranked
+     Lighthouse Guild on the query "im blind". Explicit beats attached. */
+  var W_NAME = 6, W_KIND = 4, W_TAG = 3, W_ALIAS = 2, W_BODY = 1;
+  /* A whole word beats a word start. Prefix matching is what lets "dent"
+     find "dentist", and it is also why "who do i call" opened with
+     Callen-Lorde. */
+  var EXACT = 1.5;
+  /* And a query that appears verbatim in what we attached to a row is the
+     strongest signal there is, because those phrases were written down FOR
+     this — "cant pay my hospital bill", "who do i call", "i want to die". */
+  var W_PHRASE = 14;
+
+  var exactCache = {};
+  function hasExact(hay, word) {
+    var re = exactCache[word];
+    if (!re) {
+      var esc = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      re = exactCache[word] = new RegExp("\\b" + esc + "\\b");
+    }
+    return re.test(hay);
+  }
+
+  function fieldScore(hay, w, weight) {
+    if (!hasWord(hay, w)) return 0;
+    return hasExact(hay, w) ? weight * EXACT : weight;
+  }
+
+  function score(row, ws, phrase) {
+    var hits = 0, points = 0;
+    for (var i = 0; i < ws.length; i++) {
+      var w = ws[i];
+      var p = fieldScore(row.name, w, W_NAME) ||
+              fieldScore(row.kind, w, W_KIND) ||
+              fieldScore(row.tags, w, W_TAG) ||
+              fieldScore(row.alias, w, W_ALIAS) ||
+              fieldScore(row.body, w, W_BODY);
+      if (p) { hits++; points += p; }
+    }
+    if (hits && phrase && phrase.length > 6 &&
+        (row.alias.indexOf(phrase) !== -1 || row.name.indexOf(phrase) !== -1)) {
+      points += W_PHRASE;
+    }
+    return { hits: hits, points: points };
+  }
+
+  /* Rank, then cut.
+
+     Every word matching is the ideal and is often too much to ask, so the cut
+     starts at the best any row managed and relaxes a word at a time until
+     there are enough answers to be worth showing. Exact matches still lead —
+     relaxing adds rows below them, it never reorders them — and the count
+     says plainly when the query was not matched in full. */
+  var ENOUGH = 5;
+  /* A loosened search is a guess, and a guess three screens long is not more
+     helpful than a guess one screen long. "free wifi" matched "free" in a
+     hundred and seventy-four rows. */
+  var LOOSE_MAX = 24;
+
+  function rank(rows, ws, phrase) {
+    if (!ws.length) return { keep: rows.map(function (r) { return r.ref; }), loose: false };
+    var scored = rows.map(function (r) {
+      var s = score(r, ws, phrase);
+      return { r: r, hits: s.hits, points: s.points };
+    });
+    var best = 0;
+    scored.forEach(function (s) { if (s.hits > best) best = s.hits; });
+    if (!best) return { keep: [], loose: false };
+
+    var need = best;
+    var kept = scored.filter(function (s) { return s.hits >= need; });
+    // Relaxing exists to avoid a blank page, not to pad a good answer. If
+    // something matched the whole query, that IS the answer, however few: "free
+    // coat" found the coat drive, then relaxed to one word and returned a
+    // hundred and seventy-four rows containing "free".
+    while (best < ws.length && kept.length < ENOUGH && need > 1) {
+      need--;
+      kept = scored.filter(function (s) { return s.hits >= need; });
+    }
+    kept.sort(function (a, b) {
+      if (b.hits !== a.hits) return b.hits - a.hits;
+      return b.points - a.points;
+    });
+    var loose = need < ws.length;
+    if (loose && kept.length > LOOSE_MAX) kept = kept.slice(0, LOOSE_MAX);
+    return {
+      keep: kept.map(function (s) { return s.r.ref; }),
+      loose: loose,
+    };
+  }
+
+  /* "Nothing here matched X." — said once, in front of whatever did match. */
+  function missNote() {
+    if (!dropped.length) return "";
+    var q = dropped.map(function (w) { return "\u201c" + w + "\u201d"; });
+    var list = q.length === 1 ? q[0]
+             : q.slice(0, -1).join(", ") + " or " + q[q.length - 1];
+    return "Nothing here matched " + list + ". ";
+  }
+
   function narrowed() {
     return !!(words.length || active.boro.length || active.lang.length ||
               active.flags.length);
@@ -172,9 +339,19 @@
     var noneEl = results.querySelector(".dir__none");
     var TOTAL = items.length;
 
+    // Three haystacks, not one, so the ranker can tell a name from a
+    // paragraph. `s` — the internal tags and the plain-English synonyms
+    // build_help.py attaches — counts as "what this is", which is how "food
+    // stamps" reaches SNAP and "kicked out" reaches an eviction hotline.
     items.forEach(function (it) {
-      it._find = (it.n + " " + it.k + " " + it.d + " " + it.s)
-        .toLowerCase().replace(/\s+/g, " ");
+      it.name = (it.n || "").toLowerCase();
+      it.kind = (it.k || "").toLowerCase();
+      it.tags = (it.t || "").toLowerCase().replace(/\s+/g, " ");
+      it.alias = (it.s || "").toLowerCase().replace(/\s+/g, " ");
+      it.body = (it.d || "").toLowerCase();
+      it._find = (it.name + " " + it.kind + " " + it.tags + " " +
+                  it.alias + " " + it.body);
+      it.ref = it;
     });
     var corpus = items.map(function (it) { return it._find; });
 
@@ -231,15 +408,15 @@
         if (resetBtn) resetBtn.hidden = true;
         return;
       }
-      var hits = items.filter(function (it) {
-        for (var w = 0; w < words.length; w++) {
-          if (!hasWord(it._find, words[w])) return false;
-        }
+      var eligible = items.filter(function (it) {
         return facetsOk(function (f) {
           return f === "boro" ? it.b : f === "lang" ? it.l : it.f;
         });
       });
-      // Rows that answer the borough or the language *specifically* lead.
+      var ranked = rank(eligible, words, mode.phrase());
+      var hits = ranked.keep;
+      // Rows that answer the borough or the language *specifically* lead,
+      // without disturbing the relevance order among equals.
       hits.sort(function (a, b) {
         var A = isCloserMatch(function (f) {
           return f === "boro" ? a.b : f === "lang" ? a.l : a.f; }) ? 0 : 1;
@@ -251,13 +428,17 @@
       clusters.hidden = true;
       results.hidden = false;
       resultRows.innerHTML = hits.map(rowHTML).join("");
-      resultsH.textContent = hits.length === 0
+      resultsH.textContent = missNote() + (hits.length === 0
         ? "Nothing matched that"
-        : hits.length + (hits.length === 1 ? " place matches" : " places match");
+        : ranked.loose
+          ? "No exact match. Here are the " + hits.length + " closest."
+          : hits.length + (hits.length === 1 ? " place matches" : " places match"));
       noneEl.hidden = hits.length !== 0;
       countEl.textContent = hits.length === 0
         ? "Nothing matched"
-        : "Showing " + hits.length + " of " + TOTAL + " places";
+        : ranked.loose
+          ? "No exact match. Showing the " + hits.length + " closest."
+          : "Showing " + hits.length + " of " + TOTAL + " places";
       if (clearBtn) clearBtn.hidden = !words.length;
       if (resetBtn) resetBtn.hidden = false;
     }
@@ -266,6 +447,7 @@
       apply: apply,
       terms: function (raw) { return termsFor(raw, corpus); },
       home: function () { return clusters; },
+      phrase: function () { return phrase; },
       jump: jump,
       total: TOTAL,
     };
@@ -288,17 +470,22 @@
     // data-find adds what is NOT on screen: the internal tags and category,
     // and the plain-English phrases SYNONYMS attaches — which is how "food
     // stamps" finds SNAP and "kicked out" finds an eviction hotline.
-    var CONTENT = [".r__name", ".r__kind", ".r__what", ".r__badges",
-                   ".r__facts dl", ".r__note"];
+    var BODY = [".r__what", ".r__badges", ".r__facts dl", ".r__note"];
+    function textOf(r, sel) {
+      var el = r.querySelector(sel);
+      return el ? el.textContent : "";
+    }
     rows.forEach(function (r) {
-      var parts = [];
-      CONTENT.forEach(function (sel) {
-        var el = r.querySelector(sel);
-        if (el) parts.push(el.textContent);
-      });
-      r._find = (parts.join(" ") + " " + (r.dataset.find || ""))
-        .toLowerCase().replace(/\s+/g, " ");
+      r.name = textOf(r, ".r__name").toLowerCase();
+      r.kind = textOf(r, ".r__kind").toLowerCase();
+      r.tags = (r.dataset.tags || "").toLowerCase().replace(/\s+/g, " ");
+      r.alias = (r.dataset.find || "").toLowerCase().replace(/\s+/g, " ");
+      r.body = BODY.map(function (sel) { return textOf(r, sel); })
+        .join(" ").toLowerCase().replace(/\s+/g, " ");
+      r._find = r.name + " " + r.kind + " " + r.tags + " " + r.alias +
+                " " + r.body;
       r._key = r.dataset.key;
+      r.ref = r;
     });
 
     // Unique resources, not rendered rows: a resource can appear both in its
@@ -315,15 +502,23 @@
     function apply() {
       var shown = Object.create(null);
       var n = 0;
+      var eligible = rows.filter(function (r) {
+        return facetsOk(function (f) { return r.dataset[f]; });
+      });
+      var ranked = rank(eligible, words, mode.phrase());
+      var live = Object.create(null);
+      ranked.keep.forEach(function (r, i) { r._rank = i; live[r.id] = 1; });
+
       rows.forEach(function (r) {
-        var ok = true;
-        for (var w = 0; w < words.length; w++) {
-          if (!hasWord(r._find, words[w])) { ok = false; break; }
-        }
-        if (ok) ok = facetsOk(function (f) { return r.dataset[f]; });
+        var ok = !!live[r.id];
         r.hidden = !ok;
         if (ok && !shown[r._key]) { shown[r._key] = 1; n++; }
-        r.style.order = isCloserMatch(function (f) { return r.dataset[f]; }) ? "-1" : "";
+        // Relevance first, then a local answer ahead of a citywide one. Order
+        // is a small integer so the two can be combined without a sort.
+        r.style.order = words.length
+          ? String((r._rank || 0) * 2 +
+                   (isCloserMatch(function (f) { return r.dataset[f]; }) ? 0 : 1))
+          : (isCloserMatch(function (f) { return r.dataset[f]; }) ? "-1" : "");
       });
 
       // A group heading over nothing reads as "we have none of this", when the
@@ -348,7 +543,9 @@
       countEl.textContent = !narrowed()
         ? TOTAL + (TOTAL === 1 ? " place on this page" : " places on this page")
         : n === 0 ? "Nothing matched"
-                  : "Showing " + n + " of " + TOTAL;
+        : ranked.loose
+          ? "No exact match. Showing the " + n + " closest."
+          : "Showing " + n + " of " + TOTAL;
       if (noneEl) noneEl.hidden = n !== 0;
       if (clearBtn) clearBtn.hidden = !words.length;
       if (resetBtn) resetBtn.hidden = !narrowed();
@@ -358,13 +555,16 @@
       apply: apply,
       terms: function (raw) { return termsFor(raw, corpus); },
       home: function () { return document.querySelector(".cat__main"); },
+      phrase: function () { return phrase; },
       jump: null,
       total: TOTAL,
     };
   }
 
   /* -------------------------------------------------------------- wiring */
+  var phrase = "";
   function onType() {
+    phrase = q.value.toLowerCase().trim().replace(/[\u2019']/g, "").replace(/\s+/g, " ");
     words = mode.terms(q.value);
     mode.apply();
   }

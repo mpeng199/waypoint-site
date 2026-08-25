@@ -1698,6 +1698,147 @@ def check_no_stale_counts():
         bad("the front page's total is not the generated count")
 
 
+# ---------------------------------------------------------------- searching
+# The queries that must not stop working, and what each one has to reach.
+#
+# This is a check on the DATA, not on the ranking. It asserts that every
+# content word in the query appears somewhere in the named resource's
+# searchable text — its name, what it calls itself, its tags, or the
+# plain-English phrases SYNONYMS attaches. If that holds, help.js can find it;
+# if it stops holding, help.js cannot, however good the ranking is.
+#
+# Every entry here was a real failure at some point. "my husband hits me",
+# "i want to die" and "heroin" all returned a blank page once. "my daughter is
+# being abused" returned a housing lottery. "unpaid wages" returned a
+# job-training centre, because the directory had nothing about wage theft at
+# all. A query in this table is a promise that the words a frightened person
+# actually types reach the thing that helps them.
+CRITICAL_QUERIES = [
+    # the emergencies
+    ("my husband hits me",          "NYC HOPE — 24-Hour DV Hotline (Safe Horizon)"),
+    ("my daughter is being abused", "Safe Horizon"),
+    ("im scared of my boyfriend",   "NYC HOPE — 24-Hour DV Hotline (Safe Horizon)"),
+    ("i want to die",               "NYC 988 (formerly NYC Well)"),
+    ("kill myself",                 "988 Suicide & Crisis Lifeline"),
+    ("someone to talk to",          "NYC 988 (formerly NYC Well)"),
+    ("heroin",                      "NY OASAS HOPEline"),
+    ("narcan",                      "OASAS Free Naloxone / Harm Reduction"),
+    ("overdose",                    "OnPoint NYC"),
+    ("they took my passport",       "National Human Trafficking Hotline"),
+    # what this site exists for
+    ("cant pay my hospital bill",   "Hospital Financial Assistance (every NY hospital)"),
+    ("charity care",                "Dollar For"),
+    ("insurance said no",           "Community Health Advocates (CHA)"),
+    ("denied claim",                "New York State External Appeal (DFS)"),
+    ("medical debt collector",      "Consumer Financial Protection Bureau — complaint"),
+    ("my medicine is too expensive","NeedyMeds"),
+    # food
+    ("food stamps",                 "SNAP (Food Stamps)"),
+    ("free food",                   "Food Help NYC (official finder)"),
+    ("hot meal",                    "Holy Apostles Soup Kitchen"),
+    # housing
+    ("shelter tonight",             "NYC DHS Shelter Intake (right to shelter)"),
+    ("kicked out",                  "Homebase (Homelessness Prevention)"),
+    ("landlord wont fix",           "Met Council on Housing Tenant Hotline"),
+    ("back rent",                   "HRA Emergency Assistance / One Shot Deal"),
+    ("i sleep on the train",        "Breaking Ground Street Outreach"),
+    # health
+    ("free clinic no insurance",    "NYC Care"),
+    ("dentist",                     "NYU College of Dentistry Clinics"),
+    ("abortion",                    "NYC Abortion Access Hub"),
+    ("birth control",               "Planned Parenthood of Greater New York"),
+    # legal, work, benefits
+    ("deportation",                 "Immigrant Defense Project Hotline"),
+    ("green card",                  "CUNY Citizenship Now!"),
+    ("unpaid wages",                "NYS Department of Labor — unpaid wages"),
+    ("my boss didnt pay me",        "NYC Worker Rights (DCWP)"),
+    ("my benefits were cut off",    "New York Legal Assistance Group (NYLAG)"),
+    ("con ed shut off my power",    "HEAP (Home Energy Assistance Program)"),
+    ("free tax help",               "NYC Free Tax Prep"),
+    # the ones added because the directory had nothing
+    ("seal my record",              "Legal Action Center"),
+    ("job with a felony",           "Center for Employment Opportunities (CEO)"),
+    ("wheelchair",                  "Access-A-Ride (MTA Paratransit)"),
+    ("im blind",                    "Lighthouse Guild"),
+    ("help after a fire",           "American Red Cross Greater New York"),
+    ("i cant afford a funeral",     "HRA Burial Assistance"),
+    ("my son was shot",             "Mayor’s Office to Prevent Gun Violence"),
+    ("free wifi",                   "New York Public Library — help at the branch"),
+    ("interpreter",                 "NYC 311"),
+    ("who do i call",               "NYC 311"),
+]
+
+# The stop list and the stemmer, kept in step with help.js by hand. Both are
+# small, both are commented in one place there, and duplicating them here is
+# cheaper than shipping a JavaScript runtime into the linter.
+_STOP = set((" i me my mine we our you your a an the is am are be been it its this that "
+             "to of for and or in on at with from about need needs help please do does did "
+             "how where what who can cant cannot get got some any my im ive have has had "
+             "there here now they them he she his her not no "
+             "being was were just still even much very really been ").split())
+
+
+def _stem(w):
+    for suf, keep in (("ing", 3), ("ies", 3), ("ed", 2), ("es", 2), ("s", 1), ("ly", 2)):
+        if len(w) - keep >= 4 and w.endswith(suf):
+            return w[: -len(suf)]
+    return w
+
+
+def check_critical_queries():
+    """The searches that must not stop working."""
+    import build_help
+    rows = build_help.load()
+    by = {r["Resource Name"]: r for r in rows}
+
+    def searchable(r):
+        return " ".join([r["Resource Name"], r["Subcategory"],
+                         build_help.tagtext(r), build_help.haystack(r),
+                         r["Description"]]).lower()
+
+    hays = {r["Resource Name"]: searchable(r) for r in rows}
+
+    def hits(hay, words):
+        n = 0
+        for w in words:
+            if (re.search(r"\b" + re.escape(w), hay)
+                    or re.search(r"\b" + re.escape(_stem(w)), hay)):
+                n += 1
+        return n
+
+    broken = []
+    for query, target in CRITICAL_QUERIES:
+        row = by.get(target)
+        if not row:
+            broken.append(f"{query!r} should reach {target!r}, which is not in "
+                          "the directory any more")
+            continue
+        words = [w for w in re.split(r"[^a-z0-9\-]+", query.lower().replace("’", ""))
+                 if w and w not in _STOP and len(w) >= 2
+                 and not (w.isdigit() and len(w) < 3)]
+        # help.js keeps the rows that matched the most words, so the promise
+        # this makes is the same one: the target has to be in that top tier.
+        # Requiring every word instead would be stricter than the thing it is
+        # meant to be checking, and would fail on the filler nobody can list
+        # in advance ("being", "was", "just").
+        scores = {name: hits(hay, words) for name, hay in hays.items()}
+        best = max(scores.values()) if scores else 0
+        if not best:
+            broken.append(f"{query!r} matches nothing in the whole directory")
+        elif scores[target] < best:
+            winner = max(scores, key=lambda k: scores[k])
+            broken.append(
+                f"{query!r} no longer reaches {target!r} first: it matches "
+                f"{scores[target]} of {len(words)} words while {winner!r} "
+                f"matches {best}")
+    if broken:
+        for b in broken:
+            bad(b)
+    else:
+        ok(f"all {len(CRITICAL_QUERIES)} critical searches still reach what they "
+           "are supposed to reach")
+
+
 def check_home_names_the_same_needs():
     """The narrative page and the directory must name the same things.
 
@@ -2296,6 +2437,7 @@ def main():
                check_directory_languages, check_directory_needs,
                check_directory_clusters, check_no_stale_counts,
                check_page_furniture, check_home_names_the_same_needs,
+               check_critical_queries,
                check_directory_a11y, check_directory_print,
                check_home_offers_help, check_doors_have_resources]:
         before = len(passes) + len(failures)

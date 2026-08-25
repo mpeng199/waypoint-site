@@ -512,6 +512,8 @@ GROUPS = {
         ("more",      "More legal help", []),
     ],
     "money": [
+        ("emergency", "After a fire, a flood, or a death",
+         ["after a fire", "after a death", "disaster", "burial"]),
         ("cash",      "Cash assistance and income",
          ["income support", "cash assistance", "federal income", "ssi",
           "disability", "unemployment"]),
@@ -562,6 +564,8 @@ GROUPS = {
         ("more",      "More places for supplies", []),
     ],
     "work": [
+        ("rights",    "Your rights at work",
+         ["rights at work", "workers rights", "wage"]),
         ("jobs",      "Jobs and training",
          ["job search", "training", "workforce", "career", "apprentice"]),
         ("young",     "Paid work for young people",
@@ -1077,7 +1081,9 @@ SYNONYMS = [
     ("housing",         "rent apartment place to live"),
     ("affordable housing", "section 8 voucher vouchers housing voucher cityfheps "
                         "nycha public housing lottery"),
-    ("utility",         "con ed electric bill gas bill heat heating pay paying cant pay"),
+    ("utility",         "con ed electric bill gas bill heat heating pay paying cant pay "
+                        "shut off my power power shut off no electricity no heat "
+                        "no hot water lights turned off disconnected"),
     ("income support",  "welfare public assistance cash benefits pay paying rent money"),
     ("immigration",     "green card papers undocumented ice deportation asylum visa"),
     ("legal",           "lawyer attorney court sue rights"),
@@ -1086,7 +1092,8 @@ SYNONYMS = [
                         "boyfriend girlfriend partner unsafe at home violent assault "
                         "choked stalking restraining order"),
     ("dv ",             "hits me scared afraid husband boyfriend partner abuse"),
-    ("survivor",        "abuse assault rape raped attacked scared afraid"),
+    ("survivor",        "abuse assault rape raped attacked scared afraid "
+                        "daughter son sister mother wife husband child"),
     # The four highest-stakes searches on this page returned NOTHING before
     # these lines existed: "my husband hits me", "im scared of my boyfriend",
     # "i want to die", "heroin". Somebody types what is happening to them, in
@@ -1113,17 +1120,71 @@ SYNONYMS = [
     ("job",             "work employment hiring career resume training classes"),
     ("esol",            "english classes esl learn english"),
     ("veteran",         "army navy marines air force service member"),
-    ("hiv",             "aids positive status testing"),
+    ("hiv",             "aids positive status testing hiv test std sti"),
+    ("reproductive",    "abortion terminate a pregnancy pregnancy options "
+                        "birth control pregnancy test prenatal"),
+    ("abortion",        "abortion pregnancy options terminate"),
     ("diaper",          "baby supplies formula newborn"),
     ("coat",            "winter clothes jacket warm"),
     ("clothing",        "clothes shoes free clothes"),
     ("tax",             "taxes refund filing irs w2"),
     ("identification",  "id card birth certificate documents"),
     ("citywide info",   "not sure where to start dont know where to start where to begin "
-                        "anything else who do i call"),
+                        "anything else who do i call interpreter translation "
+                        "in my language somebody who speaks my language"),
     ("benefits eligibility", "what can i get what am i eligible for do i qualify "
                         "benefits screener see what i qualify for"),
     ("social services search", "not sure where to start find services near me"),
+
+    # Added after a second sweep of real phrasings against the rebuilt search.
+    # Each one is a query that returned nothing, or returned the wrong thing
+    # confidently, until the trigger on the left carried the words on the right.
+    ("medical bills",   "hospital bill cant pay my hospital bill bills i cant pay "
+                        "surprise bill collections owe the hospital"),
+    ("hospital bill",   "charity care financial assistance bill i cannot pay "
+                        "cant pay hospital wrote off forgiven"),
+    ("denied claims",   "denied claim insurance said no denial appeal "
+                        "they wont cover it refused to pay"),
+    ("insurance denial","appeal external review denied coverage they said no "
+                        "claim denied my claim rejected"),
+    ("medical debt",    "debt collector collections credit report owe money hospital"),
+    ("copay",           "medicine too expensive cant afford my medicine prescription cost"),
+    ("prescription",    "medicine too expensive cant afford my pills pharmacy cost"),
+    ("repairs",         "landlord wont fix no heat no hot water mold leak broken"),
+    ("tenant rights",   "landlord wont fix no heat no hot water repairs harassment lockout"),
+    ("arrears",         "back rent behind on rent owe rent rent money"),
+    ("emergency cash",  "back rent behind on rent one shot deal cant pay rent"),
+    ("free civil legal","benefits cut off my benefits were cut off they cut off my "
+                        "benefits stopped my benefits stopped my food stamps denied "
+                        "benefits fair hearing"),
+    ("benefits",        "cut off stopped denied fair hearing appeal my case"),
+    ("workers",         "wages unpaid wages not paid me wage theft boss stole my pay "
+                        "overtime fired didnt pay me they didnt pay me"),
+    ("rights at work",  "unpaid wages wage theft not paid boss stole my pay overtime "
+                        "minimum wage fired retaliation sick leave"),
+    ("discrimination",  "refused to rent to me wouldnt hire me because of my record "
+                        "because im disabled because im pregnant landlord refused voucher"),
+    ("employment",      "wages unpaid wages wage theft fired discrimination at work"),
+    ("clinic",          "free clinic no insurance uninsured cant afford a doctor "
+                        "sliding scale"),
+    ("health access",   "no insurance uninsured undocumented no papers see a doctor "
+                        "free clinic cheap clinic cant afford a doctor"),
+    ("criminal record", "background check turned down for a job sealing my record "
+                        "expunge felony conviction came home from prison parole probation"),
+    ("reentry",         "came home from prison out of jail parole probation "
+                        "background check record"),
+    ("disability",      "disabled ssi ssdi wheelchair blind deaf accommodation "
+                        "cant work because"),
+    ("trafficking",     "forced to work took my passport wont let me leave "
+                        "controlling my money"),
+    ("victim",          "crime victim compensation reimburse funeral robbed attacked"),
+    ("cancer",          "chemo chemotherapy oncology treatment tumor"),
+    ("after a fire",    "fire burned my apartment burned down lost everything flood "
+                        "flooded disaster displaced red cross"),
+    ("after a death",   "funeral burial cremation died passed away cant afford a funeral"),
+    ("after a shooting","shot shooting gun violence killed murdered lost my son "
+                        "my son was shot my daughter was shot"),
+    ("lodging",         "place to stay during treatment far from the hospital"),
 ]
 
 
@@ -1323,13 +1384,26 @@ def load():
     return out
 
 
-def haystack(r):
-    """What the search box matches against.
+def tagtext(r):
+    """What we filed this row as: its tags and its category.
 
-    Only the vocabulary that is NOT already visible in the row: the internal
-    tags and category, plus every plain-English phrase SYNONYMS attaches to
-    this row. help.js unions this with the row's own textContent, so repeating
-    the description here would just ship it twice.
+    Separate from the synonym expansion below, and weighted above it, because
+    a row we deliberately tagged "wheelchair" is a better answer to the query
+    "wheelchair" than one that inherited the word from being tagged
+    "disability". Explicit beats attached.
+    """
+    return " ".join([r["Tags"].replace(";", " "), r["Category"]]).lower()
+
+
+def haystack(r):
+    """The plain-English words somebody would actually type for this row.
+
+    Only vocabulary that is NOT already visible in the row and NOT in its
+    tags: every phrase SYNONYMS attaches. help.js scores this below the row's
+    own text, because it is deliberately generous — every row tagged
+    "disability" carries "blind", "deaf" and "wheelchair" so that those
+    searches find something, and weighted equally a meal-delivery service
+    outranked Lighthouse Guild on "im blind".
     """
     # What a synonym is allowed to fire on: the fields that say what this
     # resource IS. Description and Notes are deliberately excluded — most rows
@@ -1340,7 +1414,7 @@ def haystack(r):
     base = " ".join([
         r["Resource Name"], r["Subcategory"], r["Tags"], r["Category"],
     ]).lower()
-    extra = [r["Tags"].replace(";", " "), r["Category"]]
+    extra = []
     for trigger, words in SYNONYMS:
         if trigger in base:
             extra.append(words)
@@ -1407,6 +1481,7 @@ def render_row(r, need_key):
              f' data-boro="{esc(" ".join(r["_boroughs"]))}"'
              f' data-lang="{esc(" ".join(r["_langs"]))}"'
              f' data-flags="{esc(" ".join(r["_flags"]))}"'
+             f' data-tags="{esc(tagtext(r))}"'
              f' data-find="{esc(haystack(r))}">')
     a.append('<div class="r__head">')
     a.append(f'<h3 class="r__name">{esc(r["Resource Name"])}</h3>')
@@ -1825,6 +1900,7 @@ def index_json(rows):
             "p": label,
             "h": href,
             "w": r["Website"],
+            "t": tagtext(r),
             "f": " ".join(r["_flags"]),
             "b": " ".join(r["_boroughs"]),
             "l": " ".join(r["_langs"]),
