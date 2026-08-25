@@ -19,7 +19,7 @@ under it asked that person for their organisation's letterhead. So: give
 residents their own front door and put the directory behind it, and keep the
 narrative for the audiences it was written for.
 
-## Where it stands, 311 resources and 38 commits on
+## Where it stands, 329 resources and 48 commits on
 
 - **`help.html` is a way in, not the directory.** One cluster per kind of
   help, three real places with real numbers under each, and a link to that
@@ -27,12 +27,12 @@ narrative for the audiences it was written for.
 - **Seventeen category pages**, each built to be skimmed: a rail of what is on
   it, resources in named buckets, a Start here block, and every neighbouring
   kind of help one tap away.
-- **311 verified resources** across 17 categories, every one of them
-  checked against a first-party source on 24-25 August 2026.
+- **329 verified resources** across 17 categories, 264 of them checked
+  against a first-party source on 24-25 August 2026.
 - **Ten languages** — Local Law 30's ten — each panel naming every kind of
-  help in that language.
+  help in that language, and the search box understanding all ten.
 - **One palette.** `tokens.css` is the only place a brand hue exists.
-- **`python3 check.py`: 1826 passed, 0 failed.**
+- **`python3 check.py`: 1,833 passing, none failing.**
 
 ## Sequences
 
@@ -73,12 +73,18 @@ narrative for the audiences it was written for.
       had a blank where its count should be.
 - [x] **S26** **Third research push.** Community organisations by borough and
       by language.
+- [x] **S27** **Search in ten languages.** The tokenizer was deleting every
+      non-ASCII character, so the page could be read in ten and searched in
+      one. `NEED_WORDS` carries the query vocabulary; it ships once per page.
+- [x] **S28** **Phone verification.** `verify_phones.py` asks each
+      organisation's own site whether the number we print is its number.
+      Eleven had drifted, one by a single digit.
 - [ ] **S15** Push + PR — still not done. Outward-facing; waiting on a
       go-ahead.
 
 ## What still needs a human
 
-1. **The push.** 38 commits sit on
+1. **The push.** 48 commits sit on
    `claude/website-accessibility-redesign-2b15ac`, unpushed.
    `git push -u origin claude/website-accessibility-redesign-2b15ac`.
 2. **A native-speaker review of the ten in-language panels.** They are short,
@@ -108,6 +114,10 @@ narrative for the audiences it was written for.
 - **Staten Island is thin but no longer empty.** Project Hospitality and the
   Community Health Center of Richmond are now in, and the filter floats local
   results above citywide ones so the shape of the gap stays visible.
+- **65 rows still carry a June verification date** — not because anything is
+  known to be wrong with them, but because their sites draw the phone number
+  in JavaScript or refuse a scripted request. `verify_phones.py` reports them
+  as UNSEEN, never as confirmed.
 - **Some rows have no phone**, only a website. Correct for a lottery portal or
   an online screener; a gap for anything else. `merge_rows.py` refuses a row
   with neither.
