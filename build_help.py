@@ -1601,10 +1601,10 @@ def needs_for(row):
     # never fires by accident.
     named = {t.strip()[5:] for t in (row.get("Tags") or "").split(";")
              if t.strip().startswith("also:")}
-    unknown = named - {n["key"] for n in NEEDS}
-    if unknown:
-        raise SystemExit(f'{row["Resource Name"]}: also:{sorted(unknown)[0]} '
-                         f'is not one of the seventeen needs')
+    # A misspelt need is ignored here rather than fatal: the build's job is to
+    # produce the site, and check_also_tags_are_real_needs is what says so out
+    # loud. Raising from here killed the whole suite before it could report,
+    # which turned one typo into no report at all.
     for need in NEEDS:
         if cat in need.get("cats", []) or need["key"] in named:
             found.append(need["key"])
