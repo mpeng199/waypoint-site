@@ -3382,6 +3382,19 @@ def check_directory_languages():
             if label not in plain:
                 bad(f"{page} does not name {key!r} in {L['name_en']}")
 
+        # 5b. the same table of contents the English page has, in the same
+        #     seventeen, in the same order
+        jm = re.search(r'<nav class="jump"[^>]*>(.*?)</nav>', src, re.S)
+        if not jm:
+            bad(f"{page} has no jump row; seventeen cards is a long scroll in "
+                f"any language")
+        else:
+            got = re.findall(r"<a[^>]*>([^<]*)</a>", jm.group(1))
+            want = [i18n.SHORT[L["key"]][n["key"]] for n in build_help.NEEDS]
+            if [html.unescape(g) for g in got] != want:
+                bad(f"{page}: the jump row does not name the seventeen in "
+                    f"i18n.SHORT order")
+
         # 6. and a line under each, which is what makes it a page rather than
         #    a menu of headings
         for key, blurb in i18n.BLURBS[L["key"]].items():

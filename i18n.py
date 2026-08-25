@@ -97,6 +97,7 @@ UI["spanish"] = {
     "english_h": "Sobre el idioma",
     "home": 'Waypoint, página principal',
     "nav_label": 'Navegación principal',
+    "jump_h": 'Ir a un tipo de ayuda',
     "skip": "Ir a la lista",
     "here": "está leyendo esta página",
 }
@@ -150,6 +151,7 @@ UI["french"] = {
     "english_h": "À propos de la langue",
     "home": 'Waypoint, page d’accueil',
     "nav_label": 'Navigation principale',
+    "jump_h": 'Aller à un type d’aide',
     "skip": "Aller à la liste",
     "here": "vous lisez cette page",
 }
@@ -206,6 +208,7 @@ UI["polish"] = {
     "english_h": "O języku",
     "home": 'Waypoint, strona główna',
     "nav_label": 'Nawigacja główna',
+    "jump_h": 'Przejdź do rodzaju pomocy',
     "skip": "Przejdź do listy",
     "here": "czytasz tę stronę",
 }
@@ -253,6 +256,7 @@ UI["haitian-creole"] = {
     "english_h": "Sou lang lan",
     "home": 'Waypoint, paj dakèy',
     "nav_label": 'Navigasyon prensipal',
+    "jump_h": 'Ale nan yon kalite èd',
     "skip": "Ale nan lis la",
     "here": "w ap li paj sa a",
 }
@@ -304,6 +308,7 @@ UI["russian"] = {
     "english_h": "О языке",
     "home": 'Waypoint, главная страница',
     "nav_label": 'Основная навигация',
+    "jump_h": 'Перейти к виду помощи',
     "skip": "Перейти к списку",
     "here": "вы читаете эту страницу",
 }
@@ -347,6 +352,7 @@ UI["chinese"] = {
     "english_h": "关于语言",
     "home": 'Waypoint 首页',
     "nav_label": '主导航',
+    "jump_h": '跳到某一类帮助',
     "skip": "跳到列表",
     "here": "您正在阅读本页",
 }
@@ -395,6 +401,7 @@ UI["korean"] = {
     "english_h": "언어 안내",
     "home": 'Waypoint 홈',
     "nav_label": '기본 메뉴',
+    "jump_h": '도움 종류로 이동',
     "skip": "목록으로 건너뛰기",
     "here": "지금 이 페이지를 보고 계십니다",
 }
@@ -445,6 +452,7 @@ UI["bengali"] = {
     "english_h": "ভাষা সম্পর্কে",
     "home": 'Waypoint, প্রথম পাতা',
     "nav_label": 'প্রধান নেভিগেশন',
+    "jump_h": 'কোনও ধরনের সাহায্যে যান',
     "skip": "তালিকায় যান",
     "here": "আপনি এই পাতাটি পড়ছেন",
 }
@@ -491,6 +499,7 @@ UI["arabic"] = {
     "english_h": "عن اللغة",
     "home": 'Waypoint، الصفحة الرئيسية',
     "nav_label": 'التنقل الرئيسي',
+    "jump_h": 'انتقل إلى نوع من المساعدة',
     "skip": "انتقل إلى القائمة",
     "here": "أنت تقرأ هذه الصفحة",
 }
@@ -541,6 +550,7 @@ UI["urdu"] = {
     "english_h": "زبان کے بارے میں",
     "home": 'Waypoint، مرکزی صفحہ',
     "nav_label": 'مرکزی نیویگیشن',
+    "jump_h": 'مدد کی قسم پر جائیں',
     "skip": "فہرست پر جائیں",
     "here": "آپ یہ صفحہ پڑھ رہے ہیں",
 }
@@ -785,3 +795,121 @@ DATE_SPAN = {
 # The masthead title is two halves, roman then gold. Chinese sets them with no
 # space between; everything else takes one.
 TITLE_JOIN = {"chinese": ""}
+
+
+# The jump row above the seventeen cards: the same short labels the English
+# page uses, which are a *category* rather than a sentence — "Food", not "I
+# need food". The card headings stay in the reader's voice; these are a table
+# of contents and read as one.
+SHORT = {}
+
+SHORT["spanish"] = {
+    "safety": "En casa no estoy a salvo", "crisis": "Crisis y salud mental",
+    "food": "Comida", "housing": "Vivienda y alojamiento",
+    "bills": "Facturas médicas", "doctor": "Médico o dentista",
+    "legal": "Abogado", "money": "Ayuda para pagar",
+    "family": "Niños y jóvenes", "senior": "Personas mayores",
+    "clothes": "Ropa y enseres", "work": "Trabajo o clases",
+    "getting-there": "Transporte", "veterans": "Veteranos",
+    "disability": "Discapacidad", "record": "Después de prisión",
+    "start": "No sé por dónde empezar",
+}
+SHORT["french"] = {
+    "safety": "Pas en sécurité chez soi", "crisis": "Crise et santé mentale",
+    "food": "Nourriture", "housing": "Logement et hébergement",
+    "bills": "Factures médicales", "doctor": "Médecin ou dentiste",
+    "legal": "Avocat", "money": "Aide à payer",
+    "family": "Enfants et jeunes", "senior": "Personnes âgées",
+    "clothes": "Vêtements et articles", "work": "Emploi ou cours",
+    "getting-there": "Se déplacer", "veterans": "Anciens combattants",
+    "disability": "Handicap", "record": "Après la prison",
+    "start": "Je ne sais pas par où",
+}
+SHORT["polish"] = {
+    "safety": "Brak bezpieczeństwa w domu", "crisis": "Kryzys i zdrowie psychiczne",
+    "food": "Jedzenie", "housing": "Mieszkanie i nocleg",
+    "bills": "Rachunki za leczenie", "doctor": "Lekarz lub dentysta",
+    "legal": "Prawnik", "money": "Pomoc w opłatach",
+    "family": "Dzieci i młodzież", "senior": "Osoby starsze",
+    "clothes": "Ubrania i rzeczy", "work": "Praca lub kursy",
+    "getting-there": "Dojazd", "veterans": "Weterani",
+    "disability": "Niepełnosprawność", "record": "Po więzieniu",
+    "start": "Nie wiem, od czego zacząć",
+}
+SHORT["haitian-creole"] = {
+    "safety": "Pa an sekirite lakay", "crisis": "Kriz ak sante mantal",
+    "food": "Manje", "housing": "Kote pou rete",
+    "bills": "Bòdwo doktè", "doctor": "Doktè oswa dantis",
+    "legal": "Avoka", "money": "Èd pou peye",
+    "family": "Timoun ak jèn", "senior": "Granmoun aje",
+    "clothes": "Rad ak founiti", "work": "Travay oswa kou",
+    "getting-there": "Transpò", "veterans": "Veteran",
+    "disability": "Andikap", "record": "Apre prizon",
+    "start": "Mwen pa konnen kote",
+}
+SHORT["russian"] = {
+    "safety": "Дома небезопасно", "crisis": "Кризис и психика",
+    "food": "Еда", "housing": "Жильё и ночлег",
+    "bills": "Счета за лечение", "doctor": "Врач или стоматолог",
+    "legal": "Юрист", "money": "Помощь с оплатой",
+    "family": "Дети и подростки", "senior": "Пожилые",
+    "clothes": "Одежда и вещи", "work": "Работа или курсы",
+    "getting-there": "Проезд", "veterans": "Ветераны",
+    "disability": "Инвалидность", "record": "После заключения",
+    "start": "Не знаю, с чего начать",
+}
+SHORT["chinese"] = {
+    "safety": "家里不安全", "crisis": "危机与心理健康",
+    "food": "食物", "housing": "住房与住处",
+    "bills": "医疗账单", "doctor": "医生或牙医",
+    "legal": "律师", "money": "付款帮助",
+    "family": "儿童与青少年", "senior": "长者",
+    "clothes": "衣物与用品", "work": "工作或课程",
+    "getting-there": "出行", "veterans": "退伍军人",
+    "disability": "残障", "record": "出狱之后",
+    "start": "不知从何开始",
+}
+SHORT["korean"] = {
+    "safety": "집이 안전하지 않음", "crisis": "위기와 정신 건강",
+    "food": "음식", "housing": "주거와 쉼터",
+    "bills": "의료비", "doctor": "의사나 치과",
+    "legal": "변호사", "money": "비용 지원",
+    "family": "아이와 청소년", "senior": "어르신",
+    "clothes": "옷과 생필품", "work": "일자리나 수업",
+    "getting-there": "교통", "veterans": "제대 군인",
+    "disability": "장애", "record": "출소 이후",
+    "start": "어디서 시작할지",
+}
+SHORT["bengali"] = {
+    "safety": "বাড়িতে নিরাপদ নই", "crisis": "সংকট ও মানসিক স্বাস্থ্য",
+    "food": "খাবার", "housing": "বাসস্থান ও আশ্রয়",
+    "bills": "ডাক্তারের বিল", "doctor": "ডাক্তার বা দাঁতের ডাক্তার",
+    "legal": "আইনজীবী", "money": "খরচে সাহায্য",
+    "family": "শিশু ও তরুণ", "senior": "প্রবীণ",
+    "clothes": "জামাকাপড় ও জিনিস", "work": "কাজ বা ক্লাস",
+    "getting-there": "যাতায়াত", "veterans": "প্রাক্তন সেনা",
+    "disability": "প্রতিবন্ধকতা", "record": "জেলের পরে",
+    "start": "কোথায় শুরু করব",
+}
+SHORT["arabic"] = {
+    "safety": "المنزل غير آمن", "crisis": "أزمة وصحة نفسية",
+    "food": "طعام", "housing": "سكن ومأوى",
+    "bills": "فواتير العلاج", "doctor": "طبيب أو طبيب أسنان",
+    "legal": "محامٍ", "money": "مساعدة في الدفع",
+    "family": "أطفال وشباب", "senior": "كبار السن",
+    "clothes": "ملابس ومستلزمات", "work": "عمل أو دورات",
+    "getting-there": "التنقل", "veterans": "قدامى المحاربين",
+    "disability": "إعاقة", "record": "بعد السجن",
+    "start": "لا أعرف من أين",
+}
+SHORT["urdu"] = {
+    "safety": "گھر محفوظ نہیں", "crisis": "بحران اور ذہنی صحت",
+    "food": "کھانا", "housing": "رہائش اور پناہ",
+    "bills": "علاج کے بل", "doctor": "ڈاکٹر یا دانتوں کا ڈاکٹر",
+    "legal": "وکیل", "money": "ادائیگی میں مدد",
+    "family": "بچے اور نوجوان", "senior": "معمر افراد",
+    "clothes": "کپڑے اور سامان", "work": "کام یا کلاسیں",
+    "getting-there": "آمد و رفت", "veterans": "سابق فوجی",
+    "disability": "معذوری", "record": "جیل کے بعد",
+    "start": "کہاں سے شروع کروں",
+}

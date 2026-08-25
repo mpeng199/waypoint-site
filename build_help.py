@@ -2637,6 +2637,15 @@ def render_language(L, rows, by_need):
     A(f'    <h2 id="needs-h">{esc(U["needs_h"])}</h2>')
     A(f'    <p class="clusters__say">{esc(U["needs_sub"])}</p>')
     A('  </div>')
+    # The same table of contents the English page has. Seventeen cards is a
+    # long scroll in any language, and the short labels are a category rather
+    # than a sentence — "Food", not "I need food" — so the card headings stay
+    # in the reader's voice and this reads as an index.
+    A(f'  <nav class="jump" aria-label="{esc(U["jump_h"])}"><ul>')
+    for need in NEEDS:
+        A(f'    <li><a href="#n-{need["key"]}">'
+          f'{esc(i18n.SHORT[L["key"]][need["key"]])}</a></li>')
+    A('  </ul></nav>')
     A('  <ul class="clusters__grid">')
     for need in NEEDS:
         k = need["key"]
