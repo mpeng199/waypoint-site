@@ -475,11 +475,17 @@ All form inputs:
 - All form labels clearly associated with inputs
 - Alt text and ARIA labels on interactive elements
 
-## The directory (`help.html`) — the one generated page
+## The resident side — eighteen generated pages
 
-`help.html` is the resident-facing surface: the whole verified NYC resource
-directory, grouped by the sentence somebody arrives with rather than by the
-categories the agencies use. `python3 build_help.py` prints the current count. It is the only page on the site that is generated.
+The whole verified NYC resource directory, grouped by the sentence somebody
+arrives with rather than by the categories the agencies use. It is the only
+part of the site that is generated, and `python3 build_help.py` writes all of
+it in one go.
+
+```
+help.html            the way in: one cluster per kind of help, three examples each
+help-<need>.html     one page per kind of help, with everything in it
+```
 
 **To change anything in it, edit the source and rebuild:**
 
@@ -489,34 +495,118 @@ python3 build_help.py
 
 - **Resource data** lives in `data/resources.csv` — one row per resource, with
   the columns the original NYC directory used. Add, correct, or remove rows
-  there.
-- **Everything else** — the fifteen needs and their wording, the search
-  vocabulary, the emergency numbers, the seven in-language panels — lives in
-  tables at the top of `build_help.py`, each with a comment saying what it is
-  for.
-- **Never hand-edit `help.html`.** A fix typed into it survives until the next
-  build and then disappears. `check.py` compares the file against the
-  generator's output and fails if they differ, so this cannot go unnoticed.
+  there. New rows go through `merge_rows.py`, which refuses one with a missing
+  column, no verification date, or no way to reach it, and skips duplicates.
+- **Everything else** — the needs and their wording, the second-level buckets,
+  the search vocabulary, the emergency numbers, the ten in-language panels —
+  lives in tables at the top of `build_help.py`, each with a comment saying
+  what it is for.
+- **Never hand-edit a generated page.** A fix typed into one survives until
+  the next build and then disappears. `check.py` compares every one of them
+  against the generator's output and fails if any differs.
+- The build also rewrites one block of `index.html`: the list of what the
+  directory holds. That list is the directory's table of contents rendered on
+  the other side of the site, and hand-maintaining it is how it came to offer
+  eight of sixteen kinds of help.
+
+### Why it is split, and where the split falls
+
+It used to be one page carrying every resource: 250 KB of markup, sixteen
+headings deep, opened by somebody frightened, on a phone, looking for one
+phone number. Now:
+
+- **The front page is a way in, not the directory.** One cluster per need —
+  icon, the sentence, three real places with real numbers, and a link to that
+  need's own page. Nobody has to read past the cluster that matches their
+  sentence.
+- **Each category page is built to be skimmed**: a rail of what is on it with
+  counts, resources in named buckets ("somewhere to sleep tonight" / "stop an
+  eviction" / "money for the rent") rather than one run of forty, a Start here
+  block holding the best first call, and every neighbouring kind of help one
+  tap away.
+- **Everything on a category page is bucketed by subject**, whether it got
+  there through its own category or through a cross-reference keyword. These
+  used to be two sections, with cross-references collected at the bottom under
+  "Also worth calling"; on a need that cuts across everything that made the
+  page five rows and then a heap.
+
+Two rules that are not obvious and are load-bearing:
+
+- **A cross-reference keyword matches at a word start, never anywhere.**
+  Plain substring matching put a soup kitchen, a diaper bank and a
+  hospital-bill charity on the disability page, because `ssi` is inside
+  a-ssi-stance, mi-ssi-on and a-ssi-stors.
+- **A row is filed by what it IS — its name and subcategory — never by its
+  tags.** Tags are search vocabulary and are deliberately generous; a health
+  centre is tagged "dental" so a search for a dentist finds it. Letting that
+  decide where rows file put sixteen general clinics under "Teeth".
 
 ### Why generated rather than fetched
 
 The reader is plausibly on a six-year-old Android, on transit data, at a
 locked-down library terminal, or using a screen reader. Fetching JSON and
 templating every row in the browser fails all four. So the rows are baked in
-once, here, and `help.js` only ever *hides* them — the worst case when the
-script fails to load is that somebody sees the whole list, which is what they
-came for. `check.py` enforces both halves of that contract: no row may ship
-hidden, and `help.js` may not build markup.
+once, here, and on a category page `help.js` only ever *hides* them — the
+worst case when the script fails to load is that somebody sees the whole list,
+which is what they came for.
 
-### Register
+The front page is the one exception, and a deliberate one: it carries clusters
+of three, not the whole directory, so its search runs off a compact index in
+the document (`<script type="application/json" id="ix">`) and builds results
+from it — using the same `.r` markup a real row uses, so there is one resource
+card design on this site and not two. `check.py` holds the line: the index
+must cover every resource, every result must link to an anchor that exists,
+and `help.js` may write markup in at most two places.
 
-Deliberately not `styles.css`. The narrative site is a dark green room you walk
-through — pinned scenes, a WebGL door, inertial scroll. All of that is craft
-aimed at a partner with a laptop and a tax on somebody frightened with a bad
-phone. `help.css` flips it: cream ground, near-black green ink, 18px floor,
-44px targets, nothing moving that you did not touch. The palette and the two
-typefaces are the only things carried across, and they are what keep it
-recognisably the same organisation.
+### Search
+
+The people this is for do not type "domestic violence" or "substance use
+disorder" — those are the words the agencies use about them afterwards. They
+type "my husband hits me" and "heroin". So:
+
+- **Every word must match, until that returns nothing.** Then the cut relaxes
+  a word at a time until there is something worth showing, and stops relaxing
+  the moment a row matches the whole query. The count says plainly when it was
+  not matched in full.
+- **Where a word matched decides the order**: a resource's name beats its
+  subcategory beats the tags we filed it under beats the plain-English phrases
+  we attached beats a paragraph about it. And a whole word beats a word start,
+  which is why "who do i call" no longer opens with Callen-Lorde.
+- **A phrase written into `SYNONYMS` is the strongest signal there is**,
+  because those phrases were written down for exactly this.
+- **A crude four-suffix stemmer**, because prefix matching only works one way:
+  "dent" finds "dentist", and "abused" found nothing, because the page says
+  "abuse".
+- **Words that matched nothing are named**, not silently dropped.
+- `check.py` carries the forty-six searches that must not stop working, each
+  with the resource it has to reach. It checks the data, not the ranking: if
+  the words are there `help.js` can find them.
+
+### Register — one palette, two keys
+
+`tokens.css` holds every brand hue, both typefaces, the easings and the radii,
+and both stylesheets map onto it. Neither may restate a brand hue; `check.py`
+fails if either does, because two copies of a colour are two colours as soon
+as one is edited.
+
+What each side chooses is only the key. The narrative site is a dark green
+room you walk through — pinned scenes, a WebGL door, inertial scroll. The
+directory is what is on the other side of that door, in daylight: cream
+ground, near-black green ink, an 18px floor, 44px targets, nothing moving that
+you did not touch.
+
+Carried across on purpose, and each one guarded:
+
+- the masthead is the same painted valley the door opens onto (`band.webp`,
+  22 KB, budgeted at 40);
+- headings turn gold and italic the same way;
+- the brand lockup is the same 20px-over-9.5px lockup;
+- the nav pill is the same pill, and gold means "the resident side" in both
+  places;
+- the footer is the same deep green.
+
+What is **not** carried across is the machinery. No WebGL, no inertial scroll,
+no pinned scenes, no scroll-driven anything.
 
 ### Things that are safety decisions, not content decisions
 
@@ -524,24 +614,44 @@ recognisably the same organisation.
   heuristic over tags and hours previously put a hospital switchboard and two
   copies of 988 in front of somebody in danger.
 - **Phone numbers stay in Western digits in every language.** Bengali prose
-  would normally write 311 as ৩১১; that is correct Bengali and useless against
-  the keypad in somebody's hand.
+  would normally write 311 as ৩১১ and Urdu as ۳۱۱; both are correct and both
+  are useless against the keypad in somebody's hand.
+- **The ten languages are Local Law 30's ten**, not a shortlist: Spanish,
+  Chinese, Russian, Bengali, Haitian Creole, Korean, Arabic, Urdu, French,
+  Polish. Each panel names every kind of help in that language, each opening
+  its own page, and leads with 911 and 988 before the interpreter line.
 - **The in-language panels have not been reviewed by native speakers.** They
   are short and carry nothing a reader must act on precisely, and the only
-  instruction any of them gives is "call 311 and ask for an interpreter". Get
-  them read before launch — the multilingual students are the obvious
-  reviewers.
-- **The honesty statement appears on `help.html` and on every printed sheet**,
-  because a leave-behind is exactly where somebody mistakes a student for a
-  professional.
+  instructions any of them give are "call 911 if you are in danger", "call 988
+  to talk to somebody" and "call 311 and ask for an interpreter". Get them
+  read before launch — the multilingual students are the obvious reviewers.
+- **The honesty statement appears on every resident page and every printed
+  sheet**, because a leave-behind is exactly where somebody mistakes a student
+  for a professional.
+- **A website that redirects off its own domain is treated as a takeover until
+  a human says otherwise.** `check_links_live.py` found `ppgny.org` — Planned
+  Parenthood of Greater New York — lapsed and redirecting to an unrelated
+  commercial site, with the directory quietly sending people looking for
+  reproductive health care there.
+- **A resource whose HTTPS chain is broken is dropped.** A current desktop
+  browser papers over a missing intermediate certificate; a six-year-old
+  Android shows a full-screen security warning instead of the page.
 
 ### Print
 
-The printed sheet is a real output — students hand people paper. Whatever the
-filter is showing is what prints, so narrowing to "I need food" in Brooklyn and
-printing gives exactly that sheet. `help.js` opens every disclosure on
-`beforeprint` and closes them after, because on paper the hours, address and
-languages are the useful lines and there is nothing to tap.
+The printed sheet is a real output — students hand people paper.
+
+- **A category page prints what the filter is showing**, so narrowing to "I
+  need food" in Brooklyn and printing gives exactly that sheet.
+- **The front page prints its clusters**: every kind of help, three real
+  places with numbers under each, in three columns. One or two sheets, not the
+  forty the old single-page directory produced.
+- `help.js` opens every disclosure on `beforeprint` and closes them after,
+  because on paper the hours, address and languages are the useful lines and
+  there is nothing to tap.
+- The attribution and the "Checked <month>" line are on both, and the date is
+  derived from the newest verification in the data. It used to be typed in
+  three places, two of which said June while the third said August.
 
 
 ## Asset Libraries & References
@@ -555,12 +665,43 @@ languages are the useful lines and there is nothing to tap.
 ### External Resources
 
 - **Google Fonts**: Fraunces + Inter (preconnected via `<link rel="preconnect">`). The only third-party origin the site touches, and it is disclosed in `privacy.html`.
-- **Vendored, not CDN**: `assets/vendor/three.module.min.js` + `three.core.min.js` (three.js splits its build — both are required) and `lenis.min.js`, with versions recorded in `assets/vendor/VERSIONS.txt`. `python3 -m http.server` still serves the site directly — the only generated file is `help.html`, and it is committed, so a clone with no Python run still serves the whole site (see **The directory** below). Vendoring keeps the privacy disclosure honest and means no CDN outage can break the page.
+- **Vendored, not CDN**: `assets/vendor/three.module.min.js` + `three.core.min.js` (three.js splits its build — both are required) and `lenis.min.js`, with versions recorded in `assets/vendor/VERSIONS.txt`. `python3 -m http.server` still serves the site directly — the generated files are the eighteen resident pages, and they are committed, so a clone with no Python run still serves the whole site (see **The resident side** above). Vendoring keeps the privacy disclosure honest and means no CDN outage can break the page.
 - **Icons**: Inline SVG for logo (pin marker) and form controls (select dropdown arrow)
 
 ## Verification
 
-`python3 check.py` prints the pass/fail total; add `-v` to list every passing check. It covers dead links and anchors (including fragments into any local page, not just the homepage), missing assets, the honesty statement present verbatim on two surfaces, no surviving references to the removed Schools chapter or the unlaunched Companionship track, no numeric track-record claims, form completeness and labelling, the door's fallback paths and transition invariants, the reel's roll geometry and released states, the line's paired sentences and its undrawn rule, the doors' disclosure wiring and equal-height contract, vendored dependency integrity, the asset-size budget, and that `script.js`'s tracked nav sections match the markup. It also covers the resident surfaces: that `help.html` still equals `build_help.py`'s output, that every resource is reachable and every `tel:` will actually dial, that the emergency strip leads with 911 and never repeats a number, the no-JavaScript contract, the seven language panels and their subtags, that every need leads to a section with places in it, that print keeps the hours and the honesty statement, and that the home page still leads with help rather than with a partner pitch. A missing file is reported as a failed check rather than raised, so one absent page never costs you the rest of the report.
+`python3 check.py` prints the pass/fail total; add `-v` to list every passing
+check. It covers dead links and anchors (including fragments into any local
+page, not just the homepage), missing assets, the honesty statement present
+verbatim on every surface that offers help, no surviving references to the
+removed Schools chapter or the unlaunched Companionship track, no numeric
+track-record claims, form completeness and labelling, the door's fallback
+paths and transition invariants, the reel's roll geometry and released states,
+the line's paired sentences and its undrawn rule, the doors' disclosure wiring
+and equal-height contract, vendored dependency integrity, the asset-size
+budget, and that `script.js`'s tracked nav sections match the markup.
+
+On the resident side it covers: that every generated page still equals
+`build_help.py`'s output and that no orphaned one survives a renamed need;
+that every resource is reachable and every `tel:` will actually dial; that the
+emergency strip leads with 911 and never repeats a number; the no-JavaScript
+contract; that the front page's search index covers every resource and every
+result links to an anchor that exists; that each cluster promises the number
+its page holds and previews only resources that are really on it; that each
+rail matches its page in order; that only the lead block says "Start here";
+that all ten Local Law 30 languages are present in the bar, the panel and the
+filter on every resident page, with real BCP-47 subtags, every kind of help
+named in each, every panel carrying 911, 988 and 311, and no number left in
+non-Western digits; that the forty-six searches which must not stop working
+still reach what they are supposed to reach; that no prose counts something
+the build already counts; that every "checked" date is the derived one; that
+the palette lives only in `tokens.css` and the devices that make the two
+halves one brand are all still there; that no grid can push the page sideways
+at 320px; that print keeps the hours and the honesty statement; and that the
+home page names the same kinds of help, in the same words, and still leads
+with help rather than with a partner pitch.
+
+A missing file is reported as a failed check rather than raised, so one absent page never costs you the rest of the report.
 
 ## Notes
 
