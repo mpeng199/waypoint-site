@@ -68,6 +68,14 @@ SETTLED = {
         "we print the hotline; the site shows press and administrative lines",
     "National Runaway Safeline":
         "we print 1-800-RUNAWAY; the site shows its Chicago office",
+    "The Bowery Mission":
+        "we print the flagship campus line from bowery.org/contact-and-directions; "
+        "the crawler lands on a page showing a programme number",
+    "Good Days":
+        "we print the patient assistance line; the site shows its Texas office",
+    "Planned Parenthood of Greater New York":
+        "we print PPGNY's main line; the national site lists health centres "
+        "across the country",
     "New York Cares Winter Wishes / Coat Drive":
         "we print the main office line; the coat-drive page shows a programme line",
     "RiseBoro Community Partnership":
@@ -113,6 +121,19 @@ def fetch(url):
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", body)))
 
 
+# Where an organisation keeps its phone number when the front page does not.
+# Plenty of sites draw the homepage number in JavaScript, or put it only on
+# the page whose whole job is to carry it — and reporting those as "we could
+# not see it" is a report with eighty entries nobody reads.
+CONTACT_PATHS = ("/contact", "/contact-us", "/contact/", "/contact-us/",
+                 "/about/contact", "/get-help", "/about-us/contact-us/")
+
+
+def root(url):
+    m = re.match(r"(https?://[^/]+)", (url or "").strip())
+    return m.group(1) if m else ""
+
+
 def one(row):
     name, url, cell = row["Resource Name"], row["Website"], row["Phone"]
     mine = ours(cell)
@@ -121,8 +142,31 @@ def one(row):
     text = fetch(url)
     if text is None:
         return name, "UNSEEN", "site did not answer"
-    found = {digits(m) for m in PHONE.findall(text)}
-    found = {d for d in found if len(d) == 10}
+
+    # 212-639-9675 is 311's direct line and sits in the footer of every
+    # nyc.gov page, so it "disagrees" with every City programme number on the
+    # site. Noise, not a finding.
+    NOISE = {"2126399675"}
+
+    def numbers(t):
+        return {d for d in (digits(m) for m in PHONE.findall(t))
+                if len(d) == 10} - NOISE
+
+    found = numbers(text)
+    # If the page we landed on shows nothing, or shows numbers but not ours,
+    # ask the page whose job it is to carry the number before deciding.
+    if not (found & set(mine)):
+        base = root(url)
+        for path in CONTACT_PATHS:
+            if base and base + path == url.rstrip("/"):
+                continue
+            more = fetch(base + path) if base else None
+            if not more:
+                continue
+            here = numbers(more)
+            found |= here
+            if here & set(mine):
+                break
     if any(d in found for d in mine):
         return name, "CONFIRMED", ""
     if not found:
