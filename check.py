@@ -2243,6 +2243,42 @@ def check_focus_ring():
             ok(f"{sheet} removes an outline and restores one under forced colours")
 
 
+def check_heading_order():
+    """Every page's headings, as a screen reader lists them.
+
+    Somebody navigating by heading gets an outline, not a page, and a level
+    that jumps h2 -> h4 tells them a heading is missing and they have lost
+    their place. The two narrative pages did exactly that: the footer column
+    labels were h4 because h4 was the size they wanted, three levels below a
+    page whose sections are h2.
+
+    Cheap to state, so it covers every page the site has rather than the one
+    it was noticed on.
+    """
+    tag = re.compile(r"<h([1-6])\b[^>]*>(.*?)</h\1>", re.S | re.I)
+    strip = re.compile(r"<[^>]+>")
+    for page in RESIDENT_PAGES + ["index.html", "privacy.html"]:
+        try:
+            src = read(page)
+        except Missing:
+            continue
+        hs = [(int(m.group(1)), strip.sub("", m.group(2)).strip()[:40])
+              for m in tag.finditer(src)]
+        ones = [h for h in hs if h[0] == 1]
+        if len(ones) != 1:
+            bad(f"{page}: {len(ones)} h1s; a page is one thing and says so once")
+        skips = []
+        prev = 0
+        for lvl, txt in hs:
+            if prev and lvl > prev + 1:
+                skips.append(f"h{prev} to h{lvl} at {txt!r}")
+            prev = lvl
+        if skips:
+            bad(f"{page}: heading levels skip — {'; '.join(skips[:3])}")
+        else:
+            ok(f"{page}: {len(hs)} headings, one h1, no level skipped")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -2998,7 +3034,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_focus_ring,
+               check_theme_is_shared, check_focus_ring, check_heading_order,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
