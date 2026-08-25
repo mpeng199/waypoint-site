@@ -54,8 +54,9 @@ PHONE = re.compile(r"(?:1[-. ]?)?\(?\b[2-9]\d{2}\)?[-. ]?\d{3}[-. ]\d{4}\b")
 # the report worth reading — but a NEW disagreement always shows up.
 SETTLED = {
     "211 New York":
-        "we print the 211 short code and the statewide line; the site's footer "
-        "shows the Capital Region office",
+        "we print the 211 short code and the statewide line, which is on "
+        "211newyork.org/211-ny-regions; the pages a crawler lands on show the "
+        "Capital Region office instead",
     "Adult Protective Services (APS)":
         "we print the central APS line; the page lists the five borough offices",
     "National Domestic Violence Hotline":
