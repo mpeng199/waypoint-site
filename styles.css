@@ -118,9 +118,14 @@ img,svg{ display:block; max-width:100%; }
 @media (max-width:900px){ .spiral{ display:none; } }
 
 /* skip link */
-.skip{ position:absolute; left:-9999px; top:0; z-index:200; background:var(--cream); color:var(--green-deep);
+/* Clipped rather than parked at left:-9999px — see the note in help.css.
+   Same technique on both halves, because it is the same control. */
+.skip{ position:absolute; width:1px; height:1px; overflow:hidden;
+  clip-path:inset(50%); white-space:nowrap; z-index:200;
+  background:var(--cream); color:var(--green-deep);
   padding:12px 18px; border-radius:0 0 6px 0; font-weight:600; font-size:14px; }
-.skip:focus{ left:0; }
+.skip:focus{ position:fixed; inset-block-start:0; inset-inline-start:0;
+  width:auto; height:auto; overflow:visible; clip-path:none; }
 
 /* progress rail (EverSwap-style diamonds) */
 .rail{ position:fixed; left:clamp(14px,2.4vw,34px); top:50%; transform:translateY(-50%); z-index:40;
@@ -311,7 +316,13 @@ img,svg{ display:block; max-width:100%; }
 .form__ok.show{ display:block; }
 .form__err{ grid-column:1/13; display:none; padding:14px 18px; border:1px solid rgba(224,134,88,.55); border-radius:8px; background:rgba(224,134,88,.12); color:#f6e3d7; font-size:14px; }
 .form__err.show{ display:block; }
-.trap{ position:absolute !important; left:-9999px !important; width:1px; height:1px; opacity:0; pointer-events:none; }
+/* The spam honeypot. Clipped rather than parked at -9999px for the same
+   reason the skip link is: a physical offset is off the end of the
+   document rather than off-screen the moment a page runs right to left,
+   and this form is one translated page away from being one. Still in the
+   DOM and still fillable, which is the whole point of it. */
+.trap{ position:absolute !important; width:1px; height:1px;
+  overflow:hidden; clip-path:inset(50%); opacity:0; pointer-events:none; }
 
 /* privacy / legal page */
 .legal{ max-width:760px; margin-inline:auto; }

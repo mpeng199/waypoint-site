@@ -2667,6 +2667,53 @@ def check_language_voice():
        "ending on the reader")
 
 
+def check_nothing_parks_offscreen():
+    """Nothing may be hidden by shoving it to a physical -9999px.
+
+    The skip link did, on every page, and on the two right-to-left ones that
+    is not "off-screen" — it is off the *end*, the direction the page scrolls.
+    help-ur.html reported a document 10,695 pixels wide against a 696-pixel
+    body: ten thousand pixels of empty cream a thumb could pan into, on the
+    two pages whose readers can least afford a page that behaves strangely.
+
+    It was invisible to the reflow check because that measured body.scrollWidth
+    and the overflow was on the documentElement.
+
+    Clipping is the technique that works in both directions, so this fails on
+    the offset rather than on the symptom.
+    """
+    for sheet in ("help.css", "styles.css", "tokens.css"):
+        src = read(sheet)
+        for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", src):
+            body = m.group(2)
+            hit = re.search(r"(?:^|;|\s)(left|right|margin-left|margin-right|text-indent)"
+                            r":\s*-\s*(\d{4,})px", body)
+            if hit:
+                sel = m.group(1).strip().splitlines()[-1].strip()
+                bad(f"{sheet}: {sel[:44]} parks something at "
+                    f"{hit.group(1)}:-{hit.group(2)}px. On a right-to-left page "
+                    f"that is off the end of the document, not off-screen — use "
+                    f"clip-path:inset(50%) on a 1px box instead")
+    ok("nothing is hidden by a physical offset; the off-screen technique works "
+       "in both directions")
+
+    # and the thing it was protecting has to still work
+    for sheet in ("help.css", "styles.css"):
+        src = read(sheet)
+        m = re.search(r"\.skip\{([^}]*)\}", src)
+        f = re.search(r"\.skip:focus\{([^}]*)\}", src)
+        if not m or not f:
+            bad(f"{sheet} has no skip link, or none that reappears on focus")
+            continue
+        if "clip-path" not in m.group(1):
+            bad(f"{sheet}: the skip link is not clipped, so it is either "
+                f"visible or parked somewhere")
+        if "clip-path:none" not in f.group(1).replace(" ", ""):
+            bad(f"{sheet}: the skip link never unclips, so a keyboard user "
+                f"tabs onto a control they cannot see")
+    ok("the skip link is clipped at rest and unclipped on focus, on both halves")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3385,7 +3432,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

@@ -80,10 +80,18 @@ b,strong{ font-weight:600; }
 /* The focus ring lives in tokens.css, because both halves of the site need
    the same one. Dark surfaces below re-point --focus; light ones inherit. */
 
-.skip{ position:absolute; left:-9999px; top:0; z-index:200;
+/* Parked off-screen by clipping it to nothing, not by left:-9999px.
+   On the two right-to-left pages, left:-9999px overflows into the direction
+   the page actually scrolls: the document became 10,695px wide and could be
+   panned ten thousand pixels into empty cream — on Arabic and Urdu, the two
+   pages whose readers can least afford a page that behaves strangely. Clipping
+   takes no space in any direction. */
+.skip{ position:absolute; width:1px; height:1px; overflow:hidden;
+  clip-path:inset(50%); white-space:nowrap;
   background:var(--green); color:var(--mint); padding:14px 20px;
-  font-weight:600; border-radius:0 0 var(--r-s) 0; }
-.skip:focus{ left:0; }
+  font-weight:600; border-radius:0 0 var(--r-s) 0; z-index:200; }
+.skip:focus{ position:fixed; inset-block-start:0; inset-inline-start:0;
+  width:auto; height:auto; overflow:visible; clip-path:none; }
 
 .wrap{ max-width:var(--wrap); margin:0 auto; padding:0 var(--pad) 80px; }
 
