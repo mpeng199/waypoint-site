@@ -790,6 +790,27 @@ The count sits directly under the box that changes it. The scope note beside it
 no longer repeats the number standing next to it, which is one fewer place for
 a count to go stale.
 
+#### Which pages a row appears on
+
+A row's category always counts. `also` keywords in `NEEDS` add the needs it
+answers from somewhere else, matched against what the row **is** — its name and
+subcategory — and never its description, because nearly every description
+mentions cost and immigration status.
+
+That rule has one hole: a multi-service organisation's subcategory is "One
+place that does many things", true of all of them and so useless as a trigger.
+So a row can also name its other pages explicitly with an `also:<need>` tag.
+Per row, so it never fires by accident; `check_also_tags_are_real_needs` fails
+on a name that is not one of the seventeen. Eight rows use it — the Staten
+Island and Brooklyn multi-service organisations whose pantries are the biggest
+in their boroughs and which appeared only under "I'm not sure where to start".
+
+A cluster card shows `preview_line(description)`: the first sentence, cut at
+the colon or em dash that introduced a list when that sentence runs past 150
+characters. Twenty-eight descriptions open that way, and the whole list on a
+card stops the card being a preview — but rewriting twenty-eight good
+descriptions to fit a card would be the wrong way round.
+
 #### How a row is scored
 
 Six fields, weighted, best match per word:
@@ -816,6 +837,17 @@ Then three multipliers:
 - **Whole-phrase bonus +14**, if the query appears verbatim in the name, the
   alias **or the tags**. Tags are where this directory puts the exact sentence
   a reader types.
+
+**One typo does not empty the page.** A query that matched nothing is retried
+against the words the page actually contains, allowing one insertion,
+deletion, substitution or **transposition** — swapping two letters is the
+commonest typing mistake and costs two edits without that last one, so
+"hosuing" and "shleter" came back blank until it was there. Among the
+candidates one edit away it takes the one this page uses most: "lawer" is one
+edit from "later", "lower" and "lawyer", and alphabetical order answered a
+question about lawyers with NeedyMeds. Four characters minimum, ASCII only,
+and the correction is announced — "Showing results for “housing”" — because a
+list that changes under you unexplained is a list you cannot trust.
 
 `check_critical_queries` models all of this in Python and asserts that 77
 named searches come back **first**, not merely somewhere. Every constant is
