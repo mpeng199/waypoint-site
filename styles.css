@@ -514,10 +514,13 @@ img,svg{ display:block; max-width:100%; }
      the header: only this half loads this sheet, so the wordmark had a
      widened hit area on the narrative pages and its bare glyph box on
      the eighteen directory ones. */
-  /* an inline link in a list item is stacked, so it gets the widened area
-     too — the email address in the privacy page's list measured 22px */
-  li > .inl{ position:relative; }
-  li > .inl::after{ content:""; position:absolute; inset:-11px -6px; }
+  /* an inline link gets the widened area too — the email address in the
+     privacy page's list measured 22px. It was scoped to `li >` and the same
+     address in a paragraph, three of them on privacy.html and one on
+     terms.html, kept its 17-22px box. Hit-tested, not read: a point 3px
+     above the glyph box landed on the paragraph. */
+  .inl{ position:relative; }
+  .inl::after{ content:""; position:absolute; inset:-11px -6px; }
   .tlink,.form__legal a{ position:relative; }
   .tlink::after,.form__legal a::after{ content:""; position:absolute;
     inset:-13px -10px; }

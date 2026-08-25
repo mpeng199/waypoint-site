@@ -167,7 +167,13 @@ b,strong{ font-weight:600; }
    green panel, underlined, at the weight of the surrounding text. */
 .dialn{ color:var(--gold-lit); font-weight:600;
   text-decoration:underline; text-underline-offset:3px;
-  text-decoration-thickness:2px; }
+  text-decoration-thickness:2px;
+  /* Measured 24x20 on every language page — the smallest target on the site,
+     and the one thing on a translated page a reader is most likely to be
+     reaching for. The glyph box of three digits is what it is; the hit area
+     is widened to the 44px the rest of the site uses. */
+  position:relative; }
+.dialn::after{ content:""; position:absolute; inset:-12px -10px; }
 .dialn:hover{ color:#FFF; }
 
 /* An RTL panel keeps its own direction; the page around it stays LTR. */

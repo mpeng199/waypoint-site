@@ -89,6 +89,11 @@ MUTATIONS = [
  ("an unmeasured header follows a language page again",
   "help.css", "body[data-lang] .sitehead{ position:static; }",
   "body[data-lang] .sitehead{ position:sticky; }"),
+ ("a dialled number in translated prose shrinks to its glyphs",
+  "help.css", '.dialn::after{ content:""; position:absolute; inset:-12px -10px; }', ""),
+ ("an inline link is tappable only inside a list again",
+  "styles.css", "  .inl{ position:relative; }\n  .inl::after{",
+  "  li > .inl{ position:relative; }\n  li > .inl::after{"),
  # ---- round three: print, contrast, motion, forms, search feedback, SEO
  ("printing loses the numbers under every card",
   "help.css", ".cl__b{ font-size:7pt; color:#000; }",

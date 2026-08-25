@@ -3096,6 +3096,42 @@ def check_tap_targets():
                 f"site does and what a thumb needs")
     ok(f"all {len(CONTROLS)} named controls on the directory are 44px or taller")
 
+    # An inline link inside a sentence cannot have a min-height — it is a run
+    # of glyphs in a line box. Its hit area comes from an absolutely
+    # positioned ::after with a negative inset, and if that rule is missing or
+    # scoped too narrowly the link is as tall as its text and nothing says so.
+    # Both of these were found by hit-testing the built pages, not by reading
+    # the CSS: .dialn measured 24x20 on every language page, and .inl kept its
+    # 17-22px box in a paragraph because the rule said `li > .inl`.
+    INLINE = [(r"\.dialn", "a phone number inside translated prose"),
+              (r"\.inl", "an inline link in the narrative pages")]
+    # Match the selector exactly. `li > .inl::after` is the bug this pair was
+    # written for, and a substring search finds it just as happily as `.inl`.
+    rules = re.findall(r"([^{}]+)\{([^{}]*)\}", css)
+
+    def exact(cls):
+        for sel, body in rules:
+            for one in sel.split(","):
+                if one.strip().splitlines()[-1].strip() == cls + "::after":
+                    return body
+        return None
+
+    for rx, what in INLINE:
+        body = exact(rx.replace("\\", ""))
+        exp = re.match(r"(?s)(.*)", body) if body is not None else None
+        if not exp:
+            bad(f"{what} has no ::after hit area, so it is only as tall as its "
+                f"own text — about 20px, against the 44 the rest of the site "
+                f"gives a thumb")
+            continue
+        inset = re.search(r"inset:\s*(-?\d+)px", body)
+        if not inset or int(inset.group(1)) > -11:
+            bad(f"{what}'s hit area grows by "
+                f"{inset.group(1) if inset else '0'}px vertically; it needs at "
+                f"least 11 on each side to clear 44px around a line of text")
+        else:
+            ok(f"{what} is tappable")
+
 
 def check_high_contrast_covers_the_cards():
     """Everything with a hairline border gets a thicker one at higher contrast.
