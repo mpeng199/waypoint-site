@@ -86,7 +86,38 @@ MUTATIONS = [
   "need of nutritional assistance at the present time"),
  ("the search stops matching what people actually call things",
   "help.js", "W_ALIAS = 2", "W_ALIAS = 0"),
+ # ---- round three: print, contrast, motion, forms, search feedback, SEO
+ ("printing loses the numbers under every card",
+  "help.css", ".cl__b{ font-size:7pt; color:#000; }",
+  ".cl__b{ font-size:7pt; color:#000; display:none; }"),
+ ("high contrast mode stops being handled on the light half",
+  "help.css", "@media (forced-colors: active){", "@media (forced-colors: never){"),
+ ("motion stops being optional on the dark half",
+  "styles.css", "@media (prefers-reduced-motion:reduce){",
+  "@media (prefers-reduced-motion:no-preference){"),
+ ("a form field loses the label that names it",
+  "index.html", '<label for="s-email">', '<label>'),
+ ("an email field stops being an email field",
+  "index.html", '<input id="s-email" type="email" name="email" required',
+  '<input id="s-email" type="text" name="email" required'),
+ ("the search stops saying it corrected a spelling",
+  "help.js", "corrected = fixed.slice();", "corrected = [];"),
+ ("the result count stops being announced",
+  "build_help.py", '<p class="find__count" role="status" aria-live="polite">',
+  '<p class="find__count">'),
+ ("a language page stops pointing back at the others",
+  "build_help.py", 'f\'<link rel="alternate" hreflang="{L["tag"]}" \'', "''"),
+ ("the focus ring stops surviving what is behind it",
+  "tokens.css", "--focus:var(--green);", "--focus:transparent;"),
+ ("a category page stops naming what it is",
+  "build_help.py", '<meta name="description" content="', '<meta name="ignored" content="'),
+ ("the directory stops working without JavaScript",
+  "build_help.py", 'A(\'  <nav class="jump" aria-label="Jump to a kind of help"><ul>\')',
+  'A(\'  <nav class="jump" aria-label="Jump to a kind of help" style="display:none"><ul>\')'),
+ ("a resource's description is cut off mid-clause",
+  "data/resources.csv", "A free pantry on Staten Island where you pick", "where you pick"),
 ]
+
 
 
 def snapshot():

@@ -2215,6 +2215,15 @@ def check_focus_ring():
             if not decl:            # a block that *uses* var(--focus), not one that sets it
                 continue
             sel = m.group(1).strip().splitlines()[-1].strip()
+            # A ring set to nothing is the failure this whole guard exists to
+            # prevent, and it resolves to no hex at all, so it used to fall
+            # through the contrast test untested.
+            raw = decl.group(1).strip().rstrip(";")
+            if re.match(r"transparent|none|currentColor|inherit", raw, re.I):
+                bad(f"{sheet} sets --focus:{raw} on {sel}. The ring is still "
+                    f"drawn and still cannot be seen, which for a keyboard or "
+                    f"switch user is the same as not drawing it.")
+                continue
             ring = hexof(decl.group(1))
             bgm = re.search(r"(?:^|;|\s)background(?:-color)?:\s*([^;]+)", body)
             ground = hexof(bgm.group(1)) if bgm else None
@@ -2318,10 +2327,16 @@ def check_heading_order():
     """
     tag = re.compile(r"<h([1-6])\b[^>]*>(.*?)</h\1>", re.S | re.I)
     strip = re.compile(r"<[^>]+>")
-    for page in RESIDENT_PAGES + ["index.html", "privacy.html"]:
+    # "Every page the site has" used to mean a list that had drifted: it named
+    # privacy.html and not terms.html, and neither of the two internal
+    # documents. Both of those turned out to be wrong — one had four h1s, the
+    # other started at h2. Glob it, so the docstring stays true.
+    for page in sorted(str(q) for q in Path(".").glob("*.html")):
         try:
             src = read(page)
         except Missing:
+            continue
+        if 'http-equiv="refresh"' in src:
             continue
         hs = [(int(m.group(1)), strip.sub("", m.group(2)).strip()[:40])
               for m in tag.finditer(src)]
@@ -4537,8 +4552,10 @@ def check_category_pages_keep_their_jump_nav():
             bad(f"{page} has lost its {cls} nav, which is the only thing on "
                 f"the page that takes a reader to a section")
             return
-        if re.search(r"\bhidden\b", nav.group(1)):
-            bad(f"{page}'s {cls} nav carries hidden, which is the same as not "
+        if re.search(r"\bhidden\b", nav.group(1)) or \
+                re.search(r"display\s*:\s*none|visibility\s*:\s*hidden",
+                          nav.group(1)):
+            bad(f"{page}'s {cls} nav is hidden, which is the same as not "
                 f"having one for everybody who can see the page")
             return
         links = set(re.findall(rf'href="#({prefix}[^"]*)"', nav.group(2)))
@@ -4626,6 +4643,153 @@ def check_the_docs_do_not_carry_a_stale_count():
         ok(f"no doc, comment or docstring miscounts the {n} resources")
 
 
+def check_the_printed_page_keeps_its_numbers():
+    """The print stylesheet exists to produce a leave-behind.
+
+    Students hand it across a table at an event: a kind of help, three real
+    places under it, every phone number in plain type. The rules that make it
+    two sheets instead of forty are all `display:none`, and one more of those
+    aimed at the wrong selector produces a handout with no numbers on it —
+    which nobody notices, because nobody prints the site to check.
+    """
+    css = read("help.css")
+    block = re.search(r"@media print\{(.*?)\n\}", css, re.S)
+    if not block:
+        bad("help.css has no @media print block; the leave-behind is gone")
+        return
+    body = block.group(1)
+    # The selectors that carry a phone number onto paper.
+    carriers = [".cl__b", ".cl__pv", ".pv__call", ".pv__n", ".cl h3 a"]
+    for sel in carriers:
+        hidden = re.search(rf"{re.escape(sel)}\s*\{{[^}}]*display\s*:\s*none",
+                           body)
+        if hidden:
+            bad(f"the print stylesheet hides {sel}, which is where a phone "
+                f"number lands on paper. The printed page is the thing a "
+                f"student hands somebody; it is numbers or it is nothing.")
+        else:
+            ok(f"print keeps {sel}")
+    # And the numbers have to be black on white, not a grey nobody can read
+    # through a photocopier.
+    if "color:#000" not in body:
+        bad("the print stylesheet never sets a black ink colour")
+    else:
+        ok("print sets black ink")
+
+
+def check_form_fields_say_what_they_want():
+    """A form that asks for an email should say so to the browser.
+
+    type="email" is three things at once: the phone shows an @ key, the
+    browser rejects a typo before the round trip, and a password manager knows
+    what the field is. type="text" on a field named email throws all three
+    away and looks identical.
+    """
+    for f in sorted(str(q) for q in Path(".").glob("*.html")):
+        for tag in re.findall(r"<input\b[^>]*>", read(f)):
+            name = re.search(r'name="([^"]+)"', tag)
+            if not name:
+                continue
+            kind = re.search(r'type="([^"]+)"', tag)
+            kind = kind.group(1) if kind else "text"
+            want = {"email": "email", "phone": "tel", "tel": "tel"}.get(
+                name.group(1).lower())
+            if want and kind != want:
+                bad(f'{f}: <input name="{name.group(1)}"> is type="{kind}"; it '
+                    f'should be type="{want}" so the phone shows the right '
+                    f'keyboard and the browser catches a typo first')
+            elif want:
+                ok(f"{f}: {name.group(1)} is type={want}")
+
+
+def check_the_search_says_when_it_guessed():
+    """If the search silently fixes a spelling, the reader is looking at
+    results for a word they did not type.
+
+    Somebody who typed "sheltr" and sees shelters is fine. Somebody who typed
+    a real word we mangled into a different real word is being misled, and has
+    no way to tell. So the correction is announced, in the same status line
+    that announces the count.
+    """
+    js = read("help.js")
+    if not re.search(r"Showing results for", js):
+        bad("help.js no longer tells the reader when it corrected a spelling. "
+            "A search that quietly answers a different question is worse than "
+            "one that finds nothing.")
+        return
+    ok("the search announces a correction")
+    # and the announcement has to be built from what it actually corrected
+    if not re.search(r"corrected\s*=\s*fixed", js):
+        bad("help.js announces a correction but never records one, so the "
+            "sentence can only ever be empty")
+    else:
+        ok("the announcement is built from the words it actually changed")
+
+
+def check_every_page_names_itself():
+    """A page with no description is a page that arrives in a search result,
+    or in somebody's messages, as a bare URL.
+
+    Every page gets a title and a one-sentence description, and on the
+    resident side the description is the page's own lede — generated, so it
+    cannot drift from what the page says.
+    """
+    for f in sorted(str(q) for q in Path(".").glob("*.html")):
+        src = read(f)
+        if 'http-equiv="refresh"' in src:
+            continue                      # the redirect stubs
+        if re.search(r'<meta name="robots"[^>]*noindex', src):
+            continue                      # a page nobody should find at all
+        title = re.search(r"<title>(.*?)</title>", src, re.S)
+        desc = re.search(r'<meta name="description" content="([^"]*)"', src)
+        if not title or not title.group(1).strip():
+            bad(f"{f} has no title")
+        elif not desc:
+            bad(f"{f} has no meta description, so it arrives anywhere it is "
+                f"shared as a bare URL")
+        elif len(desc.group(1).strip()) < 40:
+            bad(f"{f}'s description is {len(desc.group(1).strip())} characters "
+                f"— too short to say what the page is")
+        else:
+            ok(f"{f} names itself")
+
+
+def check_every_resource_says_what_it_is():
+    """A row with no description is a name and a phone number.
+
+    The description is the whole reason somebody picks one row over another —
+    it is what tells them this pantry is the one that does not ask for ID.
+    Without it the card is a phone number with a proper noun above it, and the
+    reader has to call to find out whether it was worth calling.
+    """
+    import build_help
+
+    thin, shape = [], []
+    for r in build_help.load():
+        d = (r["Description"] or "").strip()
+        if len(d) < 40:
+            thin.append(f"{r['Resource Name']!r} has "
+                        f"{'no description' if not d else f'a {len(d)}-character description'}")
+            continue
+        # A description is a sentence. Anything that starts mid-clause or
+        # stops without a full stop is a description something ate — a
+        # truncation, a bad paste, a clause deleted by a careless edit — and
+        # it lands on the card looking almost right.
+        if not re.match(r'[A-Z0-9"\u201c]', d):
+            shape.append(f"{r['Resource Name']!r} starts mid-sentence: {d[:60]!r}")
+        elif not d.endswith((".", "?", "!", "\u201d")):
+            shape.append(f"{r['Resource Name']!r} stops without a full stop: "
+                         f"{d[-60:]!r}")
+    if thin:
+        for t in thin[:8]:
+            bad(t + " — a card with no sentence on it is a phone number with a "
+                    "name above it")
+    for t in shape[:8]:
+        bad(t)
+    if not thin and not shape:
+        ok("every resource says what it is, in a whole sentence")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -4641,6 +4805,11 @@ def main():
                check_the_skip_link_works, check_category_pages_keep_their_jump_nav,
                check_header_spacing_lives_in_one_place,
                check_the_docs_do_not_carry_a_stale_count,
+               check_the_printed_page_keeps_its_numbers,
+               check_form_fields_say_what_they_want,
+               check_the_search_says_when_it_guessed,
+               check_every_page_names_itself,
+               check_every_resource_says_what_it_is,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
