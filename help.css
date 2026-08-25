@@ -328,7 +328,10 @@ b,strong{ font-weight:600; }
 .jump ul{ display:flex; flex-wrap:wrap; gap:8px; }
 .jump li{ display:flex; min-width:0; }
 .jump a{ min-width:0; }
-.jump a{ display:inline-flex; align-items:center; min-height:40px;
+/* 44, like every other tap target on the site. It was 40 — under the
+   minimum this directory holds itself to, on a row of seventeen small
+   pills, which is exactly where a thumb misses. */
+.jump a{ display:inline-flex; align-items:center; min-height:44px;
   padding:6px 14px; border:1.5px solid var(--line); border-radius:var(--r-pill);
   background:var(--surface); font-size:.9rem; font-weight:500;
   text-decoration:none; color:var(--ink-2);
@@ -350,7 +353,8 @@ b,strong{ font-weight:600; }
 .cl h3{ font-size:1.2rem; line-height:1.2; }
 /* The whole heading is the link, so the tap target is the sentence somebody
    read, not a chevron beside it. */
-.cl h3 a{ text-decoration:none; color:var(--ink); }
+.cl h3 a{ text-decoration:none; color:var(--ink);
+  display:flex; align-items:center; min-height:44px; }
 .cl h3 a:hover{ color:var(--green-2); text-decoration:underline;
   text-underline-offset:3px; text-decoration-thickness:1.5px; }
 .cl__b{ margin-top:5px; font-size:.9rem; color:var(--ink-2); line-height:1.45; }
@@ -358,7 +362,14 @@ b,strong{ font-weight:600; }
 .cl__pv{ margin:16px 0 0; padding:14px 0 0; border-top:1px solid var(--line-2);
   display:grid; gap:12px; }
 .pv{ min-width:0; }
+/* A resource's name is a link in a list, not a link in a sentence, so the
+   inline exception to WCAG 2.5.8 does not cover it — and at 20px tall it was
+   under even the 24px floor, let alone the 44 the rest of this site holds to.
+   Real padding rather than a widened pseudo-element, because these are
+   stacked: growing them invisibly would make adjacent targets overlap, which
+   trades a small target for a mis-hit and is worse. */
 .pv__n{ font-family:var(--display); font-size:1.02rem; line-height:1.25;
+  display:flex; align-items:center; min-height:44px;
   color:var(--ink); text-decoration:none;
   text-decoration-line:underline; text-decoration-color:transparent;
   text-underline-offset:3px; text-decoration-thickness:1.5px;
@@ -367,8 +378,12 @@ b,strong{ font-weight:600; }
 .pv__d{ margin-top:2px; font-size:.86rem; color:var(--ink-2); line-height:1.4; }
 /* A phone number on the front page is the shortest path there is between
    somebody arriving and somebody being helped, so the preview carries one. */
+/* This is the most important tap target on the site: the number somebody
+   frightened, one-handed, on a phone, reaches for. It was 36px — eight under
+   what the rest of this site holds itself to, on the one control where a miss
+   costs the most. */
 .pv__call{ display:inline-flex; align-items:center; gap:7px; margin-top:7px;
-  min-height:36px; padding:5px 12px; border-radius:var(--r-pill);
+  min-height:44px; padding:5px 14px; border-radius:var(--r-pill);
   background:var(--line-2); border:1.5px solid var(--line);
   font-size:.86rem; font-weight:600; color:var(--green);
   text-decoration:none; transition:background .16s var(--ease), border-color .16s var(--ease); }

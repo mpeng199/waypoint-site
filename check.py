@@ -2986,6 +2986,37 @@ def check_page_cannot_be_dragged_sideways():
             "text at 200% it can be dragged 78px into nothing")
 
 
+def check_tap_targets():
+    """Every control on the directory is at least 44px tall.
+
+    Not 24 — that is the WCAG 2.5.8 floor, and this directory is read on a
+    phone by somebody who is frightened, often one-handed, often in a hurry.
+    44 is what Apple and Google both ask for and what the rest of this site
+    already does; the jump row was 40 and it is a row of seventeen small pills,
+    which is exactly where a thumb misses.
+    """
+    css = read("help.css") + "\n" + read("tokens.css")
+    CONTROLS = [(r"\.jump a\{", "the jump row"),
+                (r"\.chip\{", "a filter chip"),
+                (r"\.langbar__list a\{", "a language link"),
+                (r"\.langbar__here\{", "the language you are on"),
+                (r"\.sitehead__links a\{", "a nav tab"),
+                (r"\.printbtn\{", "the print button"),
+                (r"\.pv__call\{", "a phone number in a preview")]
+    for rx, what in CONTROLS:
+        m = re.search(rx + r"([^}]*)\}", css, re.S)
+        if not m:
+            bad(f"{what} has no rule; it may have been renamed away from this check")
+            continue
+        h = re.search(r"min-height:\s*(\d+)px", m.group(1))
+        if not h:
+            continue          # sized by padding and line-height; measured live
+        if int(h.group(1)) < 44:
+            bad(f"{what} is {h.group(1)}px tall. 44 is what the rest of this "
+                f"site does and what a thumb needs")
+    ok(f"all {len(CONTROLS)} named controls on the directory are 44px or taller")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3760,7 +3791,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
