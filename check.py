@@ -1784,6 +1784,12 @@ CRITICAL_QUERIES = [
     ("nourriture",                  "Food Help NYC (official finder)"),
     ("jedzenie",                    "Food Help NYC (official finder)"),
     ("\u0996\u09be\u09ac\u09be\u09b0",                   "Food Help NYC (official finder)"),
+
+    # The last round of gaps.
+    ("ice came to my door",         "Know Your Rights with ICE"),
+    ("i got court papers",          "Housing Court Help Center"),
+    ("con ed shut off",             "Con Edison payment help"),
+    ("i cant sleep since the baby", "Postpartum depression help (NYC Health)"),
 ]
 
 # The stop list and the stemmer, kept in step with help.js by hand. Both are

@@ -737,6 +737,8 @@ GROUPS = {
         ("family",    "Family, safety, and criminal matters",
          ["family", "domestic", "criminal", "survivor", "child", "record",
           "discrimination"]),
+        ("rights",    "Know your rights",
+         ["know your rights", "rights"]),
         ("id",        "Names, IDs, and papers",
          ["name change", "trans", "gender", "id", "identification"]),
         ("more",      "More legal help", []),
@@ -1352,7 +1354,10 @@ SYNONYMS = [
                         "shut off my power power shut off no electricity no heat "
                         "no hot water lights turned off disconnected"),
     ("income support",  "welfare public assistance cash benefits pay paying rent money"),
-    ("immigration",     "green card papers undocumented ice deportation asylum visa"),
+    ("immigration",     "green card papers undocumented ice deportation asylum visa "
+                        "raid detained knocked on my door came to my work"),
+    ("know your rights","ice at my door immigration agents raid detained arrested "
+                        "do i have to open the door what do i say"),
     ("legal",           "lawyer attorney court sue rights"),
     ("domestic violence","abuse abusive hits me hitting me beat me beats me hurt me "
                         "hurting me scared afraid threatens threatening husband wife "
