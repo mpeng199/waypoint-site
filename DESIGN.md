@@ -461,6 +461,48 @@ All form inputs:
 - All animations disabled under `@media (prefers-reduced-motion: reduce)`
 - Entrance reveals use crossfade as fallback (no blur or scale)
 
+### The header
+
+One component, `.sitehead` in `tokens.css`, on all twenty pages. Same lockup,
+same three tabs in the same order, same gold "Find help" pill, same wrap rule,
+same stuck-on-scroll rule. It was two headers that had drifted — five tabs
+against three, a solid pin against an outlined one, 22px of padding against
+12px, a drawer against a wrap — and each difference was defensible on its own.
+
+Each half sets **six colour tokens and one line of positioning**, nothing else:
+
+| token | narrative | directory |
+|---|---|---|
+| `--head-bg` | `rgba(19,35,26,.55)` | `rgba(252,254,247,.90)` |
+| `--head-line` | `--hair` | `--line` |
+| `--head-ink` | `--cream` | `--ink` |
+| `--head-ink-2` | `--ink-soft` | `--ink-2` |
+| `--head-ink-3` | `--ink-faint` | `--ink-3` |
+| `--head-hover` | `rgba(252,254,247,.10)` | `--line-2` |
+| `--head-shadow` | `0 1px 12px rgba(12,22,16,.6)` | `none` |
+| position | `fixed` (floats over the door) | `sticky` (sits under the top edge) |
+
+Both are **transparent until you have scrolled past 40px**, then take their own
+page's ground with a blur. Over cream that is nearly invisible, which is the
+point: the bar appears when there is something behind it to separate from. It
+fades in over 120ms and out over 400ms — appearing is the safe direction to
+hurry, because during the fade the bar's own type sits half-transparent over
+whatever is passing under it.
+
+The pin is **outlined, taking the header's ink, with a gold centre on both
+halves**. Gold is the one colour that reads on cream and on deep green, so
+even the dot does not have to change.
+
+`--head-h` is derived from the tokens the bar is built out of
+(`calc(var(--head-pad) * 2 + var(--head-row))`, and two rows below 640px)
+rather than measured and typed. Anything that has to clear a fixed header
+reads it: the hero's top padding is `max(what it wanted, --head-h + a gap)` in
+all three places that set it.
+
+`check_one_header` fails if the tabs differ between pages, if the gold pill
+comes off, if the lockup is edited on one half, or if either stylesheet so
+much as restyles a padding on the shared bar.
+
 ### The focus ring
 
 One ring, in `tokens.css`, for both halves of the site:
@@ -602,6 +644,18 @@ must cover every resource, every result must link to an anchor that exists,
 and `help.js` may write markup in at most two places.
 
 ### Search
+
+The search box, the result count, the print button and the filters are **one
+card, three zones divided by hairlines**: what you type, what that got you, and
+how to narrow it further. They were four separate objects — a labelled box, an
+orphaned grey line under it, a bordered card of chips, and, below the lot and
+outside everything, the count on the left with the print button on the right.
+All four did the same job and none looked related to any other.
+
+The count sits directly under the box that changes it. The scope note beside it
+no longer repeats the number standing next to it, which is one fewer place for
+a count to go stale.
+
 
 The people this is for do not type "domestic violence" or "substance use
 disorder" — those are the words the agencies use about them afterwards. They

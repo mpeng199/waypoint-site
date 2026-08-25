@@ -158,6 +158,12 @@
 }
 .sitehead.stuck{
   backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  /* Quick in, slow out. The ground fades in over the same 400ms it fades out
+     over, and for those 400ms the bar's own text sits half-transparent over
+     whatever is passing under it — which on the directory is the clay
+     emergency panel, light text on red, under dark green type. Appearing is
+     the safe direction to hurry. */
+  transition-duration:.12s;
 }
 .sitehead__in{
   max-width:var(--wrap,var(--container)); margin-inline:auto;
