@@ -2202,6 +2202,18 @@ def check_directory_clusters():
             bad(f"{page} renders {actual} rows for {want} resources")
     ok(f"every cluster links to its page, and promises the number that page holds")
 
+    # A preview line is the first sentence of a description. When a
+    # description has no full stop until the end, the whole thing lands on the
+    # cluster card and the card stops being a preview.
+    PV_MAX = 150
+    longwinded = [t for t in re.findall(r'<p class="pv__d">([^<]+)</p>', src)
+                  if len(html.unescape(t)) > PV_MAX]
+    if longwinded:
+        bad(f"{len(longwinded)} preview line(s) run past {PV_MAX} characters, so "
+            f"the cluster card is showing a paragraph: {longwinded[0][:80]!r}")
+    else:
+        ok(f"every preview line fits its card ({PV_MAX} characters or fewer)")
+
     previews = re.findall(r'<li class="pv">', src)
     per = build_help.PREVIEW
     expect = sum(min(per, len(build_help.ordered(rows, n["key"])))
