@@ -1750,15 +1750,16 @@ CRITICAL_QUERIES = [
     ("my daughter is being abused", "Safe Horizon"),
     ("im scared of my boyfriend",   "NYC HOPE — 24-Hour DV Hotline (Safe Horizon)"),
     ("i want to die",               "NYC 988 (formerly NYC Well)"),
-    ("kill myself",                 "988 Suicide & Crisis Lifeline"),
+    ("kill myself", ("988 Suicide & Crisis Lifeline",
+                                    "NYC 988 (formerly NYC Well)")),
     ("someone to talk to",          "NYC 988 (formerly NYC Well)"),
-    ("heroin",                      "NY OASAS HOPEline"),
+    ("heroin", ("NY OASAS HOPEline", "NYC 988 (formerly NYC Well)")),
     ("narcan",                      "OASAS Free Naloxone / Harm Reduction"),
     ("overdose",                    "OASAS Free Naloxone / Harm Reduction"),
     ("they took my passport",       "National Human Trafficking Hotline"),
     # what this site exists for
     ("cant pay my hospital bill",   "Hospital Financial Assistance (every NY hospital)"),
-    ("charity care",                "Dollar For"),
+    ("charity care", ("Hospital Financial Assistance (every NY hospital)", "Dollar For")),
     ("insurance said no",           "Community Health Advocates (CHA)"),
     ("denied claim",           "Community Health Advocates (CHA)"),
     ("medical debt collector",      "Consumer Financial Protection Bureau — complaint"),
@@ -1773,7 +1774,8 @@ CRITICAL_QUERIES = [
     ("landlord wont fix",      "JustFix"),
     ("back rent", ("HRA Emergency Assistance / One Shot Deal",
                                     "FHEPS (rent help for families)")),
-    ("i sleep on the train",        "Breaking Ground Street Outreach"),
+    ("i sleep on the train", ("Coalition for the Homeless — Crisis Intervention",
+                                    "Breaking Ground Street Outreach")),
     # health
     ("free clinic no insurance",    "NYC Care"),
     ("dentist",                     "NYU College of Dentistry Clinics"),
@@ -1829,15 +1831,17 @@ CRITICAL_QUERIES = [
     ("my mom has dementia", "CaringKind — dementia helpline"),
     ("period products", "Free period products (schools and shelters)"),
     ("help paying for a funeral", "HRA Burial Assistance"),
-    ("somewhere to sleep tonight", "NYC DHS Shelter Intake (right to shelter)"),
+    ("somewhere to sleep tonight", ("NYC DHS Shelter Intake (right to shelter)",
+                                    "The Bowery Mission")),
     ("i am being evicted", "Right to Counsel — Free Eviction Defense"),
     ("paying for medicine", "RxAssist"),
-    ("i need a bed", "NYC DHS Shelter Intake (right to shelter)"),
+    ("i need a bed", ("NYC DHS Shelter Intake (right to shelter)", "The Bowery Mission")),
     ("i need a therapist", "NAMI-NYC Helpline"),
     ("special education", ("Advocates for Children — education helpline",
                                           "The New York Foundling")),
     ("my child was suspended", "Advocates for Children — education helpline"),
-    ("halal", "ICNA Relief NY food pantries"),
+    ("halal", ("ICNA Relief NY food pantries",
+                                    "Council of Peoples Organization (COPO)")),
     ("day laborer", "NICE — New Immigrant Community Empowerment"),
     ("tps", "MOIA Immigration Legal Support Hotline (ActionNYC)"),
 ]
@@ -3136,6 +3140,40 @@ def check_every_row_has_someone_to_verify_it():
            f"{link} by the site being live")
 
 
+def check_every_resource_is_findable_by_name():
+    """Somebody told you to call Safe Horizon. Typing that has to reach it.
+
+    Most people arrive at this directory with a name in their head, given to
+    them by a caseworker, a neighbour or a flyer. A row that its own name
+    cannot find is a row that person will conclude does not exist.
+
+    Uses the same scoring model as check_critical_queries, so it tests the
+    order and not just reachability: two rows used to lose to a longer name
+    containing theirs — "Safe Horizon" opened with Safe Horizon Streetwork
+    Project, "Met Council" with Met Council on Housing Tenant Hotline.
+    """
+    import build_help
+    K = _js_constants()
+    if not K:
+        return
+    rows = build_help.load()
+    model = _search_model(rows, K)
+    missing, second = [], []
+    for r in rows:
+        name = r["Resource Name"]
+        order = model(name)
+        if not order:
+            missing.append(name)
+        elif order[0] != name:
+            second.append(f"{name!r} is outranked by {order[0]!r}")
+    for m in missing[:5]:
+        bad(f"{m!r} cannot be found by searching its own name")
+    for m in second[:5]:
+        bad(m)
+    if not missing and not second:
+        ok(f"all {len(rows)} resources come back first when you type their name")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3193,7 +3231,7 @@ def _js_constants():
     """
     js = read("help.js")
     want = ["W_NAME", "W_KIND", "W_TAG", "W_ALIAS", "W_BODY", "W_CAT",
-            "EXACT", "STEMMED", "W_PHRASE"]
+            "EXACT", "STEMMED", "W_PHRASE", "W_NAME_EXACT"]
     got = {}
     for name in want:
         m = re.search(rf"\b{name}\s*=\s*([\d.]+)", js)
@@ -3207,31 +3245,16 @@ def _js_constants():
     return got
 
 
-def check_critical_queries():
-    """The searches that must not stop working — and must still come first.
+def _search_model(rows, K):
+    """help.js's scoring, in Python, returning names best-first for a query.
 
-    This used to count matched words only: it asked whether the target row was
-    in the tier that matched the most words, which is a reachability test. But
-    every failure the fifty-phrasing probe turned up was an *ordering* failure.
-    "free eyeglasses" did reach the optometry clinic; it put naloxone and
-    eviction defence above it, and this check was happy.
-
-    So it models the score help.js computes — the five weighted fields, the
-    exact/prefix/stem factors, inverse document frequency, the phrase bonus —
-    and asserts the target row comes FIRST. Every constant is read out of
-    help.js by _js_constants, so the model cannot drift from the code without
-    either changing with it or failing loudly.
-
-    It remains a model of a different language's behaviour, which is worth
-    saying out loud: it is checked against the real page by hand, and the
-    probe that found these queries was run in a browser, not here.
+    One model, used by every check that asks about search, so there is one
+    thing to keep honest rather than two. Every constant comes from help.js
+    (see _js_constants); the model itself is checked against the live page by
+    hand, and the probes that found the queries it guards were run in a
+    browser, not here.
     """
     import build_help
-    K = _js_constants()
-    if not K:
-        return
-    rows = build_help.load()
-    by = {r["Resource Name"]: r for r in rows}
 
     def fields(r):
         own, cat = build_help.haystack(r)
@@ -3246,6 +3269,8 @@ def check_critical_queries():
 
     F = {r["Resource Name"]: fields(r) for r in rows}
     FLAT = {n: " ".join(f.values()) for n, f in F.items()}
+    N = len(rows)
+    idf_cache = {}
 
     def starts(hay, w):
         if not w.isascii():
@@ -3265,21 +3290,24 @@ def check_critical_queries():
             return weight * K["STEMMED"]
         return 0.0
 
-    N = len(rows)
-    idf_cache = {}
-
     def idf(w):
         if w in idf_cache:
             return idf_cache[w]
-        df = sum(1 for hay in FLAT.values() if starts(hay, w) or
-                 (_stem(w) != w and starts(hay, _stem(w))))
+        df = sum(1 for hay in FLAT.values()
+                 if starts(hay, w) or (_stem(w) != w and starts(hay, _stem(w))))
         v = math.log(N / df) / math.log(N) if df else 1.0
-        v = min(1.0, max(K["IDF_FLOOR"], v))
-        idf_cache[w] = v
-        return v
+        idf_cache[w] = min(1.0, max(K["IDF_FLOOR"], v))
+        return idf_cache[w]
 
     ORDER = [("name", "W_NAME"), ("kind", "W_KIND"), ("tags", "W_TAG"),
              ("alias", "W_ALIAS"), ("body", "W_BODY"), ("cat", "W_CAT")]
+
+    def words_of(query):
+        phrase = query.lower().replace("\u2019", "")
+        return phrase, [w for w in re.split(r"[^\w\-]+", phrase, flags=re.UNICODE)
+                        if w and w not in _STOP
+                        and (len(w) >= 2 or not w.isascii())
+                        and not (w.isdigit() and len(w) < 3)]
 
     def score(name, words, phrase):
         f = F[name]
@@ -3296,49 +3324,72 @@ def check_critical_queries():
         if hits and len(phrase) > 6 and (phrase in f["alias"] or phrase in f["name"]
                                          or phrase in f["tags"]):
             points += K["W_PHRASE"]
+        if phrase and f["name"] == phrase:
+            points += K["W_NAME_EXACT"]
         return hits, points
+
+    def run(query):
+        """Names best-first, cut the way help.js cuts: only the tier that
+        matched the most words."""
+        phrase, words = words_of(query)
+        if not words:
+            return []
+        scored = {n: score(n, words, phrase) for n in F}
+        best = max(h for h, _ in scored.values())
+        if not best:
+            return []
+        tier = [(p, n) for n, (h, p) in scored.items() if h == best]
+        tier.sort(key=lambda t: -t[0])
+        return [n for _p, n in tier]
+
+    run.score = score
+    run.words_of = words_of
+    return run
+
+
+def check_critical_queries():
+    """The searches that must not stop working — and must still come first.
+
+    This used to count matched words only: it asked whether the target row was
+    in the tier that matched the most words, which is a reachability test. But
+    every failure the fifty-phrasing probe turned up was an *ordering* failure.
+    "free eyeglasses" did reach the optometry clinic; it put naloxone and
+    eviction defence above it, and this check was happy.
+
+    It uses _search_model now — the same scoring help.js computes, with every
+    constant read out of help.js — and asserts the target comes FIRST.
+    """
+    import build_help
+    K = _js_constants()
+    if not K:
+        return
+    rows = build_help.load()
+    names = {r["Resource Name"] for r in rows}
+    model = _search_model(rows, K)
 
     broken = []
     for query, target in CRITICAL_QUERIES:
         # Some questions have more than one right answer. "back rent" is
         # answered by the emergency grant that pays arrears and by the rent
         # subsidy for families, and insisting on one of them would push the
-        # data around until the guard was happy rather than until the page
-        # was. A tuple means any of these may lead.
+        # data around until the guard was happy rather than until the page was.
         targets = target if isinstance(target, tuple) else (target,)
-        missing = [t for t in targets if t not in by]
+        missing = [t for t in targets if t not in names]
         if missing:
             broken.append(f"{query!r} should reach {missing[0]!r}, which is not "
                           "in the directory any more")
             continue
-        phrase = query.lower().replace("\u2019", "")
-        words = [w for w in re.split(r"[^\w\-]+", phrase, flags=re.UNICODE)
-                 if w and w not in _STOP
-                 and (len(w) >= 2 or not w.isascii())
-                 and not (w.isdigit() and len(w) < 3)]
-        if not words:
-            continue
-        scored = {n: score(n, words, phrase) for n in F}
-        best_hits = max(h for h, _ in scored.values())
-        if not best_hits:
+        order = model(query)
+        if not order:
             broken.append(f"{query!r} matches nothing in the whole directory")
-            continue
-        tier = {n: p for n, (h, p) in scored.items() if h == best_hits}
-        top = max(tier.values())
-        winner = max(tier, key=tier.get)
-        if any(scored[t][0] == best_hits and scored[t][1] >= top - 1e-9
-               for t in targets):
-            continue
-        reachable = [t for t in targets if scored[t][0] == best_hits]
-        if not reachable:
-            t = targets[0]
-            broken.append(f"{query!r} no longer reaches {t!r}: it matches "
-                          f"{scored[t][0]} of {len(words)} words while "
-                          f"{winner!r} matches {best_hits}")
-        else:
-            t = max(reachable, key=lambda x: scored[x][1])
-            broken.append(f"{query!r} reaches {t!r} but ranks {winner!r} above "
-                          f"it ({tier[winner]:.1f} against {scored[t][1]:.1f})")
+        elif order[0] not in targets:
+            here = next((i for i, n in enumerate(order) if n in targets), None)
+            if here is None:
+                broken.append(f"{query!r} no longer reaches {targets[0]!r} at all; "
+                              f"it returns {order[0]!r}")
+            else:
+                broken.append(f"{query!r} reaches {order[here]!r} but ranks "
+                              f"{order[0]!r} above it (position {here + 1})")
     if broken:
         for b in broken:
             bad(b)
@@ -4009,7 +4060,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

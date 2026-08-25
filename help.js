@@ -309,6 +309,9 @@
      strongest signal there is, because those phrases were written down FOR
      this — "cant pay my hospital bill", "who do i call", "i want to die". */
   var W_PHRASE = 14;
+  /* Above the phrase bonus, because a name typed in full is a stronger signal
+     than a phrase found inside something longer. */
+  var W_NAME_EXACT = 20;
 
   var exactCache = {};
   function hasExact(hay, word) {
@@ -389,6 +392,12 @@
          row.tags.indexOf(phrase) !== -1)) {
       points += W_PHRASE;
     }
+    /* Typing an organisation's name should reach that organisation, not the
+       one whose longer name contains it. "Safe Horizon" opened with Safe
+       Horizon Streetwork Project, and "Met Council" with Met Council on
+       Housing Tenant Hotline: both are the phrase bonus landing on two rows
+       at once, and the longer row winning on the words around it. */
+    if (phrase && row.name === phrase) points += W_NAME_EXACT;
     return { hits: hits, points: points };
   }
 
