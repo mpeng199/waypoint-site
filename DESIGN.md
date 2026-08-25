@@ -642,6 +642,21 @@ numbers, seventeen kinds of help with places named and dialable under each,
 the promise, the footer. `i18n.py` holds every word — about 70 strings and 17
 blurbs per language — and is the file a translator gets handed.
 
+**The header's height is a guess, and only script makes it true.** `--head-h`
+computes the bar from the assumption that the tab row wraps to two rows. How
+many rows it takes depends on how long the tab labels are, which is a different
+answer in every language. Measured at 320px, the bar is 251px in Spanish and
+French, 203 in English and Russian, 155 in Arabic and Chinese — against a
+declared 116 in all six. On `help.html` and `index.html` a `ResizeObserver`
+publishes the measured height and the guess never survives first paint. The ten
+language pages ship no script on purpose, so there it stood: a tap on any
+section link put the heading up to 121px under a bar that was still covering
+it. Below 1080px those pages take the bar out of the flow instead. Nothing can
+cover a heading then, in any language, and a 320px phone gets back the third of
+its screen the bar was holding. `check_a_page_without_script_does_not_trust_head_h`
+holds the arrangement together: a page that trusts `--head-h` has to be a page
+that corrects it.
+
 **What is not translated, and why.** The resource descriptions are English
 and this site has no way to check ten translations of every one of them. So the cards name
 places and dial them — a proper noun and a number are the same in every

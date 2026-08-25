@@ -4790,6 +4790,46 @@ def check_every_resource_says_what_it_is():
         ok("every resource says what it is, in a whole sentence")
 
 
+def check_a_page_without_script_does_not_trust_head_h():
+    """--head-h is a guess, and only JavaScript makes it true.
+
+    The token computes the header's height from the assumption that the tab
+    row wraps to two rows. How many rows it really takes depends on how long
+    the tab labels are, which is a different answer in every language.
+    Measured at 320px: Spanish and French 251px, English and Russian 203,
+    Arabic and Chinese 155 — against a declared 116 in every case.
+
+    help.html and index.html publish the measured height with a
+    ResizeObserver, so the guess never survives first paint. The ten language
+    pages ship no script on purpose, and there the guess stood: a tap on any
+    section link landed the heading up to 121px under a bar that was still
+    covering it.
+
+    So the rule is: a page that trusts --head-h for its anchor offsets has to
+    be a page that corrects it. The language pages do not, so below the width
+    where the bar wraps it stops following them.
+    """
+    import build_help
+
+    css = read("help.css")
+    if not re.search(r"body\[data-lang\][^{]*\.sitehead\s*\{[^}]*position\s*:\s*static",
+                     css):
+        bad("help.css no longer takes the header out of the flow on the "
+            "language pages. Those pages ship no script, so --head-h stays at "
+            "its two-row guess and a sticky bar covers the heading every "
+            "in-page link jumps to. Restore the rule or give the pages the "
+            "script that measures the bar.")
+    else:
+        ok("the language pages do not let an unmeasured bar follow them")
+
+    # and the premise: they really do ship no script
+    for key in build_help.LANG_SLUG:
+        page = build_help.lang_page(key)
+        if os.path.exists(page) and re.search(r"<script\b", read(page)):
+            bad(f"{page} has a script on it now; if it measures the header, "
+                f"this guard's premise is gone and the static rule can go too")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -4810,6 +4850,7 @@ def main():
                check_the_search_says_when_it_guessed,
                check_every_page_names_itself,
                check_every_resource_says_what_it_is,
+               check_a_page_without_script_does_not_trust_head_h,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

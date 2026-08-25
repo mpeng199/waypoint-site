@@ -110,6 +110,32 @@ b,strong{ font-weight:600; }
   --head-dot:var(--gold);      /* on cream the mark wants a counter */
   --head-shadow:none;
 }
+/* --head-h is a guess, and on ten pages nothing corrects it.
+
+   The token computes the bar's height from the assumption that the tab row
+   wraps to exactly two rows. How many rows it actually takes depends on how
+   long the tab labels are, which is a different answer in each of the ten
+   languages: at 320px the Spanish bar is 251px tall and the French one too,
+   the English one 203, the Arabic and Chinese ones 155 — against a declared
+   116 in every case.
+
+   On help.html and index.html a ResizeObserver publishes the measured height
+   and the guess never survives first paint. The ten language pages ship no
+   JavaScript on purpose — a page somebody opens frightened, in a language
+   they read, should not depend on a script loading — so there the guess
+   stands, and a tap on any section link landed the heading up to 121px
+   underneath a bar that was still covering it.
+
+   Below the width where the row wraps at all, the bar stops following the
+   page. Nothing can then cover a heading in any language, the jump lands
+   where it says it will, and a 320px phone gets back the third of its screen
+   the bar was holding. Above that width the bar is one row, --head-h is right
+   within a pixel, and it stays sticky. */
+@media (max-width:1080px){
+  body[data-lang] .sitehead{ position:static; }
+  body[data-lang] :is(.clusters,.cl,.grp,.results){ scroll-margin-top:14px; }
+}
+
 /* transparent until you have scrolled: over cream, indistinguishable from the
    page, which is the point — the bar appears when there is something behind
    it to separate from. */

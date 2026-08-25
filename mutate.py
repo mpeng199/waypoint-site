@@ -86,6 +86,9 @@ MUTATIONS = [
   "need of nutritional assistance at the present time"),
  ("the search stops matching what people actually call things",
   "help.js", "W_ALIAS = 2", "W_ALIAS = 0"),
+ ("an unmeasured header follows a language page again",
+  "help.css", "body[data-lang] .sitehead{ position:static; }",
+  "body[data-lang] .sitehead{ position:sticky; }"),
  # ---- round three: print, contrast, motion, forms, search feedback, SEO
  ("printing loses the numbers under every card",
   "help.css", ".cl__b{ font-size:7pt; color:#000; }",
