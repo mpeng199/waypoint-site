@@ -200,11 +200,15 @@ def main(argv):
             print(".", end="", flush=True)
     print("\n")
 
-    stale = sorted(set(SETTLED) - {r["Resource Name"] for r in rows})
-    if stale and "--stale" not in argv:
-        print("\n-- settled entries for resources that are gone --")
-        for name in stale:
-            print(f"  {name}")
+    if "--stale" not in argv:
+        gone = sorted(set(SETTLED) - {r["Resource Name"] for r in rows})
+        healed = sorted(set(SETTLED) & confirmed)
+        if gone or healed:
+            print("\n-- entries in SETTLED that no longer earn their place --")
+            for name in gone:
+                print(f"  {name} — the resource is not in the directory any more")
+            for name in healed:
+                print(f"  {name} — now confirmed, so the exception can go")
 
     if "--stamp" in argv and confirmed:
         today = datetime.date.today().isoformat()

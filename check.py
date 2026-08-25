@@ -157,13 +157,18 @@ def check_links():
             else:
                 bad(f"{page}: dead reference {ref!r}")
 
+        # Every page, not just index.html. The condition here used to be
+        # `if page == "index.html" or a in ids`, which means that on any other
+        # page a MISSING anchor fell through both branches and was never
+        # reported — so the check quietly only ran on one file. It let the
+        # language panels link to #dir on the front page, where there is no
+        # #dir, on the one control aimed at people who cannot read the page.
         ids = set(ID.findall(src))
         for a in set(ANCHOR.findall(src)):
-            if page == "index.html" or a in ids:
-                if a in ids:
-                    ok(f"{page} anchor #{a}")
-                else:
-                    bad(f"{page}: anchor #{a} has no matching id")
+            if a in ids:
+                ok(f"{page} anchor #{a}")
+            else:
+                bad(f"{page}: anchor #{a} has no matching id")
 
 
 CROSS_REF = re.compile(r'href="([A-Za-z0-9._-]+\.html)#([^"]+)"')

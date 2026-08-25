@@ -1986,7 +1986,7 @@ def header_frag():
     ]
 
 
-def langbar_frag():
+def langbar_frag(target="#dir"):
     """Language access, first thing under the header, on every resident page.
 
     Somebody who cannot read the page should not have to read the page to find
@@ -2027,7 +2027,7 @@ def langbar_frag():
                        f'{esc(L["needs"][need["key"]])}</a></li>')
         out += [
             '  </ul>',
-            f'  <p class="langnote__do"><a class="langnote__go" href="#dir" '
+            f'  <p class="langnote__do"><a class="langnote__go" href="{target}" '
             f'data-lang="{L["key"]}">{esc(L["cta"])}</a>',
             '  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>',
             '</section>',
@@ -2263,7 +2263,7 @@ def render_overview(rows):
               "#needs", "Skip to what you need help with")
     p += header_frag()
     A('<main class="wrap">')
-    p += langbar_frag()
+    p += langbar_frag("#needs")
 
     # ---- masthead
     A('<section class="mast">')
