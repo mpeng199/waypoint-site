@@ -464,10 +464,16 @@ All form inputs:
 ### The header
 
 One component, `.sitehead` in `tokens.css`, on all twenty pages. Same lockup,
-same three tabs in the same order, same gold "Find help" pill, same wrap rule,
-same stuck-on-scroll rule. It was two headers that had drifted — five tabs
-against three, a solid pin against an outlined one, 22px of padding against
-12px, a drawer against a wrap — and each difference was defensible on its own.
+same five tabs in the same order — **Find help · Bills & denials · How it
+works · Students · Partners** — same gold "Find help" pill, same tubelight
+lamp, same wrap rule, same stuck-on-scroll rule. It was two headers that had
+drifted: five tabs on one half against three on the other, a solid pin against
+an outlined one, 22px of padding against 12px, a drawer against a wrap.
+
+On the directory the four section links point back into the narrative page,
+because that is where those sections are, and the lamp ships with them and
+never lights: there is nothing on a directory page for it to slide between.
+Shipping it anyway is what lets the two headers be one string of markup.
 
 Each half sets **six colour tokens and one line of positioning**, nothing else:
 
@@ -479,6 +485,7 @@ Each half sets **six colour tokens and one line of positioning**, nothing else:
 | `--head-ink-2` | `--ink-soft` | `--ink-2` |
 | `--head-ink-3` | `--ink-faint` | `--ink-3` |
 | `--head-hover` | `rgba(252,254,247,.10)` | `--line-2` |
+| `--head-dot` (the pin's centre) | `transparent` | `--gold` |
 | `--head-shadow` | `0 1px 12px rgba(12,22,16,.6)` | `none` |
 | position | `fixed` (floats over the door) | `sticky` (sits under the top edge) |
 
@@ -489,15 +496,24 @@ fades in over 120ms and out over 400ms — appearing is the safe direction to
 hurry, because during the fade the bar's own type sits half-transparent over
 whatever is passing under it.
 
-The pin is **outlined, taking the header's ink, with a gold centre on both
-halves**. Gold is the one colour that reads on cream and on deep green, so
-even the dot does not have to change.
+The pin is **solid, filled with the header's ink** — cream on the dark half,
+deep green on the light one, the same mark either way. Its centre is the one
+piece that adapts: nothing on the dark ground, where the filled pin reads on
+its own, and gold on cream, where the mark wants a counter.
 
-`--head-h` is derived from the tokens the bar is built out of
-(`calc(var(--head-pad) * 2 + var(--head-row))`, and two rows below 640px)
-rather than measured and typed. Anything that has to clear a fixed header
-reads it: the hero's top padding is `max(what it wanted, --head-h + a gap)` in
-all three places that set it.
+Below about 1050px the tabs take a row of their own, which reads as a
+deliberate second line rather than the ragged two-then-three a plain wrap gives
+between 700 and 1000px.
+
+**`--head-h` is published by the bar itself.** With five tabs it comes to 73px
+at a desk, 155px at 375px and 203px at 320px — no `calc()` in a stylesheet can
+know that, so a `ResizeObserver` in `script.js` and `help.js` sets the custom
+property from the measured height; the `calc()` in `tokens.css` is the no-JS
+fallback and is exact wherever the tabs fit on one row. Everything that has to
+clear a fixed header reads it: the hero's top padding is `max(what it wanted,
+--head-h + a gap)` in all three places that set it, and every `scroll-margin`
+on the directory is `calc(var(--head-h) + 14px)` — those were a flat 84px,
+which on a phone landed the heading you asked for 70px behind the bar.
 
 `check_one_header` fails if the tabs differ between pages, if the gold pill
 comes off, if the lockup is edited on one half, or if either stylesheet so

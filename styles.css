@@ -148,6 +148,7 @@ img,svg{ display:block; max-width:100%; }
   --head-ink-2:var(--ink-soft);
   --head-ink-3:var(--ink-faint);
   --head-hover:rgba(252,254,247,.10);
+  --head-dot:transparent;      /* a filled pin reads on its own here */
   --head-shadow:0 1px 12px rgba(12,22,16,.6);
 }
 /* transparent until you have scrolled, so the door runs edge to edge */

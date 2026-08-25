@@ -87,6 +87,7 @@
   --head-ink-2:var(--ink-2);
   --head-ink-3:var(--ink-3);
   --head-hover:var(--line-2);
+  --head-dot:transparent;
   --head-shadow:none;
 
   --r:16px;
@@ -171,15 +172,16 @@
   display:flex; align-items:center; gap:20px; justify-content:space-between;
 }
 
-/* the lockup: an outlined pin with a gold centre, and the wordmark over a
-   9.5px tracked line. Identical on cream and on deep green — the pin takes
-   the header's ink, and gold is the one colour that reads on both grounds,
-   so even the dot does not have to change. */
+/* the lockup: a solid pin and the wordmark over a 9.5px tracked line. The pin
+   takes the header's ink, so it is cream on the dark half and deep green on
+   the light one and it is the same mark either way. Its centre is the one
+   piece that adapts — nothing on the dark ground, where the filled pin reads
+   on its own, and gold on cream, where the mark wants a counter. */
 .brand{ display:inline-flex; align-items:center; gap:11px; text-decoration:none;
   color:var(--head-ink); }
 .brand svg{ width:26px; height:26px; flex:none; }
-.brand .pin{ fill:none; stroke:currentColor; stroke-width:2; }
-.brand .pin-dot{ fill:var(--gold); }
+.brand .pin{ fill:currentColor; stroke:none; }
+.brand .pin-dot{ fill:var(--head-dot); }
 .brand__txt{ font-family:var(--display); font-weight:600; font-size:20px;
   line-height:1; letter-spacing:-.01em; display:flex; flex-direction:column;
   gap:4px; color:var(--head-ink); text-shadow:var(--head-shadow); }
@@ -187,8 +189,11 @@
   letter-spacing:.18em; text-transform:uppercase; color:var(--head-ink-3);
   text-shadow:none; }
 
-/* three tabs, same three, same order, both halves */
-.sitehead__links{ display:flex; gap:6px; align-items:center; position:relative; }
+/* five tabs, same five, same order, both halves. On the directory the four
+   section links point back into the narrative page; the lamp below is the one
+   thing that has nothing to slide between there, so it simply never lights. */
+.sitehead__links{ display:flex; gap:6px; align-items:center; position:relative;
+  flex-wrap:wrap; justify-content:flex-end; }
 .sitehead__links a{ position:relative; z-index:1; text-decoration:none;
   display:inline-flex; align-items:center; min-height:44px;
   font-weight:600; font-size:.9rem; letter-spacing:.005em;
@@ -213,15 +218,19 @@
   :root{ --head-pad:12px; }
 }
 
-@media (max-width:640px){
-  /* Wrap rather than scroll sideways, and rather than hide behind a drawer.
-     At 200% text these three links are wider than a 320px screen; a scroll
-     strip puts the last one behind a gesture and a drawer puts all three
-     behind a tap. Stacking just makes the header one line taller. */
-  /* two rows now, so --head-h has to say two rows */
+/* Five tabs and the lockup need about 1050px to sit on one line. Below that
+   the tabs take a row of their own, which reads as a deliberate second line
+   rather than the ragged two-then-three a plain wrap gives between 700 and
+   1000px. Wrapping rather than scrolling sideways or hiding behind a drawer:
+   at 200% text the tabs are wider than a 320px screen, a scroll strip puts
+   the last one behind a gesture, and a drawer puts all five behind a tap.
+   Stacking just makes the header a line taller — and script.js and help.js
+   publish what it actually came to, so everything below it clears it. */
+@media (max-width:1080px){
   :root{ --head-pad:10px;
          --head-h:calc(var(--head-pad) * 2 + var(--head-row) * 2 + var(--head-gap)); }
   .sitehead__in{ flex-wrap:wrap; gap:var(--head-gap); }
-  .sitehead__links{ width:100%; flex-wrap:wrap; gap:4px; }
+  .sitehead__links{ width:100%; flex-wrap:wrap; gap:4px; justify-content:flex-start;
+    margin-inline-start:-13px; }   /* the pill's padding, so labels line up with the wordmark */
   .sitehead__links a{ padding:10px 13px; }
 }

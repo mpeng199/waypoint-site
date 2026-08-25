@@ -1136,7 +1136,7 @@ def check_mobile_reads():
         else:
             ok("the tabs stay in the flow on a phone; no menu to open")
         tok = read("tokens.css")
-        if re.search(r"@media \(max-width:640px\)\{[^@]*\.sitehead__links\{[^}]*flex-wrap:wrap",
+        if re.search(r"@media \(max-width:1080px\)\{[^@]*\.sitehead__links\{[^}]*flex-wrap:wrap",
                      tok, flags=re.S):
             ok("the tabs wrap onto a second row rather than scrolling sideways")
         else:
@@ -2393,6 +2393,29 @@ def check_one_header():
                 f"navigation — and an empty container counts, because script "
                 f"fills it")
     ok("on every page the header is the first thing after the skip link")
+
+    # The bar has to publish its own height, because with five tabs it is 73px
+    # at a desk, 155px at 375px and 203px at 320px, and no calc() can know
+    # which. Everything that clears it reads --head-h; when nothing sets it
+    # from the measurement, the fallback silently understates it by 80px and a
+    # heading you clicked lands behind the bar on a phone.
+    for js in ("script.js", "help.js"):
+        src = read(js)
+        if re.search(r"ResizeObserver\([^)]*\)[\s\S]{0,220}?setProperty\(\s*[\"']--head-h",
+                     src):
+            ok(f"{js}: the header publishes its measured height as --head-h")
+        else:
+            bad(f"{js} no longer measures the header. --head-h falls back to a "
+                f"calc() that is only right when the tabs fit on one row, so "
+                f"anchors land behind the bar on a phone")
+
+    hardcoded = re.findall(r"(scroll-margin-top|top):\s*(\d+)px", read("help.css"))
+    stale = [f"{k}:{v}px" for k, v in hardcoded if 60 <= int(v) <= 240]
+    if stale:
+        bad(f"help.css clears the header with a typed height ({', '.join(sorted(set(stale)))}); "
+            f"the bar is 73px to 203px depending on width, so it has to be --head-h")
+    else:
+        ok("everything that clears the header on the directory reads --head-h")
 
     if ".sitehead{" not in tok or ".sitehead__links a.is-find{" not in tok:
         bad("tokens.css no longer owns the header; it has moved back into a sheet")

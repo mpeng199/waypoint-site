@@ -54,7 +54,29 @@
   });
 
   /* ---------- nav chrome ---------- */
-  var nav = $(".sitehead");
+
+  /* --------------------------------------------------------------------
+     The bar publishes its own height.
+
+     With five tabs it wraps onto one, two or three rows depending on the
+     width and the text size — 73px at a desk, 203px at 320px — so no amount
+     of calc() in a stylesheet can know it. Everything that has to clear a
+     fixed header reads --head-h: the hero's first line, and every
+     scroll-margin on the directory, where an anchor was landing 84px down a
+     page whose header is 203px tall and putting the heading you asked for
+     behind the bar.
+
+     The calc() in tokens.css stays as the no-JS fallback; it is exact at the
+     widths where the tabs fit on one row. (Same block in help.js — five lines
+     duplicated rather than a third script tag on twenty pages.) */
+  var head = document.querySelector(".sitehead");
+  if (head && window.ResizeObserver) {
+    new ResizeObserver(function () {
+      document.documentElement.style.setProperty("--head-h", head.offsetHeight + "px");
+    }).observe(head);
+  }
+
+  var nav = head;
   function chrome() { if (nav) nav.classList.toggle("stuck", (window.scrollY || 0) > 40); }
 
   /* The mobile menu used to be a drawer — a fixed panel, a scrim, a body
@@ -367,7 +389,7 @@
 
   /* ---------- tubelight nav ---------- */
   var lamp = $("#navLamp");
-  var navSections = ["students", "partners"].map(function (id) {
+  var navSections = ["bills", "work", "students", "partners"].map(function (id) {
     return { id: id, el: document.getElementById(id), link: $('.sitehead__links a[href="#' + id + '"]') };
   }).filter(function (s) { return s.el && s.link; });
 

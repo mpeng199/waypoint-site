@@ -2004,12 +2004,16 @@ def head(title, desc, skip_href, skip_label):
 
 
 def header_frag():
-    """The same bar as the narrative side: same lockup, same three tabs, same
-    order. It used to be a second header that had drifted — three tabs here
-    against five there, a different pin, different padding, a drawer on one
-    half and a wrap on the other — which is how one organisation comes to look
-    like two. The look lives in tokens.css; this only says which page you are
-    standing on.
+    """The same bar as the narrative side: same lockup, same five tabs, same
+    order, same lamp. It used to be a second header that had drifted — three
+    tabs here against five there, a different pin, different padding, a drawer
+    on one half and a wrap on the other — which is how one organisation comes
+    to look like two.
+
+    The four section links point back into the narrative page, because that is
+    where those sections are. The lamp ships with them and never lights here:
+    there is nothing on a directory page for it to slide between, and shipping
+    it anyway is what lets the two headers be one string of markup.
     """
     return [
         '<header class="sitehead">',
@@ -2019,7 +2023,11 @@ def header_frag():
         '      <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>',
         '    </a>',
         '    <nav class="sitehead__links" aria-label="Primary">',
+        '      <span class="nav-lamp" id="navLamp" aria-hidden="true">'
+        '<i class="nav-lamp__bar"></i></span>',
         '      <a href="help.html" class="is-find" aria-current="page">Find help</a>',
+        '      <a href="index.html#bills">Bills &amp; denials</a>',
+        '      <a href="index.html#work">How it works</a>',
         '      <a href="index.html#students">Students</a>',
         '      <a href="index.html#partners">Partners</a>',
         '    </nav>',
