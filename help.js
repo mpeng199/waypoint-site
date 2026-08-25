@@ -76,6 +76,7 @@
   var active = { boro: [], lang: [], flags: [] };
   var words = [];
   var dropped = [];
+  var corrected = [];
 
   /* ---------------------------------------------------------------- shared */
 
@@ -188,6 +189,71 @@
     return !starts(hay, word) && hasWord(hay, word);
   }
 
+  /* The words the page actually contains, built once, for the typo fallback. */
+  var vocabCache = null, vocabFor = null;
+  function vocabulary(corpus) {
+    if (vocabFor === corpus) return vocabCache;
+    var seen = Object.create(null);
+    for (var i = 0; i < corpus.length; i++) {
+      var parts = corpus[i].split(SPLIT);
+      for (var j = 0; j < parts.length; j++) {
+        var w = parts[j];
+        if (w.length >= 4 && ASCII.test(w)) seen[w] = 1;
+      }
+    }
+    vocabFor = corpus;
+    vocabCache = Object.keys(seen);
+    return vocabCache;
+  }
+
+  /* True when one insertion, deletion, substitution or TRANSPOSITION turns a
+     into b. Transposition matters most: swapping two letters is the commonest
+     typing mistake there is, and it is two edits under plain Levenshtein, so
+     "hosuing" and "shleter" both came back empty until this was here. */
+  function oneEditApart(a, b) {
+    if (a.length === b.length) {
+      for (var t = 0; t < a.length - 1; t++) {
+        if (a.charAt(t) !== b.charAt(t)) {
+          if (a.charAt(t) === b.charAt(t + 1) && a.charAt(t + 1) === b.charAt(t) &&
+              a.slice(t + 2) === b.slice(t + 2)) return true;
+          break;
+        }
+      }
+    }
+    var la = a.length, lb = b.length;
+    if (Math.abs(la - lb) > 1) return false;
+    var i = 0, j = 0, edits = 0;
+    while (i < la && j < lb) {
+      if (a.charAt(i) === b.charAt(j)) { i++; j++; continue; }
+      if (++edits > 1) return false;
+      if (la > lb) i++;
+      else if (lb > la) j++;
+      else { i++; j++; }
+    }
+    return edits + (la - i) + (lb - j) <= 1;
+  }
+
+  var nearCache = {};
+  function nearestWord(word, corpus) {
+    if (word.length < 4 || !ASCII.test(word)) return null;
+    if (word in nearCache) return nearCache[word];
+    /* Among the candidates one edit away, take the one this page uses most.
+       "lawer" is one edit from "later", "lower" and "lawyer"; alphabetical
+       order picked "later" and answered a question about lawyers with
+       NeedyMeds. How often a word appears here is the only evidence available
+       about which one somebody meant, and it is good evidence. */
+    var vocab = vocabulary(corpus), best = null, bestDf = -1;
+    for (var i = 0; i < vocab.length; i++) {
+      if (!oneEditApart(word, vocab[i])) continue;
+      var df = 0;
+      for (var c = 0; c < corpus.length; c++) if (starts(corpus[c], vocab[i])) df++;
+      if (df > bestDf || (df === bestDf && best && vocab[i] < best)) {
+        best = vocab[i]; bestDf = df;
+      }
+    }
+    return (nearCache[word] = best);
+  }
+
   function termsFor(raw, corpus) {
     var text = raw.toLowerCase().trim().replace(/[’']/g, "");
     if (!text) return [];
@@ -195,6 +261,7 @@
     // old class was [^a-z0-9-], which silently deleted every Cyrillic,
     // Arabic, Bengali, Korean and Chinese character before matching — so the
     // ten languages the page offers could be read and not searched.
+    corrected = [];
     var all = text.split(SPLIT).filter(Boolean);
     var content = all.filter(function (w) {
       if (STOP.indexOf(w) !== -1) return false;
@@ -209,6 +276,29 @@
     var useful = content.filter(function (w) {
       return corpus.some(function (hay) { return hasWord(hay, w); });
     });
+    /* One typo should not empty the page.
+
+       "fod", "docter", "lawer", "sucide", "landlrd", "aprtment" all returned
+       nothing. This is read on a phone by somebody upset, and a blank page is
+       the one answer that helps nobody — so a word that matched nothing is
+       given one more try against the words the page actually contains,
+       allowing a single insertion, deletion or substitution.
+
+       Only when nothing matched at all, only for words of four characters or
+       more (below that a single edit is a different word: "fod"/"for",
+       "bed"/"bad"), and only for ASCII, where "one character" means what it
+       looks like. */
+    if (!useful.length) {
+      var fixed = [];
+      for (var ci = 0; ci < content.length; ci++) {
+        var near = nearestWord(content[ci], corpus);
+        if (near) fixed.push(near);
+      }
+      if (fixed.length) {
+        corrected = fixed.slice();
+        useful = fixed;
+      }
+    }
     // Say which words went nowhere. Dropping a word that matches nothing can
     // only widen the result and beats the blank page — but doing it silently
     // is how "free wifi" returned a hundred and seventy-four places that are
@@ -449,6 +539,14 @@
 
   /* "Nothing here matched X." — said once, in front of whatever did match. */
   function missNote() {
+    /* Say when a spelling was corrected, for the same reason the page says
+       when a word was dropped: a list that changed under you without
+       explanation is a list you cannot trust. */
+    if (corrected.length) {
+      var c = corrected.map(function (w) { return "\u201c" + w + "\u201d"; });
+      return "Showing results for " + (c.length === 1 ? c[0]
+        : c.slice(0, -1).join(", ") + " and " + c[c.length - 1]) + ". ";
+    }
     if (!dropped.length) return "";
     var q = dropped.map(function (w) { return "\u201c" + w + "\u201d"; });
     var list = q.length === 1 ? q[0]

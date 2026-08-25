@@ -3174,6 +3174,78 @@ def check_every_resource_is_findable_by_name():
         ok(f"all {len(rows)} resources come back first when you type their name")
 
 
+def _js_one_edit(src, a, b):
+    """oneEditApart's behaviour, evaluated by node against the real source."""
+    import json
+    import subprocess
+    prog = ("function oneEditApart(a, b) {" + src + "\n}\n"
+            "process.stdout.write(String(oneEditApart(" +
+            json.dumps(a) + "," + json.dumps(b) + ")));")
+    try:
+        out = subprocess.run(["node", "-e", prog], capture_output=True,
+                             text=True, timeout=10)
+    except (OSError, subprocess.SubprocessError):
+        return None          # no node here: the string checks still ran
+    return out.stdout.strip() == "true"
+
+
+def check_one_typo_does_not_empty_the_page():
+    """A misspelling should not be answered with a blank page.
+
+    This is read on a phone by somebody upset, and "fod", "docter", "lawer",
+    "sucide", "landlrd", "hosuing" and "shleter" all returned nothing. help.js
+    now retries a query that matched nothing against the words the page
+    actually contains, allowing one insertion, deletion, substitution or
+    transposition.
+
+    Transposition is the half that matters most: swapping two letters is the
+    commonest typing mistake there is and it costs two edits under plain
+    Levenshtein, so the first draft still answered "hosuing" and "shleter" with
+    nothing. And among the candidates one edit away it takes the one this page
+    uses most — "lawer" is one edit from "later", "lower" and "lawyer", and
+    alphabetical order picked "later" and answered a question about lawyers
+    with NeedyMeds.
+
+    Guarded here as a property of the algorithm rather than of the data, so it
+    does not go stale as the directory grows.
+    """
+    js = read("help.js")
+    for name, why in [
+            ("oneEditApart", "the one-edit test"),
+            ("nearestWord", "the retry against the page's own words"),
+            ("vocabulary", "the vocabulary the retry compares against")]:
+        if f"function {name}(" not in js:
+            bad(f"help.js no longer has {why} ({name}); a typo empties the page again")
+            return
+    # Run the algorithm rather than looking for its source: a disabled copy
+    # of the transposition branch still contains the string that tested for it,
+    # and the first version of this check passed with it switched off.
+    body = re.search(r"function oneEditApart\(a, b\) \{(.*?)\n  \}", js, re.S)
+    if not body:
+        bad("cannot read oneEditApart to test it")
+        return
+    src = body.group(1)
+    if not _js_one_edit(src, "hosuing", "housing"):
+        bad("the one-edit test no longer allows a transposition, which is the "
+            "commonest typing mistake and costs two edits without it")
+    if not _js_one_edit(src, "foood", "food"):
+        bad("the one-edit test no longer allows a deletion")
+    if _js_one_edit(src, "food", "shelter"):
+        bad("the one-edit test matches two unrelated words")
+    if "df > bestDf" not in js:
+        bad("the retry no longer prefers the word this page uses most, so "
+            "'lawer' resolves alphabetically and lands on 'later'")
+    if "word.length < 4" not in js:
+        bad("the retry no longer has a length floor; at three characters one "
+            "edit reaches a different word entirely")
+    if "corrected" not in js or "Showing results for" not in js:
+        bad("a corrected spelling is no longer announced, so the list changes "
+            "under the reader with no explanation")
+    else:
+        ok("one typo does not empty the page: transpositions included, the "
+           "page's commonest spelling wins, and the correction is announced")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -4060,7 +4132,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_one_typo_does_not_empty_the_page, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
