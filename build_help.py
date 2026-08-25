@@ -1593,8 +1593,20 @@ def needs_for(row):
     found = []
     cat = row["Category"]
     hay = ((row["Subcategory"] or "") + " " + (row["Resource Name"] or "")).lower()
+    # An explicit `also:<need>` tag, for the rows a keyword cannot reach. A
+    # multi-service organisation's subcategory is "One place that does many
+    # things" — true of all of them, and so useless as a trigger — but the
+    # biggest food pantry on Staten Island is a multi-service organisation and
+    # somebody on "I need food" has to be able to see it. Named per row, so it
+    # never fires by accident.
+    named = {t.strip()[5:] for t in (row.get("Tags") or "").split(";")
+             if t.strip().startswith("also:")}
+    unknown = named - {n["key"] for n in NEEDS}
+    if unknown:
+        raise SystemExit(f'{row["Resource Name"]}: also:{sorted(unknown)[0]} '
+                         f'is not one of the seventeen needs')
     for need in NEEDS:
-        if cat in need.get("cats", []):
+        if cat in need.get("cats", []) or need["key"] in named:
             found.append(need["key"])
             continue
         if any(_fires(kw, hay) for kw in need.get("also", [])):
@@ -2315,6 +2327,35 @@ PREVIEW = 3
 LEAD_MAX = 3
 
 
+PV_MAX = 150
+
+
+def preview_line(description):
+    """The one line a cluster card shows: what this is, not what it does.
+
+    The first sentence, which for most rows is exactly right. But a good
+    description often opens with a colon and a list — "Staten Island's
+    one-stop: food, shelter, health care, immigration and legal help,
+    benefits applications, and help getting insurance" — and the whole list
+    on a card stops the card being a preview.
+
+    So: first sentence; if that is too long, cut at the punctuation that
+    introduced the list, which leaves a clause that reads as a sentence; and
+    only if there is no such break, cut at a word and mark it. Twenty-eight
+    rows needed this, and rewriting twenty-eight good descriptions to fit a
+    card would have been the wrong way round.
+    """
+    first = description.split(". ")[0].rstrip(".").strip()
+    if len(first) <= PV_MAX:
+        return first + "."
+    for mark in ("\u2014", ":", ";"):
+        cut = first.find(mark)
+        if 20 < cut <= PV_MAX:
+            return first[:cut].strip().rstrip(",") + "."
+    clipped = first[:PV_MAX - 10]
+    return clipped[:clipped.rfind(" ")].rstrip(",;:") + "\u2026"
+
+
 def render_preview(r, need_key):
     """One line in a cluster on the front page: the name, what it is for, and
     the number if there is one. No badges, no disclosure — this is a look
@@ -2322,8 +2363,7 @@ def render_preview(r, need_key):
     a = ['<li class="pv">']
     a.append(f'<a class="pv__n" href="{page_for(need_key)}#r-{esc(need_key)}-{esc(r["_id"])}">'
              f'{esc(r["Resource Name"])}</a>')
-    short = r["Description"].split(". ")[0].rstrip(".")
-    a.append(f'<p class="pv__d">{esc(short)}.</p>')
+    a.append(f'<p class="pv__d">{esc(preview_line(r["Description"]))}</p>')
     kind, label, href = contact(r["Phone"])
     if kind == "call":
         a.append(f'<a class="pv__call" href="tel:{esc(href)}">'

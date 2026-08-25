@@ -3306,6 +3306,39 @@ def check_every_category_page_answers_its_own_questions():
         ok(f"all {n} obvious questions find something on the page they belong to")
 
 
+def check_also_tags_are_real_needs():
+    """`also:<need>` puts a row on a second page. It has to name a real one.
+
+    A multi-service organisation's subcategory is "One place that does many
+    things", which is true of all of them and so useless as a cross-filing
+    trigger — but the biggest food pantry on Staten Island is a multi-service
+    organisation, and somebody on "I need food" has to be able to see it. So a
+    row can name the other pages it belongs on. A typo in one of those names
+    would silently put it nowhere.
+    """
+    import csv as _csv
+    import build_help
+    keys = {n["key"] for n in build_help.NEEDS}
+    with open(ROOT / "data" / "resources.csv", encoding="utf-8-sig", newline="") as f:
+        rows = list(_csv.DictReader(f))
+    used, n = set(), 0
+    for r in rows:
+        for t in (r.get("Tags") or "").split(";"):
+            t = t.strip()
+            if not t.startswith("also:"):
+                continue
+            n += 1
+            need = t[5:]
+            used.add(need)
+            if need not in keys:
+                bad(f"{r['Resource Name']!r} says also:{need}, which is not one "
+                    f"of the seventeen kinds of help")
+            if need in [k for k in keys if k in r["Category"].lower()]:
+                bad(f"{r['Resource Name']!r} says also:{need} for a page its "
+                    f"category already puts it on")
+    ok(f"{n} cross-filings across {len(used)} kinds of help, all naming a real one")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -4192,7 +4225,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_one_typo_does_not_empty_the_page, check_every_category_page_answers_its_own_questions, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_one_typo_does_not_empty_the_page, check_every_category_page_answers_its_own_questions, check_also_tags_are_real_needs, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
