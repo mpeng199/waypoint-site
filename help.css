@@ -683,7 +683,13 @@ b,strong{ font-weight:600; }
 /* -------------------------------------------------------- high contrast */
 @media (prefers-contrast:more){
   :root{ --ink-2:#1B2E22; --ink-3:#2B4033; --line:#9FB3A2; }
-  .r,.cl,.jump a,.rail__nav a,.sibs a,.find__box{ border-width:2px; }
+  .r,.cl,.jump a,.rail__nav a,.sibs a,.find__box,
+  .enote,.langbar__list a,.printbtn,.pv__call{ border-width:2px; }
+  /* The gold rule down the side of the language note is the only thing that
+     marks it as a note rather than a paragraph; at higher contrast it needs
+     to be a colour that survives, not a tint. */
+  .enote{ border-inline-start-color:var(--gold-deep); }
+  .enote__h{ color:var(--ink-2); }
 }
 
 /* ---------------------------------------------------------------- print */

@@ -3017,6 +3017,36 @@ def check_tap_targets():
     ok(f"all {len(CONTROLS)} named controls on the directory are 44px or taller")
 
 
+def check_high_contrast_covers_the_cards():
+    """Everything with a hairline border gets a thicker one at higher contrast.
+
+    A 1.5px border in a pale green is the only thing separating most of these
+    cards from the page. Somebody who has asked their system for more contrast
+    has told you they cannot see it.
+
+    The list is explicit rather than derived: a component with no border does
+    not belong here, and one that gains a border later should be added on
+    purpose rather than swept in.
+    """
+    css = read("help.css")
+    m = re.search(r"@media \(prefers-contrast:more\)\{(.*?)\n\}", css, re.S)
+    if not m:
+        bad("help.css no longer has a higher-contrast block at all")
+        return
+    block = m.group(1)
+    for sel, what in [(".r", "a resource card"), (".cl", "a cluster card"),
+                      (".jump a", "the jump row"), (".find__box", "the search box"),
+                      (".enote", "the language note"),
+                      (".langbar__list a", "a language link"),
+                      (".printbtn", "the print button"),
+                      (".pv__call", "a phone number")]:
+        if not re.search(rf"(?:^|[,\s]){re.escape(sel)}(?=[,{{\s])", block, re.M):
+            bad(f"{what} ({sel}) keeps its hairline border at higher contrast; "
+                f"somebody who asked their system for more contrast has told "
+                f"you they cannot see it")
+    ok("every bordered card and control thickens its border at higher contrast")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3791,7 +3821,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
