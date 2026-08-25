@@ -2600,6 +2600,73 @@ def check_language_print():
     ok("the print sheet keeps the language note and the interpreter number")
 
 
+def check_language_voice():
+    """Two things a translated page gets wrong quietly.
+
+    One addressee, per language. Spanish addresses the reader as usted from the
+    masthead to the footer, Polish impersonally, Chinese as 您. A page that
+    slides between them reads as though two people wrote it, which on a page
+    somebody opens frightened is a reason not to trust it. This fails when one
+    language uses both.
+
+    And no gendered ending on the reader. The seventeen headings are the reader
+    speaking — "I need food" — and in Polish, Russian, Spanish, Arabic and Urdu
+    the obvious way to write that agrees with a gender the site cannot know.
+    "Nie jestem bezpieczny", "Я служил", "estoy solo", "خدمت", "اکیلا": every
+    one of those told half the readers the page was not written for them. The
+    fix is a construction that does not agree — a noun instead of a past tense,
+    an adverb instead of an adjective — so this fails on the endings rather
+    than on a word list.
+    """
+    import build_help, i18n
+
+    REGISTER = {
+        "spanish": (r"\b(usted|Elija|Llame|Escoja)\b", r"\b(tú|Elige|Llama|tuyo)\b"),
+        "french": (r"\b(vous|Appelez|Choisissez)\b", r"\b(Appelle|Choisis|ton |ta )\b"),
+        "polish": (r"\b(potrzebujesz|Zadzwoń|twoim|Nie trzeba)\b", r"\b(Pan|Pani|Państwo)\b"),
+        "russian": (r"\b(вы|вам|Позвоните|Выберите)\b", r"\b(ты|тебе|Позвони|Выбери)\b"),
+        "chinese": (r"您", r"你(?!好)"),
+        "urdu": (r"آپ", r"\bتم\b"),
+    }
+    for lang, (main_rx, other_rx) in REGISTER.items():
+        U = i18n.UI[lang]
+        text = " ".join(v if isinstance(v, str) else " ".join(v) for v in U.values())
+        text += " " + " ".join(i18n.BLURBS[lang].values())
+        a = len(re.findall(main_rx, text, re.I))
+        b = len(re.findall(other_rx, text, re.I))
+        if a and b:
+            bad(f"{lang}: the page addresses the reader two different ways "
+                f"({a} one way, {b} the other) — it reads as though two people "
+                f"wrote it")
+    ok(f"all {len(REGISTER)} languages with a politeness distinction keep one "
+       f"register from the masthead to the footer")
+
+    # endings that agree with the reader's gender
+    # Anchored to the reader's own clause, not to the word. "mi seguro dijo
+    # que no" is an insurance policy, and "أرعى شخصًا مسنًا" is the person
+    # being cared for; a bare word list called both of those a defect.
+    GENDERED = {
+        "polish": r"(jestem \w*(?:ny|na)\b|\b\w+łem\b|\b\w+łam\b)",
+        "russian": r"(\bЯ служил\w?\b|\bя вышел\b|\bя вышла\b|\bя один\b|\bя одна\b)",
+        "spanish": r"(\bestoy (?:seguro|segura|solo|sola)\b|\bsoy (?:solo|sola)\b)",
+        "french": r"(\bje suis (?:un jeune )?seule?\b)",
+        "arabic": r"(^خدمت |\bأنا مسن\b|\bأنا شاب\b|\bخرجت من\b)",
+        "urdu": r"(میں اکیلا|دیکھ بھال کرتا ہوں|واپس آ رہا ہوں)",
+    }
+    for L in build_help.LANGUAGES:
+        rx = GENDERED.get(L["key"])
+        if not rx:
+            continue
+        for key, label in L["needs"].items():
+            m = re.search(rx, label)
+            if m:
+                bad(f"{L['name_en']}: the {key!r} heading says {m.group(0)!r}, "
+                    f"which agrees with a gender this site cannot know — the "
+                    f"reader is being told the page was written for somebody else")
+    ok("none of the seventeen headings, in any language, puts a gendered "
+       "ending on the reader")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3318,7 +3385,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

@@ -151,40 +151,44 @@ UI["french"] = {
 }
 
 UI["polish"] = {
+    # Register: impersonal and direct, the way Polish public-service and
+    # helpline copy is actually written. The first draft used "Pani ani Pan"
+    # to stay formal and gender-neutral at once, which made every sentence
+    # heavier than the English it came from and read like a form.
     "nav": ["Znajdź pomoc", "Rachunki i odmowy", "Jak to działa",
             "Studenci", "Organizacje"],
     "eyebrow": "Waypoint · Nowy Jork",
     "title_a": "Bezpłatna pomoc",
     "title_b": "w Nowym Jorku.",
     "lede1": "To lista {n} miejsc, które pomagają mieszkańcom Nowego Jorku w "
-             "sprawach jedzenia, rachunków medycznych, mieszkania, opieki "
-             "zdrowotnej, problemów prawnych i wielu innych. Prawie wszystko "
-             "jest za darmo. Większość nie pyta o status imigracyjny.",
-    "lede2": "Nie trzeba zakładać konta. Nie musi nam Pani ani Pan nic mówić. "
-             "Proszę wybrać poniżej to, czego potrzebuje, i zadzwonić samemu.",
-    "sos_h": "Jeśli potrzebuje Pani lub Pan pomocy teraz",
-    "sos": ["Jest Pani lub Pan w niebezpieczeństwie albo ktoś jest ciężko ranny",
-            "Nie czuje się Pani lub Pan bezpiecznie ze sobą albo potrzebuje z "
-            "kimś porozmawiać teraz",
-            "Ktoś w domu albo partner rani Panią lub Pana, albo budzi strach",
-            "Wszystko inne. Za darmo, o każdej porze, w Pani lub Pana języku"],
+             "sprawach jedzenia, rachunków za leczenie, mieszkania, opieki "
+             "zdrowotnej, spraw prawnych i wielu innych. Prawie wszystko jest "
+             "za darmo. Większość nie pyta o status imigracyjny.",
+    "lede2": "Nie trzeba zakładać konta. Nie trzeba nam nic mówić. Wystarczy "
+             "wybrać poniżej to, czego potrzebujesz, i zadzwonić samemu.",
+    "sos_h": "Jeśli potrzebujesz pomocy teraz",
+    "sos": ["Jesteś w niebezpieczeństwie albo ktoś jest ciężko ranny",
+            "Nie czujesz się bezpiecznie ze sobą albo musisz z kimś "
+            "porozmawiać właśnie teraz",
+            "Ktoś w domu albo partner rani cię lub straszy",
+            "Wszystko inne. Za darmo, o każdej porze, w twoim języku"],
     "sos_note": "Te linie są bezpłatne, a odbierają je osoby przeszkolone "
                 "dokładnie do tego. Można zadzwonić bez podawania nazwiska.",
-    "english": "Strony poszczególnych tematów są po angielsku. Proszę "
-               "zadzwonić pod 311 i poprosić o tłumacza języka polskiego — to "
-               "bezpłatne, o każdej porze, a tłumacz zostaje na linii.",
-    "needs_h": "W czym potrzebna jest pomoc?",
+    "english": "Strony poszczególnych tematów są po angielsku. Zadzwoń pod "
+               "311 i poproś o tłumacza języka polskiego — to bezpłatne, o "
+               "każdej porze, a tłumacz zostaje na linii przez całą rozmowę.",
+    "needs_h": "W czym potrzebujesz pomocy?",
     "needs_sub": "Każda karta pokazuje kilka miejsc i otwiera stronę ze wszystkimi.",
     "open_all": "Zobacz wszystkie ({n})",
     "vow_h": "Kim jesteśmy i czego nigdy nie zrobimy",
     "vow": "Jesteśmy przeszkolonymi studentami-wolontariuszami. Pomagamy "
            "znaleźć bezpłatne programy i specjalistów w Nowym Jorku, którzy "
-           "zajmują się rachunkami medycznymi i odmowami ubezpieczenia. Nie "
+           "zajmują się rachunkami za leczenie i odmowami ubezpieczenia. Nie "
            "jesteśmy lekarzami, prawnikami, doradcami do spraw świadczeń ani "
-           "ekspertami od ubezpieczeń. Nie czytamy Pani ani Pana rachunków, "
-           "nie wypełniamy formularzy i nie mówimy, co się komu należy. "
-           "Łączymy z osobami, które to robią — i robią to za darmo. Nigdy za "
-           "nic nie pobieramy opłat.",
+           "ekspertami od ubezpieczeń. Nie czytamy twoich rachunków, nie "
+           "wypełniamy formularzy i nie mówimy, co ci przysługuje. Łączymy cię "
+           "z osobami, które to robią — i robią to za darmo. Nigdy za nic nie "
+           "pobieramy opłat.",
     "vow_src": "To jest wydrukowane na wszystkim, co rozdajemy, i mówione na "
                "głos przy każdym stoliku.",
     "foot_say": "Waypoint to grupa studentów-wolontariuszy z Nowego Jorku. Nie "
@@ -193,11 +197,11 @@ UI["polish"] = {
     "foot_links": ["Znajdź pomoc", "O Waypoint", "Zostań wolontariuszem",
                    "Dla organizacji", "Prywatność i informacje prawne"],
     "foot_ver": "{n} zasobów. Ostatnio sprawdzone: {when}. Programy się "
-                "zmieniają — jeśli coś tu jest nieaktualne, proszę dać nam znać.",
-    "langbar_h": "Pomoc w Pani lub Pana języku",
+                "zmieniają — jeśli coś tu jest nieaktualne, daj nam znać.",
+    "langbar_h": "Pomoc w twoim języku",
     "english_h": "O języku",
     "skip": "Przejdź do listy",
-    "here": "czyta Pani lub Pan tę stronę",
+    "here": "czytasz tę stronę",
 }
 
 UI["haitian-creole"] = {
