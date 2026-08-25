@@ -637,16 +637,27 @@ GROUPS = {
          ["identification", "idnyc", "document", "birth certificate"]),
         # A settlement house does everything under one roof, which is exactly
         # the answer for somebody who cannot name what they need. Filing them
-        # as "a directory to search" buried the most useful thing on the page.
-        ("onestop",   "One place that does everything",
-         ["community resource directory", "settlement", "one-stop",
-          "info & referral in person"]),
+        # as "a directory to search" buried the most useful thing on the page —
+        # and eighteen of them in one heading buried it again, so they are
+        # split the way somebody would actually choose between them: by where
+        # they are.
+        ("onestop",   "One place that does everything, anywhere in the city",
+         ["citywide"]),
+        ("os-bronx",  "One place that does everything \u2014 the Bronx", ["bronx"]),
+        ("os-bklyn",  "One place that does everything \u2014 Brooklyn", ["brooklyn"]),
+        ("os-mnhtn",  "One place that does everything \u2014 Manhattan", ["manhattan"]),
+        ("os-queens", "One place that does everything \u2014 Queens", ["queens"]),
+        ("os-si",     "One place that does everything \u2014 Staten Island",
+         ["staten-island"]),
         ("search",    "Search a directory yourself",
          ["search", "directory", "locator", "library"]),
         ("more",      "Other places that point the way", []),
     ],
 }
 
+
+# The tokens boroughs_for() produces, which is what a borough bucket matches.
+BORO_WORDS = {"bronx", "brooklyn", "manhattan", "queens", "staten-island", "citywide"}
 
 BOROUGHS = [
     ("bronx", "Bronx"),
@@ -1588,6 +1599,15 @@ def group_for(row, need_key):
     if not buckets:
         return "more"
     for key, _label, words in buckets:
+        # A bucket whose keywords are all boroughs is asking about the borough
+        # field, not about the row's name. It is the one axis a neighbourhood
+        # organisation is genuinely sorted by, and "One place that does
+        # everything" was eighteen rows deep without it.
+        if words and all(w in BORO_WORDS for w in words):
+            where = " ".join(row["_boroughs"])
+            if any(w in where for w in words):
+                return key
+            continue
         if any(w in hay for w in words):
             return key
     return buckets[-1][0]
