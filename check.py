@@ -1475,6 +1475,9 @@ def check_directory_is_generated():
         g, f = check_links_live.selfcheck()
         ok(f"check_links_live.py: the soft-404 pattern matches {g} real "
            f"'page is gone' notices and rejects {f} working pages")
+        check_links_live.selfcheck_hosts()
+        ok("check_links_live.py: the hosts that build pages in the browser are "
+           "flagged for a person, and the ones that serve their content are not")
     except AssertionError as e:
         bad(f"check_links_live.py soft-404 self-check failed: {e}")
 

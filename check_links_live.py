@@ -95,6 +95,18 @@ def _attempt(url, method, ua):
         return None, f"{type(e).__name__}: {e}"
 
 
+def selfcheck_hosts():
+    """Which hosts can be believed, and which need a person with a browser."""
+    for u in ("https://www.nyc.gov/site/hra/help/snap-benefits-food-program.page",
+              "https://finder.nyc.gov/foodhelp/locations"):
+        assert needs_a_browser(u), f"{u} is a shell and must be flagged"
+    for u in ("https://access.nyc.gov/programs/snap/",
+              "https://www.schools.nyc.gov/school-life/health-and-wellness/x",
+              "https://www.masbia.org", "https://oasas.ny.gov/harm-reduction"):
+        assert not needs_a_browser(u), f"{u} serves its content and must not be flagged"
+    return True
+
+
 def selfcheck():
     """SOFT_404 has to match what hosts actually say, and nothing else.
 
@@ -244,6 +256,23 @@ def unverifiable_by_phone(row):
 
 # A 200 that says the page is gone. Every one of these is a real string from a
 # real host: nyc.gov's is the one that hid a dead immigration-hotline link.
+# Hosts that build their pages in the browser. A 200 from one of these proves
+# the server answered, not that the page exists: nyc.gov serves a full
+# navigation shell with no article in it and writes "you have reached an
+# outdated or non-existing page" from script afterwards. The dead SNAP page and
+# the live Homebase page are byte-for-byte indistinguishable to anything that
+# does not run JavaScript — same length, same chrome, same everything.
+#
+# So these are not reported as reachable. They are listed separately, to be
+# opened by hand. `--browser-list` prints just the URLs.
+# Two hosts, not all of nyc.gov: access.nyc.gov and schools.nyc.gov serve
+# their content in the HTML and can be read here. www.nyc.gov's CMS does not,
+# and finder.nyc.gov serves a 1.7 KB shell.
+NEEDS_A_BROWSER = ("www.nyc.gov", "nyc.gov", "finder.nyc.gov")
+SERVES_ITS_CONTENT = ("access.nyc.gov", "schools.nyc.gov", "on.nyc.gov",
+                      "a069-access.nyc.gov", "home.nyc.gov")
+
+
 SOFT_404 = re.compile(
     r"you have reached an outdated or non-existing page"
     r"|page (?:you (?:are looking for|requested) )?(?:could not be|cannot be|was not) found"
@@ -255,8 +284,23 @@ SOFT_404 = re.compile(
     re.I)
 
 
+def needs_a_browser(url):
+    host = re.sub(r"^https?://", "", (url or "")).split("/")[0].lower()
+    if host in SERVES_ITS_CONTENT:
+        return False
+    return host in NEEDS_A_BROWSER
+
+
 def main():
     stamp = "--stamp" in sys.argv
+    if "--browser-list" in sys.argv:
+        with open(CSV, encoding="utf-8-sig", newline="") as f:
+            urls = sorted({r["Website"].strip() for r in csv.DictReader(f)
+                           if needs_a_browser(r.get("Website"))})
+        print("\n".join(urls))
+        print(f"\n{len(urls)} page(s) that only a browser can verify. Open each "
+              f"and look for \"outdated or non-existing\".")
+        return 0
     with open(CSV, encoding="utf-8-sig", newline="") as f:
         all_rows = list(csv.DictReader(f))
     rows = [r for r in all_rows if (r.get("Website") or "").strip()]
@@ -289,10 +333,25 @@ def main():
             print(".", end="", flush=True)
 
     print("\n")
+    browser = [(n, u) for n, u, _x in ok + redirects if needs_a_browser(u)]
+    ok = [t for t in ok if not needs_a_browser(t[1])]
+    redirects = [t for t in redirects if not needs_a_browser(t[1])]
     print(f"reachable          {len(ok)}")
     print(f"reachable via redirect {len(redirects)}")
     print(f"blocked our request    {len(blocked)}  (probably fine in a browser)")
     print(f"FAILED             {len(dead)}")
+    print(f"only a browser can say  {len(browser)}  (see below)")
+
+    if browser:
+        print("\n-- a 200 here proves the server answered, not that the page "
+              "exists --")
+        print("   These hosts build the page in the browser, so a dead page and")
+        print("   a live one look identical to this checker. Open them:")
+        print("     python3 check_links_live.py --browser-list")
+        for n, u in sorted(browser)[:6]:
+            print(f"     {n[:38]:<38} {u}")
+        if len(browser) > 6:
+            print(f"     ... and {len(browser) - 6} more")
 
     if stamp:
         today = datetime.date.today().isoformat()

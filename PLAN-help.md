@@ -187,6 +187,21 @@ Still needs a human: **a native speaker of each language should read their own
 page end to end.** Nothing in `i18n.py` is machine output, and nothing in it
 has been read by somebody who speaks the language.
 
+## The quarterly pass a person has to do
+
+Two things in this project cannot be automated from here, and pretending
+otherwise is how the ActionNYC and SNAP links stayed dead:
+
+1. **Open the 34 pages `check_links_live.py --browser-list` prints.** They are
+   on hosts that build the page in the browser, so a dead page and a live one
+   are byte-for-byte identical to anything that does not run JavaScript. Look
+   for "you have reached an outdated or non-existing page". Two of the
+   thirty-four were dead when this was first done by hand, and one of them was
+   food stamps.
+2. **Have a native speaker read each of the ten language pages end to end.**
+   Nothing in `i18n.py` is machine output and nothing in it has been read by
+   somebody who speaks the language.
+
 ## Invariants that must not break
 
 - The honesty statement, verbatim, on every surface that offers help.
