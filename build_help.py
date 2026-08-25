@@ -641,14 +641,15 @@ GROUPS = {
         # and eighteen of them in one heading buried it again, so they are
         # split the way somebody would actually choose between them: by where
         # they are.
-        ("onestop",   "One place that does everything, anywhere in the city",
-         ["citywide"]),
-        ("os-bronx",  "One place that does everything \u2014 the Bronx", ["bronx"]),
-        ("os-bklyn",  "One place that does everything \u2014 Brooklyn", ["brooklyn"]),
-        ("os-mnhtn",  "One place that does everything \u2014 Manhattan", ["manhattan"]),
-        ("os-queens", "One place that does everything \u2014 Queens", ["queens"]),
-        ("os-si",     "One place that does everything \u2014 Staten Island",
-         ["staten-island"]),
+        # The first of these carries the meaning; the rest are read straight
+        # after it and only have to say where. Repeating the whole phrase five
+        # times made the rail three lines deep per entry on a phone.
+        ("onestop",   "One place that does everything", ["citywide"]),
+        ("os-bronx",  "In the Bronx", ["bronx"]),
+        ("os-bklyn",  "In Brooklyn", ["brooklyn"]),
+        ("os-mnhtn",  "In Manhattan", ["manhattan"]),
+        ("os-queens", "In Queens", ["queens"]),
+        ("os-si",     "On Staten Island", ["staten-island"]),
         ("search",    "Search a directory yourself",
          ["search", "directory", "locator", "library"]),
         ("more",      "Other places that point the way", []),
@@ -2148,8 +2149,8 @@ def render_category(need, rows):
     A('  <h2 id="rail-h" class="rail__h">On this page</h2>')
     A('  <nav class="rail__nav" aria-label="Sections of this page"><ul>')
     for bk, label in live:
-        A(f'    <li><a href="#g-{key}-{bk}">{esc(label)}'
-          f'<span class="rail__n">{len(filed[bk])}</span></a></li>')
+        A(f'    <li><a href="#g-{key}-{bk}"><span class="rail__t">{esc(label)}'
+          f'</span><span class="rail__n">{len(filed[bk])}</span></a></li>')
     A('  </ul></nav>')
     A('</aside>')
 

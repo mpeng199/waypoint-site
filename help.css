@@ -439,13 +439,17 @@ b,strong{ font-weight:600; }
   margin-bottom:10px; }
 .rail__nav ul{ display:flex; flex-wrap:wrap; gap:6px; }
 .rail__nav li{ display:flex; min-width:0; }
-.rail__nav a{ flex:1; min-width:0; display:flex; flex-wrap:wrap;
+.rail__nav a{ flex:1; min-width:0; display:flex;
   align-items:center; justify-content:space-between;
   gap:10px; min-height:44px; padding:8px 14px; border-radius:var(--r-pill);
   border:1.5px solid var(--line); background:var(--surface);
   font-size:.9rem; font-weight:500; color:var(--ink-2); text-decoration:none;
   transition:border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease); }
 .rail__nav a:hover{ border-color:var(--green-2); background:var(--line-2); color:var(--ink); }
+/* The label wraps inside its own box; the count never leaves the first line.
+   Letting the anchor itself wrap put the number underneath a three-line
+   label and made every rail entry on a phone twice as tall as it needed. */
+.rail__t{ flex:1; min-width:0; }
 .rail__n{ flex:none; font-size:.78rem; font-weight:700; color:var(--gold-deep);
   font-variant-numeric:tabular-nums; }
 @media (min-width:940px){
