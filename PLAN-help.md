@@ -118,13 +118,41 @@ narrative for the audiences it was written for.
 - **Staten Island is thin but no longer empty.** Project Hospitality and the
   Community Health Center of Richmond are now in, and the filter floats local
   results above citywide ones so the shape of the gap stays visible.
-- **64 rows still carry a June verification date** — not because anything is
+- **63 rows still carry a June verification date** — not because anything is
   known to be wrong with them, but because their sites draw the phone number
   in JavaScript or refuse a scripted request. `verify_phones.py` reports them
   as UNSEEN, never as confirmed.
 - **Some rows have no phone**, only a website. Correct for a lottery portal or
   an online screener; a gap for anything else. `merge_rows.py` refuses a row
   with neither.
+
+## The last pass (25 August)
+
+Five things the audits turned up, each fixed at the cause rather than the
+symptom, each left with a break-tested guard:
+
+1. **A focus ring nobody could see.** In the deep green footer of all twenty
+   pages the ring was `--green` on `--green-deep`: 1.24:1. Every component had
+   been naming its own ring colour, so the ring knew about the button and
+   nothing about the room. It is one token now, set per surface. Worst ring on
+   any page is 7.6:1. Also restored a ring under forced colours, where the two
+   controls that hand theirs to a wrapper had nothing left.
+2. **"Checked August 2026" over a list a fifth of which said June.** The date
+   was derived — from `max()`, the most flattering true number in the file. It
+   prints the span now, and a category page's printed header spans that
+   category's own rows.
+3. **911 dialled in English and was printed as text in ten other languages.**
+   The reader least able to use the English page was the one asked to memorise
+   three digits. `dial()` links them at build time; thirty links per page.
+4. **Footer column labels read h2 → h4** to anything navigating by heading,
+   because h4 was the size wanted.
+5. **Ten more descriptions that described the organisation rather than the
+   help** — "the nation's largest youth employment program" says nothing to
+   somebody who needs a summer job.
+
+And two guards that were passing without checking anything: the date guard
+matched a wording that no longer existed, and derived its expectation from the
+function it was testing.
 
 ## Invariants that must not break
 

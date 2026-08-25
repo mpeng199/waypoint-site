@@ -460,7 +460,46 @@ All form inputs:
 
 - All animations disabled under `@media (prefers-reduced-motion: reduce)`
 - Entrance reveals use crossfade as fallback (no blur or scale)
-- Focus indicators available on buttons and form fields
+
+### The focus ring
+
+One ring, in `tokens.css`, for both halves of the site:
+
+```css
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{
+  outline:3px solid var(--focus); outline-offset:3px; border-radius:6px;
+}
+```
+
+The colour is a **property of the surface, not of the control**. Because the
+ring is offset outward it is painted on the ground the control sits on, so a
+button cannot know what colour its own ring should be. `--focus` defaults to
+`--green` for the light directory; each dark room re-points it once and
+everything inside inherits:
+
+| Surface | `--focus` | Ratio against its ground |
+|---|---|---|
+| the directory page | `--green` | 13.2:1 on white |
+| `.mast`, `.hfoot`, `.langnote`, `.vowbox` | `--gold-lit` | 11.5:1 on `--green-deep` |
+| `.sos` (the clay emergency panel) | `#FFF` | 7.6:1 |
+| `body` on the narrative side | `--gold-lit` | 11.5:1 |
+
+Dark *controls* — `.skip`, `.call`, a pressed `.chip` — deliberately set
+nothing: their ring lands on the light page outside them.
+
+Two controls hand their ring to a wrapper and set `outline:none`; both restore
+a `Highlight` ring under `@media (forced-colors: active)`, where the border
+and box-shadow standing in for it are discarded.
+
+`check_focus_ring` guards all of it, including telling a dark room from a dark
+control by asking the built HTML whether the class ever appears on something
+focusable.
+
+### Headings
+
+One `h1` per page, no level skipped, on all twenty pages
+(`check_heading_order`). Footer column labels are `h2` with a class, not `h4`
+chosen for its size.
 
 ### Text Sizing & Readability
 
@@ -474,6 +513,10 @@ All form inputs:
 - Generous spacing for better scannability (especially for older adults)
 - All form labels clearly associated with inputs
 - Alt text and ARIA labels on interactive elements
+- **Numbers dial in every language.** `dial()` links 911, 988 and 311 inside
+  the translated sentences at build time, so the ten language panels tap
+  through like the rest of the site rather than printing digits to memorise
+  (`check_language_numbers_dial`).
 
 ## The resident side — eighteen generated pages
 
