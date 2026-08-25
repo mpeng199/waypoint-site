@@ -14,6 +14,7 @@ Run after editing data/resources.csv:  python3 build_help.py
 
 import csv
 import html
+import json
 import re
 import sys
 from pathlib import Path
@@ -153,6 +154,372 @@ NEEDS = [
         "cats": ["Multi-Service / Navigation"],
     },
 ]
+
+# ------------------------------------------------------------- page copy
+# Each need also gets its own page, so each need needs its own voice: a short
+# name for a chip and a breadcrumb, a title split into the roman half and the
+# gold italic half the way every heading on this site is, a sentence of intro,
+# a search placeholder with words somebody would actually type, and a meta
+# description.
+#
+# Reading level is checked in check.py. Two rules the copy must not break: it
+# never states who qualifies for anything, and it never quotes a deadline.
+COPY = {
+    "safety": dict(
+        short="Not safe at home",
+        h1a="I'm not safe", h1b="where I live.",
+        intro="If someone at home or a partner is hurting you, frightening you, or "
+              "controlling you, these are the people to call. They answer at any hour, "
+              "they do not need your name, and they do not ask about immigration status.",
+        ph="Try: shelter, order of protection, hotline",
+        seo="Free help in New York City for domestic and gender-based violence: "
+            "24-hour hotlines, Family Justice Centers, safe shelter and free lawyers. "
+            "No immigration status asked."),
+    "crisis": dict(
+        short="Crisis & mental health",
+        h1a="I'm in crisis, or I need", h1b="someone to talk to.",
+        intro="If you feel unsafe with yourself, cannot cope, or are struggling with "
+              "drinking or drugs, someone is awake and trained to talk with you right "
+              "now. Calling is free and you do not have to give your name.",
+        ph="Try: someone to talk to, rehab, overdose",
+        seo="Free mental health and substance use help in New York City: 24-hour crisis "
+            "lines, counseling, treatment referral, overdose prevention, and support for "
+            "young and LGBTQ+ New Yorkers."),
+    "food": dict(
+        short="Food",
+        h1a="I need", h1b="food.",
+        intro="Food pantries, hot meals you can walk into, groceries, and help signing "
+              "up for SNAP — what most people still call food stamps. Nearly all of it "
+              "is free, and most of it does not ask about immigration status.",
+        ph="Try: food pantry near me, food stamps, hot meal",
+        seo="Free food in New York City: food pantries, soup kitchens, groceries, SNAP "
+            "and WIC sign-up help, and meals delivered to people who cannot leave home."),
+    "housing": dict(
+        short="Housing & shelter",
+        h1a="I need somewhere to stay, or", h1b="I might lose my home.",
+        intro="Shelter for tonight, help stopping an eviction, money toward rent you "
+              "have fallen behind on, and the free lawyers New York gives tenants. If "
+              "you have a court paper about your apartment, call someone here today.",
+        ph="Try: shelter tonight, eviction, back rent",
+        seo="Free housing help in New York City: shelter intake, eviction prevention, "
+            "free tenant lawyers, emergency rent money, and affordable housing."),
+    "bills": dict(
+        short="Medical bills",
+        h1a="I got a medical bill, or", h1b="my insurance said no.",
+        intro="This is the help Waypoint exists to carry to people. Every hospital in "
+              "New York has to offer financial assistance. The state hears appeals when "
+              "an insurer says no. Free counselors take these cases in dozens of "
+              "languages. Almost nobody who qualifies ever finds out.",
+        ph="Try: hospital bill, denied claim, prescription cost",
+        seo="Free help with medical bills and denied insurance claims in New York City: "
+            "hospital charity care, external appeals, prescription costs, medical debt, "
+            "and free expert counselors."),
+    "doctor": dict(
+        short="A doctor or dentist",
+        h1a="I need to see", h1b="a doctor or a dentist.",
+        intro="Clinics that see you whether or not you have insurance, and whether or "
+              "not you have papers. Many charge on a sliding scale, which means the "
+              "price depends on what you earn — and some charge nothing.",
+        ph="Try: clinic near me, dentist, no insurance",
+        seo="Low-cost and free health care in New York City: community clinics, dental "
+            "and vision care, sexual and reproductive health, and HIV care. Most do not "
+            "ask about immigration status."),
+    "legal": dict(
+        short="A lawyer",
+        h1a="I need a lawyer, or I have", h1b="an immigration question.",
+        intro="Free lawyers for the problems that get people hurt: eviction, "
+              "immigration, benefits that were cut off, wages that were not paid, "
+              "safety at home. None of these charge, and none of them are notarios.",
+        ph="Try: eviction lawyer, immigration, unpaid wages",
+        seo="Free legal help in New York City: housing and eviction, immigration and "
+            "deportation defense, benefits, wages, and family safety. Free, and not "
+            "notarios."),
+    "money": dict(
+        short="Paying for things",
+        h1a="I need help", h1b="paying for things.",
+        intro="Cash assistance, the heating and electric bill, free tax filing that "
+              "gets people thousands of dollars they were owed, and someone to sit down "
+              "with you about debt. All of it free.",
+        ph="Try: con ed bill, cash assistance, free tax help",
+        seo="Free help with money in New York City: cash assistance, heating and utility "
+            "bills, free tax preparation, health insurance, and free financial "
+            "counseling."),
+    "family": dict(
+        short="Kids & young people",
+        h1a="I need help with my kids, or", h1b="I'm a young person alone.",
+        intro="Free childcare and early learning, support for parents, and safe places "
+              "for young people who have nowhere to sleep. If you are under 25 and on "
+              "the street tonight, the youth shelters here are for you.",
+        ph="Try: free daycare, youth shelter, after school",
+        seo="Free help for children, parents and young people in New York City: "
+            "childcare and pre-K, family support, youth drop-in centers, and shelter "
+            "for young people."),
+    "senior": dict(
+        short="Older adults",
+        h1a="I'm an older adult,", h1b="or I care for one.",
+        intro="Meals, centers where there are people to talk to, help with Medicare and "
+              "the rent, and someone to call if an older person is being harmed or "
+              "taken advantage of.",
+        ph="Try: meals delivered, senior center, medicare",
+        seo="Free help for older New Yorkers: meals and Citymeals, senior centers, "
+            "Medicare and rent help, and protection for adults at risk."),
+    "clothes": dict(
+        short="Clothes & supplies",
+        h1a="I need clothes, a coat,", h1b="or baby supplies.",
+        intro="Winter coats, everyday clothes, diapers, cribs and children's gear, and "
+              "an interview outfit if you have one coming up. Free, and nobody asks why "
+              "you need it.",
+        ph="Try: winter coat, diapers, interview clothes",
+        seo="Free clothing and supplies in New York City: winter coats, everyday "
+            "clothes, diapers and baby gear, and free interview outfits."),
+    "work": dict(
+        short="A job, or classes",
+        h1a="I need", h1b="a job, or classes.",
+        intro="Free job training and placement, paid summer work for young people, "
+              "English classes, and finishing a high school diploma as an adult. None "
+              "of these charge tuition.",
+        ph="Try: job training, english classes, ged",
+        seo="Free job training, employment help and adult classes in New York City: "
+            "Workforce1 centers, paid youth jobs, free English classes, and high school "
+            "equivalency."),
+    "getting-there": dict(
+        short="Getting there",
+        h1a="I need help", h1b="getting there.",
+        intro="Half-price MetroCards for New Yorkers with low incomes, rides to medical "
+              "appointments, and Access-A-Ride if a disability makes the subway or bus "
+              "impossible.",
+        ph="Try: fair fares, access-a-ride, ride to the doctor",
+        seo="Help getting around New York City on a low income: Fair Fares half-price "
+            "MetroCards, reduced fares, Access-A-Ride, and free rides to medical "
+            "appointments."),
+    "veterans": dict(
+        short="Veterans",
+        h1a="I served", h1b="in the military.",
+        intro="Health care, benefits, housing and a crisis line, for people who served "
+              "and for their families. You do not need a discharge of any particular "
+              "kind to call and ask.",
+        ph="Try: va clinic, veteran benefits, crisis line",
+        seo="Free help for veterans in New York City: health care, benefits navigation, "
+            "housing, and the Veterans Crisis Line."),
+    "start": dict(
+        short="Not sure where to start",
+        h1a="I'm not sure", h1b="where to start.",
+        intro="If you do not know what to ask for, start here. One phone number, or one "
+              "website, that will listen to your situation and point you at the right "
+              "thing — in your language, at any hour, without asking about immigration "
+              "status.",
+        ph="Try: what do i qualify for, who do i call",
+        seo="Not sure where to start? New York City's free information and referral "
+            "lines, benefit screeners, and directories — in any language, at any hour."),
+}
+
+for _need in NEEDS:
+    _need.update(COPY[_need["key"]])
+assert set(COPY) == {n["key"] for n in NEEDS}, "COPY and NEEDS disagree"
+
+
+# ------------------------------------------------------------- the groups
+# Second level. A need with forty places under it is a wall; a need broken
+# into "somewhere to sleep tonight / stop an eviction / money for the rent" is
+# a page somebody can skim in ten seconds and leave with a phone number.
+#
+# The CSV's own Subcategory column cannot do this job: it is free text and
+# nearly every value is unique (118 rows carried 96 distinct subcategories),
+# so grouping by it produces groups of one. These are curated buckets instead,
+# matched against the row's subcategory, tags and name, in order — first rule
+# that fires wins, so put the specific rules above the general ones.
+#
+# A row that matches nothing lands in the need's final bucket, and the build
+# prints how many did, so a bucket quietly swallowing half a category shows up
+# the moment it happens rather than six months later.
+GROUPS = {
+    "safety": [
+        ("now",       "Talk to someone right now",
+         ["hotline", "crisis", "24-hour", "24/7"]),
+        ("centers",   "Walk in, or somewhere safe to sleep",
+         ["center", "shelter", "one-stop", "residential", "safe house"]),
+        ("legal",     "Legal help and orders of protection",
+         ["legal", "court", "order of protection", "immigration"]),
+        ("community", "Help in your language, or from your community",
+         ["asian", "latina", "arab", "lgbtq", "jewish", "african", "community"]),
+        ("more",      "More places that help", []),
+    ],
+    "crisis": [
+        ("now",       "Call or text right now",
+         ["crisis", "hotline", "lifeline", "text crisis", "warmline", "988"]),
+        ("using",     "Drinking, drugs, and overdose",
+         ["addiction", "substance", "overdose", "treatment", "harm reduction",
+          "recovery", "alcohol", "opioid"]),
+        ("young",     "For young people and LGBTQ+ people",
+         ["youth", "lgbtq", "trans", "queer", "trevor"]),
+        ("ongoing",   "Someone to keep talking to",
+         ["counsel", "therapy", "peer", "support", "clubhouse", "navigation"]),
+        ("more",      "More places that help", []),
+    ],
+    "food": [
+        ("today",     "Find food near you today",
+         ["locator", "reservation", "find", "map", "emergency food"]),
+        ("pantry",    "Pantries and groceries",
+         ["pantry", "grocer", "food network", "customer-choice"]),
+        ("meals",     "Hot meals you can walk into",
+         ["soup kitchen", "meals", "hot meal", "community kitchen"]),
+        ("snap",      "SNAP, WIC, and school meals",
+         ["snap", "wic", "benefit", "nutrition", "school meal", "food purchasing"]),
+        ("delivered", "Meals brought to you",
+         ["homebound", "delivered", "medically tailored", "citymeals"]),
+        ("more",      "More places that help", []),
+    ],
+    "housing": [
+        ("tonight",   "Somewhere to sleep tonight",
+         ["shelter", "intake", "emergency shelter", "drop-in", "safe haven"]),
+        ("eviction",  "Stop an eviction, or a landlord problem",
+         ["eviction", "tenant", "housing court", "landlord", "lockout", "repairs"]),
+        ("money",     "Money for the rent or the arrears",
+         ["arrears", "cash", "one shot", "rent", "voucher", "emergency cash"]),
+        ("permanent", "Finding somewhere permanent",
+         ["affordable", "lottery", "nycha", "section 8", "supportive housing"]),
+        ("street",    "If you are sleeping on the street",
+         ["street", "outreach", "homeless services", "unsheltered"]),
+        ("more",      "More places that help", []),
+    ],
+    "bills": [
+        ("start",     "Start here — the free bill experts",
+         ["medical bills", "denied claims", "consumer assistance", "advocate",
+          "health insurance help", "helpline"]),
+        ("charity",   "Getting a hospital bill reduced or wiped out",
+         ["charity care", "financial assistance", "hospital bill", "medical debt",
+          "financial counsel"]),
+        ("appeal",    "Fighting a denial or an insurance decision",
+         ["denial", "appeal", "external review", "grievance", "complaint",
+          "surprise bill"]),
+        ("rx",        "Paying for prescriptions",
+         ["medication", "prescription", "pharmac", "copay", "co-pay", "drug"]),
+        ("cover",     "Getting covered in the first place",
+         ["enrollment", "medicaid", "medicare", "marketplace", "navigator",
+          "health access"]),
+        ("more",      "More places that help", []),
+    ],
+    "doctor": [
+        ("clinic",    "Clinics that see you either way",
+         ["fqhc", "clinic", "health center", "hospitals", "primary care",
+          "care for homeless"]),
+        ("dental",    "Teeth",
+         ["dental", "dentist"]),
+        ("eyes",      "Eyes and glasses",
+         ["vision", "eye", "optical", "glasses"]),
+        ("sexual",    "Sexual and reproductive health",
+         ["sexual", "reproductive", "planned parenthood", "std", "sti",
+          "pregnan", "birth control"]),
+        ("hiv",       "HIV care and prevention",
+         ["hiv", "aids", "prep"]),
+        ("women",     "Care for women and new parents",
+         ["women", "maternal", "doula", "prenatal", "newborn"]),
+        ("more",      "More clinics and programs", []),
+    ],
+    "legal": [
+        ("any",       "Free lawyers for almost anything",
+         ["free civil", "free legal", "legal hotline", "civil legal",
+          "legal info", "legal services"]),
+        ("immigration", "Immigration",
+         ["immigra", "deportation", "ice", "asylum", "citizenship", "daca",
+          "undocument"]),
+        ("housing",   "Housing, eviction, and landlords",
+         ["tenant", "eviction", "housing"]),
+        ("money",     "Benefits, debt, and consumer problems",
+         ["benefit", "debt", "consumer", "wage", "employ", "unemployment"]),
+        ("family",    "Family, safety, and criminal matters",
+         ["family", "domestic", "criminal", "survivor", "child"]),
+        ("more",      "More legal help", []),
+    ],
+    "money": [
+        ("cash",      "Cash assistance and income",
+         ["income support", "cash assistance", "federal income", "ssi",
+          "disability", "unemployment"]),
+        ("utility",   "The heating, electric, or water bill",
+         ["utility", "heating", "heap", "energy", "water", "con edison"]),
+        ("tax",       "Taxes and the credits people miss",
+         ["tax", "eitc", "credit"]),
+        ("insurance", "Health insurance",
+         ["health insurance", "medicare", "medicaid", "enrollment"]),
+        ("coach",     "Someone to sit down with about money",
+         ["financial counsel", "coach", "budget", "banking", "debt"]),
+        ("more",      "More help with money", []),
+    ],
+    "family": [
+        ("childcare", "Childcare and early learning",
+         ["childcare", "child care", "early childhood", "head start", "pre-k",
+          "3-k", "daycare"]),
+        ("young",     "Young people alone, or on the street",
+         ["youth shelter", "runaway", "youth outreach", "drop-in", "homeless youth",
+          "lgbtq youth"]),
+        ("support",   "Support for parents and families",
+         ["family", "parent", "comprehensive youth", "home visiting"]),
+        ("school",    "School, after school, and summer",
+         ["school", "after school", "summer", "tutor", "education"]),
+        ("more",      "More help for families", []),
+    ],
+    "senior": [
+        ("start",     "Start here",
+         ["info & referral", "aging connect", "senior info", "navigation"]),
+        ("meals",     "Meals",
+         ["meals", "homebound", "nutrition", "citymeals"]),
+        ("centers",   "Centers, activities, and company",
+         ["center", "community centers", "social", "activities"]),
+        ("money",     "Money, rent, and benefits for older adults",
+         ["scrie", "rent", "benefit", "medicare", "epic", "money"]),
+        ("safety",    "If an older adult is being harmed",
+         ["protection", "at-risk", "abuse", "elder"]),
+        ("more",      "More help for older adults", []),
+    ],
+    "clothes": [
+        ("clothes",   "Clothes and winter coats",
+         ["coat", "clothing", "thrift", "multi-service"]),
+        ("baby",      "Babies and children",
+         ["baby", "diaper", "children", "crib", "stroller", "gear"]),
+        ("work",      "Clothes for a job or an interview",
+         ["work", "interview", "professional", "career", "dress for success"]),
+        ("more",      "More places for supplies", []),
+    ],
+    "work": [
+        ("jobs",      "Jobs and training",
+         ["job search", "training", "workforce", "career", "apprentice"]),
+        ("young",     "Paid work for young people",
+         ["youth paid", "youth job", "summer youth", "syep"]),
+        ("school",    "English classes and finishing school",
+         ["esol", "adult education", "ged", "hse", "literacy", "english"]),
+        ("more",      "More work and class programs", []),
+    ],
+    "getting-there": [
+        ("fare",      "Cheaper subway and bus fares",
+         ["half-fare", "fair fares", "reduced fare", "transit discount"]),
+        ("medical",   "Rides to medical appointments",
+         ["medical", "appointment", "treatment"]),
+        ("disability", "If you cannot use the subway or bus",
+         ["paratransit", "access-a-ride", "disabilit", "ambulette"]),
+        ("more",      "More help getting there", []),
+    ],
+    "veterans": [
+        ("start",     "Start here",
+         ["navigation", "veteran services", "info"]),
+        ("health",    "Health care",
+         ["healthcare", "health care", "va "]),
+        ("crisis",    "If you are in crisis",
+         ["crisis", "hotline"]),
+        ("more",      "More veteran programs", []),
+    ],
+    "start": [
+        ("call",      "One call, any question",
+         ["citywide info", "info & referral", "hotline", "311"]),
+        ("check",     "Check what you already qualify for",
+         ["screener", "eligibility", "benefits"]),
+        ("search",    "Search a directory yourself",
+         ["search", "directory", "resource directory", "locator"]),
+        ("papers",    "Papers, ID, and proof",
+         ["identification", "idnyc", "id ", "document", "birth certificate"]),
+        ("more",      "Other places that point the way", []),
+    ],
+}
+
 
 BOROUGHS = [
     ("bronx", "Bronx"),
@@ -679,104 +1046,347 @@ HONESTY = (
 )
 
 
-def render(rows):
-    n = len(rows)
-    # Within a group, anything tagged start-here leads.
-    #
-    # Rows otherwise render in CSV order, which was carefully ordered — every
-    # group already opened with the right resource. But that makes the order an
-    # accident of when a row was typed: the four medical-bill resources were
-    # appended, so "I got a medical bill" opened with a membership programme
-    # and put Community Health Advocates, which is the single best first call
-    # for a bill, eighth. The tag already existed in the data for exactly this.
-    def ordered(key):
-        group = [r for r in rows if key in r["_needs"]]
-        return sorted(group, key=lambda r: 0 if "start-here" in r["Tags"] else 1)
+# ---------------------------------------------------- which group a row is in
+def group_for(row, need_key):
+    """The second-level bucket, matched against what the row says it is.
 
-    by_need = {need["key"]: ordered(need["key"]) for need in NEEDS}
-    p = []
-    A = p.append
-    A('<!DOCTYPE html>')
-    A('<html lang="en">')
-    A('<head>')
-    A('<meta charset="UTF-8" />')
-    A('<meta name="viewport" content="width=device-width, initial-scale=1.0" />')
-    A('<title>Find free help in New York City — Waypoint</title>')
-    A('<meta name="description" content="A plain-language directory of free and '
-      'low-cost help in New York City: food, medical bills, housing, health care, '
-      'legal help, and more. Most of these do not ask about immigration status." />')
-    A('<meta name="theme-color" content="#13231A" />')
-    A('<meta property="og:title" content="Find free help in New York City — Waypoint" />')
-    A('<meta property="og:description" content="Food, medical bills, housing, a '
-      'doctor, a lawyer. Free help that already exists in New York, in one place." />')
-    A('<meta property="og:type" content="website" />')
-    A('<link rel="preconnect" href="https://fonts.googleapis.com" />')
-    A('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />')
-    A('<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />')
-    A('<link rel="stylesheet" href="tokens.css" />')
-    A('<link rel="stylesheet" href="help.css" />')
-    A('</head>')
-    A('<body class="help" id="top">')
-    A('<a class="skip" href="#needs">Skip to the list of help</a>')
-    # one copy of the phone glyph, referenced by every Call button below
-    A('<svg class="sprite" aria-hidden="true"><symbol id="i-phone" viewBox="0 0 24 24" '
-      'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" '
-      'stroke-linejoin="round"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 '
-      '2 0 0 1-2.2 2A17 17 0 0 1 4 5.2 2 2 0 0 1 6 3Z"/></symbol>'
-      '<symbol id="i-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-      'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
-      '<path d="M21 12a8 8 0 0 1-8 8H4l2.2-2.6A8 8 0 1 1 21 12Z"/></symbol></svg>')
+    Order matters: the first rule that fires wins, so the specific buckets are
+    listed above the general ones in GROUPS. Never matches on Description or
+    Notes — nearly every row's note mentions immigration status or cost, and
+    letting prose fire these rules put food pantries under "Immigration".
+    """
+    hay = " ".join([row["Subcategory"], row["Tags"], row["Resource Name"]]).lower()
+    buckets = GROUPS.get(need_key)
+    if not buckets:
+        return "more"
+    for key, _label, words in buckets:
+        if any(w in hay for w in words):
+            return key
+    return buckets[-1][0]
 
-    # ---- header
-    A('<header class="hhead">')
-    A('  <div class="hhead__in">')
-    A('    <a class="brand" href="index.html" aria-label="Waypoint home">')
-    A('      <svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>')
-    A('      <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>')
-    A('    </a>')
-    A('    <nav class="hhead__links" aria-label="Primary">')
-    A('      <a href="help.html" aria-current="page">Find help</a>')
-    A('      <a href="index.html#students">Students</a>')
-    A('      <a href="index.html#partners">Partners</a>')
-    A('    </nav>')
-    A('  </div>')
-    A('</header>')
 
-    A('<main class="wrap">')
+def need_by_key(key):
+    for need in NEEDS:
+        if need["key"] == key:
+            return need
+    raise KeyError(key)
 
-    # ---- language, first thing on the page
-    #
-    # The panels open on :target, so this whole feature is CSS. A reader who
-    # cannot read the English around it is the least likely person on earth to
-    # be running a modern browser with working JavaScript on good signal, and
-    # making them the one group whose entry point needs a script would be
-    # exactly backwards. help.js additionally applies the language filter when
-    # one of these is opened; it is not needed for the panel to appear.
-    A('<section class="langbar" aria-labelledby="langbar-h">')
-    A('  <h2 id="langbar-h" class="langbar__h">Get help in your language</h2>')
-    A('  <ul class="langbar__list">')
+
+def page_for(need_key):
+    return f"help-{need_key}.html"
+
+
+def ordered(rows, key):
+    """Within a need, the resource somebody should try first leads.
+
+    `start-here` is a tag in the data, applied to the row that is genuinely
+    the best opening move for that need. Everything else keeps CSV order,
+    which is hand-ordered per group.
+    """
+    group = [r for r in rows if key in r["_needs"]]
+    return sorted(group, key=lambda r: 0 if "start-here" in r["Tags"] else 1)
+
+
+# --------------------------------------------------------------- fragments
+FONTS = ('<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,'
+         'opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@'
+         '400;500;600;700&display=swap" rel="stylesheet" />')
+
+SPRITE = ('<svg class="sprite" aria-hidden="true"><symbol id="i-phone" viewBox="0 0 24 24" '
+          'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" '
+          'stroke-linejoin="round"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 '
+          '2 0 0 1-2.2 2A17 17 0 0 1 4 5.2 2 2 0 0 1 6 3Z"/></symbol>'
+          '<symbol id="i-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+          'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+          '<path d="M21 12a8 8 0 0 1-8 8H4l2.2-2.6A8 8 0 1 1 21 12Z"/></symbol></svg>')
+
+PIN = ('<svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 '
+       'c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/>'
+       '<circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>')
+
+
+def head(title, desc, skip_href, skip_label):
+    return [
+        '<!DOCTYPE html>', '<html lang="en">', '<head>',
+        '<meta charset="UTF-8" />',
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+        f'<title>{esc(title)}</title>',
+        f'<meta name="description" content="{esc(desc)}" />',
+        '<meta name="theme-color" content="#13231A" />',
+        f'<meta property="og:title" content="{esc(title)}" />',
+        f'<meta property="og:description" content="{esc(desc)}" />',
+        '<meta property="og:type" content="website" />',
+        '<link rel="preconnect" href="https://fonts.googleapis.com" />',
+        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />',
+        FONTS,
+        '<link rel="stylesheet" href="tokens.css" />',
+        '<link rel="stylesheet" href="help.css" />',
+        '</head>',
+        '<body class="help" id="top">',
+        f'<a class="skip" href="{skip_href}">{esc(skip_label)}</a>',
+        SPRITE,
+    ]
+
+
+def header_frag():
+    return [
+        '<header class="hhead">',
+        '  <div class="hhead__in">',
+        '    <a class="brand" href="index.html" aria-label="Waypoint home">',
+        f'      {PIN}',
+        '      <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>',
+        '    </a>',
+        '    <nav class="hhead__links" aria-label="Primary">',
+        '      <a href="help.html" aria-current="page">Find help</a>',
+        '      <a href="index.html#students">Students</a>',
+        '      <a href="index.html#partners">Partners</a>',
+        '    </nav>',
+        '  </div>',
+        '</header>',
+    ]
+
+
+def langbar_frag():
+    """Language access, first thing under the header, on every resident page.
+
+    Somebody who cannot read the page should not have to read the page to find
+    their way off it — and that is as true on "I need food" as it is on the
+    front of the directory, so this ships on all of them rather than only on
+    the one somebody happened to enter through.
+    """
+    out = ['<section class="langbar" aria-labelledby="langbar-h">',
+           '  <h2 id="langbar-h" class="langbar__h">Get help in your language</h2>',
+           '  <ul class="langbar__list">']
     for L in LANGUAGES:
-        A(f'    <li><a href="#lang-{L["key"]}" lang="{L["tag"]}" '
-          f'data-lang="{L["key"]}"{" dir=rtl" if L["dir"] == "rtl" else ""}>'
-          f'{esc(L["endonym"])}</a></li>')
-    A('  </ul>')
-    A('</section>')
-
+        out.append(f'    <li><a href="#lang-{L["key"]}" lang="{L["tag"]}" '
+                   f'data-lang="{L["key"]}"{" dir=rtl" if L["dir"] == "rtl" else ""}>'
+                   f'{esc(L["endonym"])}</a></li>')
+    out += ['  </ul>', '</section>']
     for L in LANGUAGES:
         rtl = ' dir="rtl"' if L["dir"] == "rtl" else ""
-        A(f'<section class="langnote" id="lang-{L["key"]}" lang="{L["tag"]}"{rtl} '
-          f'data-lang="{L["key"]}" aria-labelledby="lang-h-{L["key"]}">')
-        A(f'  <h2 id="lang-h-{L["key"]}">{esc(L["title"])}</h2>')
-        A(f'  <p>{esc(L["body"])}</p>')
-        A(f'  <p class="langnote__interp">{esc(L["interp"])}</p>')
-        A(f'  <p class="langnote__do"><a class="langnote__go" href="#dir" '
-          f'data-lang="{L["key"]}">{esc(L["cta"])}</a>')
-        A(f'  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>')
-        A('</section>')
+        out += [
+            f'<section class="langnote" id="lang-{L["key"]}" lang="{L["tag"]}"{rtl} '
+            f'data-lang="{L["key"]}" aria-labelledby="lang-h-{L["key"]}">',
+            f'  <h2 id="lang-h-{L["key"]}">{esc(L["title"])}</h2>',
+            f'  <p>{esc(L["body"])}</p>',
+            f'  <p class="langnote__interp">{esc(L["interp"])}</p>',
+            f'  <p class="langnote__do"><a class="langnote__go" href="#dir" '
+            f'data-lang="{L["key"]}">{esc(L["cta"])}</a>',
+            '  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>',
+            '</section>',
+        ]
+    return out
+
+
+def sos_frag(rows, slim=False):
+    by_name = {r["Resource Name"]: r for r in rows}
+    cls = "sos sos--slim" if slim else "sos"
+    out = [f'<section class="{cls}" aria-labelledby="sos-h">',
+           '  <h2 id="sos-h" class="sos__h">If you need help right now</h2>',
+           '  <ul class="sos__list">',
+           '    <li><a href="tel:911"><span class="sos__num">911</span>'
+           '<span class="sos__for">You are in danger, or someone is badly hurt</span></a></li>']
+    for name, why in SOS:
+        r = by_name.get(name)
+        if not r:
+            raise SystemExit(f"emergency strip: {name!r} is not in the directory")
+        kind, label, href = contact(r["Phone"])
+        if kind != "call":
+            raise SystemExit(f"emergency strip: {name!r} has no dialable number")
+        out.append(f'    <li><a href="tel:{esc(href)}"><span class="sos__num">'
+                   f'{esc(label)}</span><span class="sos__for">{esc(why)}</span></a></li>')
+    out.append('  </ul>')
+    if not slim:
+        out.append('  <p class="sos__note">These lines are free, and they are answered by '
+                   'people trained for exactly this. You can call them without giving '
+                   'your name.</p>')
+    out.append('</section>')
+    return out
+
+
+def vow_frag():
+    return [
+        '<section class="vowbox" aria-labelledby="vow-h">',
+        '  <h2 id="vow-h">Who we are, and what we will never do</h2>',
+        f'  <p class="vowbox__full">{HONESTY}</p>',
+        '  <p class="vowbox__src">This is printed on everything we hand out, and said '
+        'out loud at every table.</p>',
+        '</section>',
+    ]
+
+
+def footer_frag(n):
+    return [
+        '<footer class="hfoot">',
+        '  <div class="hfoot__in">',
+        f'    <a class="brand" href="index.html">{PIN}'
+        '<span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>',
+        '    <p class="hfoot__say">Waypoint is a student volunteer corps in New York '
+        'City. We do not run any of the programs on this page. We help people find '
+        'them.</p>',
+        '    <ul class="hfoot__links">',
+        '      <li><a href="help.html">Find help</a></li>',
+        '      <li><a href="index.html">About Waypoint</a></li>',
+        '      <li><a href="index.html#students">Volunteer with us</a></li>',
+        '      <li><a href="index.html#partners">For organizations</a></li>',
+        '      <li><a href="privacy.html">Privacy &amp; legal</a></li>',
+        '      <li><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@<wbr />gmail.com</a></li>',
+        '    </ul>',
+        f'    <p class="hfoot__ver">{n} resources. Last checked June 2026. '
+        'Programs change &mdash; if something here is wrong, please tell us.</p>',
+        '  </div>',
+        '</footer>',
+        '<script src="help.js" defer></script>',
+        '</body>', '</html>',
+    ]
+
+
+def filters_frag(compact=False):
+    """The three facets. Identical on the front page and on every category
+    page, because a chip that means one thing here and another thing there is
+    a chip nobody trusts."""
+    out = ['  <div class="find__filters">',
+           '    <fieldset class="fset"><legend>Where you are</legend><div class="chips">']
+    for key, label in BOROUGHS:
+        out.append(f'      <button type="button" class="chip" data-f="boro" data-v="{key}" '
+                   f'aria-pressed="false">{label}</button>')
+    out += ['    </div></fieldset>',
+            '    <fieldset class="fset"><legend>Language you speak</legend>',
+            '      <p class="fset__hint">Shows places that name your language, and '
+            'places that work through interpreters. Ask when you call.</p>',
+            '      <div class="chips">']
+    for L in LANGUAGES:
+        out.append(f'      <button type="button" class="chip" data-f="lang" data-v="{L["key"]}" '
+                   f'aria-pressed="false" lang="{L["tag"]}">{esc(L["endonym"])}</button>')
+    out += ['    </div></fieldset>',
+            '    <fieldset class="fset"><legend>Only show</legend><div class="chips">']
+    for key, label in [("free", "Free"), ("open-247", "Open 24/7"),
+                       ("no-status", "Does not ask immigration status"),
+                       ("phone", "You can call")]:
+        out.append(f'      <button type="button" class="chip" data-f="flags" data-v="{key}" '
+                   f'aria-pressed="false">{label}</button>')
+    out += ['    </div></fieldset>',
+            '    <button type="button" class="reset" hidden>Start over</button>',
+            '  </div>']
+    return out
+
+
+def search_frag(placeholder, scope_note):
+    return [
+        '<section class="find" aria-labelledby="find-h" hidden>',
+        '  <h2 id="find-h" class="sr-only">Search and narrow the list</h2>',
+        '  <div class="find__search">',
+        '    <label for="q">Search for what you need</label>',
+        '    <div class="find__box">',
+        '      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
+        'stroke="currentColor" stroke-width="1.8" stroke-linecap="round">'
+        '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+        f'      <input id="q" type="search" autocomplete="off" placeholder="{esc(placeholder)}" />',
+        '      <button type="button" class="find__clear" hidden>Clear</button>',
+        '    </div>',
+        f'    <p class="find__scope">{scope_note}</p>',
+        '  </div>',
+    ] + filters_frag() + [
+        '  <div class="find__foot">',
+        '    <p class="find__count" role="status" aria-live="polite"></p>',
+        '    <button type="button" class="printbtn" hidden>'
+        '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
+        'stroke="currentColor" stroke-width="1.7" stroke-linecap="round" '
+        'stroke-linejoin="round"><path d="M7 9V3h10v6M7 19H5a2 2 0 0 1-2-2v-5a2 2 '
+        '0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>'
+        'Print this list</button>',
+        '  </div>',
+        '</section>',
+    ]
+
+
+# --------------------------------------------------------------- the pages
+# How many resources each cluster shows on the front page before it hands off
+# to its own page. Three is the number that fits beside the heading without
+# the card becoming a list, and it is enough to show what KIND of thing is
+# behind the link — which is the only job a preview has.
+PREVIEW = 3
+
+
+def render_preview(r, need_key):
+    """One line in a cluster on the front page: the name, what it is for, and
+    the number if there is one. No badges, no disclosure — this is a look
+    through the door, not the room."""
+    a = ['<li class="pv">']
+    a.append(f'<a class="pv__n" href="{page_for(need_key)}#r-{esc(need_key)}-{esc(r["_id"])}">'
+             f'{esc(r["Resource Name"])}</a>')
+    short = r["Description"].split(". ")[0].rstrip(".")
+    a.append(f'<p class="pv__d">{esc(short)}.</p>')
+    kind, label, href = contact(r["Phone"])
+    if kind == "call":
+        a.append(f'<a class="pv__call" href="tel:{esc(href)}">'
+                 f'<svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>'
+                 f'{esc(label)}</a>')
+    elif kind == "text":
+        a.append(f'<a class="pv__call" href="{esc(href)}">'
+                 f'<svg class="ico" aria-hidden="true"><use href="#i-text"/></svg>'
+                 f'{esc(label)}</a>')
+    a.append('</li>')
+    return "".join(a)
+
+
+def index_json(rows):
+    """The compact index the front page's search runs against.
+
+    The front page no longer carries every resource — that is the whole point
+    of splitting the directory into fifteen pages — so search needs its own
+    copy of the facts. Keys are one letter because this ships on every visit
+    to the busiest page on the site: at 118 resources it is about 40 KB, and
+    it stays roughly linear as the directory grows, which the full markup does
+    not.
+
+    It is <script type="application/json">, not a fetch: one round trip fewer
+    on the connection this audience actually has, and no failure mode where
+    the page renders and the search silently never works.
+    """
+    out = []
+    for r in rows:
+        kind, label, href = contact(r["Phone"])
+        out.append({
+            "i": r["_id"],
+            "n": r["Resource Name"],
+            "k": r["Subcategory"],
+            "d": r["Description"],
+            "g": r["_needs"][0],
+            "c": kind,
+            "p": label,
+            "h": href,
+            "w": r["Website"],
+            "f": " ".join(r["_flags"]),
+            "b": " ".join(r["_boroughs"]),
+            "l": " ".join(r["_langs"]),
+            "s": haystack(r),
+        })
+    doc = {
+        "needs": {nd["key"]: nd["short"] for nd in NEEDS},
+        "page": {nd["key"]: page_for(nd["key"]) for nd in NEEDS},
+        "rows": out,
+    }
+    # `</` inside a JSON string would close the script element early.
+    return json.dumps(doc, ensure_ascii=False, separators=(",", ":")) \
+               .replace("</", "<\\/")
+
+
+def render_overview(rows):
+    n = len(rows)
+    by_need = {need["key"]: ordered(rows, need["key"]) for need in NEEDS}
+    p = []
+    A = p.append
+    p += head("Find free help in New York City — Waypoint",
+              "A plain-language directory of free and low-cost help in New York City: "
+              "food, medical bills, housing, health care, legal help, and more. Most of "
+              "these do not ask about immigration status.",
+              "#needs", "Skip to what you need help with")
+    p += header_frag()
+    A('<main class="wrap">')
+    p += langbar_frag()
 
     # ---- masthead
-    # The painted valley from index.html, in a frame. See help.css .mast for
-    # why this page goes dark exactly once and exactly here.
     A('<section class="mast">')
     A('  <div class="mast__bg" aria-hidden="true"></div>')
     A('  <span class="eyebrow mast__eye">Waypoint &middot; New York City</span>')
@@ -788,165 +1398,202 @@ def render(rows):
       'need to tell us anything. Pick what you need below, and call them yourself.</p>')
     A('</section>')
 
-    # ---- emergency
-    A('<section class="sos" aria-labelledby="sos-h">')
-    A('  <h2 id="sos-h" class="sos__h">If you need help right now</h2>')
-    A('  <ul class="sos__list">')
-    A('    <li><a href="tel:911"><span class="sos__num">911</span>'
-      '<span class="sos__for">You are in danger, or someone is badly hurt</span></a></li>')
-    by_name = {r["Resource Name"]: r for r in rows}
-    for name, why in SOS:
-        r = by_name.get(name)
-        if not r:
-            raise SystemExit(f"emergency strip: {name!r} is not in the directory")
-        kind, label, href = contact(r["Phone"])
-        if kind != "call":
-            raise SystemExit(f"emergency strip: {name!r} has no dialable number")
-        A(f'    <li><a href="tel:{esc(href)}"><span class="sos__num">'
-          f'{esc(label)}</span><span class="sos__for">{esc(why)}</span></a></li>')
-    A('  </ul>')
-    A('  <p class="sos__note">These lines are free, and they are answered by people '
-      'trained for exactly this. You can call them without giving your name.</p>')
+    p += sos_frag(rows)
+    A('<hr class="rule" />')
+
+    A('<noscript><p class="noscript-note">Search needs JavaScript, which is turned '
+      'off. Nothing is lost: every one of the fifteen headings below opens a page '
+      'with all of that kind of help on it, and every phone number on this page '
+      'dials.</p></noscript>')
+    p += search_frag("Try: food, rent, dentist, lawyer",
+                     "Searches all " + str(n) + " places, not just the ones shown below.")
+
+    # ---- search results (built by help.js from the index below; empty until then)
+    A('<section class="results" id="results" hidden aria-labelledby="results-h">')
+    A('  <h2 id="results-h" class="results__h"></h2>')
+    A('  <ul class="rows" id="resultRows"></ul>')
+    A('  <p class="dir__none" hidden>Nothing here matched that. Try a different word, '
+      'or <button type="button" class="linkish reset">show everything again</button>. '
+      'If you cannot find it, call <a href="tel:311">311</a> &mdash; they will point '
+      'you somewhere, in your language, at any hour.</p>')
     A('</section>')
 
-    # ---- search + filters
-    # The whole search block ships hidden and help.js reveals it, for the same
-    # reason the filter chips do: without a script none of it can work, and a
-    # search field that silently does nothing is worse than no search field.
-    # The <noscript> beside it is the native way to say so — it renders only
-    # when scripts are off, and needs no script of its own to decide that.
-    A('<noscript><p class="noscript-note">Search and filtering need JavaScript, '
-      'which is turned off. Everything is still here: all the places are listed '
-      'below, grouped by what you need. Use the list to jump to a group.</p></noscript>')
-    A('<section class="find" aria-labelledby="find-h" hidden>')
-    A('  <h2 id="find-h" class="sr-only">Search and narrow the list</h2>')
-    A('  <div class="find__search">')
-    A('    <label for="q">Search for what you need</label>')
-    A('    <div class="find__box">')
-    A('      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>')
-    A('      <input id="q" type="search" autocomplete="off" '
-      'placeholder="Try: food, rent, dentist, lawyer" />')
-    A('      <button type="button" class="find__clear" hidden>Clear</button>')
-    A('    </div>')
+    # ---- the clusters
+    A('<div class="clusters" id="needs">')
+    A('  <div class="clusters__head">')
+    A('    <h2 id="needs-h">What do you need help with?</h2>')
+    A('    <p class="clusters__say">Fifteen kinds of help. Each one shows a few '
+      'places, and opens a page with all of them.</p>')
     A('  </div>')
-
-    A('  <div class="find__filters">')
-    A('    <fieldset class="fset"><legend>Where you are</legend><div class="chips">')
-    for key, label in BOROUGHS:
-        A(f'      <button type="button" class="chip" data-f="boro" data-v="{key}" aria-pressed="false">{label}</button>')
-    A('    </div></fieldset>')
-    A('    <fieldset class="fset"><legend>Language you speak</legend>')
-    A('      <p class="fset__hint">Shows places that name your language, and '
-      'places that work through interpreters. Ask when you call.</p>')
-    A('      <div class="chips">')
-    for L in LANGUAGES:
-        A(f'      <button type="button" class="chip" data-f="lang" data-v="{L["key"]}" '
-          f'aria-pressed="false" lang="{L["tag"]}">{esc(L["endonym"])}</button>')
-    A('    </div></fieldset>')
-    A('    <fieldset class="fset"><legend>Only show</legend><div class="chips">')
-    for key, label in [("free", "Free"), ("open-247", "Open 24/7"),
-                       ("no-status", "Does not ask immigration status"),
-                       ("phone", "You can call")]:
-        A(f'      <button type="button" class="chip" data-f="flags" data-v="{key}" aria-pressed="false">{label}</button>')
-    A('    </div></fieldset>')
-    A('    <button type="button" class="reset" hidden>Start over</button>')
-    A('  </div>')
-    A('  <div class="find__foot">')
-    A('    <p class="find__count" role="status" aria-live="polite"></p>')
-    A('    <button type="button" class="printbtn" hidden>'
-      '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
-      'stroke="currentColor" stroke-width="1.7" stroke-linecap="round" '
-      'stroke-linejoin="round"><path d="M7 9V3h10v6M7 19H5a2 2 0 0 1-2-2v-5a2 2 '
-      '0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>'
-      'Print this list</button>')
-    A('  </div>')
-    A('</section>')
-
-    # ---- the needs index
-    A('<nav class="needs" id="needs" aria-labelledby="needs-h">')
-    A('  <h2 id="needs-h">What do you need help with?</h2>')
-    A('  <ul class="needs__grid">')
+    A('  <nav class="jump" aria-label="Jump to a kind of help"><ul>')
     for need in NEEDS:
-        c = len(by_need[need["key"]])
-        A(f'    <li><a class="need" href="#n-{need["key"]}" data-need="{need["key"]}">')
+        A(f'    <li><a href="#n-{need["key"]}">{esc(need["short"])}</a></li>')
+    A('  </ul></nav>')
+    A('  <ul class="clusters__grid">')
+    for need in NEEDS:
+        group = by_need[need["key"]]
+        c = len(group)
+        A(f'  <li><section class="cl" id="n-{need["key"]}" data-need="{need["key"]}" '
+          f'aria-labelledby="h-{need["key"]}">')
+        A('    <div class="cl__head">')
         A(f'      {icon(need["icon"])}')
-        A(f'      <span class="need__t">{esc(need["label"])}</span>')
-        A(f'      <span class="need__b">{esc(need["blurb"])}</span>')
-        A(f'      <span class="need__n">{c} place{"s" if c != 1 else ""}</span>')
-        A('    </a></li>')
+        A('      <div>')
+        A(f'        <h3 id="h-{need["key"]}"><a href="{page_for(need["key"])}">'
+          f'{esc(need["label"])}</a></h3>')
+        A(f'        <p class="cl__b">{esc(need["blurb"])}</p>')
+        A('      </div>')
+        A('    </div>')
+        A('    <ul class="cl__pv">')
+        for r in group[:PREVIEW]:
+            A("      " + render_preview(r, need["key"]))
+        A('    </ul>')
+        rest = max(0, c - PREVIEW)
+        more = (f'See all {c} places' if rest else
+                (f'See {"this place" if c == 1 else f"all {c} places"}'))
+        A(f'    <a class="cl__all" href="{page_for(need["key"])}">{more} '
+          f'<span class="arr">&rarr;</span></a>')
+        A('  </section></li>')
     A('  </ul>')
-    A('</nav>')
+    A('</div>')
 
-    # ---- the directory
-    #
-    # The printed sheet is a real output here, not an afterthought: students
-    # hand people paper at a table, and the person they hand it to may have no
-    # phone to open this on. It carries its own heading because a printout
-    # with no source on it is a photocopy of nothing.
+    p += vow_frag()
+    A('</main>')
+    A(f'<script type="application/json" id="ix">{index_json(rows)}</script>')
+    p += footer_frag(n)
+    return "\n".join(p) + "\n"
+
+
+def render_category(need, rows):
+    """One kind of help, on its own page: a rail you can skim, the resources
+    broken into buckets, and every neighbouring kind of help one tap away."""
+    key = need["key"]
+    group = ordered(rows, key)
+    n_all = len(rows)
+
+    # Rows that landed here through a keyword rather than their own category
+    # are honest cross-references, not members of this group, and saying so is
+    # better than mixing them in — somebody scanning "I got a medical bill"
+    # should be able to tell the bill experts from the clinic that also happens
+    # to help with paperwork.
+    primary = [r for r in group if key in [nd["key"] for nd in NEEDS
+                                           if r["Category"] in nd.get("cats", [])]]
+    crossed = [r for r in group if r not in primary]
+
+    buckets = GROUPS.get(key, [("more", "Places that help", [])])
+    filed = {b[0]: [] for b in buckets}
+    for r in primary:
+        filed[group_for(r, key)].append(r)
+    live = [(bk, label) for bk, label, _ in buckets if filed[bk]]
+
+    p = []
+    A = p.append
+    p += head(f'{need["label"]} — free help in New York City | Waypoint',
+              need["seo"],
+              "#dir", "Skip to the list")
+    p += header_frag()
+    A('<main class="wrap">')
+    A('<nav class="crumb" aria-label="Breadcrumb"><a href="help.html">'
+      '<span class="arr crumb__back" aria-hidden="true">&larr;</span> All free help</a>'
+      f'<span class="crumb__sep" aria-hidden="true">/</span><span aria-current="page">'
+      f'{esc(need["short"])}</span></nav>')
+    p += langbar_frag()
+
+    A('<section class="mast mast--cat">')
+    A('  <div class="mast__bg" aria-hidden="true"></div>')
+    A('  <span class="eyebrow mast__eye">Waypoint &middot; Free help in New York City</span>')
+    A(f'  <h1>{esc(need["h1a"])} <em>{esc(need["h1b"])}</em></h1>')
+    A(f'  <p class="mast__say">{esc(need["intro"])}</p>')
+    A(f'  <p class="mast__say mast__say--2"><b>{len(group)} '
+      f'{"place" if len(group) == 1 else "places"}</b> on this page. Nearly all are '
+      'free. Most do not ask about immigration status. You can call them yourself &mdash; '
+      'you do not have to go through us.</p>')
+    A('</section>')
+
+    p += sos_frag(rows, slim=True)
+
+    A('<noscript><p class="noscript-note">Search and filtering need JavaScript, which '
+      'is turned off. Everything is still here: every place on this page is listed '
+      'below, in labelled groups, and every phone number dials.</p></noscript>')
+
+    A('<div class="cat">')
+    # ---- the rail
+    A('<aside class="cat__rail" aria-labelledby="rail-h">')
+    A('  <h2 id="rail-h" class="rail__h">On this page</h2>')
+    A('  <nav class="rail__nav" aria-label="Sections of this page"><ul>')
+    for bk, label in live:
+        A(f'    <li><a href="#g-{key}-{bk}">{esc(label)}'
+          f'<span class="rail__n">{len(filed[bk])}</span></a></li>')
+    if crossed:
+        A(f'    <li><a href="#g-{key}-also">Also worth calling'
+          f'<span class="rail__n">{len(crossed)}</span></a></li>')
+    A('  </ul></nav>')
+    A('</aside>')
+
+    A('<div class="cat__main">')
+    p += search_frag(esc(need["ph"]), "Searches the " + str(len(group)) +
+                     " places on this page.")
     A('<div class="printhead" aria-hidden="true">')
+    A(f'  <p class="printhead__t">{esc(need["label"])}</p>')
     A('  <p class="printhead__s">Collected by Waypoint, a student volunteer '
       'corps. We do not run any of these programs &mdash; we help people find '
       'them. Checked June 2026; programs change.</p>')
     A('</div>')
     A('<div class="dir" id="dir">')
-    A('<p class="dir__none" hidden>Nothing here matched that. Try a different word, '
-      'or <button type="button" class="linkish reset">show everything again</button>. '
+    A('<p class="dir__none" hidden>Nothing here matched that. Try a different word, or '
+      '<button type="button" class="linkish reset">show everything again</button>. '
       'If you cannot find it, call <a href="tel:311">311</a> &mdash; they will point '
       'you somewhere, in your language, at any hour.</p>')
-    for need in NEEDS:
-        group = by_need[need["key"]]
-        A(f'<section class="grp" id="n-{need["key"]}" data-need="{need["key"]}" '
-          f'aria-labelledby="h-{need["key"]}">')
+    for bk, label in live:
+        A(f'<section class="grp" id="g-{key}-{bk}" data-need="{key}" '
+          f'aria-labelledby="gh-{key}-{bk}">')
         A('  <div class="grp__head">')
-        A(f'    {icon(need["icon"])}')
-        A('    <div>')
-        A(f'      <h2 id="h-{need["key"]}">{esc(need["label"])}</h2>')
-        A(f'      <p>{esc(need["blurb"])}</p>')
-        A('    </div>')
-        A(f'    <a class="grp__top" href="#needs">Back to the list</a>')
+        A(f'    <h2 id="gh-{key}-{bk}">{esc(label)}</h2>')
+        A('    <a class="grp__top" href="#top">Back to the top</a>')
         A('  </div>')
         A('  <ul class="rows">')
-        for r in group:
-            A(render_row(r, need["key"]))
+        for r in filed[bk]:
+            A(render_row(r, key))
         A('  </ul>')
-        A("</section>")
-    A("</div>")
+        A('</section>')
+    if crossed:
+        A(f'<section class="grp grp--also" id="g-{key}-also" data-need="{key}" '
+          f'aria-labelledby="gh-{key}-also">')
+        A('  <div class="grp__head">')
+        A(f'    <h2 id="gh-{key}-also">Also worth calling</h2>')
+        A('    <a class="grp__top" href="#top">Back to the top</a>')
+        A('  </div>')
+        A('  <p class="grp__why">These are filed under something else, but they '
+          'answer this too.</p>')
+        A('  <ul class="rows">')
+        for r in crossed:
+            A(render_row(r, key))
+        A('  </ul>')
+        A('</section>')
+    A('</div>')
 
-    # ---- honesty
-    A('<section class="vowbox" aria-labelledby="vow-h">')
-    A('  <h2 id="vow-h">Who we are, and what we will never do</h2>')
-    A(f'  <p class="vowbox__full">{HONESTY}</p>')
-    A('  <p class="vowbox__src">This is printed on everything we hand out, and said '
-      'out loud at every table.</p>')
-    A('</section>')
+    # ---- neighbours
+    A('<nav class="sibs" aria-labelledby="sibs-h">')
+    A('  <h2 id="sibs-h">Something else?</h2>')
+    A('  <ul>')
+    for other in NEEDS:
+        if other["key"] == key:
+            continue
+        c = len(ordered(rows, other["key"]))
+        A(f'    <li><a href="{page_for(other["key"])}">{icon(other["icon"])}'
+          f'<span class="sibs__t">{esc(other["label"])}</span>'
+          f'<span class="sibs__n">{c}</span></a></li>')
+    A('  </ul>')
+    A(f'  <p class="sibs__all"><a href="help.html">Back to all {n_all} places '
+      '<span class="arr">&rarr;</span></a></p>')
+    A('</nav>')
+    A('</div>')   # cat__main
+    A('</div>')   # cat
 
+    p += vow_frag()
     A('</main>')
-
-    # ---- footer
-    A('<footer class="hfoot">')
-    A('  <div class="hfoot__in">')
-    A('    <a class="brand" href="index.html">'
-      '<svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/>'
-      '<circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>'
-      '<span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>')
-    A('    <p class="hfoot__say">Waypoint is a student volunteer corps in New York '
-      'City. We do not run any of the programs on this page. We help people find '
-      'them.</p>')
-    A('    <ul class="hfoot__links">')
-    A('      <li><a href="index.html">About Waypoint</a></li>')
-    A('      <li><a href="index.html#students">Volunteer with us</a></li>')
-    A('      <li><a href="index.html#partners">For organizations</a></li>')
-    A('      <li><a href="privacy.html">Privacy &amp; legal</a></li>')
-    A('      <li><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@<wbr />gmail.com</a></li>')
-    A('    </ul>')
-    A(f'    <p class="hfoot__ver">{n} resources. Last checked June 2026. '
-      'Programs change &mdash; if something here is wrong, please tell us.</p>')
-    A('  </div>')
-    A('</footer>')
-    A('<script src="help.js" defer></script>')
-    A('</body>')
-    A('</html>')
+    p += footer_frag(n_all)
     return "\n".join(p) + "\n"
+
 
 def selfcheck():
     """The phone parser, which is the one place here where being wrong hurts
@@ -979,6 +1626,35 @@ def selfcheck():
                 f"{r['Resource Name']}: unusable tel: {href!r} from {r['Phone']!r}"
 
 
+def build():
+    """Write the front page and one page per need.
+
+    Splitting the directory was not cosmetic. One page carrying every resource
+    was 250 KB of markup and fifteen headings deep, and the person it is for
+    opens it frightened, on a phone, looking for one phone number. Now the
+    front page is a way in — fifteen clusters, three examples each — and each
+    kind of help gets a page built to be skimmed: a rail of what is on it,
+    resources in named buckets rather than one run of forty, and every
+    neighbouring kind of help one tap away.
+
+    Nothing about the contract changed: every page is static HTML with every
+    resource in it, every phone number is a real tel: link, and JavaScript
+    only ever hides rows that are already there.
+    """
+    rows = load()
+    written = []
+
+    overview = ROOT / "help.html"
+    overview.write_text(render_overview(rows), encoding="utf-8")
+    written.append(overview)
+
+    for need in NEEDS:
+        path = ROOT / page_for(need["key"])
+        path.write_text(render_category(need, rows), encoding="utf-8")
+        written.append(path)
+    return rows, written
+
+
 if __name__ == "__main__":
     selfcheck()
     print("selfcheck ok")
@@ -989,6 +1665,28 @@ if __name__ == "__main__":
     for need in NEEDS:
         print(f'  {c[need["key"]]:3}  {need["label"]}')
     print(f'  urgent: {sum(1 for r in rows if r["_urgent"])}')
+
+    # Where the catch-all buckets are swallowing a category. A "More places
+    # that help" holding half the page means the buckets above it are wrong,
+    # and this is the only place that would ever say so.
+    stuffed = []
+    for need in NEEDS:
+        grp = ordered(rows, need["key"])
+        primary = [r for r in grp
+                   if need["key"] in [nd["key"] for nd in NEEDS
+                                      if r["Category"] in nd.get("cats", [])]]
+        if not primary:
+            continue
+        last = GROUPS[need["key"]][-1][0]
+        n_last = sum(1 for r in primary if group_for(r, need["key"]) == last)
+        if n_last > max(2, len(primary) * 0.34):
+            stuffed.append(f'{need["key"]}: {n_last}/{len(primary)} fell through to '
+                           f'"{GROUPS[need["key"]][-1][1]}"')
+    if stuffed:
+        print("BUCKETS TOO COARSE:", file=sys.stderr)
+        for s in stuffed:
+            print("   ", s, file=sys.stderr)
+
     missing = [r["Resource Name"] for r in rows
                if contact(r["Phone"])[0] == "none" and not r["Website"]]
     unparsed = [(r["Resource Name"], r["Phone"]) for r in rows
@@ -997,6 +1695,9 @@ if __name__ == "__main__":
         print("PHONE NOT PARSED:", unparsed, file=sys.stderr)
     if missing:
         print("NO WAY TO REACH:", missing, file=sys.stderr)
-    OUT.write_text(render(rows), encoding="utf-8")
-    kb = OUT.stat().st_size / 1024
-    print(f"wrote {OUT.name}  {kb:.0f} KB")
+
+    _, written = build()
+    total = sum(p.stat().st_size for p in written) / 1024
+    front = written[0].stat().st_size / 1024
+    print(f"wrote {len(written)} pages, {total:.0f} KB total "
+          f"({written[0].name} {front:.0f} KB)")

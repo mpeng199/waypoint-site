@@ -18,14 +18,28 @@ import html
 import os
 import re
 import importlib
+import json
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 VERBOSE = "-v" in sys.argv or "--verbose" in sys.argv
 
-PAGES = ["index.html", "help.html", "privacy.html", "terms.html", "partner-pitch.html",
-         "cohort-onboarding.html", "students.html", "partners.html", "admin.html"]
+# The directory used to be one page. It is now a front page and one page per
+# kind of help, generated together by build_help.py, so the list of resident
+# pages is derived from the generator rather than typed here — a need added to
+# NEEDS gets checked the moment it exists, and cannot be forgotten.
+def _need_keys():
+    import build_help
+    return [n["key"] for n in build_help.NEEDS]
+
+
+CATEGORY_PAGES = [f"help-{k}.html" for k in _need_keys()]
+RESIDENT_PAGES = ["help.html"] + CATEGORY_PAGES
+
+PAGES = (["index.html", "help.html"] + CATEGORY_PAGES +
+         ["privacy.html", "terms.html", "partner-pitch.html",
+          "cohort-onboarding.html", "students.html", "partners.html", "admin.html"])
 
 # Printed on every flyer, every table sign, and the site. It exists to stop a
 # vulnerable person mistaking a student for a professional; it does not get
@@ -41,8 +55,9 @@ HONESTY = ("We are trained student volunteers.",
 
 # The statement is duplicated by hand with no shared source, so the linter is
 # the shared source. index.html carries it twice: the vow scene and the footer.
-HONESTY_SURFACES = {"index.html": 2, "help.html": 1, "partner-pitch.html": 1,
-                    "cohort-onboarding.html": 1}
+HONESTY_SURFACES = dict({"index.html": 2, "partner-pitch.html": 1,
+                         "cohort-onboarding.html": 1},
+                        **{p: 1 for p in RESIDENT_PAGES})
 
 # Cut from the public site: schools/replication and the Companionship track.
 FORBIDDEN = [
@@ -1300,6 +1315,108 @@ def check_lane():
 # help.html is generated, so the first and most important thing to know is
 # whether the file on disk is still what the generator produces. Everything
 # below it is only meaningful if that holds.
+def check_theme_is_shared():
+    """The two halves of the site must be one brand, provably.
+
+    They were two stylesheets that happened to agree on eight hex values, and
+    "happened to agree" is a state that ends the first time somebody nudges a
+    green. tokens.css is now the only place a brand hue exists; both
+    stylesheets map onto it and neither may restate one.
+
+    This is not a tidiness check. The directory and the narrative page share
+    an audience — a partner reads the story then sends somebody to the
+    directory — and the moment the greens diverge the second page reads as a
+    different organisation, which for a page about medical bills is a page
+    somebody does not trust.
+    """
+    if not (ROOT / "tokens.css").is_file():
+        bad("tokens.css is missing; the shared palette is gone and each "
+            "stylesheet is back to defining its own brand")
+        return
+    tokens = read("tokens.css")
+
+    hues = {h.upper() for h in re.findall(r"#[0-9A-Fa-f]{6}", tokens)}
+    inks = set(re.findall(r"rgba\(\s*25[12],\s*25[45],\s*24[47],\s*\.\d+\s*\)", tokens))
+    if len(hues) >= 14:
+        ok(f"tokens.css defines the palette in one place ({len(hues)} hues)")
+    else:
+        bad(f"tokens.css only defines {len(hues)} hues; the palette has leaked "
+            "back into the stylesheets")
+
+    for sheet in ("styles.css", "help.css"):
+        css = read(sheet)
+        # Comments are prose about the palette and legitimately name hues.
+        body = re.sub(r"/\*.*?\*/", " ", css, flags=re.S)
+        restated = sorted({h.upper() for h in re.findall(r"#[0-9A-Fa-f]{6}", body)} & hues)
+        if restated:
+            bad(f"{sheet} restates brand hue(s) {restated} instead of using the "
+                "token. Two copies of a colour is two colours as soon as one "
+                "is edited.")
+        else:
+            ok(f"{sheet} restates no brand hue")
+        leaked = sorted(set(re.findall(
+            r"rgba\(\s*25[12],\s*25[45],\s*24[47],\s*\.\d+\s*\)", body)) & inks)
+        if leaked:
+            bad(f"{sheet} restates cream-on-dark ink level(s) {leaked}; use "
+                "--ink-soft / --ink-faint / --ink-strong / --hair")
+        else:
+            ok(f"{sheet} takes its cream-on-dark ink levels from the tokens")
+
+    # Loaded first, and by every page that loads either stylesheet — a page
+    # that loads help.css without tokens.css renders with every custom
+    # property undefined, which is a page with no colours at all.
+    for page in PAGES:
+        if not (ROOT / page).is_file():
+            continue
+        src = read(page)
+        uses = [n for n in ("styles.css", "help.css") if f'href="{n}"' in src]
+        if not uses:
+            continue
+        if 'href="tokens.css"' not in src:
+            bad(f"{page} loads {uses[0]} without tokens.css, so every colour on "
+                "it is an undefined custom property")
+            continue
+        if src.index('href="tokens.css"') > min(src.index(f'href="{n}"') for n in uses):
+            bad(f"{page} loads tokens.css after {uses[0]}; the variables must be "
+                "defined before the rules that read them")
+    ok("every page that loads a stylesheet loads tokens.css first")
+
+    # The devices that make the two halves recognisable as one place. Each of
+    # these was carried across deliberately; losing one is how the directory
+    # quietly becomes a different website.
+    front, story = read("help.html"), read("index.html")
+    helpcss = read("help.css")
+    for what, test in [
+        ("the brand lockup, identical on both",
+         '<span class="brand__txt">Waypoint<small>Student Health Corps</small></span>'
+         in front and
+         '<span class="brand__txt">Waypoint<small>Student Health Corps</small></span>'
+         in story),
+        ("the eyebrow above the title", 'class="eyebrow mast__eye"' in front),
+        ("the roman-then-gold-italic heading", "<em>" in front and
+         ".mast h1 em{ color:var(--gold); }" in helpcss),
+        ("the painted valley behind the masthead", 'class="mast__bg"' in front and
+         "assets/band.webp" in helpcss),
+        ("the deep green footer", ".hfoot{ background:var(--green-deep)" in helpcss),
+    ]:
+        if test:
+            ok(f"carried across: {what}")
+        else:
+            bad(f"the directory has lost {what}, which is one of the things that "
+                "makes it read as the same organisation as the narrative page")
+
+    if (ROOT / "assets" / "band.webp").is_file():
+        kb = (ROOT / "assets" / "band.webp").stat().st_size / 1024
+        if kb <= 40:
+            ok(f"assets/band.webp is {kb:.0f} KB")
+        else:
+            bad(f"assets/band.webp is {kb:.0f} KB. The masthead image is the only "
+                "picture on a page built for somebody on transit data; over 40 KB "
+                "it stops being worth what it buys.")
+    else:
+        bad("assets/band.webp is missing, so the masthead has no picture in it")
+
+
 def check_directory_is_generated():
     """help.html must equal what build_help.py produces, byte for byte.
 
@@ -1331,15 +1448,28 @@ def check_directory_is_generated():
         return
 
     rows = build_help.load()
-    fresh = build_help.render(rows)
-    on_disk = read("help.html")
-    if fresh == on_disk:
-        ok(f"help.html matches build_help.py's output ({len(rows)} resources)")
+    want = {"help.html": build_help.render_overview(rows)}
+    for need in build_help.NEEDS:
+        want[build_help.page_for(need["key"])] = build_help.render_category(need, rows)
+
+    stale = [name for name, fresh in want.items()
+             if not (ROOT / name).is_file() or read(name) != fresh]
+    if not stale:
+        ok(f"all {len(want)} resident pages match build_help.py's output "
+           f"({len(rows)} resources)")
     else:
-        bad("help.html is not what build_help.py produces. It was hand-edited, "
-            "or data/resources.csv changed without a rebuild — either way the "
-            "next `python3 build_help.py` silently discards the difference. "
-            "Run it.")
+        bad(f"{len(stale)} resident page(s) are not what build_help.py produces "
+            f"({', '.join(sorted(stale)[:4])}). They were hand-edited, or "
+            "data/resources.csv changed without a rebuild — either way the next "
+            "`python3 build_help.py` silently discards the difference. Run it.")
+
+    orphans = sorted(p.name for p in ROOT.glob("help-*.html") if p.name not in want)
+    if orphans:
+        bad(f"stale category page(s) with no need behind them: {orphans}. A need "
+            "was renamed or removed and its page was left behind, so the site "
+            "still serves a directory nothing links to and nothing regenerates.")
+    else:
+        ok("no orphaned category pages")
 
     unreachable = [r["Resource Name"] for r in rows
                    if build_help.contact(r["Phone"])[0] == "none" and not r["Website"]]
@@ -1358,28 +1488,28 @@ def check_directory_reachable():
     this is the guard for the "988 then press 1 / text 838255" class of bug,
     where stripping non-digits across a whole cell produced +19881838255.
     """
-    src = read("help.html")
+    src = "\n".join(read(p) for p in CATEGORY_PAGES)
     rows = re.findall(r'<li class="r"[^>]*>(.*?)</li>', src, flags=re.S)
     if not rows:
-        bad("help.html: no resource rows at all")
+        bad("the category pages carry no resource rows at all")
         return
-    ok(f"help.html: {len(rows)} resource rows present in the HTML")
+    ok(f"the category pages carry {len(rows)} resource rows in the HTML")
 
     unreachable = [r for r in rows if 'href="tel:' not in r
                    and 'href="sms:' not in r and 'class="visit"' not in r]
     if unreachable:
         names = re.findall(r'class="r__name">([^<]+)', "".join(unreachable))
-        bad(f"help.html: {len(unreachable)} resource(s) with no phone and no "
+        bad(f"{len(unreachable)} resource(s) with no phone and no "
             f"website, so there is no way to act on them: {names[:5]}")
     else:
-        ok("help.html: every resource has a phone number or a website")
+        ok("every rendered resource has a phone number or a website")
 
     tels = set(re.findall(r'href="tel:([^"]+)"', src))
     bad_tels = [t for t in tels if not re.fullmatch(r"\+1[0-9]{10}|[0-9]{3}", t)]
     if bad_tels:
-        bad(f"help.html: tel: links that will not dial: {bad_tels}")
+        bad(f"tel: links that will not dial: {bad_tels}")
     else:
-        ok(f"help.html: all {len(tels)} phone links are a short code or a full +1 number")
+        ok(f"all {len(tels)} phone links are a short code or a full +1 number")
 
 
 def check_directory_emergency():
@@ -1415,44 +1545,170 @@ def check_directory_emergency():
 
 
 def check_directory_no_js_contract():
-    """The page must be usable with JavaScript off.
+    """The resident pages must be usable with JavaScript off.
 
     The whole reason the rows are generated into the HTML instead of fetched
     is that the reader may be on a locked-down library terminal, a dying
-    phone, or a connection that drops help.js. So: no row may ship hidden, and
-    the only controls that ship hidden are the ones that genuinely cannot work
-    without a script. Nobody is offered a control that does nothing.
+    phone, or a connection that drops help.js. So: on a category page no row
+    may ship hidden, and on every resident page the only controls that ship
+    hidden are the ones that genuinely cannot work without a script. Nobody is
+    offered a control that does nothing.
     """
-    src = read("help.html")
-    rows = re.findall(r'<li class="r"[^>]*>', src)
-    hidden_rows = [r for r in rows if "hidden" in r]
-    if hidden_rows:
-        bad(f"help.html: {len(hidden_rows)} row(s) ship with the hidden "
-            f"attribute, so a reader without JavaScript never sees them")
-    else:
-        ok("help.html: no resource row is hidden in the served HTML")
+    for page in CATEGORY_PAGES:
+        src = read(page)
+        hidden_rows = [r for r in re.findall(r'<li class="r"[^>]*>', src) if "hidden" in r]
+        if hidden_rows:
+            bad(f"{page}: {len(hidden_rows)} row(s) ship with the hidden "
+                f"attribute, so a reader without JavaScript never sees them")
+    ok(f"no resource row is hidden in any of the {len(CATEGORY_PAGES)} category pages")
 
-    for sel, why in [(r'<section class="find"[^>]*\shidden>', "the search and filter block"),
-                     (r'<p class="dir__none" hidden>', "the no-matches message"),
-                     (r'<button type="button" class="printbtn" hidden>', "the print button")]:
-        if re.search(sel, src):
-            ok(f"help.html: {why} ships hidden and is revealed by help.js")
-        else:
-            bad(f"help.html: {why} no longer ships hidden — without JavaScript "
-                f"it would be a control that does nothing")
+    for page in RESIDENT_PAGES:
+        src = read(page)
+        for sel, why in [(r'<section class="find"[^>]*\shidden>', "the search and filter block"),
+                         (r'class="dir__none" hidden>', "the no-matches message"),
+                         (r'<button type="button" class="printbtn" hidden>', "the print button")]:
+            if not re.search(sel, src):
+                bad(f"{page}: {why} no longer ships hidden — without JavaScript "
+                    f"it would be a control that does nothing")
+        if "<noscript>" not in src:
+            bad(f"{page}: no <noscript> note. With scripts off the search block "
+                "vanishes with no explanation of where it went.")
+    ok(f"across {len(RESIDENT_PAGES)} resident pages, every script-only control "
+       "ships hidden with a <noscript> note beside it")
 
-    if "<noscript>" in src:
-        ok("help.html: a <noscript> note explains what is unavailable and why")
-    else:
-        bad("help.html: no <noscript> note. With scripts off the search block "
-            "vanishes with no explanation of where it went.")
-
+    # help.js may only *hide* rows on a category page: everything there is
+    # already in the markup. The front page is the one exception, and it is a
+    # deliberate one — it carries fifteen clusters of three, not the whole
+    # directory, so its search has to build results from the index. The rule
+    # that replaces "never build markup" is narrower and stronger: the index
+    # must cover every resource, and every row it builds must point at a real
+    # anchor on a real category page.
     js = read("help.js")
-    for meth in ["innerHTML", "insertAdjacentHTML", "document.write"]:
+    for meth in ["document.write", "insertAdjacentHTML"]:
         if meth in js:
-            bad(f"help.js uses {meth}; this script may only hide rows, never "
-                f"build them, or the no-JavaScript page stops matching the real one")
-    ok("help.js builds no markup; it only narrows what is already served")
+            bad(f"help.js uses {meth}")
+    builds = js.count("innerHTML")
+    if builds > 2:
+        bad(f"help.js writes innerHTML in {builds} places. Building markup is "
+            "allowed only for front-page search results; anywhere else it "
+            "means a resource exists that the no-JavaScript page never shows.")
+    else:
+        ok("help.js builds markup only for front-page search results")
+
+    src = read("help.html")
+    m = re.search(r'<script type="application/json" id="ix">(.*?)</script>', src, re.S)
+    if not m:
+        bad("help.html: the search index is gone, so the front page's search "
+            "box can no longer reach anything that is not one of the previews")
+        return
+    try:
+        ix = json.loads(m.group(1).replace("<\\/", "</"))
+    except Exception as e:
+        bad(f"help.html: the search index is not valid JSON ({e}); the front "
+            "page's search silently does nothing")
+        return
+
+    import build_help
+    rows = build_help.load()
+    if len(ix["rows"]) == len(rows):
+        ok(f"help.html: the search index covers all {len(rows)} resources, not "
+           "only the ones previewed")
+    else:
+        bad(f"help.html: the search index has {len(ix['rows'])} entries for "
+            f"{len(rows)} resources. Searching the front page cannot find the "
+            "difference.")
+
+    ids = {}
+    for page in CATEGORY_PAGES:
+        for i in re.findall(r'\sid="(r-[^"]+)"', read(page)):
+            ids[i] = page
+    broken = [it for it in ix["rows"]
+              if f"r-{it['g']}-{it['i']}" not in ids]
+    if broken:
+        bad(f"{len(broken)} search result(s) link to an anchor that does not "
+            f"exist on any category page, e.g. {broken[0]['n']!r} -> "
+            f"help-{broken[0]['g']}.html#r-{broken[0]['g']}-{broken[0]['i']}")
+    else:
+        ok(f"every one of the {len(ix['rows'])} search results links to a real "
+           "anchor on a real category page")
+
+
+def check_directory_clusters():
+    """The front page is fifteen clusters, each a way in to one page.
+
+    The failure this guards against is quiet and total: a cluster whose "See
+    all" link points at a page that does not exist, or a cluster showing three
+    previews of a need whose page shows something else. Either way somebody
+    taps and lands nowhere.
+    """
+    import build_help
+    src = read("help.html")
+    rows = build_help.load()
+
+    clusters = re.findall(r'<section class="cl" id="n-([a-z\-]+)"', src)
+    keys = [n["key"] for n in build_help.NEEDS]
+    if clusters == keys:
+        ok(f"help.html: all {len(keys)} clusters present, in the order NEEDS defines")
+    else:
+        bad(f"help.html: the clusters {clusters} do not match NEEDS {keys}")
+
+    # Every cluster hands off to its own page, and the count it promises is
+    # the count that page delivers. A "See all 19 places" over a page holding
+    # eleven is the kind of small lie that stops somebody trusting the rest.
+    for need in build_help.NEEDS:
+        key = need["key"]
+        page = build_help.page_for(key)
+        block = re.search(
+            r'<section class="cl" id="n-%s".*?</section>' % re.escape(key), src, re.S)
+        if not block:
+            bad(f"help.html: no cluster for {key}")
+            continue
+        block = block.group(0)
+        if f'href="{page}"' not in block:
+            bad(f"help.html: the {key} cluster does not link to {page}")
+            continue
+        promised = re.search(r'class="cl__all"[^>]*>See (?:all )?(\d+)? ?', block)
+        want = len(build_help.ordered(rows, key))
+        actual = len(re.findall(r'<li class="r"', read(page)))
+        if promised and promised.group(1) and int(promised.group(1)) != want:
+            bad(f"help.html: the {key} cluster promises {promised.group(1)} "
+                f"places; there are {want}")
+        elif actual != want:
+            bad(f"{page} renders {actual} rows for {want} resources")
+    ok(f"every cluster links to its page, and promises the number that page holds")
+
+    previews = re.findall(r'<li class="pv">', src)
+    per = build_help.PREVIEW
+    expect = sum(min(per, len(build_help.ordered(rows, n["key"])))
+                 for n in build_help.NEEDS)
+    if len(previews) == expect:
+        ok(f"help.html: {len(previews)} previews, {per} per cluster — the front "
+           "page shows a way in, not the whole directory")
+    else:
+        bad(f"help.html: {len(previews)} previews where {expect} were expected. "
+            "The front page's job is to not be the whole directory.")
+
+    # The rail on each category page is that page's table of contents. A rail
+    # entry pointing at a section that is not there is a dead link in the one
+    # control built for skimming.
+    for page in CATEGORY_PAGES:
+        cat = read(page)
+        rail = re.findall(r'class="rail__nav"[^>]*>.*?</nav>', cat, re.S)
+        if not rail:
+            bad(f"{page}: no rail, so there is no way to see what is on the page "
+                "without scrolling all of it")
+            continue
+        targets = re.findall(r'href="#(g-[^"]+)"', rail[0])
+        ids = set(re.findall(r'\sid="(g-[^"]+)"', cat))
+        missing = [t for t in targets if t not in ids]
+        if missing:
+            bad(f"{page}: rail links to {missing}, which is not on the page")
+        heads = re.findall(r'<section class="grp[^"]*" id="(g-[^"]+)"', cat)
+        if targets != heads:
+            bad(f"{page}: the rail lists {targets} but the page has {heads}, in "
+                "that order — the contents and the page disagree")
+    ok(f"every rail on the {len(CATEGORY_PAGES)} category pages matches its page, "
+       "in order")
 
 
 def check_directory_languages():
@@ -1509,50 +1765,65 @@ def check_directory_languages():
 
 
 def check_directory_needs():
-    """Every need offered in the index must lead to something.
+    """Every need offered must lead to something, on its own page.
 
-    The index is a promise: fifteen sentences, each saying "there is help for
-    this". A heading with nothing under it, or a tile pointing at a section
-    that no longer exists, breaks that promise silently.
+    The front page is a promise: fifteen sentences, each saying "there is help
+    for this". A cluster over an empty page, or a bucket heading with nothing
+    under it, breaks that promise silently.
     """
-    src = read("help.html")
-    tiles = re.findall(r'<a class="need" href="#n-([a-z-]+)"', src)
-    groups = re.findall(r'<section class="grp" id="n-([a-z-]+)"', src)
-    if tiles and tiles == groups:
-        ok(f"help.html: all {len(tiles)} needs in the index match the sections, in order")
-    else:
-        bad(f"help.html: the need index {tiles} does not match the sections {groups}")
+    import build_help
+    rows = build_help.load()
 
     # The back-link must survive the phone. It was display:none under 640px —
-    # on the one device where this page scrolls longest and there is nothing
+    # on the one device where these pages scroll longest and there is nothing
     # else to climb back with. Checked once, not per group.
     if re.search(r"@media \(max-width:640px\)\{.*?\.grp__top\{[^}]*display:\s*none",
                  read("help.css"), flags=re.S):
         bad("help.css: .grp__top is hidden on phones, so a reader who has "
-            "scrolled into a group has no way back to the list of needs")
+            "scrolled into a group has no way back to the top of the page")
     else:
-        ok("help.css: the back-link to the needs list survives on a phone")
+        ok("help.css: the back-link survives on a phone")
 
-    for g in groups:
-        block = src.split(f'id="n-{g}"', 1)[-1].split("</section>", 1)[0]
-        n = block.count('<li class="r"')
-        if n:
-            ok(f"help.html: '{g}' offers {n} place(s)")
-        else:
-            bad(f"help.html: '{g}' is a heading with nothing under it")
-
-        # If anything in the group is marked start-here, it has to be what the
-        # group opens with. Rows otherwise fall in CSV order, which makes the
+    for need in build_help.NEEDS:
+        page = build_help.page_for(need["key"])
+        src = read(page)
+        groups = re.findall(r'<section class="grp[^"]*" id="(g-[^"]+)"', src)
+        if not groups:
+            bad(f"{page}: no groups at all")
+            continue
+        for g in groups:
+            block = src.split(f'id="{g}"', 1)[-1].split("</section>", 1)[0]
+            if not block.count('<li class="r"'):
+                bad(f"{page}: '{g}' is a heading with nothing under it")
+        # If anything on the page is marked start-here, it has to be the first
+        # thing on the page. Rows otherwise fall in CSV order, which makes the
         # first thing somebody reads an accident of when it was typed — that is
         # how "I got a medical bill" came to open with a membership programme
         # and bury Community Health Advocates eighth.
-        first = re.search(r'<li class="r"[^>]*data-find="([^"]*)"', block)
-        marked = 'start-here' in block
-        if marked and first and "start-here" not in first.group(1):
-            bad(f"help.html: '{g}' has a start-here resource but does not open "
-                f"with it, so the best first call is not the first thing read")
-        elif marked:
-            ok(f"help.html: '{g}' opens with its start-here resource")
+        first = re.search(r'<li class="r"[^>]*data-find="([^"]*)"', src)
+        if "start-here" in src and first and "start-here" not in first.group(1):
+            bad(f"{page}: something here is marked start-here but the page does "
+                "not open with it, so the best first call is not the first read")
+    ok(f"every bucket on all {len(CATEGORY_PAGES)} category pages has resources "
+       "under it, and each page opens with its best first call")
+
+    # A cluster preview must be a real resource on the page it links to, with
+    # the same name. A preview quoting a name the page does not carry is the
+    # front page advertising something that is not there.
+    front = read("help.html")
+    for need in build_help.NEEDS:
+        block = re.search(r'<section class="cl" id="n-%s".*?</section>'
+                          % re.escape(need["key"]), front, re.S)
+        if not block:
+            continue
+        names = re.findall(r'class="pv__n"[^>]*>([^<]+)</a>', block.group(0))
+        page = read(build_help.page_for(need["key"]))
+        for nm in names:
+            if f">{nm}</h3>" not in page:
+                bad(f'help.html: the {need["key"]} cluster previews {nm!r}, which '
+                    f'is not on {build_help.page_for(need["key"])}')
+    ok("every preview on the front page is a resource that is really on the "
+       "page it links to")
 
 
 def check_directory_a11y():
@@ -1584,15 +1855,34 @@ def check_directory_a11y():
     # count the page prints must be resources, not rows, or it overstates the
     # directory by exactly the number of things we cross-filed.
     keys = re.findall(r'data-key="([^"]+)"', src)
-    lede = re.search(r"list of <b>(\d+) places</b>", src)
+    front = read("help.html")
+    keys = re.findall(r'<li class="r"[^>]*data-key="([^"]+)"',
+                      "\n".join(read(p) for p in CATEGORY_PAGES))
+    lede = re.search(r"list of <b>(\d+) places</b>", front)
     if not lede:
-        bad("help.html: the lede no longer states how many places are listed")
+        bad("help.html: the masthead no longer states how many places are listed")
     elif int(lede.group(1)) == len(set(keys)):
-        ok(f"help.html: the lede's count ({lede.group(1)}) is unique resources, "
-           f"not the {len(keys)} rows rendered")
+        ok(f"help.html: the masthead's count ({lede.group(1)}) is unique "
+           f"resources, not the {len(keys)} rows rendered across the pages")
     else:
-        bad(f"help.html: the lede claims {lede.group(1)} places but there are "
-            f"{len(set(keys))} distinct resources")
+        bad(f"help.html: the masthead claims {lede.group(1)} places but the "
+            f"category pages carry {len(set(keys))} distinct resources")
+
+    # Every category page states its own count too, and that one has to be the
+    # number of rows on that page. It is the promise somebody checks against
+    # what they can see.
+    import build_help
+    rows = build_help.load()
+    for need in build_help.NEEDS:
+        page = build_help.page_for(need["key"])
+        src = read(page)
+        m = re.search(r"<b>(\d+) places?</b> on this page", src)
+        actual = len(set(re.findall(r'data-key="([^"]+)"', src)))
+        if not m:
+            bad(f"{page}: does not say how many places are on it")
+        elif int(m.group(1)) != actual:
+            bad(f"{page}: promises {m.group(1)} places, carries {actual}")
+    ok(f"every category page's count matches the rows on it")
 
 
 def check_directory_print():
@@ -1704,9 +1994,8 @@ def check_doors_have_resources():
         bad("index.html: no doors found, so the promises cannot be checked")
         return
 
-    helptext = strip_tags(read("help.html")).lower()
-    bills = read("help.html").split('id="n-bills"', 1)
-    bills = strip_tags(bills[-1].split("</section>", 1)[0]).lower() if len(bills) > 1 else ""
+    helptext = strip_tags("\n".join(read(p) for p in RESIDENT_PAGES)).lower()
+    bills = strip_tags(read("help-bills.html")).lower()
 
     for door in named:
         door = door.replace("&amp;", "&").strip()
@@ -1736,9 +2025,11 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
+               check_theme_is_shared,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
+               check_directory_clusters,
                check_directory_a11y, check_directory_print,
                check_home_offers_help, check_doors_have_resources]:
         before = len(passes) + len(failures)

@@ -4,14 +4,11 @@
    ============================================================ */
 
 :root{
-  /* The hues, the two typefaces, the easings and the shapes all come from
-     tokens.css, which help.css loads too — that shared file is what keeps the
-     dark room and the daylight page provably the same brand. Everything below
-     is this side's own: the ink levels a dark ground needs, and the scroll
-     geometry that only exists here. */
-  --ink-soft:rgba(252,254,247,.78);
-  --ink-faint:rgba(252,254,247,.55);
-
+  /* The hues, the ink levels, the two typefaces, the easings and the shapes
+     all come from tokens.css, which help.css loads too — that shared file is
+     what keeps the dark room and the daylight page provably the same brand.
+     Everything below is this side's own: the scroll geometry, which exists
+     nowhere else. */
   --container:1280px;
   --pad:clamp(22px,5vw,80px);
   /* The space either side of every block. On a desktop this is the whole
@@ -263,10 +260,10 @@ img,svg{ display:block; max-width:100%; }
    ============================================================ */
 /* the 50vh is the footer's half of the gap that keeps it off the closing line's
    screen — solid ground you land on before any of the links show up */
-.footer{ position:relative; z-index:3; background:var(--green-deep); border-top:1px solid rgba(252,254,247,.12);
+.footer{ position:relative; z-index:3; background:var(--green-deep); border-top:1px solid var(--hair);
   padding:var(--gap) 0 36px; }
 .footer__wrap{ max-width:var(--container); margin-inline:auto; padding-inline:var(--pad); }
-.footer__grid{ display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; padding-bottom:44px; border-bottom:1px solid rgba(252,254,247,.12); }
+.footer__grid{ display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; padding-bottom:44px; border-bottom:1px solid var(--hair); }
 .footer__note{ margin-top:20px; max-width:44ch; font-size:14px; color:var(--ink-soft); line-height:1.65; }
 .footer__col h4{ font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:14px; font-weight:600; }
 .footer__col a{ display:block; font-size:14px; color:var(--ink-soft); padding:5px 0; transition:color .2s; }
@@ -1022,7 +1019,7 @@ img,svg{ display:block; max-width:100%; }
    organisation, so it is the one that does not look like the others. */
 .nav__links a.nav__find{ color:var(--green-deep); background:var(--gold);
   text-shadow:none; }
-.nav__links a.nav__find:hover{ background:#F0D69A; color:var(--green-deep); }
+.nav__links a.nav__find:hover{ background:var(--gold-lit); color:var(--green-deep); }
 
 @media (max-width:900px){
   .helplinks{ columns:1; margin-top:24px; }

@@ -85,7 +85,7 @@ b,strong{ font-weight:600; }
 }
 
 .skip{ position:absolute; left:-9999px; top:0; z-index:200;
-  background:var(--green); color:#FBFFF4; padding:14px 20px;
+  background:var(--green); color:var(--mint); padding:14px 20px;
   font-weight:600; border-radius:0 0 var(--r-s) 0; }
 .skip:focus{ left:0; }
 
@@ -140,20 +140,20 @@ b,strong{ font-weight:600; }
    JavaScript, so it must not depend on any. */
 .langnote{ display:none; }
 .langnote:target{ display:block; }
-.langnote{ background:var(--green); color:#FBFFF4; border-radius:var(--r);
+.langnote{ background:var(--green); color:var(--mint); border-radius:var(--r);
   padding:clamp(22px,3.4vw,34px); margin:16px 0 8px; scroll-margin-top:84px; }
 .langnote h2{ font-size:clamp(1.5rem,1.3rem + 1vw,2.1rem); margin-bottom:.55em;
   line-height:1.25; }
-.langnote p{ max-width:64ch; line-height:1.7; color:rgba(251,255,244,.94); }
+.langnote p{ max-width:64ch; line-height:1.7; color:var(--ink-strong); }
 .langnote__interp{ margin-top:1em; padding-top:1em;
-  border-top:1px solid rgba(251,255,244,.22); }
+  border-top:1px solid var(--hair); }
 .langnote__do{ margin-top:1.3em; display:flex; flex-wrap:wrap; gap:10px 22px;
   align-items:center; }
 .langnote__go{ display:inline-flex; align-items:center; min-height:48px;
   padding:11px 20px; border-radius:var(--r-s); background:var(--gold);
   color:var(--green-deep); font-weight:600; text-decoration:none; }
-.langnote__go:hover{ background:#F0D69A; }
-.langnote__x{ color:rgba(251,255,244,.72); font-size:.9rem;
+.langnote__go:hover{ background:var(--gold-lit); }
+.langnote__x{ color:var(--ink-soft); font-size:.9rem;
   display:inline-flex; align-items:center; min-height:44px; }
 .langnote:focus-visible, .langnote__go:focus-visible, .langnote__x:focus-visible{
   outline-color:#FFF; }
@@ -193,7 +193,7 @@ b,strong{ font-weight:600; }
   line-height:1.04; max-width:20ch; text-wrap:balance; }
 .mast h1 em{ color:var(--gold); }
 .mast__say{ margin-top:clamp(16px,2.2vw,26px); max-width:58ch; font-size:1.04em;
-  line-height:1.6; color:rgba(252,254,247,.86); }
+  line-height:1.6; color:var(--ink-soft); }
 .mast__say b{ color:var(--cream); font-weight:600; }
 .mast__say--2{ margin-top:.75em; }
 /* A device the narrative site uses at every chapter edge. Here it separates
@@ -206,7 +206,7 @@ b,strong{ font-weight:600; }
    Somebody scanning this page in a panic gets one block that is unmistakably
    a different thing from the directory below it, and the numbers inside it
    are the only white objects on the page. */
-.sos{ background:var(--urgent); color:#FDF6F3; border-radius:var(--r);
+.sos{ background:var(--urgent); color:var(--clay-ink); border-radius:var(--r);
   padding:clamp(22px,3.4vw,34px); margin-bottom:clamp(28px,5vw,48px); }
 .sos__h{ font-size:clamp(1.35rem,1.2rem + .7vw,1.7rem); color:#FFF; margin-bottom:.7em; }
 /* Fixed 1 / 2 / 4, not auto-fit. There are exactly four numbers here and
@@ -262,7 +262,7 @@ b,strong{ font-weight:600; }
   transition:background .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease); }
 .chip:hover{ border-color:var(--green-2); color:var(--ink); }
 .chip[aria-pressed="true"]{ background:var(--green); border-color:var(--green);
-  color:#FBFFF4; }
+  color:var(--mint); }
 .reset,.linkish{ font:inherit; font-size:.94rem; font-weight:600; cursor:pointer;
   background:none; border:0; color:var(--green); text-decoration:underline;
   text-underline-offset:3px; padding:8px 0; justify-self:start; }
@@ -280,23 +280,86 @@ b,strong{ font-weight:600; }
 /* Screen-invisible, paper-only. */
 .printhead{ display:none; }
 
-/* ------------------------------------------------------------- the needs */
-.needs{ margin-bottom:clamp(34px,6vw,60px); scroll-margin-top:84px; }
-.needs h2{ font-size:clamp(1.7rem,1.3rem + 1.6vw,2.4rem); margin-bottom:.7em; }
-.needs__grid{ display:grid; gap:12px;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
-.need{ display:grid; grid-template-columns:auto minmax(0,1fr); gap:4px 14px; min-width:0;
-  align-items:start; text-decoration:none; height:100%;
+/* ---------------------------------------------------------- the clusters */
+/* The front page used to be every resource in the directory, one after
+   another, fifteen headings deep. That is a wall, and the person it is for
+   arrives frightened, on a phone, wanting one phone number.
+
+   So the front page is now a way in: fifteen clusters, each showing what kind
+   of thing is behind it — three real places, with real numbers — and opening
+   a page built for that one kind of help. Nobody has to read past the cluster
+   that matches their sentence. */
+.clusters{ margin-bottom:clamp(34px,6vw,60px); scroll-margin-top:84px; }
+.clusters__head h2{ font-size:clamp(1.7rem,1.3rem + 1.6vw,2.4rem); }
+.clusters__say{ margin-top:.55em; color:var(--ink-2); max-width:56ch; }
+
+/* A way past fifteen cards without scrolling through fifteen cards. */
+.jump{ margin:clamp(18px,2.6vw,26px) 0 clamp(20px,3vw,30px);
+  padding-bottom:2px; }
+.jump ul{ display:flex; flex-wrap:wrap; gap:8px; }
+.jump a{ display:inline-flex; align-items:center; min-height:40px;
+  padding:6px 14px; border:1.5px solid var(--line); border-radius:var(--r-pill);
+  background:var(--surface); font-size:.9rem; font-weight:500;
+  text-decoration:none; color:var(--ink-2);
+  transition:border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease); }
+.jump a:hover{ border-color:var(--green-2); background:var(--line-2); color:var(--ink); }
+
+.clusters__grid{ display:grid; gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); }
+.cl{ display:flex; flex-direction:column; height:100%; min-width:0;
   background:var(--surface); border:1.5px solid var(--line);
-  border-radius:var(--r); padding:18px 18px 16px;
-  transition:border-color .18s var(--ease), transform .18s var(--ease),
-             box-shadow .18s var(--ease); }
-.need:hover{ border-color:var(--green-2); transform:translateY(-3px); box-shadow:var(--shadow-up); }
-.need .ico{ width:26px; height:26px; color:var(--green-2); grid-row:1/3; margin-top:2px; }
-.need__t{ font-family:var(--display); font-size:1.16rem; line-height:1.2; color:var(--ink); }
-.need__b{ font-size:.9rem; color:var(--ink-2); line-height:1.45; }
-.need__n{ grid-column:2; font-size:.8rem; font-weight:600; color:var(--gold-deep);
-  text-transform:uppercase; letter-spacing:.06em; margin-top:8px; }
+  border-radius:var(--r); padding:clamp(18px,2.2vw,24px);
+  box-shadow:var(--shadow); scroll-margin-top:84px;
+  transition:border-color .18s var(--ease), box-shadow .18s var(--ease); }
+.cl:hover{ border-color:var(--green-2); box-shadow:var(--shadow-up); }
+.cl:focus-within{ border-color:var(--green-2); }
+.cl__head{ display:grid; grid-template-columns:auto minmax(0,1fr); gap:14px;
+  align-items:start; }
+.cl__head .ico{ width:26px; height:26px; color:var(--green-2); margin-top:2px; }
+.cl h3{ font-size:1.2rem; line-height:1.2; }
+/* The whole heading is the link, so the tap target is the sentence somebody
+   read, not a chevron beside it. */
+.cl h3 a{ text-decoration:none; color:var(--ink); }
+.cl h3 a:hover{ color:var(--green-2); text-decoration:underline;
+  text-underline-offset:3px; text-decoration-thickness:1.5px; }
+.cl__b{ margin-top:5px; font-size:.9rem; color:var(--ink-2); line-height:1.45; }
+
+.cl__pv{ margin:16px 0 0; padding:14px 0 0; border-top:1px solid var(--line-2);
+  display:grid; gap:12px; }
+.pv{ min-width:0; }
+.pv__n{ font-family:var(--display); font-size:1.02rem; line-height:1.25;
+  color:var(--ink); text-decoration:none;
+  text-decoration-line:underline; text-decoration-color:transparent;
+  text-underline-offset:3px; text-decoration-thickness:1.5px;
+  transition:text-decoration-color .16s var(--ease), color .16s var(--ease); }
+.pv__n:hover{ color:var(--green-2); text-decoration-color:var(--gold-deep); }
+.pv__d{ margin-top:2px; font-size:.86rem; color:var(--ink-2); line-height:1.4; }
+/* A phone number on the front page is the shortest path there is between
+   somebody arriving and somebody being helped, so the preview carries one. */
+.pv__call{ display:inline-flex; align-items:center; gap:7px; margin-top:7px;
+  min-height:36px; padding:5px 12px; border-radius:var(--r-pill);
+  background:var(--line-2); border:1.5px solid var(--line);
+  font-size:.86rem; font-weight:600; color:var(--green);
+  text-decoration:none; transition:background .16s var(--ease), border-color .16s var(--ease); }
+.pv__call:hover{ background:var(--mint-2); border-color:var(--green-2); }
+.pv__call .ico{ width:15px; height:15px; flex:none; }
+
+.cl__all{ margin-top:16px; padding-top:14px; border-top:1px solid var(--line-2);
+  display:inline-flex; align-items:center; gap:9px; min-height:44px;
+  font-weight:600; font-size:.95rem; color:var(--green); text-decoration:none; }
+.cl__all .arr{ color:var(--gold-deep); }
+.cl__all:hover{ color:var(--green-deep); text-decoration:underline;
+  text-underline-offset:4px; }
+
+/* ------------------------------------------------------------- results */
+/* Search results on the front page. The front page does not carry every
+   resource any more, so these are built by help.js from the index at the
+   bottom of the document — using the same .r markup as a real row, so there
+   is exactly one resource card design on this site. */
+.results{ margin-bottom:clamp(30px,5vw,50px); scroll-margin-top:84px; }
+.results__h{ font-size:clamp(1.4rem,1.15rem + 1vw,1.9rem); margin-bottom:.8em; }
+.r__where{ margin-top:10px; font-size:.86rem; }
+.r__where a{ color:var(--green); font-weight:600; text-underline-offset:3px; }
 
 /* --------------------------------------------------------- the directory */
 /* A column so the groups can be reordered by relevance during a search; see
@@ -307,12 +370,91 @@ b,strong{ font-weight:600; }
   max-width:66ch; }
 .dir__none a{ color:var(--green); font-weight:600; }
 
+/* ============================================================
+   CATEGORY PAGES — one kind of help, built to be skimmed.
+
+   The rail is the difference between a page you read and a page you scan:
+   "somewhere to sleep tonight / stop an eviction / money for the rent" tells
+   somebody in four seconds whether their sentence is on this page and where.
+   On a phone it becomes a row of chips above the list, which is the same
+   information in the shape a thumb can use.
+   ============================================================ */
+.crumb{ display:flex; flex-wrap:wrap; align-items:center; gap:10px;
+  padding:18px 0 2px; font-size:.86rem; color:var(--ink-3); }
+.crumb a{ display:inline-flex; align-items:center; gap:8px; min-height:44px;
+  font-weight:600; color:var(--green); text-decoration:none; }
+.crumb a:hover{ text-decoration:underline; text-underline-offset:3px; }
+.crumb__back{ color:var(--gold-deep); }
+.crumb a:hover .crumb__back{ transform:translateX(-4px); }
+.crumb__sep{ color:var(--line); }
+
+.cat{ display:grid; gap:clamp(20px,3vw,40px); align-items:start; }
+@media (min-width:940px){
+  .cat{ grid-template-columns:236px minmax(0,1fr); }
+  .cat__rail{ position:sticky; top:78px; }
+}
+.cat__main{ min-width:0; }
+.rail__h{ font-family:var(--sans); font-size:.8rem; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3);
+  margin-bottom:10px; }
+.rail__nav ul{ display:flex; flex-wrap:wrap; gap:6px; }
+.rail__nav a{ display:flex; align-items:center; justify-content:space-between;
+  gap:10px; min-height:44px; padding:8px 14px; border-radius:var(--r-pill);
+  border:1.5px solid var(--line); background:var(--surface);
+  font-size:.9rem; font-weight:500; color:var(--ink-2); text-decoration:none;
+  transition:border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease); }
+.rail__nav a:hover{ border-color:var(--green-2); background:var(--line-2); color:var(--ink); }
+.rail__n{ flex:none; font-size:.78rem; font-weight:700; color:var(--gold-deep);
+  font-variant-numeric:tabular-nums; }
+@media (min-width:940px){
+  .rail__nav ul{ display:grid; gap:4px; }
+  .rail__nav a{ border-color:transparent; background:none; border-radius:var(--r-s);
+    padding:9px 12px; }
+  .rail__nav a:hover{ border-color:transparent; background:var(--line-2); }
+}
+
+/* Neighbouring kinds of help. Somebody who came here for food and turns out
+   to need a lawyer should not have to go back to the front page to find out
+   we have one. */
+.sibs{ margin-top:clamp(34px,5vw,56px); padding-top:clamp(26px,3.5vw,38px);
+  border-top:1px solid var(--line); }
+.sibs h2{ font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem); margin-bottom:.7em; }
+.sibs ul{ display:grid; gap:8px;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); }
+.sibs a{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:12px;
+  align-items:center; min-height:52px; padding:10px 14px;
+  border:1.5px solid var(--line); border-radius:var(--r-s);
+  background:var(--surface); text-decoration:none; color:var(--ink);
+  transition:border-color .16s var(--ease), background .16s var(--ease); }
+.sibs a:hover{ border-color:var(--green-2); background:var(--line-2); }
+.sibs .ico{ width:20px; height:20px; color:var(--green-2); }
+.sibs__t{ font-size:.93rem; line-height:1.3; }
+.sibs__n{ font-size:.8rem; font-weight:700; color:var(--gold-deep);
+  font-variant-numeric:tabular-nums; }
+.sibs__all{ margin-top:18px; }
+.sibs__all a{ display:inline-flex; align-items:center; gap:9px; min-height:44px;
+  border:0; padding:0; background:none; font-weight:600; color:var(--green); }
+.sibs__all a:hover{ background:none; text-decoration:underline; text-underline-offset:4px; }
+.sibs__all .arr{ color:var(--gold-deep); }
+
+/* A slim emergency strip for the category pages. The front page's version
+   explains itself; here the numbers alone are right, because somebody who
+   reached this page has already been told once. */
+.sos--slim{ padding:clamp(16px,2.2vw,22px) clamp(18px,2.4vw,26px); }
+.sos--slim .sos__h{ font-size:1.05rem; margin-bottom:.6em; }
+.sos--slim .sos__list a{ padding:10px 13px; }
+.sos--slim .sos__num{ font-size:1.25rem; }
+.sos--slim .sos__for{ font-size:.82rem; }
+
+.find__scope{ margin-top:8px; font-size:.86rem; color:var(--ink-3); }
+.grp__why{ margin:-6px 0 14px; font-size:.9rem; color:var(--ink-3); max-width:62ch; }
+
 .grp{ margin-bottom:clamp(38px,6vw,64px); scroll-margin-top:84px; }
-.grp__head{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:16px;
+.grp__head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:16px;
   align-items:start; padding-bottom:16px; margin-bottom:20px;
   border-bottom:2px solid var(--line); }
 .grp__head .ico{ width:30px; height:30px; color:var(--green-2); margin-top:4px; }
-.grp__head h2{ font-size:clamp(1.5rem,1.2rem + 1.2vw,2.05rem); }
+.grp__head h2{ font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem); }
 .grp__head p{ color:var(--ink-2); font-size:.96rem; margin-top:4px; max-width:60ch; }
 .grp__top{ font-size:.88rem; font-weight:600; color:var(--green);
   text-decoration:none; white-space:nowrap; padding:8px 14px;
@@ -348,7 +490,7 @@ b,strong{ font-weight:600; }
 
 .r__do{ display:flex; flex-wrap:wrap; gap:10px; margin-top:auto; padding-top:4px; }
 .call{ display:inline-flex; align-items:center; gap:10px; text-decoration:none;
-  background:var(--green); color:#FBFFF4; border-radius:var(--r-s);
+  background:var(--green); color:var(--mint); border-radius:var(--r-s);
   padding:11px 18px; min-height:52px; font-weight:600;
   transition:background .16s var(--ease); }
 .call:hover{ background:var(--green-2); }
@@ -388,12 +530,12 @@ b,strong{ font-weight:600; }
 /* The most important text on the page, and it is placed where somebody who
    has just found a phone number will pass it: after the list, before the
    footer. Never reworded — check_honesty_statement in check.py owns it. */
-.vowbox{ background:var(--green); color:#FBFFF4; border-radius:var(--r);
+.vowbox{ background:var(--green); color:var(--mint); border-radius:var(--r);
   padding:clamp(26px,4vw,44px); margin-top:clamp(20px,4vw,40px); }
 .vowbox h2{ font-size:clamp(1.5rem,1.2rem + 1.2vw,2.1rem); margin-bottom:.6em; }
 .vowbox__full{ font-size:1.06em; line-height:1.65; max-width:68ch;
-  color:rgba(251,255,244,.94); }
-.vowbox__src{ margin-top:1em; font-size:.88rem; color:rgba(251,255,244,.62); }
+  color:var(--ink-strong); }
+.vowbox__src{ margin-top:1em; font-size:.88rem; color:var(--ink-faint); }
 
 /* ------------------------------------------------------------------ foot */
 /* The same footer as the narrative site, to the hue: deep green ground, cream
@@ -406,15 +548,15 @@ b,strong{ font-weight:600; }
 .hfoot .brand .pin{ fill:var(--cream); stroke:none; }
 .hfoot .brand .pin-dot{ fill:var(--green-deep); }
 .hfoot .brand__txt{ color:var(--cream); }
-.hfoot .brand__txt small{ color:rgba(252,254,247,.55); letter-spacing:.18em; }
-.hfoot__say{ max-width:62ch; color:rgba(252,254,247,.78); font-size:.97rem; }
+.hfoot .brand__txt small{ color:var(--ink-faint); letter-spacing:.18em; }
+.hfoot__say{ max-width:62ch; color:var(--ink-soft); font-size:.97rem; }
 .hfoot__links{ display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:22px;
-  padding-top:22px; border-top:1px solid rgba(252,254,247,.12); }
-.hfoot__links a{ font-weight:500; color:rgba(252,254,247,.78); text-underline-offset:3px;
+  padding-top:22px; border-top:1px solid var(--hair); }
+.hfoot__links a{ font-weight:500; color:var(--ink-soft); text-underline-offset:3px;
   display:inline-flex; align-items:center; min-height:44px; overflow-wrap:anywhere; }
 .hfoot__links a:hover{ color:var(--gold); }
 .hfoot__ver{ margin-top:20px; padding-top:18px; font-size:.84rem;
-  border-top:1px solid rgba(252,254,247,.12); color:rgba(252,254,247,.55); }
+  border-top:1px solid var(--hair); color:var(--ink-faint); }
 
 /* ------------------------------------------------------------ responsive */
 @media (max-width:640px){
@@ -423,7 +565,7 @@ b,strong{ font-weight:600; }
      wider than a 320px screen, and a scroll strip hides the last one behind a
      gesture; stacking them just makes the header taller. */
   .hhead__links{ width:100%; flex-wrap:wrap; }
-  .rows,.needs__grid{ grid-template-columns:1fr; }
+  .rows,.clusters__grid,.sibs ul{ grid-template-columns:1fr; }
   /* The back-link was hidden here, on the one device where the scroll is
      longest and there is no other way up. Because the groups interleave, a
      link at the head of each one is never more than a group away while
@@ -438,21 +580,42 @@ b,strong{ font-weight:600; }
 /* --------------------------------------------------------------- motion */
 @media (prefers-reduced-motion:reduce){
   *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
-  .need:hover,.sos__list a:hover{ transform:none; }
+  .sos__list a:hover{ transform:none; }
 }
 
 /* -------------------------------------------------------- high contrast */
 @media (prefers-contrast:more){
   :root{ --ink-2:#1B2E22; --ink-3:#2B4033; --line:#9FB3A2; }
-  .r,.need,.find__box{ border-width:2px; }
+  .r,.cl,.jump a,.rail__nav a,.sibs a,.find__box{ border-width:2px; }
 }
 
 /* ---------------------------------------------------------------- print */
 /* Students hand people paper. A printed page has no Call button, so the
    number has to become text, and the interface around it has to vanish. */
 @media print{
-  .hhead,.find,.needs,.skip,.hfoot__links,.grp__top,.dir__none,
-  .langbar,.langnote,.sprite{ display:none !important; }
+  .hhead,.find,.jump,.results,.sibs,.cat__rail,.crumb,
+  .skip,.hfoot__links,.grp__top,.dir__none,.grp__why,
+  .cl__all,.clusters__say,
+  .langbar,.langnote,.sprite,.mast__bg{ display:none !important; }
+
+  /* The front page's printed form is the leave-behind students hand across a
+     table: fifteen kinds of help, three real places under each, every phone
+     number in plain type. Two sheets, not the forty the old single-page
+     directory produced. */
+  .clusters__grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:6pt; }
+  .clusters__head h2{ font-size:12.5pt; margin-bottom:5pt; }
+  .cl{ border:0.75pt solid #666; border-radius:0; padding:5pt 6pt;
+    box-shadow:none; break-inside:avoid; }
+  .cl h3{ font-size:9.5pt; }
+  .cl h3 a{ color:#000; }
+  .cl__head .ico{ width:11pt; height:11pt; }
+  .cl__b{ font-size:7pt; color:#000; }
+  .cl__pv{ margin-top:5pt; padding-top:4pt; gap:4pt; }
+  .pv__n{ font-size:8.5pt; color:#000; }
+  .pv__d{ font-size:7pt; color:#000; }
+  .pv__call{ background:none !important; border:0; padding:0; min-height:0;
+    margin-top:2pt; font-size:8.5pt; font-weight:700; color:#000; }
+  .pv__call .ico{ display:none; }
 
   body.help{ background:#fff; color:#000; font-size:9.5pt; line-height:1.35; }
   .wrap{ max-width:none; padding:0; }
@@ -462,12 +625,22 @@ b,strong{ font-weight:600; }
      just says the same thing twice. What paper needs that the screen does not
      is the attribution: who collected this, that we do not run any of it, and
      when it was last checked. */
-  .lede{ padding:0 0 6pt; }
-  .lede h1{ font-size:19pt; margin-bottom:0; }
-  .lede__say{ display:none; }
+  /* The masthead is a painted dark panel on screen and plain black type on
+     paper: the photograph costs ink, tells a reader nothing, and on most
+     printers turns the title into white-on-grey. */
+  .mast{ background:none !important; color:#000 !important; border-radius:0;
+    padding:0 0 6pt; margin:0; }
+  .mast__eye{ display:none; }
+  .mast h1{ font-size:19pt; margin-bottom:4pt; max-width:none; }
+  .mast h1 em{ color:#000 !important; }
+  .mast__say{ font-size:8.5pt; color:#000 !important; max-width:none; margin-top:3pt; }
+  .mast__say--2{ display:none; }
+  .rule{ display:none; }
   .printhead{ display:block; margin:0 0 10pt; padding-bottom:6pt;
     border-bottom:1.5pt solid #000; }
+  .printhead__t{ font-family:var(--display); font-size:12pt; }
   .printhead__s{ font-size:8pt; max-width:none; }
+  .cat{ display:block; }
 
   /* The emergency numbers lead the sheet, as they lead the screen. */
   .sos{ background:none !important; color:#000 !important; border:1.5pt solid #000;

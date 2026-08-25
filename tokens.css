@@ -39,6 +39,16 @@
   --gold-deep:#8A6A22;
   --sage:#A6C39A;
 
+  /* ---- ink on a dark ground ------------------------------- */
+  /* Both halves put cream type on deep green: the narrative site everywhere,
+     the daylight page in its masthead, its language panels, its promise and
+     its footer. One set of levels, so "secondary text on green" is the same
+     grey-green in both. */
+  --ink-soft:rgba(252,254,247,.78);
+  --ink-faint:rgba(252,254,247,.55);
+  --ink-strong:rgba(252,254,247,.94);
+  --hair:rgba(252,254,247,.12);
+
   /* ---- the one warm alarm --------------------------------- */
   /* A clay, never a fire engine: it has to read as "this one is for
      right now" without making a frightened person more frightened. */
