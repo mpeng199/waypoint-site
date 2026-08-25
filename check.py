@@ -1844,6 +1844,12 @@ CRITICAL_QUERIES = [
                                     "Council of Peoples Organization (COPO)")),
     ("day laborer", "NICE — New Immigrant Community Empowerment"),
     ("tps", "MOIA Immigration Legal Support Hotline (ActionNYC)"),
+    # The initials and building names people are handed on the phone.
+    ("welfare", "Cash Assistance (Public Assistance / TANF)"),
+    ("acs", ("The Bronx Defenders", "Brooklyn Defender Services",
+             "Neighborhood Defender Service of Harlem")),
+    ("bellevue", "NYC Health + Hospitals (public hospital system)"),
+    ("section8", "NYCHA Public Housing"),
 ]
 
 # The stop list and the stemmer, kept in step with help.js by hand. Both are
