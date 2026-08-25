@@ -1467,6 +1467,17 @@ def check_directory_is_generated():
         bad(f"build_help.py self-check failed: {e}")
         return
 
+    # The link checker's "this page says it is gone" pattern, against real
+    # strings. Offline, so it belongs here even though the checker itself
+    # talks to the internet and does not.
+    try:
+        import check_links_live
+        g, f = check_links_live.selfcheck()
+        ok(f"check_links_live.py: the soft-404 pattern matches {g} real "
+           f"'page is gone' notices and rejects {f} working pages")
+    except AssertionError as e:
+        bad(f"check_links_live.py soft-404 self-check failed: {e}")
+
     rows = build_help.load()
     want = {"help.html": build_help.render_overview(rows)}
     for need in build_help.NEEDS:
@@ -1789,7 +1800,7 @@ CRITICAL_QUERIES = [
     # returned nothing at all until the tokenizer stopped deleting every
     # character outside ASCII and the vocabulary existed to match.
     ("comida",                      "Food Help NYC (official finder)"),
-    ("abogado",                     "ActionNYC Immigration Legal Hotline"),
+    ("abogado",                     "MOIA Immigration Legal Support Hotline (ActionNYC)"),
     ("violencia doméstica",         "NYC HOPE — 24-Hour DV Hotline (Safe Horizon)"),
     ("\u98df\u7269",                        "Food Help NYC (official finder)"),
     ("\u533b\u751f",                        "NYC Care"),
@@ -1825,7 +1836,7 @@ CRITICAL_QUERIES = [
     ("my child was suspended", "Advocates for Children — education helpline"),
     ("halal", "ICNA Relief NY food pantries"),
     ("day laborer", "NICE — New Immigrant Community Empowerment"),
-    ("tps", "ActionNYC Immigration Legal Hotline"),
+    ("tps", "MOIA Immigration Legal Support Hotline (ActionNYC)"),
 ]
 
 # The stop list and the stemmer, kept in step with help.js by hand. Both are

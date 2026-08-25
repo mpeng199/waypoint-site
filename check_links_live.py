@@ -15,6 +15,17 @@ exists, and deciding the rest of the list is probably wrong too.
 Findings are advisory, and the failure list needs a human before anyone edits
 the CSV. Two known false alarms:
 
+  * A page can be gone and still answer 200. SOFT_404 below catches the common
+    phrasings in a server-rendered body and reports the link as dead.
+
+    It does NOT catch the case that prompted it, and that is worth knowing
+    rather than assuming otherwise. nyc.gov answered the dead ActionNYC URL
+    with 200, no redirect, and a 6 KB JavaScript shell; the words "you have
+    reached an outdated or non-existing page" are written into the page by
+    script, after load. Nothing that does not run JavaScript can see them.
+    Finding that one took opening the URL in a real browser, and a page that
+    matters — a hotline, an intake number — is worth opening by hand once a
+    quarter for exactly this reason.
   * A 403/429 usually means the host blocks scripted requests. Those are
     reported separately so nobody "fixes" a working link by deleting it.
   * Some WAFs fingerprint the TLS handshake, not the User-Agent, and answer
@@ -68,6 +79,13 @@ def _attempt(url, method, ua):
                                  headers={"User-Agent": ua, "Accept": "*/*"})
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+            # A GET is the only way to see a page that answers 200 and says it
+            # is gone. Only the first 40 KB: the message is always near the top
+            # and some of these hosts serve megabytes.
+            if method == "GET" and r.status == 200:
+                body = r.read(40000).decode("utf-8", "replace")
+                if SOFT_404.search(re.sub(r"<[^>]+>", " ", body)):
+                    return 404, "answers 200 and says the page is gone"
             return r.status, r.url if r.url.rstrip("/") != url.rstrip("/") else ""
     except urllib.error.HTTPError as e:
         return e.code, ""
@@ -77,12 +95,73 @@ def _attempt(url, method, ua):
         return None, f"{type(e).__name__}: {e}"
 
 
+def selfcheck():
+    """SOFT_404 has to match what hosts actually say, and nothing else.
+
+    Every string below is real. The "not gone" list matters more than the
+    other one: a false positive here deletes a working resource from a
+    directory somebody is relying on.
+    """
+    gone = [
+        "You have reached an outdated or non-existing page",
+        "The page you are looking for could not be found",
+        "Sorry, this page cannot be found",
+        "404 Error",
+        "This page no longer exists",
+        "The page you requested was not found.",
+        "this page has moved",
+    ]
+    fine = [
+        "Find help with the cost of medicine.",
+        "We could not find a pantry near that address — try another ZIP",
+        "Page 404 of our annual report",
+        "404 Broadway, Suite 200",
+        "Sorry, this page is only available in English",
+        "If you cannot be reached by phone we will write to you",
+    ]
+    for t in gone:
+        assert SOFT_404.search(t), f"missed a real 'page is gone': {t!r}"
+    for t in fine:
+        assert not SOFT_404.search(t), f"would delete a working page over: {t!r}"
+    return len(gone), len(fine)
+
+
+def _says_it_is_gone(url):
+    """A 200 whose body says the page is not there. Returns a note or ""."""
+    req = urllib.request.Request(url, method="GET",
+                                 headers={"User-Agent": BROWSER_UA, "Accept": "*/*"})
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+            if r.status != 200:
+                return ""
+            body = r.read(40000).decode("utf-8", "replace")
+    except Exception:              # noqa: BLE001 — a body we cannot read proves nothing
+        return ""
+    if SOFT_404.search(re.sub(r"<[^>]+>", " ", body)):
+        return "answers 200 and says the page is gone"
+    return ""
+
+
 def probe(url):
-    """(status, note). HEAD, then GET, then GET as a browser."""
+    """(status, note). HEAD, then GET, then GET as a browser.
+
+    A HEAD that answers 200 is not the end of it: a page can be gone and still
+    answer 200 with "you have reached an outdated or non-existing page" in the
+    body, which is exactly how a dead immigration-hotline link sat in this
+    directory being reported as reachable. So a 200 from HEAD is followed by
+    one GET to read what the page actually says.
+    """
     for ua in (UA, BROWSER_UA):
         for method in ("HEAD", "GET"):
             status, note = _attempt(url, method, ua)
             if status and 200 <= status < 400:
+                if status == 200:
+                    # nyc.gov answers HEAD with 200 and this UA's GET with 403,
+                    # so the body has to be asked for as a browser or the
+                    # "outdated page" notice is never seen.
+                    gone = _says_it_is_gone(url)
+                    if gone:
+                        return 404, gone
                 return status, note
             if status not in (403, 405, 429, 501, None):
                 return status, note      # a real 404/500: believe it
@@ -161,6 +240,19 @@ def unverifiable_by_phone(row):
         if len(re.sub(r"\D", "", m).lstrip("1")) == 10:
             return False
     return True
+
+
+# A 200 that says the page is gone. Every one of these is a real string from a
+# real host: nyc.gov's is the one that hid a dead immigration-hotline link.
+SOFT_404 = re.compile(
+    r"you have reached an outdated or non-existing page"
+    r"|page (?:you (?:are looking for|requested) )?(?:could not be|cannot be|was not) found"
+    r"|this page (?:no longer exists|has moved|is no longer available)"
+    r"|404 (?:error|not found)"
+    # "sorry, this page" needs what follows it: "sorry, this page is only
+    # available in English" is a working page saying something useful.
+    r"|sorry,? (?:this|that) page (?:cannot be|could not be|is not|does not|no longer)",
+    re.I)
 
 
 def main():
