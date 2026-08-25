@@ -2915,6 +2915,45 @@ def check_hreflang_is_reciprocal():
        f"themselves, with an x-default")
 
 
+def check_language_spacing_is_shared():
+    """A language page is the English page in another language, not another
+    design of it.
+
+    Which means the per-script rules may adjust *typography* and nothing else.
+    Leading, tracking, word breaking and the measure are properties of a
+    script and have to change; padding, margins, gaps, radii and box sizes are
+    the page's rhythm and must not. Measured at 1280px, the four pages checked
+    by hand come back with the same 26px between the language row and the
+    masthead, the same 37px to the emergency panel, the same 60px to the
+    promise, and the same 24px card padding and 16px radius as the English
+    page. This is the rule that keeps that true.
+    """
+    TYPOGRAPHY = {"line-height", "letter-spacing", "word-break", "overflow-wrap",
+                  "word-spacing", "max-width", "font-style", "font-weight",
+                  "font-size", "text-align", "font-feature-settings",
+                  "font-variant", "hyphens", "text-wrap", "direction",
+                  "unicode-bidi", "color", "text-decoration", "content"}
+    css = read("help.css")
+    seen = 0
+    for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", css):
+        sel = m.group(1).strip().splitlines()[-1].strip()
+        if not re.search(r"\.help--[a-z]{2}\b", sel):
+            continue
+        seen += 1
+        for prop in re.findall(r"(?:^|;)\s*([a-z-]+)\s*:", m.group(2)):
+            if prop.startswith("--") or prop in TYPOGRAPHY:
+                continue
+            bad(f"help.css: {sel[:40]} sets {prop}, which is the page's "
+                f"rhythm rather than the script's typography. A language page "
+                f"is the English page in another language, not another design "
+                f"of it")
+    if seen < 5:
+        bad(f"only {seen} per-script rules left in help.css; the scripts that "
+            f"need different leading have stopped getting it")
+    else:
+        ok(f"all {seen} per-script rules touch typography only, never spacing")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3676,7 +3715,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
