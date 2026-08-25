@@ -1785,6 +1785,35 @@ def _stem(w):
     return w
 
 
+def check_page_weight():
+    """What a reader on transit data actually downloads.
+
+    Measured gzipped, because that is what crosses the wire and because raw
+    size badly overstates the cost of the search index — it is repetitive and
+    compresses to a fifth. Deduplicating it by hand saved two kilobytes and
+    was not worth the machinery; this budget is the thing that would catch it
+    if that ever stopped being true.
+
+    The budgets are set a little above where the pages sit, so ordinary growth
+    is fine and a step change is not.
+    """
+    import gzip
+    budgets = [("help.html", 90), *[(p, 40) for p in CATEGORY_PAGES]]
+    worst = 0
+    for page, kb in budgets:
+        if not (ROOT / page).is_file():
+            continue
+        raw = (ROOT / page).read_bytes()
+        gz = len(gzip.compress(raw, 9)) / 1024
+        worst = max(worst, gz)
+        if gz > kb:
+            bad(f"{page} is {gz:.0f} KB gzipped, over its {kb} KB budget. On the "
+                "connection this page is written for that is the difference "
+                "between arriving and giving up.")
+    ok(f"every resident page is inside its transfer budget "
+       f"(largest {worst:.0f} KB gzipped)")
+
+
 def check_checked_date_is_derived():
     """"Checked August 2026" must come from the data, not from a keystroke.
 
@@ -2510,7 +2539,7 @@ def main():
                check_directory_clusters, check_no_stale_counts,
                check_page_furniture, check_home_names_the_same_needs,
                check_critical_queries, check_no_sideways_scroll,
-               check_checked_date_is_derived,
+               check_checked_date_is_derived, check_page_weight,
                check_directory_a11y, check_directory_print,
                check_home_offers_help, check_doors_have_resources]:
         before = len(passes) + len(failures)
