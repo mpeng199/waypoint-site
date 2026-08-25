@@ -2343,12 +2343,7 @@ def check_one_header():
         if not m:
             bad(f"{page}: no shared header — this page is still its own component")
             continue
-        # only the rule that actually thickens the border counts. The first draft
-    # searched the whole block, and .enote appears in it twice — so removing
-    # it from the border-width rule left the other mention behind and the
-    # check passed on a card that had gone back to a hairline.
-    thick = re.findall(r"([^{}]+)\{[^{}]*border-width:\s*2px", block)
-    block = " , ".join(thick)
+        block = m.group(1)
         # the lockup, to the pixel: one pin path, one wordmark, one strapline
         for want, what in [('class="pin"', "the pin"),
                            ('class="pin-dot"', "the pin's centre"),
@@ -2493,12 +2488,7 @@ def check_language_header():
         if not m:
             bad(f"{page} has no shared header")
             continue
-        # only the rule that actually thickens the border counts. The first draft
-    # searched the whole block, and .enote appears in it twice — so removing
-    # it from the border-width rule left the other mention behind and the
-    # check passed on a card that had gone back to a hairline.
-    thick = re.findall(r"([^{}]+)\{[^{}]*border-width:\s*2px", block)
-    block = " , ".join(thick)
+        block = m.group(1)
         got = [t for t in tabs.findall(block) if "brand" not in t[1]]
         got = [t for t in got if t[2] != "Waypoint"]
         if len(got) != 5:
@@ -3047,7 +3037,7 @@ def check_high_contrast_covers_the_cards():
     # searched the whole block, and .enote appears in it twice — so removing
     # it from the border-width rule left the other mention behind and the
     # check passed on a card that had gone back to a hairline.
-    thick = re.findall(r"([^{}]+)\{[^{}]*border-width:\s*2px", block)
+    thick = re.findall(r"([^{}]+)\{[^{}]*border-width:\s*2px", m.group(1))
     block = " , ".join(thick)
     for sel, what in [(".r", "a resource card"), (".cl", "a cluster card"),
                       (".jump a", "the jump row"), (".find__box", "the search box"),
@@ -3055,7 +3045,9 @@ def check_high_contrast_covers_the_cards():
                       (".langbar__list a", "a language link"),
                       (".printbtn", "the print button"),
                       (".pv__call", "a phone number")]:
-        if not re.search(rf"(?:^|[,\s]){re.escape(sel)}(?=[,{{\s])", block, re.M):
+        # the last selector in a rule is followed by the brace, which the
+        # capture above stops at — so end-of-string counts as a boundary too
+        if not re.search(rf"(?:^|[,\s]){re.escape(sel)}(?=[,{{\s]|$)", block, re.M):
             bad(f"{what} ({sel}) keeps its hairline border at higher contrast; "
                 f"somebody who asked their system for more contrast has told "
                 f"you they cannot see it")
