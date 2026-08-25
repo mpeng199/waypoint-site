@@ -3162,13 +3162,29 @@ def check_directory_languages():
     # 1. ten pages, and every English page offers all ten
     for page in ENGLISH_PAGES:
         src = read(page)
+        # the link may carry a fragment: from "I need food", switching
+        # language lands on that language's food card rather than its top
         missing = [L["endonym"] for L in langs
-                   if f'href="{build_help.lang_page(L["key"])}"' not in src]
+                   if f'href="{build_help.lang_page(L["key"])}' not in src]
         if missing:
             bad(f"{page} does not link to {len(missing)} of the ten language "
                 f"pages ({', '.join(missing[:3])}) — a reader who cannot read "
                 f"this page cannot get off it")
     ok(f"all {len(ENGLISH_PAGES)} English pages link to all ten language pages")
+
+    # and where the link carries a fragment, that fragment has to be there
+    for page in CATEGORY_PAGES:
+        key = page[len("help-"):-len(".html")]
+        for L in langs:
+            href = f'{build_help.lang_page(L["key"])}#n-{key}'
+            if f'href="{href}"' not in read(page):
+                bad(f"{page}: switching to {L['name_en']} does not keep the "
+                    f"reader's place ({href} is not linked)")
+                break
+            if f'id="n-{key}"' not in read(build_help.lang_page(L["key"])):
+                bad(f"{build_help.lang_page(L['key'])} has no #n-{key} to land on")
+                break
+    ok("switching language from a category page lands on the same kind of help")
 
     for L in langs:
         page = build_help.lang_page(L["key"])

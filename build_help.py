@@ -2036,7 +2036,7 @@ def header_frag():
     ]
 
 
-def langbar_frag(target="#dir"):
+def langbar_frag(need=None):
     """Ten doors, first thing under the header, on every English page.
 
     They used to be ten anchors that revealed a green panel further down the
@@ -2049,11 +2049,16 @@ def langbar_frag(target="#dir"):
     the same components, in the same order, with the same spacing as this one.
     So this is a plain row of links, which is what it always should have been.
     """
+    # From "I need food", switching language lands on the food card of that
+    # language's page rather than the top of it. Losing your place is a small
+    # thing in English and a large one when you have just spent a minute
+    # working out where you were.
+    at = f'#n-{need}' if need else ''
     out = ['<nav class="langbar" aria-labelledby="langbar-h">',
            '  <h2 id="langbar-h" class="langbar__h">Get help in your language</h2>',
            '  <ul class="langbar__list">']
     for L in LANGUAGES:
-        out.append(f'    <li><a href="{lang_page(L["key"])}" lang="{L["tag"]}" '
+        out.append(f'    <li><a href="{lang_page(L["key"])}{at}" lang="{L["tag"]}" '
                    f'data-lang="{L["key"]}"{" dir=rtl" if L["dir"] == "rtl" else ""}>'
                    f'{esc(L["endonym"])}</a></li>')
     # English closes the row on every one of the eleven, marked rather than
@@ -2309,7 +2314,7 @@ def render_overview(rows):
               "#needs", "Skip to what you need help with")
     p += header_frag()
     A('<main class="wrap">')
-    p += langbar_frag("#needs")
+    p += langbar_frag()
 
     # ---- masthead
     A('<section class="mast">')
@@ -2764,7 +2769,7 @@ def render_category(need, rows):
       '<span class="arr crumb__back" aria-hidden="true">&larr;</span> All free help</a>'
       f'<span class="crumb__sep" aria-hidden="true">/</span><span aria-current="page">'
       f'{esc(need["short"])}</span></nav>')
-    p += langbar_frag()
+    p += langbar_frag(key)
 
     A('<section class="mast mast--cat">')
     A('  <div class="mast__bg" aria-hidden="true"></div>')
