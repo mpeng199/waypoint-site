@@ -147,6 +147,21 @@ NEEDS = [
         "cats": ["Veterans"],
     },
     {
+        "key": "disability",
+        "label": "I have a disability, or I care for someone who does",
+        "blurb": "Benefits, getting around, accessible housing, and being turned down.",
+        "icon": "access",
+        "cats": ["Disability"],
+        # Disability cuts across everything, so this page is mostly built out
+        # of resources filed elsewhere. That is the point: the person looking
+        # for it should not have to know that Access-A-Ride is "transport" and
+        # the rent freeze is "senior services".
+        "also": [
+            "paratransit", "access-a-ride", "disabilit", "disabled",
+            "blind", "deaf", "low vision", "ssi", "home care", "special education",
+        ],
+    },
+    {
         "key": "record",
         "label": "I have a criminal record, or I'm coming home",
         "blurb": "Jobs, housing, and legal help after jail or prison.",
@@ -309,6 +324,16 @@ COPY = {
         ph="Try: va clinic, benefits, crisis",
         seo="Free help for veterans in New York City: health care, benefits navigation, "
             "housing, and the Veterans Crisis Line."),
+    "disability": dict(
+        short="Disability",
+        h1a="I have a disability,", h1b="or I care for someone who does.",
+        intro="Benefits and how to keep them, getting around a city that was not "
+              "built for you, accessible housing, care at home, and what to do "
+              "when a service is cut off or an accommodation is refused.",
+        ph="Try: ssi, access-a-ride, home care",
+        seo="Free help for disabled New Yorkers: benefits and appeals, Access-A-Ride "
+            "and reduced fares, accessible and supportive housing, care at home, "
+            "vision and hearing services, and the City's disability office."),
     "record": dict(
         short="After jail or prison",
         h1a="I have a criminal record,", h1b="or I'm coming home.",
@@ -567,6 +592,27 @@ GROUPS = {
          ["navigation", "veteran services", "info"]),
         ("more",      "More veteran programs", []),
     ],
+    "disability": [
+        ("start",     "Where to begin",
+         ["disability info", "info & referral"]),
+        ("senses",    "Sight and hearing",
+         ["blind", "deaf", "vision", "hearing", "optometry", "eyes"]),
+        ("getting",   "Getting around",
+         ["paratransit", "access-a-ride", "fare", "transit", "ride",
+          "transportation", "ferry"]),
+        ("home",      "Care at home, and somewhere to live",
+         ["home care", "housing", "supportive", "family type", "shelter",
+          "rent", "scrie", "drie"]),
+        ("children",  "Children and school",
+         ["face center", "special education", "early intervention",
+          "youth", "childcare", "child care"]),
+        ("health",    "Health care",
+         ["clinic", "fqhc", "health center", "dental", "hiv", "mental"]),
+        ("money",     "Benefits, and keeping them",
+         ["benefits", "ssi", "income", "insurance", "medicaid", "medicare",
+          "cash", "tax", "counsel", "legal"]),
+        ("more",      "More programs", []),
+    ],
     "record": [
         ("start",     "Where to begin",
          ["reentry services", "start-here"]),
@@ -583,10 +629,16 @@ GROUPS = {
          ["citywide info", "info & referral", "hotline", "311"]),
         ("check",     "Check what you already qualify for",
          ["screener", "eligibility", "benefits"]),
-        ("search",    "Search a directory yourself",
-         ["search", "directory", "resource directory", "locator"]),
         ("papers",    "Papers, ID, and proof",
-         ["identification", "idnyc", "id ", "document", "birth certificate"]),
+         ["identification", "idnyc", "document", "birth certificate"]),
+        # A settlement house does everything under one roof, which is exactly
+        # the answer for somebody who cannot name what they need. Filing them
+        # as "a directory to search" buried the most useful thing on the page.
+        ("onestop",   "One place that does everything",
+         ["community resource directory", "settlement", "one-stop",
+          "info & referral in person"]),
+        ("search",    "Search a directory yourself",
+         ["search", "directory", "locator", "library"]),
         ("more",      "Other places that point the way", []),
     ],
 }
@@ -666,6 +718,7 @@ LANGUAGES = [
             "work": "Necesito trabajo, o clases",
             "getting-there": "Necesito ayuda para llegar",
             "veterans": "Serví en las fuerzas armadas",
+            "disability": "Tengo una discapacidad, o cuido a alguien que la tiene",
             "record": "Tengo antecedentes penales, o estoy saliendo de prisión",
             "start": "No sé por dónde empezar",
         },
@@ -696,6 +749,7 @@ LANGUAGES = [
             "work": "我需要工作或课程",
             "getting-there": "我需要交通方面的帮助",
             "veterans": "我曾在军队服役",
+            "disability": "我有残疾，或者我在照顾残疾人",
             "record": "我有犯罪记录，或者我刚出狱",
             "start": "我不知道从哪里开始",
         },
@@ -730,6 +784,7 @@ LANGUAGES = [
             "work": "Мне нужна работа или курсы",
             "getting-there": "Мне нужна помощь с проездом",
             "veterans": "Я служил в армии",
+            "disability": "У меня инвалидность, или я ухаживаю за человеком с инвалидностью",
             "record": "У меня судимость, или я вышел из заключения",
             "start": "Я не знаю, с чего начать",
         },
@@ -763,6 +818,7 @@ LANGUAGES = [
             "work": "আমার কাজ বা ক্লাস দরকার",
             "getting-there": "যাতায়াতে আমার সাহায্য দরকার",
             "veterans": "আমি সেনাবাহিনীতে কাজ করেছি",
+            "disability": "আমার প্রতিবন্ধকতা আছে, বা আমি এমন কারও যত্ন নিই",
             "record": "আমার অপরাধের রেকর্ড আছে, বা আমি জেল থেকে ফিরছি",
             "start": "আমি জানি না কোথা থেকে শুরু করব",
         },
@@ -795,6 +851,7 @@ LANGUAGES = [
             "work": "Mwen bezwen yon travay, oswa kou",
             "getting-there": "Mwen bezwen èd pou m rive",
             "veterans": "Mwen te sèvi nan lame",
+            "disability": "Mwen gen yon andikap, oswa m ap pran swen yon moun ki gen youn",
             "record": "Mwen gen yon kazye jidisyè, oswa m ap soti nan prizon",
             "start": "Mwen pa konnen kote pou m kòmanse",
         },
@@ -827,6 +884,7 @@ LANGUAGES = [
             "work": "일자리나 수업이 필요합니다",
             "getting-there": "이동에 도움이 필요합니다",
             "veterans": "군에서 복무했습니다",
+            "disability": "저는 장애가 있거나 장애가 있는 사람을 돌봅니다",
             "record": "전과가 있거나 출소했습니다",
             "start": "어디서 시작해야 할지 모르겠습니다",
         },
@@ -859,6 +917,7 @@ LANGUAGES = [
             "work": "أحتاج إلى عمل أو دورات دراسية",
             "getting-there": "أحتاج إلى مساعدة في التنقل",
             "veterans": "خدمت في الجيش",
+            "disability": "لدي إعاقة، أو أرعى شخصًا لديه إعاقة",
             "record": "لدي سجل جنائي، أو خرجت من السجن",
             "start": "لا أعرف من أين أبدأ",
         },
@@ -891,6 +950,7 @@ LANGUAGES = [
             "work": "مجھے کام یا کلاسیں چاہئیں",
             "getting-there": "مجھے آنے جانے میں مدد چاہیے",
             "veterans": "میں نے فوج میں خدمات انجام دی ہیں",
+            "disability": "مجھے معذوری ہے، یا میں کسی معذور شخص کی دیکھ بھال کرتا ہوں",
             "record": "میرا مجرمانہ ریکارڈ ہے، یا میں جیل سے واپس آ رہا ہوں",
             "start": "مجھے معلوم نہیں کہاں سے شروع کروں",
         },
@@ -924,6 +984,7 @@ LANGUAGES = [
             "work": "J'ai besoin d'un emploi ou de cours",
             "getting-there": "J'ai besoin d'aide pour me déplacer",
             "veterans": "J'ai servi dans l'armée",
+            "disability": "J'ai un handicap, ou je m'occupe de quelqu'un qui en a un",
             "record": "J'ai un casier judiciaire, ou je sors de prison",
             "start": "Je ne sais pas par où commencer",
         },
@@ -957,6 +1018,7 @@ LANGUAGES = [
             "work": "Potrzebuję pracy albo kursów",
             "getting-there": "Potrzebuję pomocy z dojazdem",
             "veterans": "Służyłem w wojsku",
+            "disability": "Mam niepełnosprawność albo opiekuję się osobą z niepełnosprawnością",
             "record": "Mam wyrok albo wracam z więzienia",
             "start": "Nie wiem, od czego zacząć",
         },
@@ -1117,20 +1179,41 @@ def contact(phone):
     return ("call", label, href)
 
 
+# A cross-reference keyword matches at a WORD START, never anywhere in the
+# string. Plain substring matching put a soup kitchen, a diaper bank and a
+# hospital-bill charity on the disability page, because "ssi" is inside
+# a-ssi-stance, mi-ssi-on and a-ssi-stors. It is the same bug the search box
+# had with "ice" inside serv-ice, off-ice and just-ice, and it is worse here:
+# the search is something somebody typed and can retype, and this decides
+# what a page IS.
+_ALSO_RE = {}
+
+
+def _fires(kw, hay):
+    r = _ALSO_RE.get(kw)
+    if r is None:
+        r = _ALSO_RE[kw] = re.compile(r"\b" + re.escape(kw))
+    return bool(r.search(hay))
+
+
 def needs_for(row):
-    """Every sentence this resource answers."""
+    """Every sentence this resource answers.
+
+    Its own category always counts. `also` keywords add the needs it answers
+    from somewhere else — a health-insurance helpline is both "seeing a
+    doctor" and "this bill" — matched against what the row IS (its name and
+    subcategory) and never against its description, because nearly every
+    description mentions cost and immigration status.
+    """
     found = []
     cat = row["Category"]
-    sub = (row["Subcategory"] or "").lower()
-    name = (row["Resource Name"] or "").lower()
+    hay = ((row["Subcategory"] or "") + " " + (row["Resource Name"] or "")).lower()
     for need in NEEDS:
         if cat in need.get("cats", []):
             found.append(need["key"])
             continue
-        for kw in need.get("also", []):
-            if kw in sub or kw in name:
-                found.append(need["key"])
-                break
+        if any(_fires(kw, hay) for kw in need.get("also", [])):
+            found.append(need["key"])
     return found or ["start"]
 
 
@@ -1285,6 +1368,9 @@ ICONS = {
     "star": "m12 3 2.6 5.6 6 .8-4.4 4.2 1.1 6.1L12 16.8 6.7 19.7l1.1-6.1L3.4 9.4l6-.8L12 3Z",
     "compass": "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm3.5-12.5-2 5-5 2 2-5 5-2Z",
     "gate": "M4 21V6a2 2 0 0 1 2-2h6v17M4 21h16M20 21V10l-8-4M8 12h.01M15 13h.01",
+    # The international access symbol, drawn as one stroke rather than the
+    # filled glyph, so it sits with the other fifteen instead of shouting.
+    "access": "M12 5.5a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2ZM9 8.2l3 .9 3-.6M12 9v4h4l2.5 6M12 13a4.6 4.6 0 1 0 3.6 7.4",
 }
 
 
@@ -1682,6 +1768,13 @@ def search_frag(placeholder, scope_note):
 # behind the link — which is the only job a preview has.
 PREVIEW = 3
 
+# A lead block is a lead only while it is short. On "I'm not sure where to
+# start", thirteen of fifteen resources are marked start-here — every one of
+# them genuinely is a place to start — and a Start here block holding the
+# whole page tells nobody anything. Past this, the tag goes back to doing what
+# it does everywhere else: ordering rows inside their buckets.
+LEAD_MAX = 3
+
 
 def render_preview(r, need_key):
     """One line in a cluster on the front page: the name, what it is for, and
@@ -1848,14 +1941,23 @@ def render_category(need, rows):
     group = ordered(rows, key)
     n_all = len(rows)
 
-    # Rows that landed here through a keyword rather than their own category
-    # are honest cross-references, not members of this group, and saying so is
-    # better than mixing them in — somebody scanning "I got a medical bill"
-    # should be able to tell the bill experts from the clinic that also happens
-    # to help with paperwork.
+    # Everything on this page is bucketed by subject, whether it got here
+    # through its own category or through a keyword.
+    #
+    # These used to be two sections, with cross-references collected at the
+    # bottom under "Also worth calling". That was honest and it was wrong: on
+    # a need that cuts across everything — a disability page is 5 resources of
+    # its own and 21 that answer it from somewhere else — the page became five
+    # rows and then a heap. And it was wrong even where it looked fine:
+    # somebody on "I got a medical bill" looking for insurance enrolment wants
+    # it under "Getting covered in the first place", not in an appendix.
+    #
+    # What is kept is the ordering. Inside a bucket, the resources whose own
+    # category is this need come first, so the bill experts still lead the bill
+    # page. The row's own subcategory line already says what each thing is.
     primary = [r for r in group if key in [nd["key"] for nd in NEEDS
                                            if r["Category"] in nd.get("cats", [])]]
-    crossed = [r for r in group if r not in primary]
+    own = {id(r) for r in primary}
 
     # The best first call leads the page, in its own block, before any
     # bucket. `start-here` is a tag in the data on the row that is genuinely
@@ -1863,14 +1965,24 @@ def render_category(need, rows):
     # because it happens to be filed under "money for the rent" is exactly the
     # mistake the tag exists to prevent. It appears once: here, not also in
     # its topical bucket.
+    # A lead block is a lead only while it is short. On "I'm not sure where to
+    # start", thirteen of fifteen resources are marked start-here — every one
+    # of them genuinely is a place to start — and a Start here block holding
+    # the whole page tells nobody anything. Past three, the tag goes back to
+    # doing what it does everywhere else: ordering rows inside their buckets.
     lead = [r for r in primary if "start-here" in r["Tags"]]
-    rest = [r for r in primary if r not in lead]
+    if len(lead) > LEAD_MAX:
+        lead = []
+    rest = [r for r in group if r not in lead]
 
     buckets = [(bk, prose(lb), w) for bk, lb, w in
                GROUPS.get(key, [("more", "Places that help", [])])]
     filed = {b[0]: [] for b in buckets}
     for r in rest:
         filed[group_for(r, key)].append(r)
+    for bk in filed:
+        filed[bk].sort(key=lambda r: (0 if "start-here" in r["Tags"] else 1,
+                                      0 if id(r) in own else 1))
     live = [(bk, label) for bk, label, _ in buckets if filed[bk]]
     if lead:
         live = [("lead", "Start here" if len(lead) == 1
@@ -1915,9 +2027,6 @@ def render_category(need, rows):
     for bk, label in live:
         A(f'    <li><a href="#g-{key}-{bk}">{esc(label)}'
           f'<span class="rail__n">{len(filed[bk])}</span></a></li>')
-    if crossed:
-        A(f'    <li><a href="#g-{key}-also">Also worth calling'
-          f'<span class="rail__n">{len(crossed)}</span></a></li>')
     A('  </ul></nav>')
     A('</aside>')
 
@@ -1945,20 +2054,6 @@ def render_category(need, rows):
         A('  </div>')
         A('  <ul class="rows">')
         for r in filed[bk]:
-            A(render_row(r, key))
-        A('  </ul>')
-        A('</section>')
-    if crossed:
-        A(f'<section class="grp grp--also" id="g-{key}-also" data-need="{key}" '
-          f'aria-labelledby="gh-{key}-also">')
-        A('  <div class="grp__head">')
-        A(f'    <h2 id="gh-{key}-also">Also worth calling</h2>')
-        A('    <a class="grp__top" href="#top">Back to the top</a>')
-        A('  </div>')
-        A('  <p class="grp__why">These are filed under something else, but they '
-          'answer this too.</p>')
-        A('  <ul class="rows">')
-        for r in crossed:
             A(render_row(r, key))
         A('  </ul>')
         A('</section>')
@@ -2019,6 +2114,37 @@ def selfcheck():
                 f"{r['Resource Name']}: unusable tel: {href!r} from {r['Phone']!r}"
 
 
+HOME = ROOT / "index.html"
+
+
+def home_links():
+    """The one block of index.html this build owns.
+
+    The narrative page is hand-written and stays that way. But its list of
+    what the directory holds is not prose — it is the directory's own table of
+    contents, rendered on the other side of the site, and hand-maintaining it
+    meant it offered eight of sixteen kinds of help for as long as nobody
+    looked. Generated from NEEDS, like everything else that has to agree with
+    NEEDS.
+    """
+    return ("      <ul class=\"helplinks\">\n"
+            + "\n".join(f'        <li><a href="{page_for(n["key"])}">'
+                        f'{esc(n["label"])}</a></li>' for n in NEEDS)
+            + "\n      </ul>")
+
+
+def sync_home():
+    src = HOME.read_text(encoding="utf-8")
+    block = re.search(r'      <ul class="helplinks">.*?</ul>', src, re.S)
+    if not block:
+        raise SystemExit("index.html: no helplinks list to keep in step with NEEDS")
+    fresh = src.replace(block.group(0), home_links(), 1)
+    if fresh != src:
+        HOME.write_text(fresh, encoding="utf-8")
+        return True
+    return False
+
+
 def build():
     """Write the front page and one page per need.
 
@@ -2045,6 +2171,8 @@ def build():
         path = ROOT / page_for(need["key"])
         path.write_text(render_category(need, rows), encoding="utf-8")
         written.append(path)
+    if sync_home():
+        print("updated index.html's list of what the directory holds")
     return rows, written
 
 
@@ -2079,6 +2207,24 @@ if __name__ == "__main__":
         print("BUCKETS TOO COARSE:", file=sys.stderr)
         for s in stuffed:
             print("   ", s, file=sys.stderr)
+
+    # What each cross-reference keyword actually drags in. A keyword that pulls
+    # a third of the directory onto a page is a keyword that is matching
+    # something other than what it meant to.
+    greedy = []
+    for need in NEEDS:
+        for kw in need.get("also", []):
+            hit = [r for r in rows
+                   if need["key"] not in [nd["key"] for nd in NEEDS
+                                          if r["Category"] in nd.get("cats", [])]
+                   and _fires(kw, (r["Subcategory"] + " " + r["Resource Name"]).lower())]
+            if len(hit) > 12:
+                greedy.append(f'{need["key"]}/"{kw}" pulls in {len(hit)} rows, '
+                              f'e.g. {hit[0]["Resource Name"]!r}')
+    if greedy:
+        print("CROSS-REFERENCE KEYWORD TOO BROAD:", file=sys.stderr)
+        for g in greedy:
+            print("   ", g, file=sys.stderr)
 
     missing = [r["Resource Name"] for r in rows
                if contact(r["Phone"])[0] == "none" and not r["Website"]]

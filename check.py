@@ -1469,6 +1469,13 @@ def check_directory_is_generated():
             "data/resources.csv changed without a rebuild — either way the next "
             "`python3 build_help.py` silently discards the difference. Run it.")
 
+    home = read("index.html")
+    if build_help.home_links() in home:
+        ok("index.html's list of what the directory holds is the generated one")
+    else:
+        bad("index.html's list of what the directory holds is not what "
+            "build_help.py produces. Run `python3 build_help.py`.")
+
     orphans = sorted(p.name for p in ROOT.glob("help-*.html") if p.name not in want)
     if orphans:
         bad(f"stale category page(s) with no need behind them: {orphans}. A need "
@@ -2035,17 +2042,33 @@ def check_directory_needs():
         # and bury Community Health Advocates eighth. And bucketing them by
         # subject reintroduced the same problem a different way: the best first
         # call was three headings down because of what it was filed under.
-        marked = re.findall(r'<li class="r"[^>]*data-find="([^"]*start-here[^"]*)"', src)
+        # Only the resources whose own category is this need can lead it. A
+        # resource that arrives here as a cross-reference may well be the best
+        # first call for the need it belongs to and quite wrong for this one —
+        # Access-A-Ride leads "getting there", not "disability".
+        primary = [r for r in build_help.ordered(rows, need["key"])
+                   if need["key"] in [nd["key"] for nd in build_help.NEEDS
+                                      if r["Category"] in nd.get("cats", [])]]
+        marked = [r for r in primary if "start-here" in r["Tags"]]
+        # Past LEAD_MAX the build deliberately drops the lead block: a Start
+        # here section holding thirteen of fifteen resources is not a lead.
+        if len(marked) > build_help.LEAD_MAX:
+            if f"g-{need['key']}-lead" in src:
+                bad(f"{page}: {len(marked)} resources are marked start-here and "
+                    "the page still has a lead block; past a few, a lead is not "
+                    "a lead")
+            marked = []
         if marked:
             if groups[0] != f"g-{need['key']}-lead":
                 bad(f"{page}: something here is marked start-here but the page "
                     "does not open with it, so the best first call is not the "
                     "first thing read")
             lead = src.split(f'id="g-{need["key"]}-lead"', 1)[-1].split("</section>", 1)[0]
-            if lead.count('<li class="r"') != len(marked):
-                bad(f"{page}: {len(marked)} resource(s) are marked start-here but "
-                    f"{lead.count(chr(60) + 'li class=' + chr(34) + 'r' + chr(34))} "
-                    "are in the lead block, so one of them is buried or doubled")
+            n_lead = lead.count('<li class="r"')
+            if n_lead != len(marked):
+                bad(f"{page}: {len(marked)} of this need's own resources are "
+                    f"marked start-here but {n_lead} are in the lead block, so "
+                    "one of them is buried or doubled")
     ok(f"every bucket on all {len(CATEGORY_PAGES)} category pages has resources "
        "under it, and each page opens with its best first call")
 
