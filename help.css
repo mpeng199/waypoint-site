@@ -45,7 +45,6 @@
   --shadow-up:0 2px 4px rgba(19,35,26,.06), 0 18px 40px -18px rgba(19,35,26,.28);
 }
 
-
 *{ box-sizing:border-box; }
 html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
 @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
@@ -127,42 +126,9 @@ b,strong{ font-weight:600; }
 /* Closed until its own id is the fragment. No script involved: this is the
    one entry point on the page whose reader is least likely to have working
    JavaScript, so it must not depend on any. */
-.langnote{ display:none; }
-.langnote:target{ display:block; }
-.langnote{ --focus:var(--gold-lit); background:var(--green); color:var(--mint); border-radius:var(--r);
-  padding:clamp(22px,3.4vw,34px); margin:16px 0 8px; scroll-margin-top:calc(var(--head-h) + 14px); }
-.langnote h2{ font-size:clamp(1.5rem,1.3rem + 1vw,2.1rem); margin-bottom:.55em;
-  line-height:1.25; }
-.langnote p{ max-width:64ch; line-height:1.7; color:var(--ink-strong); }
 /* The emergency line sits above the interpreter line, because a reader who
    stops after two sentences should already have the two numbers that matter. */
-.langnote__sos{ margin-top:1em; padding:12px 16px; border-radius:var(--r-s);
-  background:rgba(252,254,247,.10); border:1px solid var(--hair);
-  font-weight:600; }
 /* The box understands these languages too, and nobody would guess that. */
-.langnote__search{ margin-top:1em; font-size:.96rem; color:var(--ink-strong); }
-.langnote__h3{ margin-top:1.4em; font-size:1.12rem; color:var(--gold); }
-.langneeds{ margin-top:.7em; display:grid; gap:2px;
-  grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr)); }
-.langneeds a{ display:flex; align-items:center; min-height:44px;
-  padding:8px 12px; border-radius:var(--r-s); text-decoration:none;
-  color:var(--ink-strong); line-height:1.35;
-  transition:background .16s var(--ease), color .16s var(--ease); }
-.langneeds a:hover{ background:rgba(252,254,247,.10); color:var(--mint); }
-.langneeds a::after{ content:"\2192"; margin-inline-start:auto; padding-inline-start:10px;
-  color:var(--gold); opacity:0; transition:opacity .16s var(--ease); }
-[dir="rtl"] .langneeds a::after{ content:"\2190"; }
-.langneeds a:hover::after,.langneeds a:focus-visible::after{ opacity:1; }
-.langnote__interp{ margin-top:1em; padding-top:1em;
-  border-top:1px solid var(--hair); }
-.langnote__do{ margin-top:1.3em; display:flex; flex-wrap:wrap; gap:10px 22px;
-  align-items:center; }
-.langnote__go{ display:inline-flex; align-items:center; min-height:48px;
-  padding:11px 20px; border-radius:var(--r-s); background:var(--gold);
-  color:var(--green-deep); font-weight:600; text-decoration:none; }
-.langnote__go:hover{ background:var(--gold-lit); }
-.langnote__x{ color:var(--ink-soft); font-size:.9rem;
-  display:inline-flex; align-items:center; min-height:44px; }
 /* The numbers inside a translated sentence are links, and have to look like
    one to a reader who cannot read the sentence around them. Gold on the deep
    green panel, underlined, at the weight of the surrounding text. */
@@ -172,7 +138,6 @@ b,strong{ font-weight:600; }
 .dialn:hover{ color:#FFF; }
 
 /* An RTL panel keeps its own direction; the page around it stays LTR. */
-.langnote[dir="rtl"] .langnote__do{ flex-direction:row-reverse; }
 
 /* ------------------------------------------------------------------ mast */
 /* The masthead is the one place this page goes dark, and it is deliberate:
@@ -650,8 +615,6 @@ b,strong{ font-weight:600; }
   .langbar{ gap:6px 12px; padding:12px 0 2px; }
   .langbar__list{ gap:6px; }
   .langbar__list a{ padding:6px 13px; font-size:.95rem; }
-  .langnote{ padding:20px 18px; }
-  .langneeds{ grid-template-columns:1fr; }
 
   /* Get to the emergency numbers inside the first screen and a bit. */
   .mast{ padding:26px 20px 28px; }
@@ -707,7 +670,6 @@ b,strong{ font-weight:600; }
   .sitehead,.find,.jump,.results,.sibs,.cat__rail,.crumb,
   .skip,.hfoot__links,.grp__top,.dir__none,.grp__why,
   .cl__all,.clusters__say,
-  .langbar,.langnote,.sprite,.mast__bg{ display:none !important; }
 
   /* The front page's printed form is the leave-behind students hand across a
      table: fifteen kinds of help, three real places under each, every phone
@@ -826,3 +788,90 @@ b,strong{ font-weight:600; }
 
   @page{ margin:12mm 10mm; }
 }
+
+/* ============================================================
+   THE TEN LANGUAGE PAGES
+
+   Same components, same spacing, same rhythm as the English page. These rules
+   only handle what a different script needs, and none of them changes the
+   shape of anything.
+
+   1. Room. Bengali has ascenders and a headline English does not; Arabic and
+      Urdu hang well below the baseline. At English's leading they collide.
+      They get more leading, not a different type scale.
+   2. No mechanical italic. Fraunces has a drawn italic; CJK, Bengali, Arabic
+      and Urdu do not, so a browser asked for one slants the glyphs by matrix
+      and native readers see it immediately. The masthead's emphasis is gold in
+      every language — that is what carries it — and build_help emits <b>
+      rather than <em> for those five.
+   3. Direction. Arabic and Urdu set dir=rtl on <html>; everything else is
+      already written in logical properties, so the page mirrors on its own.
+      The four things that must NOT mirror — a phone number, an organisation's
+      name, the wordmark, an email — carry dir="ltr" in the markup.
+   ============================================================ */
+
+/* ---- the one thing this page has that the English one does not ---- */
+/* A quiet card, the same object as everything else here: one fact a reader
+   needs early, not a warning. It sits between the emergency numbers and the
+   seventeen kinds of help — where somebody looks up from the numbers. */
+.enote{ background:var(--surface); border:1.5px solid var(--line);
+  border-inline-start:4px solid var(--gold); border-radius:var(--r-s);
+  padding:clamp(16px,2.4vw,22px) clamp(16px,2.4vw,24px);
+  margin-bottom:clamp(28px,5vw,44px); }
+.enote__h{ font-family:var(--sans); font-size:.8rem; font-weight:700;
+  letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  color:var(--ink-3); margin-bottom:.7em; }
+.enote__p{ font-size:1.02rem; line-height:1.65; max-width:68ch; color:var(--ink); }
+.enote__p .dialn{ color:var(--gold-deep); }
+
+/* ---- a card that names places without describing them ---- */
+/* The English sentence under each name is the one part of a resource this
+   page cannot check, so it is left out rather than printed untranslated. What
+   remains — a proper noun and a number — is the same in every language, and
+   is what somebody says and dials. */
+.cl__pv--bare .pv{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; }
+.cl__pv--bare .pv__n{ flex:1 1 auto; min-width:0; }
+.cl__pv--bare .pv__call{ margin-top:0; }
+
+/* ---- the switcher marks where you already are ---- */
+/* --focus is declared even though nothing focusable sits inside this marker
+   today: the rule is that a dark surface on a light page names its own ring,
+   and a rule with one exception in it stops being a rule. */
+.langbar__here{ --focus:var(--gold-lit);
+  display:inline-flex; align-items:center; min-height:44px;
+  padding:8px 15px; border-radius:var(--r-pill);
+  background:var(--green); color:var(--mint);
+  font-weight:600; font-size:.98rem; }
+
+/* ---- room to breathe, per script ---- */
+.help--bn .mast__title{ line-height:1.35; }
+.help--bn .cl__b,.help--bn .enote__p,.help--bn .vowbox__full,
+.help--bn .sos__for,.help--bn .mast__say,.help--bn .hfoot__say{ line-height:1.85; }
+.help--ar .mast__title,.help--ur .mast__title{ line-height:1.4; }
+.help--ar .cl__b,.help--ar .enote__p,.help--ar .vowbox__full,
+.help--ar .sos__for,.help--ar .mast__say,.help--ar .hfoot__say,
+.help--ur .cl__b,.help--ur .enote__p,.help--ur .vowbox__full,
+.help--ur .sos__for,.help--ur .mast__say,.help--ur .hfoot__say{ line-height:1.9; }
+/* CJK has no word spaces, so the eye wants the line shorter, not looser. */
+.help--zh .mast__say,.help--ko .mast__say,
+.help--zh .vowbox__full,.help--ko .vowbox__full,
+.help--zh .enote__p,.help--ko .enote__p{ line-height:1.8; max-width:44ch; }
+.help--zh .cl__b,.help--ko .cl__b{ line-height:1.75; }
+.help--zh .eyebrow,.help--ko .eyebrow,
+.help--zh .enote__h,.help--ko .enote__h{ letter-spacing:.12em; }
+.help--ru .eyebrow{ letter-spacing:.14em; }
+
+/* ---- the five scripts with no drawn italic ---- */
+/* build_help emits <b> for these, so this only has to stop it reading as bold
+   text and make it read as the emphasis the <em> carries elsewhere. */
+.mast__title b{ font-style:normal; font-weight:inherit; color:var(--gold); }
+
+/* ---- right to left ---- */
+/* Small on purpose: everything above is in logical properties. What is here
+   is what is genuinely directional, and what must stay LTR inside a mirrored
+   page. */
+[dir="rtl"] .arr{ transform:scaleX(-1); }
+[dir="rtl"] :where(a,button):hover > .arr,
+[dir="rtl"] :where(a,button):hover .arr{ transform:scaleX(-1) translateX(4px); }
+[dir="rtl"] .pv__call,[dir="rtl"] .sos__num{ direction:ltr; }
+[dir="rtl"] .cl__pv--bare .pv__n{ text-align:start; }

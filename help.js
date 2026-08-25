@@ -704,16 +704,25 @@
     if (e.target.closest(".reset")) { reset(); return; }
     if (e.target === clearBtn) { q.value = ""; words = []; mode.apply(); q.focus(); }
 
-    var go = e.target.closest(".langnote__go");
-    if (go) useLanguage(go.dataset.lang);
   });
 
-  /* The language panels open on :target with no help from here. What this
-     adds is the follow-through: somebody who opened the Spanish panel and
-     tapped "ver los lugares que atienden en español" means the list below
-     should now be the Spanish-speaking places, and the matching chip should
-     show as pressed so they can see why the list got shorter — and turn it
-     off again. */
+  /* Arriving from a language page.
+
+     help-es.html links here as help-food.html?lang=spanish, because somebody
+     who has just read a page in Spanish and tapped "I need food" is telling
+     us something. The chip shows as pressed and the filters open, so the
+     shorter list has a visible reason and one tap undoes it. Anything not in
+     the ten is ignored: this reads a URL, and a URL is not to be trusted. */
+  (function () {
+    var m = /[?&]lang=([a-z-]{2,20})/.exec(location.search);
+    if (!m) return;
+    var chip = document.querySelector('.chip[data-f="lang"][data-v="' + m[1] + '"]');
+    if (chip) useLanguage(m[1]);
+  })();
+
+  /* The follow-through: the list below should now be the places that speak
+     the language, and the matching chip should show as pressed so they can
+     see why the list got shorter — and turn it off again. */
   function useLanguage(key) {
     if (active.lang.indexOf(key) === -1) active.lang.push(key);
     var chip = document.querySelector('.chip[data-f="lang"][data-v="' + key + '"]');

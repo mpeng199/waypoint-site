@@ -34,10 +34,20 @@ def _need_keys():
     return [n["key"] for n in build_help.NEEDS]
 
 
-CATEGORY_PAGES = [f"help-{k}.html" for k in _need_keys()]
-RESIDENT_PAGES = ["help.html"] + CATEGORY_PAGES
+def _lang_pages():
+    import build_help
+    return [build_help.lang_page(L["key"]) for L in build_help.LANGUAGES]
 
-PAGES = (["index.html", "help.html"] + CATEGORY_PAGES +
+
+CATEGORY_PAGES = [f"help-{k}.html" for k in _need_keys()]
+LANGUAGE_PAGES = _lang_pages()
+# Everything the directory serves. RESIDENT_PAGES is what a resident reads;
+# the English ones are checked for English prose, the ten language ones are
+# not, so most guards want ENGLISH_PAGES instead.
+ENGLISH_PAGES = ["help.html"] + CATEGORY_PAGES
+RESIDENT_PAGES = ENGLISH_PAGES
+
+PAGES = (["index.html", "help.html"] + CATEGORY_PAGES + LANGUAGE_PAGES +
          ["privacy.html", "terms.html", "partner-pitch.html",
           "cohort-onboarding.html", "students.html", "partners.html", "admin.html"])
 
@@ -1460,6 +1470,9 @@ def check_directory_is_generated():
     want = {"help.html": build_help.render_overview(rows)}
     for need in build_help.NEEDS:
         want[build_help.page_for(need["key"])] = build_help.render_category(need, rows)
+    by_need = {n["key"]: build_help.ordered(rows, n["key"]) for n in build_help.NEEDS}
+    for L in build_help.LANGUAGES:
+        want[build_help.lang_page(L["key"])] = build_help.render_language(L, rows, by_need)
 
     stale = [name for name, fresh in want.items()
              if not (ROOT / name).is_file() or read(name) != fresh]
@@ -2449,6 +2462,56 @@ def check_one_header():
         ok("tokens.css owns the bar, the lockup and the pill")
 
 
+def check_language_header():
+    """The ten language pages wear the same bar, in their own words.
+
+    Same component, same five tabs, same order, same gold pill on the first —
+    but the labels are that language's, and "Find help" goes to that
+    language's own front page rather than the English one, because that is
+    where a reader of this page finds help. The other four go to the narrative
+    site, which is written for students and organisations and is in English.
+    """
+    import build_help, i18n
+    grab = re.compile(r'<header class="sitehead">(.*?)</header>', re.S)
+    tabs = re.compile(r'<a href="([^"]+)"([^>]*)>([^<]+)</a>')
+
+    ROLES = ["find", "bills", "work", "students", "partners"]
+    for L in build_help.LANGUAGES:
+        page = build_help.lang_page(L["key"])
+        m = grab.search(read(page))
+        if not m:
+            bad(f"{page} has no shared header")
+            continue
+        block = m.group(1)
+        got = [t for t in tabs.findall(block) if "brand" not in t[1]]
+        got = [t for t in got if t[2] != "Waypoint"]
+        if len(got) != 5:
+            bad(f"{page}: {len(got)} tabs, not five — the bar has drifted "
+                f"from the English one")
+            continue
+        want_href = [build_help.lang_page(L["key"]), "index.html#bills",
+                     "index.html#work", "index.html#students", "index.html#partners"]
+        want_label = i18n.UI[L["key"]]["nav"]
+        for i, role in enumerate(ROLES):
+            href, attrs, label = got[i]
+            if href != want_href[i]:
+                bad(f"{page}: the {role} tab points at {href!r}, not "
+                    f"{want_href[i]!r}")
+            if html.unescape(label) != want_label[i]:
+                bad(f"{page}: the {role} tab reads {label!r}; i18n.py says "
+                    f"{want_label[i]!r}")
+        if 'class="is-find"' not in got[0][1]:
+            bad(f"{page}: the first tab is not the gold pill")
+        for want, what in [('class="pin"', "the pin"),
+                           ('<span class="brand__txt"', "the wordmark"),
+                           ("Student Health Corps", "the strapline"),
+                           ('class="nav-lamp"', "the lamp")]:
+            if want not in block:
+                bad(f"{page}: the header is missing {what}")
+    ok("all ten language pages: the same bar, the same five tabs, in their "
+       "own words, with Find help pointing at their own front page")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -2762,160 +2825,117 @@ def check_directory_languages():
     """Language access, which on this site is not a nicety.
 
     New York City's Local Law 30 designates ten citywide languages. The people
-    this directory is written for are disproportionately in that group, and a
-    language panel that is subtly broken fails exactly the readers who have no
-    way to tell that it is broken — they cannot read the English around it to
-    find out.
+    this directory is written for are disproportionately in that group.
 
-    So everything here is checked mechanically rather than by eye: that every
-    declared language is present on every resident page, that its tag is a real
-    one, that it names every kind of help, that its phone numbers survived
-    translation as digits somebody can key into a phone, and that no string was
-    left in English by accident.
+    They used to get a panel: a heading, three sentences and a Close link,
+    revealed by :target under an otherwise English page. A blurb about the
+    page rather than the page. Each of the ten is now a page of its own, built
+    from the same components in the same order as the English one, and this
+    checks that they really are pages — not that a translation exists
+    somewhere, which is what the panel version of this check settled for.
     """
-    import build_help
+    import build_help, i18n
     langs = build_help.LANGUAGES
-    keys = [L["key"] for L in langs]
 
-    LL30 = {"spanish", "chinese", "russian", "bengali", "haitian-creole",
-            "korean", "arabic", "urdu", "french", "polish"}
-    missing = sorted(LL30 - set(keys))
-    if missing:
-        bad(f"the directory does not carry {missing}, which Local Law 30 names "
-            "as citywide languages. Those are the readers least able to notice "
-            "that something is missing.")
-    else:
-        ok(f"all ten Local Law 30 citywide languages are carried ({len(keys)} total)")
-
-    # Every resident page, not only the front one. Somebody arriving straight
-    # at "I need food" from a search engine needs the same way out of English
-    # that somebody arriving at the front page gets.
-    for page in RESIDENT_PAGES:
+    # 1. ten pages, and every English page offers all ten
+    for page in ENGLISH_PAGES:
         src = read(page)
-        panels = re.findall(r'<section class="langnote" id="lang-([a-z-]+)"', src)
-        if panels != keys:
-            bad(f"{page}: in-language panels are {panels}, expected {keys}")
-        chips = re.findall(r'class="chip" data-f="lang" data-v="([a-z-]+)"', src)
-        if chips != keys:
-            bad(f"{page}: the language filter offers {chips}, expected {keys}")
-        bar = re.findall(r'class="langbar__list".*?</ul>', src, re.S)
-        if not bar:
-            bad(f"{page}: no language bar, so there is no way off this page for "
-                "somebody who cannot read it")
-        elif re.findall(r'href="#lang-([a-z-]+)"', bar[0]) != keys:
-            bad(f"{page}: the language bar does not offer every language")
-    ok(f"all {len(keys)} languages appear on all {len(RESIDENT_PAGES)} resident "
-       "pages — bar, panel and filter")
+        missing = [L["endonym"] for L in langs
+                   if f'href="{build_help.lang_page(L["key"])}"' not in src]
+        if missing:
+            bad(f"{page} does not link to {len(missing)} of the ten language "
+                f"pages ({', '.join(missing[:3])}) — a reader who cannot read "
+                f"this page cannot get off it")
+    ok(f"all {len(ENGLISH_PAGES)} English pages link to all ten language pages")
 
-    src = read("help.html")
-
-    # A real BCP-47 tag: language, optional script, optional region. lang="spanish"
-    # is not one, so a screen reader keeps its English voice and reads the label
-    # as English — silently, on the one row of the page aimed at people who do
-    # not read it.
-    shape = re.compile(r"^[a-z]{2,3}(-[A-Z][a-z]{3})?(-[A-Z]{2})?$")
-    declared = {L["tag"] for L in langs} | {"en"}
-    tags = set(re.findall(r'(?<!-)\blang="([^"]+)"', src))
-    malformed = sorted(t for t in tags if not shape.match(t))
-    if malformed:
-        bad(f"help.html: lang attribute(s) that are not real subtags: {malformed}")
-    undeclared = sorted(tags - declared)
-    if undeclared:
-        bad(f"help.html: lang attribute(s) for languages the site does not "
-            f"declare: {undeclared}")
-    if not malformed and not undeclared:
-        ok(f"help.html: all {len(tags)} lang attributes are real, declared subtags")
-
-    # Right-to-left scripts have to say so, or the panel renders as a wall of
-    # words running the wrong way.
-    #
-    # Decided from the SCRIPT, never from the config. Asking "is this language
-    # configured rtl, and if so is it marked rtl" is a guard that agrees with
-    # whatever the config says, including when the config is wrong — which is
-    # the failure it exists to catch. Arabic-script text is Arabic-script text
-    # whatever a dict claims about it.
-    RTL_SCRIPT = re.compile(r"[\u0590-\u05FF\u0600-\u06FF\u0700-\u074F\u0780-\u07BF]")
     for L in langs:
-        if not RTL_SCRIPT.search(L["title"]):
+        page = build_help.lang_page(L["key"])
+        if not (ROOT / page).is_file():
+            bad(f"{L['name_en']} has no page ({page})")
             continue
-        tag = re.search(r'<section class="langnote" id="lang-%s"[^>]*>' % L["key"], src)
-        if tag and 'dir="rtl"' in tag.group(0):
-            ok(f'help.html: the {L["name_en"]} panel is marked right-to-left')
-        else:
-            bad(f'help.html: the {L["name_en"]} panel is written in a '
-                'right-to-left script but carries no dir="rtl", so it renders '
-                "in the wrong direction")
-        chip = re.search(r'<a href="#lang-%s"[^>]*>' % L["key"], src)
-        if chip and "dir=rtl" not in chip.group(0) and 'dir="rtl"' not in chip.group(0):
-            bad(f'help.html: the {L["name_en"]} button in the language bar is '
-                "not marked right-to-left")
+        src = read(page)
+        # Compared against the page with its entities resolved, not against a
+        # re-escaped copy of the expectation: the escaper is the code under
+        # test, and an apostrophe leaves it as &#x27;.
+        plain = html.unescape(src)
+        U = i18n.UI[L["key"]]
 
-    for L in langs:
-        panel = src.split(f'id="lang-{L["key"]}"', 1)[-1].split("</section>", 1)[0]
+        # 2. it declares its own language, and the tag is well formed
+        if f'<html lang="{L["tag"]}"' not in src:
+            bad(f"{page}: <html> does not declare lang=\"{L['tag']}\", so a "
+                f"screen reader reads it with the English voice")
+        if not re.fullmatch(r"[a-z]{2,3}(-[A-Za-z]{2,8})*", L["tag"]):
+            bad(f"{L['name_en']}: {L['tag']!r} is not a BCP-47 tag")
 
-        # Every kind of help, named in this language. Without these the panel
-        # tells somebody in their own language that everything else is in
-        # English, and then leaves them there.
-        absent = [n["key"] for n in build_help.NEEDS
-                  if build_help.esc(L["needs"][n["key"]]) not in panel]
-        if absent:
-            bad(f'help.html: the {L["name_en"]} panel does not name {absent}')
+        # 3. direction is decided by the script, not by a config line that
+        #    could be wrong. An Arabic-script title means the page is RTL.
+        rtl_script = bool(re.search(r"[\u0590-\u07BF]", U["title_a"] + U["title_b"]))
+        declared = 'dir="rtl"' in src.split(">", 3)[1] + src[:400]
+        if rtl_script and not declared:
+            bad(f"{page} is written in a right-to-left script and is not "
+                f"marked dir=\"rtl\"")
+        if declared and not rtl_script:
+            bad(f"{page} is marked dir=\"rtl\" and is not in an RTL script")
 
-        # Phone numbers must survive translation as digits that can be keyed
-        # into a phone. Bengali prose writes 311 as ৩১১ and Urdu as ۳۱۱; both
-        # are correct and both are useless against the buttons in your hand.
-        native_digits = re.findall(r"[\u0660-\u0669\u06F0-\u06F9\u09E6-\u09EF"
-                                   r"\u0966-\u096F\uFF10-\uFF19]", panel)
-        if native_digits:
-            bad(f'help.html: the {L["name_en"]} panel writes a number in '
-                f'non-Western digits ({"".join(sorted(set(native_digits)))}), '
-                "which cannot be matched against a phone keypad")
+        # 4. the three numbers, dialable, in every language
+        body = re.sub(r"<a[^>]*>.*?</a>", "", src, flags=re.S)
+        for num in ("911", "988", "311"):
+            if f'href="tel:{num}"' not in src:
+                bad(f"{page} never dials {num} — the one instruction that is "
+                    f"safe in every language")
+            if re.search(rf"(?<![0-9]){num}(?![0-9])", body):
+                bad(f"{page} prints {num} as text somewhere as well as dialing it")
 
-        for num, why in (("311", "the interpreter route"),
-                         ("911", "the emergency number"),
-                         ("988", "the line for somebody to talk to")):
-            if num not in panel:
-                bad(f'help.html: the {L["name_en"]} panel does not give {num}, '
-                    f"{why} — the one instruction that is safe in every language")
+        # 5. every one of the seventeen kinds of help, named in this language
+        for key, label in L["needs"].items():
+            if label not in plain:
+                bad(f"{page} does not name {key!r} in {L['name_en']}")
 
-        # A string still in English is a translation somebody forgot. Compared
-        # against the Spanish panel's English source is not possible, so the
-        # test is the tell: an ASCII-only body in a non-Latin-script language.
-        if L["tag"] in ("zh-Hans", "ru", "bn", "ko", "ar", "ur"):
-            if L["body"].isascii() or L["sos"].isascii() or L["interp"].isascii():
-                bad(f'help.html: part of the {L["name_en"]} panel is still in '
-                    "English")
-    ok(f"every one of the {len(langs)} panels names all "
-       f'{len(build_help.NEEDS)} kinds of help, gives 911, 988 and 311, and '
-       "keeps its phone numbers in Western digits")
+        # 6. and a line under each, which is what makes it a page rather than
+        #    a menu of headings
+        for key, blurb in i18n.BLURBS[L["key"]].items():
+            if blurb not in plain:
+                bad(f"{page} names {key!r} but does not say what is behind it")
 
-    # A filter that hides help is worse than no filter. Every language chip has
-    # to reach a usable share of the directory, counting the rows that work
-    # through an interpreter as reachable, because that is what the data knows.
-    rows = build_help.load()
-    total = len(rows)
-    for L in langs:
-        reach = sum(1 for r in rows
-                    if L["key"] in r["_langs"] or "many" in r["_langs"])
-        if reach >= total * 0.4:
-            ok(f'help.html: the {L["key"]} filter reaches {reach} of {total} rows')
-        else:
-            bad(f'help.html: the {L["key"]} filter reaches only {reach} of '
-                f"{total} rows, so choosing it hides most of the directory")
+        # 7. the promise, whole. It is a promise, so it is not summarised.
+        if U["vow"] not in plain:
+            bad(f"{page} does not carry the honesty statement in {L['name_en']}")
 
-    # And the narrative page has to offer the same ten, or somebody sent there
-    # first sees a shorter list than the directory actually speaks.
-    home = read("index.html")
-    cue = re.search(r'<ul class="langcue">.*?</ul>', home, re.S)
-    if not cue:
-        bad("index.html: no language cue, so the home page offers no way into "
-            "the directory for somebody who cannot read it")
-    else:
-        offered = re.findall(r'href="help\.html#lang-([a-z-]+)"', cue.group(0))
-        if offered == keys:
-            ok(f"index.html offers the same {len(keys)} languages as the directory")
-        else:
-            bad(f"index.html offers {offered}; the directory carries {keys}")
+        # 8. no non-Western digits in a phone number: a reader may copy them
+        #    into a dialler that will not take them
+        for m in re.finditer(r'href="tel:([^"]+)"', src):
+            if not re.fullmatch(r"[+0-9]+", m.group(1)):
+                bad(f"{page}: tel:{m.group(1)} is not a dialable number")
+
+        # 9. Nothing is left in English except what is declared as English.
+        #    An organisation's name is a proper noun and stays — "Access-A-Ride"
+        #    is what you say on the phone — so build_help marks those lang="en"
+        #    and this drops them before looking. Anything English that is NOT
+        #    marked is prose that was never translated.
+        marked = re.sub(r'<(\w+)[^>]*lang="en"[^>]*>.*?</\1>', "", src, flags=re.S)
+        marked = re.sub(r"<(script|style)\b.*?</\1>", "", marked, flags=re.S)
+        stray = []
+        for m in re.finditer(r">([^<>{}]{25,})<", marked):
+            t = m.group(1).strip()
+            if not t or not re.search(r"[A-Za-z]", t):
+                continue
+            # A run counts as untranslated only if it is ASCII throughout.
+            # Counting the proportion of Latin letters does not work: CJK packs
+            # a whole sentence into a dozen characters, so one product name in
+            # it tips the balance and the line reads as English.
+            if any(ord(c) > 0x24F for c in t):
+                continue          # carries this language's own script
+                continue          # mostly non-Latin: this language's own script
+            if L["tag"] in ("es", "fr", "pl", "ht"):
+                continue          # Latin-script languages: cannot tell this way
+            stray.append(t[:60])
+        for t in sorted(set(stray))[:3]:
+            bad(f"{page} has a run of English prose in it: {t!r}")
+
+    ok(f"all ten language pages: own lang tag, direction from the script, "
+       f"911/988/311 dialable, all seventeen kinds of help named and "
+       f"described, and the promise carried whole")
+
 
 
 def check_directory_needs():
@@ -3139,11 +3159,17 @@ def check_home_offers_help():
             "in trouble should not scroll past a volunteer pitch and a partner "
             "pitch to reach the help.")
 
-    langs = re.findall(r'href="help\.html#lang-([a-z-]+)"', src)
-    if len(langs) >= 7:
-        ok(f"index.html: {len(langs)} in-language entry points on the home page")
+    # They used to point at a panel further down help.html. They point at the
+    # ten pages now, which is the difference between being told the site knows
+    # your language and being handed a page in it.
+    import build_help
+    want = {build_help.lang_page(L["key"]) for L in build_help.LANGUAGES}
+    langs = sorted(w for w in want if f'href="{w}"' in src)
+    if len(langs) == len(want):
+        ok(f"index.html: all {len(langs)} language pages are reachable from the "
+           f"home page")
     else:
-        bad(f"index.html: only {len(langs)} in-language links; somebody who "
+        bad(f"index.html: only {len(langs)} of {len(want)} language pages linked; somebody who "
             f"cannot read the headline needs a way in from here")
 
 
@@ -3204,7 +3230,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

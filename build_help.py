@@ -2037,51 +2037,26 @@ def header_frag():
 
 
 def langbar_frag(target="#dir"):
-    """Language access, first thing under the header, on every resident page.
+    """Ten doors, first thing under the header, on every English page.
 
-    Somebody who cannot read the page should not have to read the page to find
-    their way off it — and that is as true on "I need food" as it is on the
-    front of the directory, so this ships on all of them rather than only on
-    the one somebody happened to enter through.
+    They used to be ten anchors that revealed a green panel further down the
+    page: a title, three sentences, the seventeen headings translated, and a
+    Close link. A blurb about the page rather than the page. Somebody who
+    reads only Bengali got a paragraph in Bengali and then two hundred
+    resources in English.
+
+    Each one is now a page — help-bn.html and its nine siblings — built from
+    the same components, in the same order, with the same spacing as this one.
+    So this is a plain row of links, which is what it always should have been.
     """
-    out = ['<section class="langbar" aria-labelledby="langbar-h">',
+    out = ['<nav class="langbar" aria-labelledby="langbar-h">',
            '  <h2 id="langbar-h" class="langbar__h">Get help in your language</h2>',
            '  <ul class="langbar__list">']
     for L in LANGUAGES:
-        out.append(f'    <li><a href="#lang-{L["key"]}" lang="{L["tag"]}" '
+        out.append(f'    <li><a href="{lang_page(L["key"])}" lang="{L["tag"]}" '
                    f'data-lang="{L["key"]}"{" dir=rtl" if L["dir"] == "rtl" else ""}>'
                    f'{esc(L["endonym"])}</a></li>')
-    out += ['  </ul>', '</section>']
-    for L in LANGUAGES:
-        rtl = ' dir="rtl"' if L["dir"] == "rtl" else ""
-        out += [
-            f'<section class="langnote" id="lang-{L["key"]}" lang="{L["tag"]}"{rtl} '
-            f'data-lang="{L["key"]}" aria-labelledby="lang-h-{L["key"]}">',
-            f'  <h2 id="lang-h-{L["key"]}">{esc(L["title"])}</h2>',
-            f'  <p>{dial(esc(L["body"]))}</p>',
-            f'  <p class="langnote__sos">{dial(esc(L["sos"]))}</p>',
-            f'  <p class="langnote__interp">{dial(esc(L["interp"]))}</p>',
-        ]
-        # The sixteen kinds of help, named in this language, each opening its
-        # own page. This is the difference between a notice that acknowledges
-        # somebody exists and a page they can actually use: without it, a
-        # reader who cannot read English is told in their language that the
-        # list below is in English, and then left with it.
-        out += [
-            f'  <p class="langnote__search">{dial(esc(L["search"]))}</p>',
-            f'  <h3 class="langnote__h3">{esc(L["browse"])}</h3>',
-            '  <ul class="langneeds">',
-        ]
-        for need in NEEDS:
-            out.append(f'    <li><a href="{page_for(need["key"])}">'
-                       f'{esc(L["needs"][need["key"]])}</a></li>')
-        out += [
-            '  </ul>',
-            f'  <p class="langnote__do"><a class="langnote__go" href="{target}" '
-            f'data-lang="{L["key"]}">{esc(L["cta"])}</a>',
-            '  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>',
-            '</section>',
-        ]
+    out += ['  </ul>', '</nav>']
     return out
 
 
@@ -2419,6 +2394,241 @@ def render_overview(rows):
     return "\n".join(p) + "\n"
 
 
+# ------------------------------------------------------------ the ten pages
+import i18n
+
+# Fraunces has a real italic; Chinese, Korean, Bengali, Arabic and Urdu do not,
+# and a browser asked for one will slant the glyphs mechanically. The masthead's
+# emphasis is gold either way — that is what carries it — and only these scripts
+# drop the slant.
+NO_ITALIC = {"chinese", "korean", "bengali", "arabic", "urdu"}
+
+
+def lang_page(key):
+    return f"help-{LANG_SLUG[key]}.html"
+
+
+LANG_SLUG = {"spanish": "es", "chinese": "zh", "russian": "ru", "bengali": "bn",
+             "haitian-creole": "ht", "korean": "ko", "arabic": "ar",
+             "urdu": "ur", "french": "fr", "polish": "pl"}
+
+
+def lang_header_frag(L, U):
+    """The same bar, the same five tabs, the same order — read in this language.
+
+    Find help goes to this language's own front page, because that is where a
+    reader of this page finds help. The other four go to the narrative site,
+    which is written for students and organisations and is in English.
+    """
+    rtl = L["dir"] == "rtl"
+    tabs = [(lang_page(L["key"]), U["nav"][0], ' class="is-find" aria-current="page"'),
+            ("index.html#bills", U["nav"][1], ""),
+            ("index.html#work", U["nav"][2], ""),
+            ("index.html#students", U["nav"][3], ""),
+            ("index.html#partners", U["nav"][4], "")]
+    out = ['<header class="sitehead">',
+           '  <div class="sitehead__in">',
+           f'    <a class="brand" href="{lang_page(L["key"])}" aria-label="Waypoint">',
+           f'      {PIN}',
+           '      <span class="brand__txt" dir="ltr">Waypoint'
+           '<small>Student Health Corps</small></span>',
+           '    </a>',
+           f'    <nav class="sitehead__links" aria-label="{esc(U["nav"][0])}">',
+           '      <span class="nav-lamp" id="navLamp" aria-hidden="true">'
+           '<i class="nav-lamp__bar"></i></span>']
+    for href, label, extra in tabs:
+        out.append(f'      <a href="{href}"{extra}>{esc(label)}</a>')
+    out += ['    </nav>', '  </div>', '</header>']
+    return out
+
+
+def lang_switch_frag(L, U):
+    """The ten doors, on every one of the ten pages, always in the same order
+    and always reading in their own script. The page you are on is marked and
+    is not a link — a link to where you already are is a small cruelty on a
+    page somebody is struggling to read."""
+    out = [f'<nav class="langbar" aria-label="{esc(U["langbar_h"])}">',
+           f'  <span class="langbar__h">{esc(U["langbar_h"])}</span>',
+           '  <ul class="langbar__list">']
+    for O in LANGUAGES:
+        d = ' dir="rtl"' if O["dir"] == "rtl" else ''
+        if O["key"] == L["key"]:
+            out.append(f'    <li><span class="langbar__here" lang="{O["tag"]}"{d} '
+                       f'aria-current="page">{esc(O["endonym"])}</span></li>')
+        else:
+            out.append(f'    <li><a href="{lang_page(O["key"])}" lang="{O["tag"]}"{d}>'
+                       f'{esc(O["endonym"])}</a></li>')
+    out += ['    <li><a href="help.html" lang="en">English</a></li>',
+            '  </ul>', '</nav>']
+    return out
+
+
+def lang_sos_frag(L, U, rows):
+    """The same four numbers, in the same order, described in this language."""
+    by_name = {r["Resource Name"]: r for r in rows}
+    nums = ["911"]
+    for name, _why in SOS:
+        r = by_name.get(name)
+        if not r:
+            raise SystemExit(f"emergency strip: {name!r} is not in the directory")
+        kind, label, href = contact(r["Phone"])
+        if kind != "call":
+            raise SystemExit(f"emergency strip: {name!r} has no dialable number")
+        nums.append(label)
+    if len(nums) != len(U["sos"]):
+        raise SystemExit(f'{L["key"]}: {len(U["sos"])} sos lines for {len(nums)} numbers')
+    out = ['<section class="sos" aria-labelledby="sos-h">',
+           f'  <h2 id="sos-h" class="sos__h">{esc(U["sos_h"])}</h2>',
+           '  <ul class="sos__list">']
+    for label, why in zip(nums, U["sos"]):
+        tel = re.sub(r"[^0-9+]", "", label)
+        out.append(f'    <li><a href="tel:{esc(tel)}">'
+                   f'<span class="sos__num" dir="ltr">{esc(label)}</span>'
+                   f'<span class="sos__for">{esc(why)}</span></a></li>')
+    out += ['  </ul>',
+            f'  <p class="sos__note">{esc(U["sos_note"])}</p>',
+            '</section>']
+    return out
+
+
+def render_language(L, rows, by_need):
+    """One language, the whole front page — not a notice about it.
+
+    It carries what the English front page carries, in the same order and the
+    same components: the masthead, the four emergency numbers, the seventeen
+    kinds of help with a few places named under each, the promise, the footer.
+    What it does not carry is a translation of 340 English descriptions it
+    would have no way to check, so each card names places and dials them and
+    the one sentence in `english` says where the detail is and how to get an
+    interpreter on the line for free.
+    """
+    U = i18n.UI[L["key"]]
+    B = i18n.BLURBS[L["key"]]
+    n = len(rows)
+    rtl = L["dir"] == "rtl"
+    p = ['<!DOCTYPE html>',
+         f'<html lang="{L["tag"]}"{" dir=\"rtl\"" if rtl else ""}>', '<head>',
+         '<meta charset="UTF-8" />',
+         '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+         f'<title>{esc(U["title_a"] + " " + U["title_b"])} | Waypoint</title>',
+         f'<meta name="description" content="{esc(U["lede1"].format(n=n))}" />',
+         '<meta name="theme-color" content="#13231A" />',
+         f'<meta property="og:title" content="{esc(U["title_a"] + " " + U["title_b"])}" />',
+         '<meta property="og:type" content="website" />',
+         '<link rel="alternate" hreflang="en" href="help.html" />']
+    for O in LANGUAGES:
+        p.append(f'<link rel="alternate" hreflang="{O["tag"]}" '
+                 f'href="{lang_page(O["key"])}" />')
+    p += ['<link rel="preconnect" href="https://fonts.googleapis.com" />',
+          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />',
+          FONTS,
+          '<link rel="stylesheet" href="tokens.css" />',
+          '<link rel="stylesheet" href="help.css" />',
+          '</head>',
+          f'<body class="help help--{LANG_SLUG[L["key"]]}" id="top" '
+          f'data-lang="{L["key"]}">',
+          f'<a class="skip" href="#needs">{esc(U["skip"])}</a>',
+          SPRITE]
+    A = p.append
+
+    p += lang_header_frag(L, U)
+    A('<div class="wrap">')
+    A('<main>')
+    p += lang_switch_frag(L, U)
+
+    # ---- masthead: the same painted valley, the same two paragraphs ----
+    A('<div class="mast">')
+    A('  <div class="mast__bg" aria-hidden="true"></div>')
+    A(f'  <p class="eyebrow mast__eye">{esc(U["eyebrow"])}</p>')
+    em = "b" if L["key"] in NO_ITALIC else "em"
+    A(f'  <h1 class="mast__title">{esc(U["title_a"])} '
+      f'<{em}>{esc(U["title_b"])}</{em}></h1>')
+    A(f'  <p class="mast__say"><b>{esc(U["lede1"].format(n=n))}</b></p>')
+    A(f'  <p class="mast__say">{esc(U["lede2"])}</p>')
+    A('</div>')
+
+    p += lang_sos_frag(L, U, rows)
+
+    # ---- the one thing this page has that the English one does not ----
+    A('<aside class="enote" aria-labelledby="enote-h">')
+    A(f'  <h2 id="enote-h" class="enote__h">{esc(U["english_h"])}</h2>')
+    A(f'  <p class="enote__p">{dial(esc(U["english"]))}</p>')
+    A('</aside>')
+
+    # ---- the seventeen, each naming places you can dial from here ----
+    A('<div class="clusters" id="needs" aria-labelledby="needs-h">')
+    A('  <div class="clusters__head">')
+    A(f'    <h2 id="needs-h">{esc(U["needs_h"])}</h2>')
+    A(f'    <p class="clusters__say">{esc(U["needs_sub"])}</p>')
+    A('  </div>')
+    A('  <ul class="clusters__grid">')
+    for need in NEEDS:
+        k = need["key"]
+        group = by_need[k]
+        c = len(group)
+        A(f'  <li><section class="cl" id="n-{k}" aria-labelledby="h-{k}">')
+        A('    <div class="cl__head">')
+        A(f'      {icon(need["icon"])}')
+        A('      <div>')
+        to = f'{page_for(k)}?lang={L["key"]}'
+        A(f'        <h3 id="h-{k}"><a href="{to}">'
+          f'{esc(L["needs"][k])}</a></h3>')
+        A(f'        <p class="cl__b">{esc(B[k])}</p>')
+        A('      </div>')
+        A('    </div>')
+        # A name and a number are the same in every language. The English
+        # sentence that would sit under them is the part this page cannot
+        # check, so it is not printed rather than printed untranslated.
+        A('    <ul class="cl__pv cl__pv--bare">')
+        for r in group[:PREVIEW]:
+            kind, label, href = contact(r["Phone"])
+            anchor = f'{to}#r-{esc(k)}-{esc(r["_id"])}'
+            call = ('' if kind != "call" else
+                    f'<a class="pv__call" href="tel:{esc(href)}" dir="ltr">'
+                    f'<svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>'
+                    f'{esc(label)}</a>')
+            A(f'      <li class="pv"><a class="pv__n" href="{anchor}" lang="en" '
+              f'dir="ltr">{esc(r["Resource Name"])}</a>{call}</li>')
+        A('    </ul>')
+        A(f'    <a class="cl__all" href="{to}">'
+          f'{esc(U["open_all"].format(n=c))} <span class="arr">&rarr;</span></a>')
+        A('  </section></li>')
+    A('  </ul>')
+    A('</div>')
+
+    # ---- the promise, translated whole ----
+    A('<section class="vowbox" aria-labelledby="vow-h">')
+    A(f'  <h2 id="vow-h">{esc(U["vow_h"])}</h2>')
+    A(f'  <p class="vowbox__full">{esc(U["vow"])}</p>')
+    A(f'  <p class="vowbox__src">{esc(U["vow_src"])}</p>')
+    A('</section>')
+    A('</main>')
+    A('</div>')
+
+    # ---- footer ----
+    A('<footer class="hfoot">')
+    A('  <div class="hfoot__in">')
+    A(f'    <a class="brand" href="{lang_page(L["key"])}" aria-label="Waypoint">{PIN}'
+      '<span class="brand__txt" dir="ltr">Waypoint'
+      '<small>Student Health Corps</small></span></a>')
+    A(f'    <p class="hfoot__say">{esc(U["foot_say"])}</p>')
+    A('    <ul class="hfoot__links">')
+    for href, label in zip([lang_page(L["key"]), "index.html",
+                            "index.html#students", "index.html#partners",
+                            "privacy.html"], U["foot_links"]):
+        A(f'      <li><a href="{href}">{esc(label)}</a></li>')
+    A('      <li><a href="mailto:waypointoutreach@gmail.com" dir="ltr">'
+      'waypointoutreach@<wbr />gmail.com</a></li>')
+    A('    </ul>')
+    A(f'    <p class="hfoot__ver">'
+      f'{esc(U["foot_ver"].format(n=n, when=checked(rows)))}</p>')
+    A('  </div>')
+    A('</footer>')
+    A('</body>')
+    A('</html>')
+    return "\n".join(p) + "\n"
+
+
 def render_category(need, rows):
     """One kind of help, on its own page: a rail you can skim, the resources
     broken into buckets, and every neighbouring kind of help one tap away."""
@@ -2656,6 +2866,15 @@ def build():
         path = ROOT / page_for(need["key"])
         path.write_text(render_category(need, rows), encoding="utf-8")
         written.append(path)
+
+    # Ten more front pages, one per language. Not a notice about the English
+    # one — the same page, in the same order, in that language.
+    by_need = {n["key"]: ordered(rows, n["key"]) for n in NEEDS}
+    for L in LANGUAGES:
+        path = ROOT / lang_page(L["key"])
+        path.write_text(render_language(L, rows, by_need), encoding="utf-8")
+        written.append(path)
+
     if sync_home():
         print("updated index.html's list of what the directory holds")
     return rows, written
