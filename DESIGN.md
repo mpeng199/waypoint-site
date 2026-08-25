@@ -577,6 +577,22 @@ One `h1` per page, no level skipped, on all twenty pages
 (`check_heading_order`). Footer column labels are `h2` with a class, not `h4`
 chosen for its size.
 
+### What a "checked" date means
+
+Two tools stamp it, and between them they cover every row —
+`check_every_row_has_someone_to_verify_it` fails if one falls through:
+
+- **`verify_phones.py`** asks each organisation's own site whether the number
+  we print is its number. It owns every row with a ten-digit number in it.
+- **`check_links_live.py --stamp`** owns the rest: a row whose "phone" is 311,
+  or `Text FOOD to 726879`, or nothing at all. For those, verifying can only
+  mean *the site is live and still on the organisation's own domain* — so that
+  is what their date means, and this is the paragraph that says so.
+
+A row whose number the sweep could not confirm keeps its older date. It is
+never stamped on a guess: 31 rows still read June for that reason, and the
+pages say "Checked June–August 2026" rather than rounding up.
+
 ### Tap targets
 
 **44px minimum on every control**, not the 24 of WCAG 2.5.8: this is read on a

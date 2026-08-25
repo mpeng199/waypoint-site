@@ -23,12 +23,21 @@ the CSV. Two known false alarms:
     curl and in a browser. Cross-check anything in the failure list with
     `curl -IL <url>` before believing it.
 
+With --stamp it also re-dates the rows the phone sweep can never confirm: the
+ones with no phone at all, and the ones whose "phone" is a short code like 311
+or 988 that no organisation prints on its own site. For those rows, verifying
+means confirming the site is live and still on the organisation's own domain,
+which is exactly what this does — so the date they carry means that, and
+DESIGN.md says so. Nothing with a real phone number is stamped here;
+verify_phones.py owns those.
+
 Redirects are reported but are usually not worth chasing — most are a trailing
 slash, a dropped www, or a locale prefix, and the reader never sees them. Chase
 the ones where the path itself changed.
 """
 
 import csv
+import datetime
 import concurrent.futures
 import re
 import sys
@@ -132,9 +141,33 @@ def offsite(url, final):
     return frozenset({a, b}) not in SAME_ORG
 
 
+TEN_DIGITS = re.compile(r"(?:\+?1[ .-]?)?\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4}")
+
+
+def unverifiable_by_phone(row):
+    """Rows verify_phones.py can never confirm, however long it runs.
+
+    Its definition, not a second one: it looks for ten-digit numbers and skips
+    a row that has none. So this asks the same question — is there a ten-digit
+    number here — rather than keeping a list of short codes beside it. The
+    first draft did keep such a list and two rows fell between the two tools:
+    "988 then press 1 / text 838255" and "Text FOOD to 726879" have digits in
+    them, none of which is a phone number either tool could check.
+
+    For these rows "we checked this" can only mean the site is live and is
+    still on the organisation's own domain, which is what this file does.
+    """
+    for m in TEN_DIGITS.findall(row.get("Phone") or ""):
+        if len(re.sub(r"\D", "", m).lstrip("1")) == 10:
+            return False
+    return True
+
+
 def main():
+    stamp = "--stamp" in sys.argv
     with open(CSV, encoding="utf-8-sig", newline="") as f:
-        rows = [r for r in csv.DictReader(f) if (r.get("Website") or "").strip()]
+        all_rows = list(csv.DictReader(f))
+    rows = [r for r in all_rows if (r.get("Website") or "").strip()]
 
     targets = [(r["Resource Name"].strip(), r["Website"].strip()) for r in rows]
     print(f"checking {len(targets)} websites\n", flush=True)
@@ -168,6 +201,25 @@ def main():
     print(f"reachable via redirect {len(redirects)}")
     print(f"blocked our request    {len(blocked)}  (probably fine in a browser)")
     print(f"FAILED             {len(dead)}")
+
+    if stamp:
+        today = datetime.date.today().isoformat()
+        live = {name for name, _u, _n in ok} | {name for name, _u, _n in redirects}
+        n = 0
+        for r in all_rows:
+            if (r["Resource Name"].strip() in live
+                    and unverifiable_by_phone(r)
+                    and r.get("Last Verified", "") < today):
+                r["Last Verified"] = today
+                n += 1
+        if n:
+            cols = list(all_rows[0].keys())
+            with open(CSV, "w", encoding="utf-8-sig", newline="") as f:
+                w = csv.DictWriter(f, fieldnames=cols, quoting=csv.QUOTE_ALL)
+                w.writeheader()
+                w.writerows(all_rows)
+        print(f"\nstamped {n} row(s) that have no phone to verify: their site "
+              f"answered, on their own domain, today")
 
     if hijacked:
         print("\n" + "=" * 70)

@@ -3074,6 +3074,51 @@ def check_high_contrast_covers_the_cards():
     ok("every bordered card and control thickens its border at higher contrast")
 
 
+def check_every_row_has_someone_to_verify_it():
+    """Two tools stamp dates, and between them they must cover every row.
+
+    verify_phones.py asks each organisation's own site whether the number we
+    print is its number, and skips a row with no ten-digit number in it.
+    check_links_live.py --stamp handles exactly those: for a row whose "phone"
+    is 311, or a text shortcode, or nothing, verifying can only mean the site
+    is live and still on its own domain.
+
+    A row owned by neither is a row whose date nobody is responsible for, and
+    it will quietly age. Two fell through the first time this was split: "988
+    then press 1 / text 838255" and "Text FOOD to 726879" both have digits in
+    them, and neither has a phone number either tool could check.
+    """
+    import csv as _csv
+    import verify_phones
+    import check_links_live
+    with open(ROOT / "data" / "resources.csv", encoding="utf-8-sig", newline="") as f:
+        rows = list(_csv.DictReader(f))
+
+    phone, link, orphan, both = 0, 0, [], []
+    for r in rows:
+        has_site = bool((r.get("Website") or "").strip())
+        by_phone = has_site and bool(verify_phones.ours(r["Phone"]))
+        by_link = check_links_live.unverifiable_by_phone(r)
+        if by_phone and by_link:
+            both.append(r["Resource Name"])
+        elif by_phone:
+            phone += 1
+        elif by_link:
+            link += 1
+        else:
+            orphan.append(r["Resource Name"])
+    for n in both[:4]:
+        bad(f"{n!r} would be stamped by both tools; the two would fight over "
+            f"what its date means")
+    for n in orphan[:4]:
+        bad(f"{n!r} is stamped by neither tool: it has a phone number too "
+            f"unusual to check and a site nobody is checking either, so its "
+            f"date will quietly age")
+    if not both and not orphan:
+        ok(f"every row has a tool responsible for its date: {phone} by phone, "
+           f"{link} by the site being live")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3947,7 +3992,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
