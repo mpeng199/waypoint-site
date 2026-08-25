@@ -2729,6 +2729,67 @@ def check_nothing_parks_offscreen():
     ok("the skip link is clipped at rest and unclipped on focus, on both halves")
 
 
+def check_script_typography():
+    """The four things a script needs that English does not.
+
+    Each of these was visible on a rendered page before it was fixed, and each
+    is invisible to anyone who does not read the script.
+    """
+    css = read("help.css")
+    WANT = [
+        (r"\.help--ko\{[^}]*word-break:keep-all",
+         "Korean breaks between eojeol, not inside a word. Without keep-all "
+         "the masthead came out '묻지 않 / 습니다' — one word split across two "
+         "lines, four times on the first screen"),
+        (r"\.help--ko\{[^}]*overflow-wrap:anywhere",
+         "keep-all with nothing to catch a unit longer than the column pushes "
+         "the page sideways"),
+        (r"\.help--bn[^{]*\{[^}]*line-height:1\.8",
+         "Bengali has a headline and ascenders English does not; at English's "
+         "leading the lines collide"),
+        (r"\.help--ar[^{]*\{[^}]*line-height:1\.9|"
+         r"\.help--ur[^{]*\{[^}]*line-height:1\.9",
+         "Arabic and Urdu hang well below the baseline"),
+        (r"\.help--zh[^{]*\{[^}]*max-width:44ch",
+         "CJK has no word spaces, so the eye wants a shorter measure, not a "
+         "looser one"),
+        (r"\.mast__title b\{[^}]*font-style:normal",
+         "Fraunces has a drawn italic and CJK, Bengali, Arabic and Urdu do "
+         "not, so a browser asked for one slants the glyphs by matrix"),
+    ]
+    for rx, why in WANT:
+        if re.search(rx, css, re.S):
+            ok(f"script typography: {why.split(chr(46))[0][:58]}")
+        else:
+            bad(f"help.css no longer handles this: {why}")
+
+    # and the five scripts with no drawn italic must not be asked for one
+    import build_help
+    for L in build_help.LANGUAGES:
+        page = build_help.lang_page(L["key"])
+        src = read(page)
+        m = re.search(r'<h1 class="mast__title">(.*?)</h1>', src, re.S)
+        if not m:
+            bad(f"{page} has no masthead title")
+            continue
+        # Decided from the script, not from build_help.NO_ITALIC: asking the
+        # code under test which languages have an italic means the check
+        # agrees with it even when it is wrong, which is how the first draft
+        # passed with Chinese removed from the set.
+        title = html.unescape(re.sub(r"<[^>]+>", "", m.group(1)))
+        latin_or_cyrillic = all(
+            ord(c) < 0x250 or 0x400 <= ord(c) <= 0x52F or not c.isalpha()
+            for c in title)
+        has_em = "<em>" in m.group(1)
+        should = latin_or_cyrillic
+        if has_em != should:
+            bad(f"{page}: the title emphasis is <{'em' if has_em else 'b'}> and "
+                f"this script has {'a' if should else 'no'} drawn italic "
+                f"in Fraunces — a browser asked for one it does not have "
+                f"slants the glyphs by matrix")
+    ok("the five scripts with no drawn italic carry the gold without one")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3474,7 +3535,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

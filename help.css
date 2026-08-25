@@ -876,6 +876,13 @@ b,strong{ font-weight:600; }
 .help--zh .vowbox__full,.help--ko .vowbox__full,
 .help--zh .enote__p,.help--ko .enote__p{ line-height:1.8; max-width:44ch; }
 .help--zh .cl__b,.help--ko .cl__b{ line-height:1.75; }
+/* Korean breaks between eojeol — the space-separated word units — not inside
+   one. The default treats every syllable as a break opportunity, and the
+   masthead came out "묻지 않 / 습니다": one word split across two lines, four
+   times on the first screen. Chinese does break anywhere and is left alone.
+   overflow-wrap catches the one case keep-all cannot: a single unit longer
+   than the column, which would otherwise push the page sideways. */
+.help--ko{ word-break:keep-all; overflow-wrap:anywhere; }
 .help--zh .eyebrow,.help--ko .eyebrow,
 .help--zh .enote__h,.help--ko .enote__h{ letter-spacing:.12em; }
 .help--ru .eyebrow{ letter-spacing:.14em; }
