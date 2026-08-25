@@ -145,6 +145,23 @@ b,strong{ font-weight:600; }
 .langnote h2{ font-size:clamp(1.5rem,1.3rem + 1vw,2.1rem); margin-bottom:.55em;
   line-height:1.25; }
 .langnote p{ max-width:64ch; line-height:1.7; color:var(--ink-strong); }
+/* The emergency line sits above the interpreter line, because a reader who
+   stops after two sentences should already have the two numbers that matter. */
+.langnote__sos{ margin-top:1em; padding:12px 16px; border-radius:var(--r-s);
+  background:rgba(252,254,247,.10); border:1px solid var(--hair);
+  font-weight:600; }
+.langnote__h3{ margin-top:1.4em; font-size:1.12rem; color:var(--gold); }
+.langneeds{ margin-top:.7em; display:grid; gap:2px;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); }
+.langneeds a{ display:flex; align-items:center; min-height:44px;
+  padding:8px 12px; border-radius:var(--r-s); text-decoration:none;
+  color:var(--ink-strong); line-height:1.35;
+  transition:background .16s var(--ease), color .16s var(--ease); }
+.langneeds a:hover{ background:rgba(252,254,247,.10); color:var(--mint); }
+.langneeds a::after{ content:"\2192"; margin-inline-start:auto; padding-inline-start:10px;
+  color:var(--gold); opacity:0; transition:opacity .16s var(--ease); }
+[dir="rtl"] .langneeds a::after{ content:"\2190"; }
+.langneeds a:hover::after,.langneeds a:focus-visible::after{ opacity:1; }
 .langnote__interp{ margin-top:1em; padding-top:1em;
   border-top:1px solid var(--hair); }
 .langnote__do{ margin-top:1.3em; display:flex; flex-wrap:wrap; gap:10px 22px;

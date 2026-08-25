@@ -1434,6 +1434,12 @@ def check_directory_is_generated():
         return
     sys.path.insert(0, str(ROOT))
     try:
+        # Bytecode is cached on (mtime, size). A build_help.py that was edited
+        # and put back — which is what break-testing a guard does — can land on
+        # the same size in the same second, and then `reload` cheerfully hands
+        # back the OLD module while every check below reads the NEW file. That
+        # produced a full page of confident, wrong failures once.
+        importlib.invalidate_caches()
         import build_help
         importlib.reload(build_help)
     except Exception as e:
@@ -1712,56 +1718,163 @@ def check_directory_clusters():
 
 
 def check_directory_languages():
-    """The seven in-language panels, and the tags that make them speakable."""
+    """Language access, which on this site is not a nicety.
+
+    New York City's Local Law 30 designates ten citywide languages. The people
+    this directory is written for are disproportionately in that group, and a
+    language panel that is subtly broken fails exactly the readers who have no
+    way to tell that it is broken — they cannot read the English around it to
+    find out.
+
+    So everything here is checked mechanically rather than by eye: that every
+    declared language is present on every resident page, that its tag is a real
+    one, that it names every kind of help, that its phone numbers survived
+    translation as digits somebody can key into a phone, and that no string was
+    left in English by accident.
+    """
+    import build_help
+    langs = build_help.LANGUAGES
+    keys = [L["key"] for L in langs]
+
+    LL30 = {"spanish", "chinese", "russian", "bengali", "haitian-creole",
+            "korean", "arabic", "urdu", "french", "polish"}
+    missing = sorted(LL30 - set(keys))
+    if missing:
+        bad(f"the directory does not carry {missing}, which Local Law 30 names "
+            "as citywide languages. Those are the readers least able to notice "
+            "that something is missing.")
+    else:
+        ok(f"all ten Local Law 30 citywide languages are carried ({len(keys)} total)")
+
+    # Every resident page, not only the front one. Somebody arriving straight
+    # at "I need food" from a search engine needs the same way out of English
+    # that somebody arriving at the front page gets.
+    for page in RESIDENT_PAGES:
+        src = read(page)
+        panels = re.findall(r'<section class="langnote" id="lang-([a-z-]+)"', src)
+        if panels != keys:
+            bad(f"{page}: in-language panels are {panels}, expected {keys}")
+        chips = re.findall(r'class="chip" data-f="lang" data-v="([a-z-]+)"', src)
+        if chips != keys:
+            bad(f"{page}: the language filter offers {chips}, expected {keys}")
+        bar = re.findall(r'class="langbar__list".*?</ul>', src, re.S)
+        if not bar:
+            bad(f"{page}: no language bar, so there is no way off this page for "
+                "somebody who cannot read it")
+        elif re.findall(r'href="#lang-([a-z-]+)"', bar[0]) != keys:
+            bad(f"{page}: the language bar does not offer every language")
+    ok(f"all {len(keys)} languages appear on all {len(RESIDENT_PAGES)} resident "
+       "pages — bar, panel and filter")
+
     src = read("help.html")
-    panels = re.findall(r'<section class="langnote" id="lang-([a-z-]+)" lang="([a-z]+)"', src)
-    if len(panels) >= 7:
-        ok(f"help.html: {len(panels)} in-language panels present")
-    else:
-        bad(f"help.html: only {len(panels)} in-language panels; expected 7")
 
-    # Every lang= on the page must be a real subtag. lang="spanish" is not one,
-    # so a screen reader keeps its English voice and reads the label as English
-    # — silently, on the one row of the page aimed at people who do not read it.
-    valid = {"en", "es", "zh", "ru", "ht", "bn", "ko", "ar"}
+    # A real BCP-47 tag: language, optional script, optional region. lang="spanish"
+    # is not one, so a screen reader keeps its English voice and reads the label
+    # as English — silently, on the one row of the page aimed at people who do
+    # not read it.
+    shape = re.compile(r"^[a-z]{2,3}(-[A-Z][a-z]{3})?(-[A-Z]{2})?$")
+    declared = {L["tag"] for L in langs} | {"en"}
     tags = set(re.findall(r'(?<!-)\blang="([^"]+)"', src))
-    rogue = tags - valid
-    if rogue:
-        bad(f"help.html: lang attribute(s) that are not valid subtags: {sorted(rogue)}")
-    else:
-        ok(f"help.html: every lang attribute is a real subtag {sorted(tags)}")
+    malformed = sorted(t for t in tags if not shape.match(t))
+    if malformed:
+        bad(f"help.html: lang attribute(s) that are not real subtags: {malformed}")
+    undeclared = sorted(tags - declared)
+    if undeclared:
+        bad(f"help.html: lang attribute(s) for languages the site does not "
+            f"declare: {undeclared}")
+    if not malformed and not undeclared:
+        ok(f"help.html: all {len(tags)} lang attributes are real, declared subtags")
 
-    # Every language offered must actually reach a usable share of the
-    # directory. This is the guard for the bug that made the feature nearly
-    # useless: 77 rows record their languages as "Multiple", which matched no
-    # chip, so filtering by Arabic — which no row names explicitly — returned
-    # six places out of a hundred and eighteen and implied the rest could not
-    # help. A chip that reaches almost nothing is worse than no chip.
-    total = src.count('<li class="r"')
-    for key, _tag in [(k, t) for k, t in re.findall(r'data-f="lang" data-v="([a-z-]+)"[^>]*lang="([a-z]+)"', src)]:
-        reach = len(re.findall(r'data-lang="[^"]*(?:\b' + key + r'\b|\bmany\b)[^"]*"', src))
-        if reach >= total * 0.25:
-            ok(f"help.html: the {key} filter reaches {reach} of {total} rows")
+    # Right-to-left scripts have to say so, or the panel renders as a wall of
+    # words running the wrong way.
+    #
+    # Decided from the SCRIPT, never from the config. Asking "is this language
+    # configured rtl, and if so is it marked rtl" is a guard that agrees with
+    # whatever the config says, including when the config is wrong — which is
+    # the failure it exists to catch. Arabic-script text is Arabic-script text
+    # whatever a dict claims about it.
+    RTL_SCRIPT = re.compile(r"[\u0590-\u05FF\u0600-\u06FF\u0700-\u074F\u0780-\u07BF]")
+    for L in langs:
+        if not RTL_SCRIPT.search(L["title"]):
+            continue
+        tag = re.search(r'<section class="langnote" id="lang-%s"[^>]*>' % L["key"], src)
+        if tag and 'dir="rtl"' in tag.group(0):
+            ok(f'help.html: the {L["name_en"]} panel is marked right-to-left')
         else:
-            bad(f"help.html: the {key} filter reaches only {reach} of {total} "
-                f"rows. Filtering by it hides most of the directory from "
-                f"exactly the person least able to search it another way.")
+            bad(f'help.html: the {L["name_en"]} panel is written in a '
+                'right-to-left script but carries no dir="rtl", so it renders '
+                "in the wrong direction")
+        chip = re.search(r'<a href="#lang-%s"[^>]*>' % L["key"], src)
+        if chip and "dir=rtl" not in chip.group(0) and 'dir="rtl"' not in chip.group(0):
+            bad(f'help.html: the {L["name_en"]} button in the language bar is '
+                "not marked right-to-left")
 
-    if 'dir="rtl"' in src:
-        ok("help.html: the Arabic panel is marked right-to-left")
-    else:
-        bad("help.html: no dir=\"rtl\" anywhere, so the Arabic panel renders "
-            "left-to-right")
+    for L in langs:
+        panel = src.split(f'id="lang-{L["key"]}"', 1)[-1].split("</section>", 1)[0]
 
-    # Each panel has to route somewhere a person can actually be helped, and
-    # 311 is the one number that answers in any language at any hour.
-    for key, _ in panels:
-        block = src.split(f'id="lang-{key}"', 1)[-1].split("</section>", 1)[0]
-        if "311" in block:
-            ok(f"help.html: the {key} panel names 311 as the interpreter route")
+        # Every kind of help, named in this language. Without these the panel
+        # tells somebody in their own language that everything else is in
+        # English, and then leaves them there.
+        absent = [n["key"] for n in build_help.NEEDS
+                  if build_help.esc(L["needs"][n["key"]]) not in panel]
+        if absent:
+            bad(f'help.html: the {L["name_en"]} panel does not name {absent}')
+
+        # Phone numbers must survive translation as digits that can be keyed
+        # into a phone. Bengali prose writes 311 as ৩১১ and Urdu as ۳۱۱; both
+        # are correct and both are useless against the buttons in your hand.
+        native_digits = re.findall(r"[\u0660-\u0669\u06F0-\u06F9\u09E6-\u09EF"
+                                   r"\u0966-\u096F\uFF10-\uFF19]", panel)
+        if native_digits:
+            bad(f'help.html: the {L["name_en"]} panel writes a number in '
+                f'non-Western digits ({"".join(sorted(set(native_digits)))}), '
+                "which cannot be matched against a phone keypad")
+
+        for num, why in (("311", "the interpreter route"),
+                         ("911", "the emergency number"),
+                         ("988", "the line for somebody to talk to")):
+            if num not in panel:
+                bad(f'help.html: the {L["name_en"]} panel does not give {num}, '
+                    f"{why} — the one instruction that is safe in every language")
+
+        # A string still in English is a translation somebody forgot. Compared
+        # against the Spanish panel's English source is not possible, so the
+        # test is the tell: an ASCII-only body in a non-Latin-script language.
+        if L["tag"] in ("zh-Hans", "ru", "bn", "ko", "ar", "ur"):
+            if L["body"].isascii() or L["sos"].isascii() or L["interp"].isascii():
+                bad(f'help.html: part of the {L["name_en"]} panel is still in '
+                    "English")
+    ok(f"every one of the {len(langs)} panels names all "
+       f'{len(build_help.NEEDS)} kinds of help, gives 911, 988 and 311, and '
+       "keeps its phone numbers in Western digits")
+
+    # A filter that hides help is worse than no filter. Every language chip has
+    # to reach a usable share of the directory, counting the rows that work
+    # through an interpreter as reachable, because that is what the data knows.
+    rows = build_help.load()
+    total = len(rows)
+    for L in langs:
+        reach = sum(1 for r in rows
+                    if L["key"] in r["_langs"] or "many" in r["_langs"])
+        if reach >= total * 0.4:
+            ok(f'help.html: the {L["key"]} filter reaches {reach} of {total} rows')
         else:
-            bad(f"help.html: the {key} panel does not mention 311. It is the "
-                f"fallback that works even if the translation above it reads badly.")
+            bad(f'help.html: the {L["key"]} filter reaches only {reach} of '
+                f"{total} rows, so choosing it hides most of the directory")
+
+    # And the narrative page has to offer the same ten, or somebody sent there
+    # first sees a shorter list than the directory actually speaks.
+    home = read("index.html")
+    cue = re.search(r'<ul class="langcue">.*?</ul>', home, re.S)
+    if not cue:
+        bad("index.html: no language cue, so the home page offers no way into "
+            "the directory for somebody who cannot read it")
+    else:
+        offered = re.findall(r'href="help\.html#lang-([a-z-]+)"', cue.group(0))
+        if offered == keys:
+            ok(f"index.html offers the same {len(keys)} languages as the directory")
+        else:
+            bad(f"index.html offers {offered}; the directory carries {keys}")
 
 
 def check_directory_needs():
