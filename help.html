@@ -347,7 +347,8 @@
     </div>
     <p class="find__scope">Searches all 258 places, not just the ones shown below.</p>
   </div>
-  <div class="find__filters">
+  <details class="find__filters">
+    <summary><span>Narrow this list</span></summary>
     <fieldset class="fset"><legend>Where you are</legend><div class="chips">
       <button type="button" class="chip" data-f="boro" data-v="bronx" aria-pressed="false">Bronx</button>
       <button type="button" class="chip" data-f="boro" data-v="brooklyn" aria-pressed="false">Brooklyn</button>
@@ -376,7 +377,7 @@
       <button type="button" class="chip" data-f="flags" data-v="phone" aria-pressed="false">You can call</button>
     </div></fieldset>
     <button type="button" class="reset" hidden>Start over</button>
-  </div>
+  </details>
   <div class="find__foot">
     <p class="find__count" role="status" aria-live="polite"></p>
     <button type="button" class="printbtn" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6M7 19H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>Print this list</button>

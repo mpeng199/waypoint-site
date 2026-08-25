@@ -1691,6 +1691,39 @@ def check_no_stale_counts():
         bad("the front page's total is not the generated count")
 
 
+def check_page_furniture():
+    """Two small things that only show up on a phone, and both look like bugs.
+
+    A category page opens with a Start here block. A bucket further down that
+    also says "Start here" makes the page look like it has two beginnings, and
+    the rail then lists both. Only the lead block may use the phrase.
+
+    And a search placeholder longer than the box clips mid-word — "Try:
+    hospital bill, denied claim, p" — which reads as a broken page on exactly
+    the device most of these readers are holding.
+    """
+    import build_help
+    stray = []
+    for key, buckets in build_help.GROUPS.items():
+        for bk, label, _ in buckets:
+            if bk != "lead" and label.lower().startswith("start here"):
+                stray.append(f"{key}/{bk}: {label!r}")
+    if stray:
+        for x in stray:
+            bad(f'a bucket says "Start here" but the lead block already does — {x}')
+    else:
+        ok('only the lead block on a category page says "Start here"')
+
+    LIMIT = 36
+    long = [(n["key"], n["ph"]) for n in build_help.NEEDS if len(n["ph"]) > LIMIT]
+    if long:
+        for key, ph in long:
+            bad(f"{key}: the search placeholder is {len(ph)} characters ({ph!r}); "
+                f"over {LIMIT} it clips mid-word in the box on a phone")
+    else:
+        ok(f"every search placeholder fits its box ({LIMIT} characters or fewer)")
+
+
 def check_directory_clusters():
     """The front page is fifteen clusters, each a way in to one page.
 
@@ -2204,6 +2237,7 @@ def main():
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
                check_directory_clusters, check_no_stale_counts,
+               check_page_furniture,
                check_directory_a11y, check_directory_print,
                check_home_offers_help, check_doors_have_resources]:
         before = len(passes) + len(failures)

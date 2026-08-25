@@ -385,6 +385,47 @@
   var findBlock = document.querySelector(".find");
   if (findBlock) findBlock.hidden = false;
 
+  /* The filters are a refinement, not the way in. Open where the space is
+     free; closed on a phone, where nineteen chips is three screens between
+     somebody arriving and the first phone number. Set once, from here rather
+     than from the markup, because the markup has to be the same on every
+     device and this is the one thing that should not be. */
+  /* Open is the safe default: it hides nothing. Only a positive signal that
+     the viewport is narrow closes it — asking a media query and trusting the
+     answer fails in the wrong direction when layout has not happened yet
+     (innerWidth is 0 in a backgrounded tab, every media query is false, and a
+     desktop page ships with its filters shut for no visible reason).
+
+     It re-syncs on rotation, which is a thing phones do mid-task, and stops
+     the moment the reader touches the control themselves: after that the
+     state is theirs and the viewport does not get a vote. */
+  var filters = document.querySelector(".find__filters");
+  var WIDE = "(min-width: 900px)";
+  var mq = window.matchMedia ? window.matchMedia(WIDE) : null;
+  var userSet = false;
+
+  var syncing = false;
+  function syncFilters() {
+    if (!filters || userSet) return;
+    var w = window.innerWidth || document.documentElement.clientWidth || 0;
+    // `toggle` fires for our own writes too, and marking those as the
+    // reader's choice would make the very first sync the last one.
+    syncing = true;
+    filters.open = !w || w >= 900;   // width unknown: hide nothing
+    syncing = false;
+  }
+  if (filters) {
+    syncFilters();
+    filters.addEventListener("toggle", function () {
+      if (!syncing) userSet = true;
+    });
+    if (mq && mq.addEventListener) mq.addEventListener("change", syncFilters);
+    else if (mq && mq.addListener) mq.addListener(syncFilters);
+  }
+
+  /* Opening a filter from a language panel is useless if the filter is shut. */
+  function revealFilters() { if (filters && !filters.open) filters.open = true; }
+
   document.addEventListener("click", function (e) {
     if (!e.target.closest) return;
     var chip = e.target.closest(".chip");
@@ -414,6 +455,7 @@
     if (active.lang.indexOf(key) === -1) active.lang.push(key);
     var chip = document.querySelector('.chip[data-f="lang"][data-v="' + key + '"]');
     if (chip) chip.setAttribute("aria-pressed", "true");
+    revealFilters();
     mode.apply();
   }
 

@@ -179,7 +179,7 @@ COPY = {
         intro="If someone at home or a partner is hurting you, frightening you, or "
               "controlling you, these are the people to call. They answer at any hour, "
               "they do not need your name, and they do not ask about immigration status.",
-        ph="Try: shelter, order of protection, hotline",
+        ph="Try: shelter, hotline, lawyer",
         seo="Free help in New York City for domestic and gender-based violence: "
             "24-hour hotlines, Family Justice Centers, safe shelter and free lawyers. "
             "No immigration status asked."),
@@ -189,7 +189,7 @@ COPY = {
         intro="If you feel unsafe with yourself, cannot cope, or are struggling with "
               "drinking or drugs, someone is awake and trained to talk with you right "
               "now. Calling is free and you do not have to give your name.",
-        ph="Try: someone to talk to, rehab, overdose",
+        ph="Try: someone to talk to, rehab",
         seo="Free mental health and substance use help in New York City: 24-hour crisis "
             "lines, counseling, treatment referral, overdose prevention, and support for "
             "young and LGBTQ+ New Yorkers."),
@@ -199,7 +199,7 @@ COPY = {
         intro="Food pantries, hot meals you can walk into, groceries, and help signing "
               "up for SNAP — what most people still call food stamps. Nearly all of it "
               "is free, and most of it does not ask about immigration status.",
-        ph="Try: food pantry near me, food stamps, hot meal",
+        ph="Try: pantry, food stamps, meal",
         seo="Free food in New York City: food pantries, soup kitchens, groceries, SNAP "
             "and WIC sign-up help, and meals delivered to people who cannot leave home."),
     "housing": dict(
@@ -208,7 +208,7 @@ COPY = {
         intro="Shelter for tonight, help stopping an eviction, money toward rent you "
               "have fallen behind on, and the free lawyers New York gives tenants. If "
               "you have a court paper about your apartment, call someone here today.",
-        ph="Try: shelter tonight, eviction, back rent",
+        ph="Try: shelter, eviction, rent",
         seo="Free housing help in New York City: shelter intake, eviction prevention, "
             "free tenant lawyers, emergency rent money, and affordable housing."),
     "bills": dict(
@@ -218,7 +218,7 @@ COPY = {
               "New York has to offer financial assistance. The state hears appeals when "
               "an insurer says no. Free counselors take these cases in dozens of "
               "languages. Almost nobody who qualifies ever finds out.",
-        ph="Try: hospital bill, denied claim, prescription cost",
+        ph="Try: hospital bill, denied claim",
         seo="Free help with medical bills and denied insurance claims in New York City: "
             "hospital charity care, external appeals, prescription costs, medical debt, "
             "and free expert counselors."),
@@ -228,7 +228,7 @@ COPY = {
         intro="Clinics that see you whether or not you have insurance, and whether or "
               "not you have papers. Many charge on a sliding scale, which means the "
               "price depends on what you earn — and some charge nothing.",
-        ph="Try: clinic near me, dentist, no insurance",
+        ph="Try: clinic, dentist, insurance",
         seo="Low-cost and free health care in New York City: community clinics, dental "
             "and vision care, sexual and reproductive health, and HIV care. Most do not "
             "ask about immigration status."),
@@ -238,7 +238,7 @@ COPY = {
         intro="Free lawyers for the problems that get people hurt: eviction, "
               "immigration, benefits that were cut off, wages that were not paid, "
               "safety at home. None of these charge, and none of them are notarios.",
-        ph="Try: eviction lawyer, immigration, unpaid wages",
+        ph="Try: eviction, immigration, wages",
         seo="Free legal help in New York City: housing and eviction, immigration and "
             "deportation defense, benefits, wages, and family safety. Free, and not "
             "notarios."),
@@ -248,7 +248,7 @@ COPY = {
         intro="Cash assistance, the heating and electric bill, free tax filing that "
               "gets people thousands of dollars they were owed, and someone to sit down "
               "with you about debt. All of it free.",
-        ph="Try: con ed bill, cash assistance, free tax help",
+        ph="Try: con ed, cash, free tax help",
         seo="Free help with money in New York City: cash assistance, heating and utility "
             "bills, free tax preparation, health insurance, and free financial "
             "counseling."),
@@ -258,7 +258,7 @@ COPY = {
         intro="Free childcare and early learning, support for parents, and safe places "
               "for young people who have nowhere to sleep. If you are under 25 and on "
               "the street tonight, the youth shelters here are for you.",
-        ph="Try: free daycare, youth shelter, after school",
+        ph="Try: daycare, youth shelter",
         seo="Free help for children, parents and young people in New York City: "
             "childcare and pre-K, family support, youth drop-in centers, and shelter "
             "for young people."),
@@ -268,7 +268,7 @@ COPY = {
         intro="Meals, centers where there are people to talk to, help with Medicare and "
               "the rent, and someone to call if an older person is being harmed or "
               "taken advantage of.",
-        ph="Try: meals delivered, senior center, medicare",
+        ph="Try: meals, senior center, medicare",
         seo="Free help for older New Yorkers: meals and Citymeals, senior centers, "
             "Medicare and rent help, and protection for adults at risk."),
     "clothes": dict(
@@ -277,7 +277,7 @@ COPY = {
         intro="Winter coats, everyday clothes, diapers, cribs and children's gear, and "
               "an interview outfit if you have one coming up. Free, and nobody asks why "
               "you need it.",
-        ph="Try: winter coat, diapers, interview clothes",
+        ph="Try: coat, diapers, interview",
         seo="Free clothing and supplies in New York City: winter coats, everyday "
             "clothes, diapers and baby gear, and free interview outfits."),
     "work": dict(
@@ -286,7 +286,7 @@ COPY = {
         intro="Free job training and placement, paid summer work for young people, "
               "English classes, and finishing a high school diploma as an adult. None "
               "of these charge tuition.",
-        ph="Try: job training, english classes, ged",
+        ph="Try: job training, english, ged",
         seo="Free job training, employment help and adult classes in New York City: "
             "Workforce1 centers, paid youth jobs, free English classes, and high school "
             "equivalency."),
@@ -296,7 +296,7 @@ COPY = {
         intro="Half-price MetroCards for New Yorkers with low incomes, rides to medical "
               "appointments, and Access-A-Ride if a disability makes the subway or bus "
               "impossible.",
-        ph="Try: fair fares, access-a-ride, ride to the doctor",
+        ph="Try: fair fares, access-a-ride",
         seo="Help getting around New York City on a low income: Fair Fares half-price "
             "MetroCards, reduced fares, Access-A-Ride, and free rides to medical "
             "appointments."),
@@ -306,7 +306,7 @@ COPY = {
         intro="Health care, benefits, housing and a crisis line, for people who served "
               "and for their families. You do not need a discharge of any particular "
               "kind to call and ask.",
-        ph="Try: va clinic, veteran benefits, crisis line",
+        ph="Try: va clinic, benefits, crisis",
         seo="Free help for veterans in New York City: health care, benefits navigation, "
             "housing, and the Veterans Crisis Line."),
     "record": dict(
@@ -316,7 +316,7 @@ COPY = {
               "apartment viewing, and New York has organisations that exist for "
               "exactly that. Jobs that start in days, housing, health care, and "
               "lawyers who seal records and fight discrimination.",
-        ph="Try: job with a record, seal my record, housing",
+        ph="Try: job, seal my record, housing",
         seo="Free reentry help in New York City after jail or prison: paid "
             "transitional jobs, housing, health care, family support, and lawyers "
             "who handle record sealing and discrimination."),
@@ -327,7 +327,7 @@ COPY = {
               "website, that will listen to your situation and point you at the right "
               "thing — in your language, at any hour, without asking about immigration "
               "status.",
-        ph="Try: what do i qualify for, who do i call",
+        ph="Try: what do i qualify for",
         seo="Not sure where to start? New York City's free information and referral "
             "lines, benefit screeners, and directories — in any language, at any hour."),
 }
@@ -410,7 +410,7 @@ GROUPS = {
         ("more",      "More places that help", []),
     ],
     "bills": [
-        ("start",     "Start here — the free bill experts",
+        ("start",     "The free experts who take these cases",
          ["medical bills", "denied claims", "consumer assistance", "advocate",
           "health insurance help", "helpline"]),
         ("charity",   "Getting a hospital bill reduced or wiped out",
@@ -443,7 +443,7 @@ GROUPS = {
          ["maternal", "doula", "prenatal", "newborn", "pregnan"]),
         ("homeless",  "If you have nowhere to live",
          ["care for homeless", "homeless"]),
-        ("start",     "Start here — the citywide networks",
+        ("start",     "The citywide networks",
          ["health access program", "hospitals & clinics", "clinic locator",
           "start-here", "public hospital"]),
         ("clinic",    "Neighborhood health centers",
@@ -498,7 +498,7 @@ GROUPS = {
         ("more",      "More help for families", []),
     ],
     "senior": [
-        ("start",     "Start here",
+        ("start",     "One call to begin with",
          ["info & referral", "aging connect", "senior info", "navigation"]),
         ("meals",     "Meals",
          ["meals", "homebound", "nutrition", "citymeals"]),
@@ -547,12 +547,12 @@ GROUPS = {
          ["healthcare", "health care", "va "]),
         ("housing",   "Housing and money",
          ["housing", "benefits", "claims", "jobs"]),
-        ("start",     "Start here",
+        ("start",     "Where to begin",
          ["navigation", "veteran services", "info"]),
         ("more",      "More veteran programs", []),
     ],
     "record": [
-        ("start",     "Start here",
+        ("start",     "Where to begin",
          ["reentry services", "start-here"]),
         ("jobs",      "Work that will hire you",
          ["jobs after prison", "job", "employment", "training"]),
@@ -1590,8 +1590,18 @@ def footer_frag(n):
 def filters_frag(compact=False):
     """The three facets. Identical on the front page and on every category
     page, because a chip that means one thing here and another thing there is
-    a chip nobody trusts."""
-    out = ['  <div class="find__filters">',
+    a chip nobody trusts.
+
+    They live in a disclosure. Nineteen chips is 860px on a phone — three
+    screens of chrome between somebody arriving and the first phone number —
+    and they are a refinement, not the way in. help.js opens it on a wide
+    screen, where the space is free, and leaves it closed on a narrow one.
+    The whole block is already script-only (a filter that cannot filter is
+    worse than no filter), so nothing is lost when there is no script: the
+    disclosure never ships at all.
+    """
+    out = ['  <details class="find__filters">',
+           '    <summary><span>Narrow this list</span></summary>',
            '    <fieldset class="fset"><legend>Where you are</legend><div class="chips">']
     for key, label in BOROUGHS:
         out.append(f'      <button type="button" class="chip" data-f="boro" data-v="{key}" '
@@ -1613,7 +1623,7 @@ def filters_frag(compact=False):
                    f'aria-pressed="false">{label}</button>')
     out += ['    </div></fieldset>',
             '    <button type="button" class="reset" hidden>Start over</button>',
-            '  </div>']
+            '  </details>']
     return out
 
 
