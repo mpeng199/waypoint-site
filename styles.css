@@ -26,6 +26,7 @@ html.lenis,html.lenis body{ height:auto; }
 .lenis.lenis-stopped{ overflow:hidden; }
 body{
   font-family:var(--sans); background:var(--green-deep); color:var(--cream);
+  --focus:var(--gold-lit);   /* the whole narrative side is a dark room */
   line-height:1.6; font-size:17px; -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility; overflow-x:hidden;
 }
@@ -307,6 +308,11 @@ img,svg{ display:block; max-width:100%; }
   border:1px solid rgba(252,254,247,.2); border-radius:8px; padding:13px 15px; transition:border-color .25s, background .25s, box-shadow .25s; }
 .field input::placeholder,.field textarea::placeholder{ color:var(--ink-faint); }
 .field input:focus,.field select:focus,.field textarea:focus{ outline:none; border-color:var(--gold); background:rgba(252,254,247,.08); box-shadow:0 0 0 3px rgba(231,197,126,.14); }
+/* Same trap as the search box in help.css: forced colours discard the gold
+   border and the gold shadow, and keep `outline:none`. */
+@media (forced-colors: active){
+  .field :is(input,select,textarea):focus{ outline:3px solid Highlight; outline-offset:2px; }
+}
 .field select{ appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A6C39A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 13px center; background-size:18px; }
 .form__submit{ grid-column:1/13; display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:6px; }
 .form__note{ font-size:13px; color:var(--ink-faint); }
@@ -412,7 +418,6 @@ img,svg{ display:block; max-width:100%; }
   transform:translateY(-2px) rotate(45deg); transition:transform .35s var(--ease); }
 .vow__more[open] > summary::after{ transform:translateY(1px) rotate(-135deg); }
 .vow__more > summary:hover{ color:var(--gold); }
-.vow__more > summary:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:2px; }
 .vow__body{ padding-top:6px; }
 /* the verbatim statement reads as the document it is: sans, plain, unstyled */
 .vow__full{ max-width:66ch; margin-inline:auto; font-size:clamp(.98rem,1.2vw,1.08rem);
@@ -473,8 +478,7 @@ img,svg{ display:block; max-width:100%; }
   /* opening the panel moves focus to this link, which is right for a keyboard
      and invisible to a thumb: :focus-visible is not matched when focus moves
      programmatically after touch or mouse input, so the ring appears for the
-     people it is for. Gold to match every other control on the site. */
-  .nav__links a:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+     people it is for. The ring itself is in tokens.css. */
 
   /* ---------- the scrim ----------
      It hangs off body rather than .nav on purpose. .nav is the drawer's own
@@ -927,7 +931,6 @@ img,svg{ display:block; max-width:100%; }
   transition:padding .4s var(--ease-out); }
 .ways__item:hover .ways__row,
 .ways__item:focus-within .ways__row{ padding-block:calc(var(--row-pad) + 8px); }
-.ways__row:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:2px; }
 .ways__name{ font-family:var(--display); font-weight:500; letter-spacing:-.015em; line-height:1.14;
   font-size:clamp(1.16rem,2vw,1.72rem); text-shadow:0 1px 22px rgba(6,12,9,.75);
   transition:color .35s var(--ease); }

@@ -1402,7 +1402,11 @@ def check_theme_is_shared():
          ".mast h1 em{ color:var(--gold); }" in helpcss),
         ("the painted valley behind the masthead", 'class="mast__bg"' in front and
          "assets/band.webp" in helpcss),
-        ("the deep green footer", ".hfoot{ background:var(--green-deep)" in helpcss),
+        # Asked as "does .hfoot paint itself green-deep", not as "does this
+        # exact byte sequence appear": adding --focus to the same block once
+        # made this fail while the footer was still green.
+        ("the deep green footer",
+         bool(re.search(r"\.hfoot\{[^}]*background:var\(--green-deep\)", helpcss))),
     ]:
         if test:
             ok(f"carried across: {what}")
@@ -2081,6 +2085,162 @@ def check_checked_date_is_derived():
     else:
         ok(f"every \"checked\" date on the resident pages is generated from that "
            f"page's own rows ({seen} of them, {whole} overall)")
+
+
+def check_focus_ring():
+    """The focus ring is one object, and its colour belongs to the surface.
+
+    Found by tabbing through the built pages with a script that measured each
+    ring against the colour actually behind it: in the deep-green footer, on
+    both halves of the site, the ring was --green on --green-deep. 1.24:1. It
+    was being drawn and it could not be seen, which for a keyboard or switch
+    user is the same as not being drawn.
+
+    The cause was that each component named its own ring colour, so the ring
+    knew about the button and nothing about the room. It is now a token —
+    --focus — set once per dark room and inherited. This guards the three ways
+    that arrangement gets undone:
+
+      1. a --focus that does not contrast with the ground declared beside it;
+      2. a component going back to naming its own outline colour;
+      3. `outline:none` with nothing restoring a ring under forced colours,
+         where the border and box-shadow substitutes are thrown away.
+    """
+    tok = read("tokens.css")
+    root = dict(re.findall(r"--([a-z0-9-]+):\s*(#[0-9A-Fa-f]{3,8})", tok))
+
+    def rgb(c):
+        h = c.lstrip("#")
+        if len(h) == 3:
+            h = "".join(x * 2 for x in h)
+        return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+    def lum(c):
+        def f(v):
+            v /= 255
+            return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+        r, g, b = rgb(c)
+        return .2126 * f(r) + .7152 * f(g) + .0722 * f(b)
+
+    def ratio(a, b):
+        la, lb = lum(a), lum(b)
+        hi, lo = max(la, lb), min(la, lb)
+        return (hi + .05) / (lo + .05)
+
+    def hexof(v):
+        v = v.strip().rstrip(";").split()[0]
+        m = re.fullmatch(r"var\(--([a-z0-9-]+)\)", v)
+        if m:
+            return root.get(m.group(1))
+        return v if re.fullmatch(r"#[0-9A-Fa-f]{3,8}", v) else None
+
+    if "--focus" not in tok:
+        bad("tokens.css does not define --focus; the ring has no default")
+        return
+    ok("tokens.css defines --focus, so both stylesheets ask the same question")
+
+    if not re.search(r":focus-visible\s*\{[^}]*outline:[^}]*var\(--focus\)", tok):
+        bad("tokens.css defines --focus but no rule paints a ring with it")
+    else:
+        ok("one :focus-visible rule, in the shared sheet, paints the ring")
+
+    # 1. every --focus must beat the ground it is declared next to
+    pairs = 0
+    for sheet in ("help.css", "styles.css", "tokens.css"):
+        src = read(sheet)
+        for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", src):
+            body = m.group(2)
+            decl = re.search(r"--focus:\s*([^;]+)", body)
+            if not decl:            # a block that *uses* var(--focus), not one that sets it
+                continue
+            sel = m.group(1).strip().splitlines()[-1].strip()
+            ring = hexof(decl.group(1))
+            bgm = re.search(r"(?:^|;|\s)background(?:-color)?:\s*([^;]+)", body)
+            ground = hexof(bgm.group(1)) if bgm else None
+            if ground is None and sel in (":root", "html", "body"):
+                ground = root.get("cream")
+            if not ring or not ground:
+                continue
+            pairs += 1
+            r = ratio(ring, ground)
+            if r < 3:
+                bad(f"{sheet}: {sel} sets --focus:{ring} on {ground} — "
+                    f"{r:.2f}:1, and 3:1 is the floor for a focus indicator")
+            else:
+                ok(f"{sheet}: {sel} focus ring {r:.1f}:1 against its own ground")
+    # A dark *room* on the light half of the site must name a ring, because
+    # everything focusable inside it inherits one. A dark *control* must not:
+    # its ring is offset outward and lands on the light page behind it, and
+    # naming one there would paint gold on cream. The difference is not a
+    # judgement call — a control is an element you can focus, so ask the built
+    # HTML whether the class ever appears on one.
+    focusable_classes = set()
+    for page in RESIDENT_PAGES:
+        for m in re.finditer(r"<(?:a|button|input|select|textarea|summary)\b[^>]*"
+                             r'class="([^"]+)"', read(page)):
+            focusable_classes.update(m.group(1).split())
+
+    rooms, unnamed = 0, []
+    for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", read("help.css")):
+        body = m.group(2)
+        bgm = re.search(r"(?:^|;|\s)background(?:-color)?:\s*([^;]+)", body)
+        if not bgm or not re.search(r"(?:^|;|\s)color:", body):
+            continue
+        ground = hexof(bgm.group(1))
+        if not ground or lum(ground) >= .18:
+            continue
+        sel = m.group(1).strip().splitlines()[-1].strip()
+        cls = re.match(r"\.([A-Za-z0-9_-]+)", sel)
+        if not cls or cls.group(1) in focusable_classes:
+            continue                      # a control; its ring lands outside it
+        rooms += 1
+        if "--focus:" not in body:
+            unnamed.append(f"help.css: {sel} is a dark room on a light page but "
+                           f"names no --focus, so everything focusable inside it "
+                           f"gets a green ring on a green ground")
+    for u in sorted(set(unnamed)):
+        bad(u)
+    if not unnamed:
+        ok(f"all {rooms} dark rooms in the directory name their own focus ring")
+
+    if "--focus" not in read("styles.css"):
+        bad("styles.css never sets --focus; the narrative side is one dark room "
+            "and body must say so once for everything inside it")
+    else:
+        ok("the narrative side sets --focus once, on body, for the whole dark room")
+
+    # 2. nobody may go back to a hand-coloured ring
+    rogue = []
+    for sheet in ("help.css", "styles.css"):
+        src = read(sheet)
+        for m in re.finditer(r"([^{}]*:focus(?:-visible|-within)?[^{}]*)\{([^{}]*)\}", src):
+            body = m.group(2)
+            if "forced-colors" in src[max(0, m.start() - 260):m.start()]:
+                continue          # Highlight is a system colour, and correct there
+            col = re.search(r"outline(?:-color)?:\s*(?:[\d.]+px\s+\w+\s+)?"
+                            r"(#[0-9A-Fa-f]{3,8}|var\(--(?!focus)[a-z0-9-]+\))", body)
+            if col:
+                rogue.append(f"{sheet}: {m.group(1).strip().splitlines()[-1].strip()[:52]} "
+                             f"paints its own ring ({col.group(1)}) instead of var(--focus)")
+    for r in sorted(set(rogue)):
+        bad(r)
+    if not rogue:
+        ok("no component paints its own focus ring; they all inherit --focus")
+
+    # 3. outline:none needs a forced-colours understudy
+    for sheet in ("help.css", "styles.css"):
+        src = read(sheet)
+        strips = re.findall(r"([^{}]+)\{[^{}]*outline:\s*(?:none|0)\s*[;}]", src)
+        if not strips:
+            ok(f"{sheet} never removes an outline")
+            continue
+        if not re.search(r"@media\s*\(forced-colors:\s*active\)\s*\{[^{}]*"
+                         r"\{[^{}]*outline:[^{}]*Highlight", src, re.S):
+            bad(f"{sheet} removes the outline on {strips[0].strip()[:40]!r} but has no "
+                f"forced-colors rule putting a ring back; in High Contrast the "
+                f"border and shadow standing in for it are discarded")
+        else:
+            ok(f"{sheet} removes an outline and restores one under forced colours")
 
 
 def check_no_sideways_scroll():
@@ -2838,7 +2998,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared,
+               check_theme_is_shared, check_focus_ring,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

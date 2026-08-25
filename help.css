@@ -76,13 +76,8 @@ b,strong{ font-weight:600; }
   overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
 .sprite{ position:absolute; width:0; height:0; overflow:hidden; }
 
-/* Focus is a real object, not a hairline. Keyboard and switch users are a
-   large slice of this audience and the ring has to survive a cream ground. */
-:where(a,button,input,summary,[tabindex]):focus-visible{
-  outline:3px solid var(--green);
-  outline-offset:3px;
-  border-radius:6px;
-}
+/* The focus ring lives in tokens.css, because both halves of the site need
+   the same one. Dark surfaces below re-point --focus; light ones inherit. */
 
 .skip{ position:absolute; left:-9999px; top:0; z-index:200;
   background:var(--green); color:var(--mint); padding:14px 20px;
@@ -140,7 +135,7 @@ b,strong{ font-weight:600; }
    JavaScript, so it must not depend on any. */
 .langnote{ display:none; }
 .langnote:target{ display:block; }
-.langnote{ background:var(--green); color:var(--mint); border-radius:var(--r);
+.langnote{ --focus:var(--gold-lit); background:var(--green); color:var(--mint); border-radius:var(--r);
   padding:clamp(22px,3.4vw,34px); margin:16px 0 8px; scroll-margin-top:84px; }
 .langnote h2{ font-size:clamp(1.5rem,1.3rem + 1vw,2.1rem); margin-bottom:.55em;
   line-height:1.25; }
@@ -174,8 +169,6 @@ b,strong{ font-weight:600; }
 .langnote__go:hover{ background:var(--gold-lit); }
 .langnote__x{ color:var(--ink-soft); font-size:.9rem;
   display:inline-flex; align-items:center; min-height:44px; }
-.langnote:focus-visible, .langnote__go:focus-visible, .langnote__x:focus-visible{
-  outline-color:#FFF; }
 /* An RTL panel keeps its own direction; the page around it stays LTR. */
 .langnote[dir="rtl"] .langnote__do{ flex-direction:row-reverse; }
 
@@ -195,7 +188,8 @@ b,strong{ font-weight:600; }
 .mast{ position:relative; overflow:hidden; border-radius:var(--r);
   margin:clamp(16px,2.5vw,26px) 0 clamp(24px,4vw,38px);
   padding:clamp(34px,5.5vw,68px) clamp(24px,4vw,52px) clamp(30px,4.5vw,56px);
-  background:var(--green-deep); color:var(--cream); isolation:isolate; }
+  background:var(--green-deep); color:var(--cream); isolation:isolate;
+  --focus:var(--gold-lit); }
 .mast__bg{ position:absolute; inset:0; z-index:-1;
   background-image:url("assets/band.webp");
   background-size:cover; background-position:50% 42%; }
@@ -225,7 +219,7 @@ b,strong{ font-weight:600; }
    Somebody scanning this page in a panic gets one block that is unmistakably
    a different thing from the directory below it, and the numbers inside it
    are the only white objects on the page. */
-.sos{ background:var(--urgent); color:var(--clay-ink); border-radius:var(--r);
+.sos{ --focus:#FFF; background:var(--urgent); color:var(--clay-ink); border-radius:var(--r);
   padding:clamp(22px,3.4vw,34px); margin-bottom:clamp(28px,5vw,48px); }
 .sos__h{ font-size:clamp(1.35rem,1.2rem + .7vw,1.7rem); color:#FFF; margin-bottom:.7em; }
 /* Fixed 1 / 2 / 4, not auto-fit. There are exactly four numbers here and
@@ -240,7 +234,6 @@ b,strong{ font-weight:600; }
   padding:14px 16px; min-height:60px; justify-content:center;
   transition:transform .16s var(--ease), box-shadow .16s var(--ease); }
 .sos__list a:hover{ transform:translateY(-2px); box-shadow:var(--shadow-up); }
-.sos__list a:focus-visible{ outline-color:#FFF; }
 .sos__num{ font-family:var(--display); font-size:1.55rem; color:var(--urgent); line-height:1.1; }
 .sos__for{ font-size:.9rem; color:var(--ink-2); line-height:1.35; }
 .sos__note{ margin-top:16px; font-size:.94rem; color:rgba(253,246,243,.88); max-width:70ch; }
@@ -263,6 +256,14 @@ b,strong{ font-weight:600; }
    intrinsic width and takes the search box off the side of the screen. */
 .find__box input{ flex:1; min-width:0; border:0; background:none; font:inherit; color:inherit;
   padding:16px 0; min-height:56px; outline:none; }
+/* The input hands its focus ring to the box around it, which is the right
+   look and a trap: in Windows High Contrast the browser throws away our
+   border colour and our shadow, and `outline:none` is the one thing it keeps.
+   The control would focus with no sign of it at all. Highlight is the colour
+   the user chose for exactly this. */
+@media (forced-colors: active){
+  .find__box:focus-within{ outline:3px solid Highlight; outline-offset:2px; }
+}
 .find__box input::placeholder{ color:var(--ink-3); }
 .find__clear{ border:0; background:var(--line-2); color:var(--ink-2); font:inherit;
   font-size:.88rem; font-weight:600; padding:8px 14px; border-radius:999px; cursor:pointer; }
@@ -588,7 +589,7 @@ b,strong{ font-weight:600; }
 /* The most important text on the page, and it is placed where somebody who
    has just found a phone number will pass it: after the list, before the
    footer. Never reworded — check_honesty_statement in check.py owns it. */
-.vowbox{ background:var(--green); color:var(--mint); border-radius:var(--r);
+.vowbox{ --focus:var(--gold-lit); background:var(--green); color:var(--mint); border-radius:var(--r);
   padding:clamp(26px,4vw,44px); margin-top:clamp(20px,4vw,40px); }
 .vowbox h2{ font-size:clamp(1.5rem,1.2rem + 1.2vw,2.1rem); margin-bottom:.6em; }
 .vowbox__full{ font-size:1.06em; line-height:1.65; max-width:68ch;
@@ -600,7 +601,7 @@ b,strong{ font-weight:600; }
    text at .78, gold on hover, the brand lockup top-left. It is the last thing
    on both halves of the site and there is no reason on earth for it to be two
    different objects. */
-.hfoot{ background:var(--green-deep); color:var(--cream); }
+.hfoot{ --focus:var(--gold-lit); background:var(--green-deep); color:var(--cream); }
 .hfoot__in{ max-width:var(--wrap); margin:0 auto; padding:clamp(34px,5vw,58px) var(--pad) clamp(26px,3vw,36px); }
 .hfoot .brand{ margin-bottom:18px; }
 .hfoot .brand .pin{ fill:var(--cream); stroke:none; }

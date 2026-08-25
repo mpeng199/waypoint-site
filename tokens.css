@@ -66,6 +66,8 @@
   --ease-out:cubic-bezier(.16,1,.3,1);
 
   /* ---- shape ----------------------------------------------- */
+  --focus:var(--green);
+
   --r:16px;
   --r-s:10px;
   --r-pill:999px;
@@ -95,4 +97,18 @@
 @media (prefers-reduced-motion:reduce){
   .arr{ transition:none; }
   :where(a,button):hover .arr{ transform:none; }
+}
+
+/* Focus is a real object, not a hairline. Keyboard and switch users are a
+   large slice of this audience and the ring has to survive whatever is behind
+   it — which, because the ring is offset outward, is the *surface the control
+   sits on*, not the control. So the colour is a property of the surface: one
+   token, set once per dark room, inherited by everything inside it.
+
+   It was a fixed green, and on the deep-green footer that is 1.24:1 against
+   its own ground. The ring was there; nobody could see it. */
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{
+  outline:3px solid var(--focus);
+  outline-offset:3px;
+  border-radius:6px;
 }
