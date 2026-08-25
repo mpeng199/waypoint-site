@@ -1912,7 +1912,7 @@ def check_reading_level():
     JARGON = {
         "sliding scale": "a price based on what you earn",
         "federally qualified": "community health centre",
-        "case management": "a caseworker",
+        "case manage": "a caseworker",
         "arrears": "rent you have fallen behind on",
         "warm handoff": "hand the person over",
         "psychosocial": "",
