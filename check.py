@@ -2115,7 +2115,7 @@ def check_checked_date_is_derived():
     SPAN = rf"(?:{months})(?: \d{{4}})?(?:\u2013(?:{months}) \d{{4}})?"
     # Two sentences, two scopes, and they are allowed to differ. The printed
     # header speaks for the resources on the page it is printed on; the site
-    # footer sits under "340 resources" and speaks for the file.
+    # footer sits under the whole directory's count and speaks for the file.
     HEAD = re.compile(rf"Checked ({SPAN}); programs change")
     FOOT = re.compile(rf"Last checked ({SPAN})\.")
     whole = span(rows)
@@ -4588,6 +4588,44 @@ def check_header_spacing_lives_in_one_place():
         bad("tokens.css no longer defines --head-pad")
 
 
+def check_the_docs_do_not_carry_a_stale_count():
+    """The pages cannot go stale about how many resources there are, because
+    the build counts them. The docs can, and did — five places said 340 when
+    the file held 351, and every one of them was written by somebody who was
+    right at the time.
+
+    So: a number written next to the word "resources" in a doc, a comment or a
+    docstring has to be the number in the file. Anywhere the count is
+    incidental, take it out rather than maintaining it.
+    """
+    import build_help
+
+    n = len(build_help.load())
+    near = re.compile(r"\b(\d{2,4})\s+(?:verified\s+|English\s+)?resources?\b")
+    hits = []
+    for f in ("DESIGN.md", "PLAN-help.md", "build_help.py", "check.py",
+              "i18n.py", "help.js"):
+        if not os.path.exists(f):
+            continue
+        for i, line in enumerate(read(f).split("\n"), 1):
+            # "118 -> 311 resources" in the task log is history, and history
+            # is supposed to stay where it was.
+            if "→" in line or "->" in line:
+                continue
+            for m in near.finditer(line):
+                said = int(m.group(1))
+                if said != n:
+                    hits.append(f"{f}:{i} says {m.group(0)!r}; the file holds "
+                                f"{n}. Fix the number, or drop it — a count "
+                                f"nobody regenerates is a count that goes "
+                                f"wrong quietly.")
+    if hits:
+        for h in hits[:8]:
+            bad(h)
+    else:
+        ok(f"no doc, comment or docstring miscounts the {n} resources")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -4602,6 +4640,7 @@ def main():
                check_outbound_links_are_safe, check_every_website_is_https,
                check_the_skip_link_works, check_category_pages_keep_their_jump_nav,
                check_header_spacing_lives_in_one_place,
+               check_the_docs_do_not_carry_a_stale_count,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

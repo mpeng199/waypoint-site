@@ -2383,9 +2383,10 @@ def index_json(rows):
     The front page no longer carries every resource — that is the whole point
     of splitting the directory into one page per need — so search needs its own
     copy of the facts. Keys are one letter because this ships on every visit
-    to the busiest page on the site: at 118 resources it is about 40 KB, and
-    it stays roughly linear as the directory grows, which the full markup does
-    not.
+    to the busiest page on the site — it is the largest single thing on it,
+    and it grows with the directory, which the full markup would do faster.
+    check_asset_budget holds the ceiling; do not write the size down here,
+    it was wrong within a month last time.
 
     It is <script type="application/json">, not a fetch: one round trip fewer
     on the connection this audience actually has, and no failure mode where
@@ -2669,7 +2670,7 @@ def render_language(L, rows, by_need):
     It carries what the English front page carries, in the same order and the
     same components: the masthead, the four emergency numbers, the seventeen
     kinds of help with a few places named under each, the promise, the footer.
-    What it does not carry is a translation of 340 English descriptions it
+    What it does not carry is a translation of every English description it
     would have no way to check, so each card names places and dials them and
     the one sentence in `english` says where the detail is and how to get an
     interpreter on the line for free.

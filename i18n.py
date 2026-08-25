@@ -4,7 +4,7 @@ This is the file a translator gets handed. It is data, not logic: build_help.py
 renders exactly the same page from it that it renders in English, so a language
 page is not a notice about the English page — it is the page.
 
-What is NOT here, and why. The 340 resources keep their own names, phone
+What is NOT here, and why. The resources keep their own names, phone
 numbers and addresses: an organisation's name is a proper noun and its number
 is a number, and both are what somebody has to say and dial. Their English
 descriptions are not translated either, and rather than print them under a

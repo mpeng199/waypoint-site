@@ -19,7 +19,7 @@ under it asked that person for their organisation's letterhead. So: give
 residents their own front door and put the directory behind it, and keep the
 narrative for the audiences it was written for.
 
-## Where it stands, 340 resources and 62 commits on
+## Where it stands, 351 resources and 120+ commits on
 
 - **`help.html` is a way in, not the directory.** One cluster per kind of
   help, three real places with real numbers under each, and a link to that
@@ -27,8 +27,9 @@ narrative for the audiences it was written for.
 - **Seventeen category pages**, each built to be skimmed: a rail of what is on
   it, resources in named buckets, a Start here block, and every neighbouring
   kind of help one tap away.
-- **340 verified resources** across 17 categories, 276 of them checked
-  against a first-party source on 24-25 August 2026.
+- **351 verified resources** across 17 categories, 339 of them checked
+  against a first-party source in August 2026. The rest are dated June and
+  listed in `check_links_live.py --browser-list`; they need a person.
 - **Ten languages** — Local Law 30's ten — each panel naming every kind of
   help in that language, and the search box understanding all ten.
 - **One palette.** `tokens.css` is the only place a brand hue exists.
@@ -204,7 +205,7 @@ cannot read:
 
 Nine resources added, all nine numbers confirmed on the organisations' own
 sites: CHASI and the Pride Center and the JCC pantry on Staten Island (which
-had ten rows in a directory of 340, three of them actually based there); the
+had ten rows in a directory of 351, three of them actually based there); the
 River Fund, Commonpoint, Urban Upbound and NICE in Queens; CaringKind's
 dementia helpline; Advocates for Children's education helpline; ICNA Relief's
 six halal pantries, on a page where "kosher" returned three results and

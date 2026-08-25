@@ -642,8 +642,8 @@ numbers, seventeen kinds of help with places named and dialable under each,
 the promise, the footer. `i18n.py` holds every word — about 70 strings and 17
 blurbs per language — and is the file a translator gets handed.
 
-**What is not translated, and why.** The 340 resource descriptions are English
-and this site has no way to check 3,400 translations of them. So the cards name
+**What is not translated, and why.** The resource descriptions are English
+and this site has no way to check ten translations of every one of them. So the cards name
 places and dial them — a proper noun and a number are the same in every
 language — and one quiet card near the top says the detail pages are in English
 and that 311 puts an interpreter on the line free, at any hour. Every link
