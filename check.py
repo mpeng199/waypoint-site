@@ -1795,15 +1795,24 @@ def check_directory_needs():
             block = src.split(f'id="{g}"', 1)[-1].split("</section>", 1)[0]
             if not block.count('<li class="r"'):
                 bad(f"{page}: '{g}' is a heading with nothing under it")
-        # If anything on the page is marked start-here, it has to be the first
-        # thing on the page. Rows otherwise fall in CSV order, which makes the
+        # If anything on the page is marked start-here, it leads the page in
+        # its own block. Rows otherwise fall in CSV order, which makes the
         # first thing somebody reads an accident of when it was typed — that is
         # how "I got a medical bill" came to open with a membership programme
-        # and bury Community Health Advocates eighth.
-        first = re.search(r'<li class="r"[^>]*data-find="([^"]*)"', src)
-        if "start-here" in src and first and "start-here" not in first.group(1):
-            bad(f"{page}: something here is marked start-here but the page does "
-                "not open with it, so the best first call is not the first read")
+        # and bury Community Health Advocates eighth. And bucketing them by
+        # subject reintroduced the same problem a different way: the best first
+        # call was three headings down because of what it was filed under.
+        marked = re.findall(r'<li class="r"[^>]*data-find="([^"]*start-here[^"]*)"', src)
+        if marked:
+            if groups[0] != f"g-{need['key']}-lead":
+                bad(f"{page}: something here is marked start-here but the page "
+                    "does not open with it, so the best first call is not the "
+                    "first thing read")
+            lead = src.split(f'id="g-{need["key"]}-lead"', 1)[-1].split("</section>", 1)[0]
+            if lead.count('<li class="r"') != len(marked):
+                bad(f"{page}: {len(marked)} resource(s) are marked start-here but "
+                    f"{lead.count(chr(60) + 'li class=' + chr(34) + 'r' + chr(34))} "
+                    "are in the lead block, so one of them is buried or doubled")
     ok(f"every bucket on all {len(CATEGORY_PAGES)} category pages has resources "
        "under it, and each page opens with its best first call")
 

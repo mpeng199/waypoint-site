@@ -357,10 +357,18 @@ GROUPS = {
          ["hotline", "crisis", "24-hour", "24/7"]),
         ("centers",   "Walk in, or somewhere safe to sleep",
          ["center", "shelter", "one-stop", "residential", "safe house"]),
-        ("legal",     "Legal help and orders of protection",
-         ["legal", "court", "order of protection", "immigration"]),
+        ("traffick",  "If someone is controlling your work or your papers",
+         ["traffick"]),
+        ("young",     "If you are young",
+         ["young", "dating", "youth", "teen"]),
+        ("counsel",   "Counseling, and someone to keep talking to",
+         ["counsel", "therapy", "response", "treatment", "advocacy"]),
+        ("legal",     "Legal help, orders of protection, and money owed to you",
+         ["legal", "court", "order of protection", "immigration",
+          "compensation", "victim services"]),
         ("community", "Help in your language, or from your community",
-         ["asian", "latina", "arab", "lgbtq", "jewish", "african", "community"]),
+         ["asian", "latina", "arab", "lgbtq", "jewish", "african", "community",
+          "south asian", "chinese", "disabled"]),
         ("more",      "More places that help", []),
     ],
     "crisis": [
@@ -379,7 +387,7 @@ GROUPS = {
         ("today",     "Find food near you today",
          ["locator", "reservation", "find", "map", "emergency food"]),
         ("pantry",    "Pantries and groceries",
-         ["pantry", "grocer", "food network", "customer-choice"]),
+         ["pantry", "grocer", "food network", "customer-choice", "kosher"]),
         ("meals",     "Hot meals you can walk into",
          ["soup kitchen", "meals", "hot meal", "community kitchen"]),
         ("snap",      "SNAP, WIC, and school meals",
@@ -419,20 +427,29 @@ GROUPS = {
         ("more",      "More places that help", []),
     ],
     "doctor": [
-        ("clinic",    "Clinics that see you either way",
-         ["fqhc", "clinic", "health center", "hospitals", "primary care",
-          "care for homeless"]),
+        # Specific before general, always: a rule matches the row's tags as
+        # well as its subcategory, so "dental" has to get its chance before
+        # "clinic" does or every dental clinic files itself under clinics.
         ("dental",    "Teeth",
          ["dental", "dentist"]),
         ("eyes",      "Eyes and glasses",
-         ["vision", "eye", "optical", "glasses"]),
+         ["vision", "eye care", "optical", "glasses", "optometry"]),
         ("sexual",    "Sexual and reproductive health",
          ["sexual", "reproductive", "planned parenthood", "std", "sti",
-          "pregnan", "birth control"]),
+          "birth control", "family planning"]),
         ("hiv",       "HIV care and prevention",
          ["hiv", "aids", "prep"]),
-        ("women",     "Care for women and new parents",
-         ["women", "maternal", "doula", "prenatal", "newborn"]),
+        ("women",     "Pregnancy and new parents",
+         ["maternal", "doula", "prenatal", "newborn", "pregnan"]),
+        ("homeless",  "If you have nowhere to live",
+         ["care for homeless", "homeless"]),
+        ("start",     "Start here — the citywide networks",
+         ["health access program", "hospitals & clinics", "clinic locator",
+          "start-here", "public hospital"]),
+        ("clinic",    "Neighborhood health centers",
+         ["fqhc", "clinic", "health center", "primary care"]),
+        ("rx",        "Help paying for a prescription",
+         ["medication", "prescription", "pharmac"]),
         ("more",      "More clinics and programs", []),
     ],
     "legal": [
@@ -447,7 +464,10 @@ GROUPS = {
         ("money",     "Benefits, debt, and consumer problems",
          ["benefit", "debt", "consumer", "wage", "employ", "unemployment"]),
         ("family",    "Family, safety, and criminal matters",
-         ["family", "domestic", "criminal", "survivor", "child"]),
+         ["family", "domestic", "criminal", "survivor", "child", "record",
+          "discrimination"]),
+        ("id",        "Names, IDs, and papers",
+         ["name change", "trans", "gender", "id", "identification"]),
         ("more",      "More legal help", []),
     ],
     "money": [
@@ -491,12 +511,13 @@ GROUPS = {
         ("more",      "More help for older adults", []),
     ],
     "clothes": [
-        ("clothes",   "Clothes and winter coats",
-         ["coat", "clothing", "thrift", "multi-service"]),
+        ("work",      "Something to wear to an interview",
+         ["interview", "professional attire", "career gear",
+          "dress for success", "bottomless closet"]),
         ("baby",      "Babies and children",
          ["baby", "diaper", "children", "crib", "stroller", "gear"]),
-        ("work",      "Clothes for a job or an interview",
-         ["work", "interview", "professional", "career", "dress for success"]),
+        ("clothes",   "Clothes and winter coats",
+         ["coat", "clothing", "thrift", "multi-service"]),
         ("more",      "More places for supplies", []),
     ],
     "work": [
@@ -518,12 +539,16 @@ GROUPS = {
         ("more",      "More help getting there", []),
     ],
     "veterans": [
-        ("start",     "Start here",
-         ["navigation", "veteran services", "info"]),
-        ("health",    "Health care",
-         ["healthcare", "health care", "va "]),
         ("crisis",    "If you are in crisis",
          ["crisis", "hotline"]),
+        ("counsel",   "Someone to talk to",
+         ["counseling", "counselling", "readjustment", "ptsd", "therapy"]),
+        ("health",    "Health care",
+         ["healthcare", "health care", "va "]),
+        ("housing",   "Housing and money",
+         ["housing", "benefits", "claims", "jobs"]),
+        ("start",     "Start here",
+         ["navigation", "veteran services", "info"]),
         ("more",      "More veteran programs", []),
     ],
     "record": [
@@ -1086,7 +1111,13 @@ def group_for(row, need_key):
     Notes — nearly every row's note mentions immigration status or cost, and
     letting prose fire these rules put food pantries under "Immigration".
     """
-    hay = " ".join([row["Subcategory"], row["Tags"], row["Resource Name"]]).lower()
+    # Subcategory and name only. Tags are search vocabulary, deliberately
+    # generous — a community health centre is tagged "dental" so that somebody
+    # searching for a dentist finds it — and letting that generosity decide
+    # where a row FILES put sixteen general clinics under "Teeth". What a row
+    # is called and what it calls itself are the two fields that say what it
+    # is; the tags say what it can also answer.
+    hay = " ".join([row["Subcategory"], row["Resource Name"]]).lower()
     buckets = GROUPS.get(need_key)
     if not buckets:
         return "more"
@@ -1510,11 +1541,24 @@ def render_category(need, rows):
                                            if r["Category"] in nd.get("cats", [])]]
     crossed = [r for r in group if r not in primary]
 
+    # The best first call leads the page, in its own block, before any
+    # bucket. `start-here` is a tag in the data on the row that is genuinely
+    # the right opening move for this need, and burying it three headings down
+    # because it happens to be filed under "money for the rent" is exactly the
+    # mistake the tag exists to prevent. It appears once: here, not also in
+    # its topical bucket.
+    lead = [r for r in primary if "start-here" in r["Tags"]]
+    rest = [r for r in primary if r not in lead]
+
     buckets = GROUPS.get(key, [("more", "Places that help", [])])
     filed = {b[0]: [] for b in buckets}
-    for r in primary:
+    for r in rest:
         filed[group_for(r, key)].append(r)
     live = [(bk, label) for bk, label, _ in buckets if filed[bk]]
+    if lead:
+        live = [("lead", "Start here" if len(lead) == 1
+                 else "Start here — the first calls to make")] + live
+        filed["lead"] = lead
 
     p = []
     A = p.append
@@ -1575,7 +1619,8 @@ def render_category(need, rows):
       'If you cannot find it, call <a href="tel:311">311</a> &mdash; they will point '
       'you somewhere, in your language, at any hour.</p>')
     for bk, label in live:
-        A(f'<section class="grp" id="g-{key}-{bk}" data-need="{key}" '
+        cls = "grp grp--lead" if bk == "lead" else "grp"
+        A(f'<section class="{cls}" id="g-{key}-{bk}" data-need="{key}" '
           f'aria-labelledby="gh-{key}-{bk}">')
         A('  <div class="grp__head">')
         A(f'    <h2 id="gh-{key}-{bk}">{esc(label)}</h2>')

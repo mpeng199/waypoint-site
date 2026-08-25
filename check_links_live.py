@@ -105,6 +105,15 @@ SAME_ORG = {
 }
 
 
+# Bot walls. A Radware/Cloudflare/Akamai challenge redirects to the vendor's
+# own domain and then back, which looks exactly like a takeover and is not one.
+# Reporting those in the loudest section on the page is how the loudest section
+# stops being read, so they are named and demoted.
+BOT_WALLS = ("perfdrive.com", "validate.perfdrive.com", "challenges.cloudflare.com",
+             "geo.captcha-delivery.com", "datadome.co", "hcaptcha.com",
+             "akamaized.net", "incapsula.com", "imperva.com", "sucuri.net")
+
+
 def offsite(url, final):
     """Did following this link land on somebody else's domain?
 
@@ -118,6 +127,8 @@ def offsite(url, final):
     a, b = _base(url), _base(final)
     if a == b or not b:
         return False
+    if any(w in final for w in BOT_WALLS):
+        return False
     return frozenset({a, b}) not in SAME_ORG
 
 
@@ -128,7 +139,7 @@ def main():
     targets = [(r["Resource Name"].strip(), r["Website"].strip()) for r in rows]
     print(f"checking {len(targets)} websites\n", flush=True)
 
-    ok, redirects, blocked, dead, hijacked = [], [], [], [], []
+    ok, redirects, blocked, dead, hijacked, tls = [], [], [], [], [], []
     with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
         futures = {pool.submit(probe, url): (name, url) for name, url in targets}
         for fut in concurrent.futures.as_completed(futures):
@@ -141,8 +152,13 @@ def main():
                     redirects.append((name, url, note))
                 else:
                     ok.append((name, url, note))
-            elif status in (401, 403, 429):
+            elif status in (401, 403, 429) or (status in (307, 302) and not note):
+                # A 3xx with nothing to follow is a JavaScript challenge
+                # (Sucuri, Cloudflare) sitting in front of a live site, not a
+                # dead link. Believing it kills good resources.
                 blocked.append((name, url, status))
+            elif isinstance(note, str) and "CERTIFICATE_VERIFY_FAILED" in note:
+                tls.append((name, url))
             else:
                 dead.append((name, url, status or note))
             print(".", end="", flush=True)
@@ -168,6 +184,15 @@ def main():
         print("\n-- moved (update the CSV to the new address) --")
         for name, url, to in sorted(redirects):
             print(f"  {name}\n      {url}\n   -> {to}")
+    if tls:
+        print("\n-- BROKEN HTTPS. Drop these unless the host fixes it. --")
+        print("   The server is not sending its full certificate chain. A")
+        print("   current desktop browser papers over that; a six-year-old")
+        print("   Android shows a full-screen security warning instead of the")
+        print("   page. That is the device this directory is written for, and")
+        print("   a scare like that is worse than the resource being missing.")
+        for name, url in sorted(tls):
+            print(f"  {name}  {url}")
     if blocked:
         print("\n-- refused a scripted request; verify by hand before touching --")
         for name, url, code in sorted(blocked):
@@ -177,7 +202,7 @@ def main():
         for name, url, why in sorted(dead):
             print(f"  [{why}] {name}  {url}")
 
-    return 1 if (dead or hijacked) else 0
+    return 1 if (dead or hijacked or tls) else 0
 
 
 if __name__ == "__main__":

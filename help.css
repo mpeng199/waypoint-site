@@ -450,6 +450,13 @@ b,strong{ font-weight:600; }
 .grp__why{ margin:-6px 0 14px; font-size:.9rem; color:var(--ink-3); max-width:62ch; }
 
 .grp{ margin-bottom:clamp(38px,6vw,64px); scroll-margin-top:84px; }
+/* The first block on a category page is the call somebody should make if they
+   read nothing else. It gets the gold rule the narrative site uses to open a
+   chapter, so it reads as the beginning of something rather than as one more
+   heading in a list. */
+.grp--lead .grp__head{ border-bottom-color:var(--gold); }
+.grp--lead .grp__head h2{ color:var(--ink); }
+.grp--lead .r{ border-color:var(--gold-deep); box-shadow:var(--shadow-up); }
 .grp__head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:16px;
   align-items:start; padding-bottom:16px; margin-bottom:20px;
   border-bottom:2px solid var(--line); }
