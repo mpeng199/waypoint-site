@@ -1372,7 +1372,8 @@ SYNONYMS = [
                         "raid detained knocked on my door came to my work"),
     ("know your rights","ice at my door immigration agents raid detained arrested "
                         "do i have to open the door what do i say"),
-    ("legal",           "lawyer attorney court sue rights"),
+    ("legal",           "lawyer attorney court sue rights arrested charged "
+                        "public defender criminal case i was arrested"),
     ("domestic violence","abuse abusive hits me hitting me beat me beats me hurt me "
                         "hurting me scared afraid threatens threatening husband wife "
                         "boyfriend girlfriend partner unsafe at home violent assault "
@@ -1394,8 +1395,17 @@ SYNONYMS = [
                         "relapse rehab sober high using"),
     ("overdose",        "narcan naloxone overdosing heroin fentanyl opioid"),
     ("addiction",       "heroin fentanyl opioid cocaine meth pills detox rehab drinking"),
-    ("mental health",   "depressed depression anxiety therapy counseling"),
-    ("senior",          "elderly older adult grandmother grandfather"),
+    # "i need a therapist" returned a blank page on a directory with nineteen
+    # mental-health rows, and "free counseling" opened with Right to Counsel —
+    # the eviction lawyers — because word-start matching makes "counseling"
+    # find "counsel". The word people use has to be in the row.
+    ("mental health",   "depressed depression anxiety therapy counseling counselling "
+                        "therapist counselor counsellor psychologist psychiatrist "
+                        "someone to talk to talk therapy see someone"),
+    ("counseling",      "therapist counselor therapy counselling"),
+    ("senior",          "elderly older adult grandmother grandfather "
+                        "my mother fell my father fell a fall falls "
+                        "cannot manage at home"),
     ("paratransit",     "access-a-ride access a ride wheelchair disabled ride"),
     ("rides",           "ride to the doctor ride to appointment transportation "
                         "get to my appointment"),

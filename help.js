@@ -177,6 +177,17 @@
     return st !== word && starts(hay, st);
   }
 
+  /* A match through the stemmer is a weaker match than a match on the word
+     somebody actually typed. "free counseling" opened with Right to Counsel —
+     the eviction lawyers — because stripping -ing leaves "counsel", and legal
+     counsel and therapeutic counselling share a root that English does not
+     distinguish. The rows that say "counseling" now outrank the row that only
+     says "counsel", without either being thrown away. */
+  var STEMMED = 0.7;
+  function stemOnly(hay, word) {
+    return !starts(hay, word) && hasWord(hay, word);
+  }
+
   function termsFor(raw, corpus) {
     var text = raw.toLowerCase().trim().replace(/[’']/g, "");
     if (!text) return [];
@@ -312,6 +323,7 @@
 
   function fieldScore(hay, w, weight) {
     if (!hasWord(hay, w)) return 0;
+    if (stemOnly(hay, w)) return weight * STEMMED;
     return hasExact(hay, w) ? weight * EXACT : weight;
   }
 

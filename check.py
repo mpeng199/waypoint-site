@@ -1817,6 +1817,9 @@ CRITICAL_QUERIES = [
     ("i am being evicted", "Right to Counsel — Free Eviction Defense"),
     ("paying for medicine", "RxAssist"),
     ("i need a bed", "NYC DHS Shelter Intake (right to shelter)"),
+    ("i need a therapist", "NAMI-NYC Helpline"),
+    ("special education", "Advocates for Children — education helpline"),
+    ("my child was suspended", "Advocates for Children — education helpline"),
 ]
 
 # The stop list and the stemmer, kept in step with help.js by hand. Both are
