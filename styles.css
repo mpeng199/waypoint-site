@@ -154,15 +154,6 @@ img,svg{ display:block; max-width:100%; }
 /* transparent until you have scrolled, so the door runs edge to edge */
 .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent; }
 
-/* tubelight active indicator (slides between sections) */
-.nav-lamp{ position:absolute; top:50%; left:0; width:0; height:36px; transform:translateY(-50%); border-radius:100px;
-  background:rgba(231,197,126,.12); opacity:0; pointer-events:none; z-index:0;
-  transition:left .45s var(--ease), width .45s var(--ease), opacity .35s var(--ease); }
-.nav-lamp.on{ opacity:1; }
-.nav-lamp__bar{ position:absolute; top:-2px; left:50%; transform:translateX(-50%); width:26px; height:3px; border-radius:0 0 6px 6px; background:var(--gold); }
-.nav-lamp__bar::before{ content:""; position:absolute; left:50%; top:-10px; transform:translateX(-50%); width:46px; height:20px; border-radius:50%; background:rgba(231,197,126,.55); filter:blur(11px); }
-.nav-lamp__bar::after{ content:""; position:absolute; left:50%; top:-5px; transform:translateX(-50%); width:24px; height:12px; border-radius:50%; background:rgba(231,197,126,.55); filter:blur(6px); }
-@media (max-width:640px){ .nav-lamp{ display:none; } }
 
 /* ---------- buttons (slim, not pills) ---------- */
 .btn{ display:inline-flex; align-items:center; gap:10px; font-family:var(--sans); font-weight:600; font-size:14.5px;
@@ -489,8 +480,12 @@ img,svg{ display:block; max-width:100%; }
      untouched. Stacked links get real padding instead: expanding those with
      pseudo-elements would make adjacent targets overlap, which trades a small
      target for a mis-hit and is worse. */
-  .tlink,.brand,.form__legal a{ position:relative; }
-  .tlink::after,.brand::after,.form__legal a::after{ content:""; position:absolute;
+  /* .brand was in this group and is now in tokens.css with the rest of
+     the header: only this half loads this sheet, so the wordmark had a
+     widened hit area on the narrative pages and its bare glyph box on
+     the eighteen directory ones. */
+  .tlink,.form__legal a{ position:relative; }
+  .tlink::after,.form__legal a::after{ content:""; position:absolute;
     inset:-13px -10px; }
   /* an inline link's box is its glyphs, not its line box: this one measures
      16px where the block controls above measure 22-34, so the shared -13px

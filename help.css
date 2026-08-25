@@ -37,8 +37,10 @@
   --urgent:var(--clay);
   --urgent-bg:var(--clay-bg);
 
-  --wrap:1160px;
-  --pad:clamp(18px,4vw,44px);
+  /* the same column the header uses, so the wordmark sits directly over the
+     first thing under it. Both come from tokens.css; neither is typed twice. */
+  --wrap:var(--head-wrap);
+  --pad:var(--head-gutter);
   --shadow:0 1px 2px rgba(19,35,26,.04), 0 8px 24px -12px rgba(19,35,26,.16);
   --shadow-up:0 2px 4px rgba(19,35,26,.06), 0 18px 40px -18px rgba(19,35,26,.28);
 }
@@ -98,6 +100,7 @@ b,strong{ font-weight:600; }
   --head-ink-2:var(--ink-2);
   --head-ink-3:var(--ink-3);
   --head-hover:var(--line-2);
+  --head-dot:var(--gold);      /* on cream the mark wants a counter */
   --head-dot:var(--gold);      /* on cream the mark wants a counter */
   --head-shadow:none;
 }

@@ -79,6 +79,15 @@
   --head-pad:14px;
   --head-row:44px;
   --head-gap:8px;
+
+  /* The bar's own column. It used to inherit each page's — 1280px with an
+     80px gutter on the narrative side, 1160px with 44px on the directory —
+     so the wordmark landed 32 to 40px apart depending on the width, and you
+     could see it move when you switched pages. The header keeps one column
+     of its own now, on both halves. The directory's page column is derived
+     from it below, so the wordmark still lines up with what is under it. */
+  --head-wrap:1160px;
+  --head-gutter:clamp(18px,4vw,44px);
   --head-h:calc(var(--head-pad) * 2 + var(--head-row));
 
   --head-bg:transparent;
@@ -167,8 +176,8 @@
   transition-duration:.12s;
 }
 .sitehead__in{
-  max-width:var(--wrap,var(--container)); margin-inline:auto;
-  padding:var(--head-pad) var(--pad);
+  max-width:var(--head-wrap); margin-inline:auto;
+  padding:var(--head-pad) var(--head-gutter);
   display:flex; align-items:center; gap:20px; justify-content:space-between;
 }
 
@@ -226,6 +235,33 @@
    the last one behind a gesture, and a drawer puts all five behind a tap.
    Stacking just makes the header a line taller — and script.js and help.js
    publish what it actually came to, so everything below it clears it. */
+/* The tubelight that slides under the section you are reading.
+
+   It lived in styles.css, which only the narrative half loads — so on the
+   eighteen directory pages the span shipped with no rules at all and sat in
+   the flow as an ordinary inline element. It is invisible either way, and it
+   was pushing every tab four pixels to the right: the two headers measured
+   identical above 1080px, where the row is right-aligned and the phantom
+   fell off the end, and four pixels apart below it, where they wrap. At
+   375px it changed where the row broke. Shared component, shared sheet. */
+/* tubelight active indicator (slides between sections) */
+.nav-lamp{ position:absolute; top:50%; left:0; width:0; height:36px; transform:translateY(-50%); border-radius:100px;
+  background:rgba(231,197,126,.12); opacity:0; pointer-events:none; z-index:0;
+  transition:left .45s var(--ease), width .45s var(--ease), opacity .35s var(--ease); }
+.nav-lamp.on{ opacity:1; }
+.nav-lamp__bar{ position:absolute; top:-2px; left:50%; transform:translateX(-50%); width:26px; height:3px; border-radius:0 0 6px 6px; background:var(--gold); }
+.nav-lamp__bar::before{ content:""; position:absolute; left:50%; top:-10px; transform:translateX(-50%); width:46px; height:20px; border-radius:50%; background:rgba(231,197,126,.55); filter:blur(11px); }
+.nav-lamp__bar::after{ content:""; position:absolute; left:50%; top:-5px; transform:translateX(-50%); width:24px; height:12px; border-radius:50%; background:rgba(231,197,126,.55); filter:blur(6px); }
+@media (max-width:640px){ .nav-lamp{ display:none; } }
+
+/* On a phone the wordmark is a link like any other and has to be a thumb
+   target. A pseudo-element widens the hit area without touching the glyph or
+   the layout — real padding here would push the tabs down a row. */
+@media (max-width:640px){
+  .brand{ position:relative; }
+  .brand::after{ content:""; position:absolute; inset:-13px -10px; }
+}
+
 @media (max-width:1080px){
   :root{ --head-pad:10px;
          --head-h:calc(var(--head-pad) * 2 + var(--head-row) * 2 + var(--head-gap)); }

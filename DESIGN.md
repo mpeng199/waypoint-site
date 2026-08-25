@@ -501,6 +501,24 @@ deep green on the light one, the same mark either way. Its centre is the one
 piece that adapts: nothing on the dark ground, where the filled pin reads on
 its own, and gold on cream, where the mark wants a counter.
 
+**The bar has its own column.** It used to inherit each page's — 1280px with
+an 80px gutter on the narrative side, 1160px with 44px on the directory — so
+the wordmark sat 32 to 40px apart depending on the width and you could watch it
+move when you switched pages. `--head-wrap` and `--head-gutter` are set once in
+`tokens.css`; the directory's page column is derived from them, so the wordmark
+still sits directly over the first thing under it.
+
+Every class the bar is built from is styled in `tokens.css` — `.sitehead`,
+`.brand`, `.brand__txt`, `.nav-lamp`, all of it. `check_one_header` fails if a
+page sheet targets any of them, because only one half loads each sheet: the
+lamp lived in `styles.css` and shipped ruleless on eighteen directory pages,
+standing in the flow as an inline element and pushing every tab 4px right, and
+the wordmark's widened phone hit-area was narrative-only.
+
+Measured at nine widths from 320px to 1920px, on six pages: the bar, the
+lockup, the pin, the wordmark, the strapline, the lamp and every tab box are
+**pixel-identical**.
+
 Below about 1050px the tabs take a row of their own, which reads as a
 deliberate second line rather than the ragged two-then-three a plain wrap gives
 between 700 and 1000px.

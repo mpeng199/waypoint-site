@@ -2355,8 +2355,34 @@ def check_one_header():
     else:
         ok("'Find help' is the gold pill on every page, both halves")
 
-    # everything that differs must be a token, not a second component
+    # Every class the header is built from has to be styled in the shared
+    # sheet. .nav-lamp was not: it sat in styles.css, which only the narrative
+    # half loads, so on the eighteen directory pages the span shipped with no
+    # rules and stood in the flow as an ordinary inline element — invisible,
+    # and pushing every tab four pixels right. The two bars measured identical
+    # above 1080px, where the row is right-aligned and the phantom fell off
+    # the end, and four pixels apart below it. At 375px it changed where the
+    # row of tabs broke.
     tok = read("tokens.css")
+    head_classes = set()
+    for page in PAGES:
+        m = grab.search(read(page))
+        if m:
+            for attr in re.findall(r'class="([^"]+)"', m.group(1)):
+                head_classes.update(attr.split())
+    for cls in sorted(head_classes):
+        for sheet in ("help.css", "styles.css"):
+            for sel in re.findall(r"([^{}]+)\{[^{}]*\}", read(sheet)):
+                sel = sel.strip().splitlines()[-1].strip()
+                # a footer or a print block may reach in; a bare rule may not
+                if re.search(rf"(?:^|,\s*)\.{re.escape(cls)}\b", sel):
+                    bad(f"{sheet} styles .{cls} ({sel[:44]}), but that is part of "
+                        f"the shared header — only one of the two halves loads "
+                        f"this sheet, so the bar renders differently on the other")
+    ok(f"all {len(head_classes)} classes the header is built from are styled "
+       f"in the shared sheet")
+
+    # everything that differs must be a token, not a second component
     for sheet in ("help.css", "styles.css"):
         src = read(sheet)
         own = re.findall(r"\.sitehead[^{,]*\{([^}]*)\}", src)
