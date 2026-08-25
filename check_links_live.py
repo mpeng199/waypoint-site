@@ -30,6 +30,7 @@ the ones where the path itself changed.
 
 import csv
 import concurrent.futures
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -81,6 +82,45 @@ def probe(url):
     return status, note
 
 
+# Second-level domain, i.e. what somebody had to buy. www./m./secure. prefixes
+# and country suffixes are noise; whether the *registrable* name changed is the
+# whole question.
+def _base(url):
+    host = re.sub(r"^https?://", "", (url or "").strip()).split("/")[0].lower()
+    host = re.sub(r":\d+$", "", host)
+    parts = host.split(".")
+    if len(parts) >= 3 and parts[-2] in ("co", "com", "org", "net", "gov", "ac", "edu"):
+        return ".".join(parts[-3:])        # example.co.uk
+    return ".".join(parts[-2:])
+
+
+# Known and legitimate. Each one is a real organisation that publishes under a
+# second name, checked by hand — not a pattern, a list, so a NEW off-domain
+# redirect is always reported.
+SAME_ORG = {
+    frozenset({"nyc.gov", "cityofnewyork.us"}),
+    frozenset({"nyc.gov", "nyc988.cityofnewyork.us"}),
+    frozenset({"ny.gov", "nystateofhealth.ny.gov"}),
+    frozenset({"cuny.edu", "cuny.edu"}),
+}
+
+
+def offsite(url, final):
+    """Did following this link land on somebody else's domain?
+
+    This is the check that caught ppgny.org, which Planned Parenthood of
+    Greater New York had let lapse: it 301'd to a marketing domain and then to
+    an unrelated commercial site, and the directory had been quietly sending
+    people looking for reproductive health care there. A redirect that changes
+    the registrable domain is the signature of exactly that, and it is not the
+    same class of finding as a trailing slash.
+    """
+    a, b = _base(url), _base(final)
+    if a == b or not b:
+        return False
+    return frozenset({a, b}) not in SAME_ORG
+
+
 def main():
     with open(CSV, encoding="utf-8-sig", newline="") as f:
         rows = [r for r in csv.DictReader(f) if (r.get("Website") or "").strip()]
@@ -88,14 +128,19 @@ def main():
     targets = [(r["Resource Name"].strip(), r["Website"].strip()) for r in rows]
     print(f"checking {len(targets)} websites\n", flush=True)
 
-    ok, redirects, blocked, dead = [], [], [], []
+    ok, redirects, blocked, dead, hijacked = [], [], [], [], []
     with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
         futures = {pool.submit(probe, url): (name, url) for name, url in targets}
         for fut in concurrent.futures.as_completed(futures):
             name, url = futures[fut]
             status, note = fut.result()
             if status and 200 <= status < 300:
-                (redirects if note else ok).append((name, url, note))
+                if note and offsite(url, note):
+                    hijacked.append((name, url, note))
+                elif note:
+                    redirects.append((name, url, note))
+                else:
+                    ok.append((name, url, note))
             elif status in (401, 403, 429):
                 blocked.append((name, url, status))
             else:
@@ -108,6 +153,17 @@ def main():
     print(f"blocked our request    {len(blocked)}  (probably fine in a browser)")
     print(f"FAILED             {len(dead)}")
 
+    if hijacked:
+        print("\n" + "=" * 70)
+        print("-- LEFT ITS OWN DOMAIN. TREAT AS UNSAFE UNTIL A HUMAN LOOKS. --")
+        print("   A charity's site does not normally redirect to a different")
+        print("   organisation. The usual cause is that the domain lapsed and")
+        print("   somebody else bought it, which turns this directory into a")
+        print("   list of somewhere else's traffic. Do not 'fix' these by")
+        print("   following the redirect.")
+        print("=" * 70)
+        for name, url, to in sorted(hijacked):
+            print(f"  {name}\n      {url}\n   -> {to}")
     if redirects:
         print("\n-- moved (update the CSV to the new address) --")
         for name, url, to in sorted(redirects):
@@ -121,7 +177,7 @@ def main():
         for name, url, why in sorted(dead):
             print(f"  [{why}] {name}  {url}")
 
-    return 1 if dead else 0
+    return 1 if (dead or hijacked) else 0
 
 
 if __name__ == "__main__":

@@ -147,6 +147,14 @@ NEEDS = [
         "cats": ["Veterans"],
     },
     {
+        "key": "record",
+        "label": "I have a criminal record, or I'm coming home",
+        "blurb": "Jobs, housing, and legal help after jail or prison.",
+        "icon": "gate",
+        "cats": ["Reentry & Criminal Record"],
+        "also": ["criminal record"],
+    },
+    {
         "key": "start",
         "label": "I'm not sure where to start",
         "blurb": "One phone number, or one website, that points you to everything else.",
@@ -301,6 +309,17 @@ COPY = {
         ph="Try: va clinic, veteran benefits, crisis line",
         seo="Free help for veterans in New York City: health care, benefits navigation, "
             "housing, and the Veterans Crisis Line."),
+    "record": dict(
+        short="After jail or prison",
+        h1a="I have a criminal record,", h1b="or I'm coming home.",
+        intro="A record follows people into every job application and every "
+              "apartment viewing, and New York has organisations that exist for "
+              "exactly that. Jobs that start in days, housing, health care, and "
+              "lawyers who seal records and fight discrimination.",
+        ph="Try: job with a record, seal my record, housing",
+        seo="Free reentry help in New York City after jail or prison: paid "
+            "transitional jobs, housing, health care, family support, and lawyers "
+            "who handle record sealing and discrimination."),
     "start": dict(
         short="Not sure where to start",
         h1a="I'm not sure", h1b="where to start.",
@@ -506,6 +525,17 @@ GROUPS = {
         ("crisis",    "If you are in crisis",
          ["crisis", "hotline"]),
         ("more",      "More veteran programs", []),
+    ],
+    "record": [
+        ("start",     "Start here",
+         ["reentry services", "start-here"]),
+        ("jobs",      "Work that will hire you",
+         ["jobs after prison", "job", "employment", "training"]),
+        ("legal",     "Sealing a record, and being turned down for one",
+         ["legal", "discrimination", "criminal record", "sealing"]),
+        ("family",    "Family, health, and housing",
+         ["family", "housing", "health", "treatment"]),
+        ("more",      "More reentry programs", []),
     ],
     "start": [
         ("call",      "One call, any question",
@@ -942,6 +972,7 @@ ICONS = {
     "bus": "M5 4h14v11H5V4Zm0 11 1 4h2l1-4m6 0 1 4h2l1-4M5 9h14M8 12h.01M16 12h.01",
     "star": "m12 3 2.6 5.6 6 .8-4.4 4.2 1.1 6.1L12 16.8 6.7 19.7l1.1-6.1L3.4 9.4l6-.8L12 3Z",
     "compass": "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm3.5-12.5-2 5-5 2 2-5 5-2Z",
+    "gate": "M4 21V6a2 2 0 0 1 2-2h6v17M4 21h16M20 21V10l-8-4M8 12h.01M15 13h.01",
 }
 
 
