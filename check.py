@@ -3053,6 +3053,7 @@ def check_directory_languages():
     """
     import build_help, i18n
     langs = build_help.LANGUAGES
+    rows = build_help.load()
 
     # 1. ten pages, and every English page offers all ten
     for page in ENGLISH_PAGES:
@@ -3117,6 +3118,20 @@ def check_directory_languages():
         # 7. the promise, whole. It is a promise, so it is not summarised.
         if U["vow"] not in plain:
             bad(f"{page} does not carry the honesty statement in {L['name_en']}")
+
+        # 8a. no English month names. The footer read "Last checked
+        #     June-August 2026" on all ten pages, in English, under a sentence
+        #     in Bengali — and a date is the one thing on that line a reader
+        #     actually checks.
+        for month in build_help.MONTHS:
+            if re.search(rf"\b{month}\b", plain):
+                bad(f"{page} prints the English month {month!r}; the checked "
+                    f"date is the one thing on that line a reader checks")
+                break
+        else:
+            got = build_help.checked_in(rows, L["key"])
+            if got not in plain:
+                bad(f"{page} does not print its checked date ({got!r})")
 
         # 8. no non-Western digits in a phone number: a reader may copy them
         #    into a dialler that will not take them

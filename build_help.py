@@ -2419,6 +2419,32 @@ LANG_SLUG = {"spanish": "es", "chinese": "zh", "russian": "ru", "bengali": "bn",
              "urdu": "ur", "french": "fr", "polish": "pl"}
 
 
+def checked_in(rows, key):
+    """The same span checked() prints, in this language.
+
+    The footer read "Last checked June-August 2026" on all ten pages, in
+    English, under a sentence in Bengali. A date is the one thing on that
+    line a reader actually checks, so it is the one thing that must not be
+    in a language they cannot read.
+    """
+    dates = sorted(r["Last Verified"] for r in rows if r.get("Last Verified"))
+    if not dates:
+        return i18n.UI[key].get("not_checked", "—")
+    names = i18n.MONTHS[key]
+    one, span = i18n.DATE_SPAN[key]
+
+    def part(d):
+        y, m, _ = d.split("-")
+        return names[int(m) - 1], y
+
+    (m0, y0), (m1, y1) = part(dates[0]), part(dates[-1])
+    if (m0, y0) == (m1, y1):
+        return one.format(a=m0, y=y0)
+    if y0 == y1:
+        return span.format(a=m0, b=m1, y=y1)
+    return f"{one.format(a=m0, y=y0)}\u2013{one.format(a=m1, y=y1)}"
+
+
 def lang_header_frag(L, U):
     """The same bar, the same five tabs, the same order — read in this language.
 
@@ -2516,10 +2542,12 @@ def render_language(L, rows, by_need):
          f'<html lang="{L["tag"]}"{" dir=\"rtl\"" if rtl else ""}>', '<head>',
          '<meta charset="UTF-8" />',
          '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
-         f'<title>{esc(U["title_a"] + " " + U["title_b"])} | Waypoint</title>',
+         f'<title>{esc(U["title_a"] + i18n.TITLE_JOIN.get(L["key"], " ") + U["title_b"])}'
+         f' | Waypoint</title>',
          f'<meta name="description" content="{esc(U["lede1"].format(n=n))}" />',
          '<meta name="theme-color" content="#13231A" />',
-         f'<meta property="og:title" content="{esc(U["title_a"] + " " + U["title_b"])}" />',
+         f'<meta property="og:title" content="'
+         f'{esc(U["title_a"] + i18n.TITLE_JOIN.get(L["key"], " ") + U["title_b"])}" />',
          '<meta property="og:type" content="website" />',
          '<link rel="alternate" hreflang="en" href="help.html" />']
     for O in LANGUAGES:
@@ -2547,7 +2575,8 @@ def render_language(L, rows, by_need):
     A('  <div class="mast__bg" aria-hidden="true"></div>')
     A(f'  <p class="eyebrow mast__eye">{esc(U["eyebrow"])}</p>')
     em = "b" if L["key"] in NO_ITALIC else "em"
-    A(f'  <h1 class="mast__title">{esc(U["title_a"])} '
+    join = i18n.TITLE_JOIN.get(L["key"], " ")
+    A(f'  <h1 class="mast__title">{esc(U["title_a"])}{join}'
       f'<{em}>{esc(U["title_b"])}</{em}></h1>')
     A(f'  <p class="mast__say"><b>{esc(U["lede1"].format(n=n))}</b></p>')
     A(f'  <p class="mast__say">{esc(U["lede2"])}</p>')
@@ -2556,9 +2585,10 @@ def render_language(L, rows, by_need):
     # Paper only. A printed sheet with no source on it is a photocopy of
     # nothing, and this one gets handed across a table in ten languages.
     A('<div class="printhead" aria-hidden="true">')
-    A(f'  <p class="printhead__t">{esc(U["title_a"] + " " + U["title_b"])}</p>')
+    A(f'  <p class="printhead__t">'
+      f'{esc(U["title_a"] + i18n.TITLE_JOIN.get(L["key"], " ") + U["title_b"])}</p>')
     A(f'  <p class="printhead__s">{esc(U["foot_say"])} '
-      f'{esc(U["foot_ver"].format(n=n, when=checked(rows)))}</p>')
+      f'{esc(U["foot_ver"].format(n=n, when=checked_in(rows, L["key"])))}</p>')
     A('</div>')
 
     p += lang_sos_frag(L, U, rows)
@@ -2635,7 +2665,7 @@ def render_language(L, rows, by_need):
       'waypointoutreach@<wbr />gmail.com</a></li>')
     A('    </ul>')
     A(f'    <p class="hfoot__ver">'
-      f'{esc(U["foot_ver"].format(n=n, when=checked(rows)))}</p>')
+      f'{esc(U["foot_ver"].format(n=n, when=checked_in(rows, L["key"])))}</p>')
     A('  </div>')
     A('</footer>')
     A('</body>')

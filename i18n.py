@@ -730,3 +730,38 @@ BLURBS["urdu"] = {
     "record": "جیل کے بعد کام، رہائش اور قانونی مدد۔",
     "start": "ایک فون نمبر، یا ایک ویب سائٹ، جو باقی سب تک پہنچا دے۔",
 }
+
+
+# Month names, and how a span of them reads. The footer said "Last checked
+# June-August 2026" on every one of the ten pages, in English, under a
+# sentence in Bengali. A date is the one thing on that line a reader checks.
+MONTHS = {
+    "spanish": ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+    "french": ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+    "polish": ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień', 'wrzesień', 'październik', 'listopad', 'grudzień'],
+    "haitian-creole": ['janvye', 'fevriye', 'mas', 'avril', 'me', 'jen', 'jiyè', 'out', 'septanm', 'oktòb', 'novanm', 'desanm'],
+    "russian": ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'],
+    "chinese": ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+    "korean": ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+    "bengali": ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'],
+    "arabic": ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+    "urdu": ['جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون', 'جولائی', 'اگست', 'ستمبر', 'اکتوبر', 'نومبر', 'دسمبر'],
+}
+
+# ("one month", "a span") — Chinese and Korean put the year first.
+DATE_SPAN = {
+    "spanish": ('{a} de {y}', '{a} a {b} de {y}'),
+    "french": ('{a} {y}', '{a} à {b} {y}'),
+    "polish": ('{a} {y}', '{a}–{b} {y}'),
+    "haitian-creole": ('{a} {y}', '{a}–{b} {y}'),
+    "russian": ('{a} {y}', '{a}–{b} {y}'),
+    "chinese": ('{y}年{a}', '{y}年{a}–{b}'),
+    "korean": ('{y}년 {a}', '{y}년 {a}–{b}'),
+    "bengali": ('{a} {y}', '{a}–{b} {y}'),
+    "arabic": ('{a} {y}', '{a}–{b} {y}'),
+    "urdu": ('{a} {y}', '{a}–{b} {y}'),
+}
+
+# The masthead title is two halves, roman then gold. Chinese sets them with no
+# space between; everything else takes one.
+TITLE_JOIN = {"chinese": ""}
