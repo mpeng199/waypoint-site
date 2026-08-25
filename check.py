@@ -2512,6 +2512,94 @@ def check_language_header():
        "own words, with Find help pointing at their own front page")
 
 
+def check_language_round_trip():
+    """A language page is a way in, not a cul-de-sac.
+
+    Every link off it carries the language — help-food.html?lang=bengali — so
+    the category page it lands on has the Bengali filter already applied, the
+    chip visibly pressed, and the disclosure open so the shorter list has a
+    reason and one tap undoes it. Without that, the ten pages end at a wall of
+    English with no thread back.
+    """
+    import build_help
+    for L in build_help.LANGUAGES:
+        page = build_help.lang_page(L["key"])
+        src = read(page)
+        want = f'?lang={L["key"]}'
+        outs = re.findall(r'href="(help-[a-z-]+\.html[^"]*)"', src)
+        outs = [h for h in outs if not h.startswith(tuple(
+            build_help.lang_page(O["key"]) for O in build_help.LANGUAGES))]
+        naked = sorted({h for h in outs if want not in h})
+        if naked:
+            bad(f"{page}: {len(naked)} link(s) into the English directory drop "
+                f"the language ({naked[0]}), so the filter is not applied when "
+                f"the reader lands")
+        elif not outs:
+            bad(f"{page} links to no category page at all")
+    ok("every link from the ten language pages carries its language with it")
+
+    js = read("help.js")
+    if re.search(r"lang=\(\[a-z-\]\{2,20\}\)", js) and "useLanguage(" in js:
+        ok("help.js reads ?lang= on arrival and presses the matching chip")
+    else:
+        bad("help.js no longer applies ?lang= on arrival, so every link from "
+            "the ten language pages lands on an unfiltered English page")
+    if "if (chip) useLanguage" not in js:
+        bad("help.js applies ?lang= without checking the value is one of the "
+            "ten; that is a URL, and a URL is not to be trusted")
+    else:
+        ok("help.js ignores a ?lang= that is not one of the ten")
+
+
+def check_language_print():
+    """A translated sheet handed across a table has to say who made it.
+
+    The English pages learned this once: a printed leave-behind with no source
+    on it is a photocopy of nothing. The ten language pages get the same
+    printhead, in their own language, plus the one line that has to survive
+    printing — what is in this language, what is not, and the number that puts
+    an interpreter on the call.
+    """
+    import build_help, i18n
+    css = read("help.css")
+    for L in build_help.LANGUAGES:
+        page = build_help.lang_page(L["key"])
+        src = read(page)
+        U = i18n.UI[L["key"]]
+        m = re.search(r'<div class="printhead".*?</div>', src, re.S)
+        if not m:
+            bad(f"{page} prints with no attribution on it")
+        elif U["foot_say"] not in html.unescape(m.group(0)):
+            # scoped to the printhead: foot_say is in the footer too, and a
+            # footer lands on the last sheet, which is not where somebody
+            # looks to see who handed this to them
+            bad(f"{page}'s printed header does not say who collected this")
+    ok("all ten language pages carry a printed attribution in their own language")
+
+    # The print block, not "everything after it": help.css gained a section
+    # below @media print, so slicing to end-of-file made this check see the
+    # screen rules as well and pass on rules it was meant to be missing.
+    i = css.index("@media print{")
+    depth, j = 0, i
+    while j < len(css):
+        if css[j] == "{":
+            depth += 1
+        elif css[j] == "}":
+            depth -= 1
+            if depth == 0:
+                break
+        j += 1
+    pr = css[i:j + 1]
+    for sel, why in [(".enote{", "the note about what is and is not in this language"),
+                     (".enote__p{", "that note's text")]:
+        if sel not in pr:
+            bad(f"the print sheet drops {why}; on paper that is the difference "
+                f"between a list somebody can use and one they put down")
+    if ".enote" in pr and "display:none" in pr.split(".enote")[1][:80]:
+        bad("the print sheet hides .enote outright")
+    ok("the print sheet keeps the language note and the interpreter number")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3230,7 +3318,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

@@ -690,6 +690,17 @@ b,strong{ font-weight:600; }
     margin-top:2pt; font-size:8.5pt; font-weight:700; color:#000; }
   .pv__call .ico{ display:none; }
 
+  /* The one line a translated sheet must keep: what is in this language and
+     what is not, and the number that puts an interpreter on the call. On
+     paper it is the difference between a list somebody can use and a list
+     they will put down. */
+  .enote{ border:0; border-inline-start:2pt solid #000; border-radius:0;
+    padding:3pt 0 3pt 6pt; margin:0 0 7pt; break-inside:avoid; }
+  .enote__h{ font-size:7pt; color:#000; margin-bottom:2pt; }
+  .enote__p{ font-size:8.5pt; color:#000; max-width:none; }
+  .enote__p .dialn{ color:#000; font-weight:700; }
+  .langbar__here{ display:none; }
+
   body.help{ background:#fff; color:#000; font-size:9.5pt; line-height:1.35; }
   .wrap{ max-width:none; padding:0; }
   a{ text-decoration:none; color:#000; }

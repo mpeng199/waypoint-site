@@ -2056,7 +2056,13 @@ def langbar_frag(target="#dir"):
         out.append(f'    <li><a href="{lang_page(L["key"])}" lang="{L["tag"]}" '
                    f'data-lang="{L["key"]}"{" dir=rtl" if L["dir"] == "rtl" else ""}>'
                    f'{esc(L["endonym"])}</a></li>')
-    out += ['  </ul>', '</nav>']
+    # English closes the row on every one of the eleven, marked rather than
+    # linked on the page you are already reading. The row is then the same
+    # object in the same order wherever you are, which is what makes it
+    # somewhere to go back to.
+    out += ['    <li><span class="langbar__here" lang="en" aria-current="page">'
+            'English</span></li>',
+            '  </ul>', '</nav>']
     return out
 
 
@@ -2545,6 +2551,14 @@ def render_language(L, rows, by_need):
       f'<{em}>{esc(U["title_b"])}</{em}></h1>')
     A(f'  <p class="mast__say"><b>{esc(U["lede1"].format(n=n))}</b></p>')
     A(f'  <p class="mast__say">{esc(U["lede2"])}</p>')
+    A('</div>')
+
+    # Paper only. A printed sheet with no source on it is a photocopy of
+    # nothing, and this one gets handed across a table in ten languages.
+    A('<div class="printhead" aria-hidden="true">')
+    A(f'  <p class="printhead__t">{esc(U["title_a"] + " " + U["title_b"])}</p>')
+    A(f'  <p class="printhead__s">{esc(U["foot_say"])} '
+      f'{esc(U["foot_ver"].format(n=n, when=checked(rows)))}</p>')
     A('</div>')
 
     p += lang_sos_frag(L, U, rows)
