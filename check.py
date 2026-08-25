@@ -2159,7 +2159,7 @@ def check_page_furniture():
 
 
 def check_directory_clusters():
-    """The front page is fifteen clusters, each a way in to one page.
+    """The front page is one cluster per need, each a way in to one page.
 
     The failure this guards against is quiet and total: a cluster whose "See
     all" link points at a page that does not exist, or a cluster showing three
@@ -2212,6 +2212,26 @@ def check_directory_clusters():
     else:
         bad(f"help.html: {len(previews)} previews where {expect} were expected. "
             "The front page's job is to not be the whole directory.")
+
+    # A bucket rule that matches nothing has usually rotted — a label got
+    # reworded and the rule that pointed at it did not. Rewording the
+    # subcategories once left nine of them dead, and only a distribution dump
+    # showed it. Some emptiness is honest (nobody offers that kind of help
+    # yet), so this is a budget rather than a rule.
+    dead = []
+    for need in build_help.NEEDS:
+        grp = build_help.ordered(rows, need["key"])
+        for bk, label, words in build_help.GROUPS.get(need["key"], []):
+            if not words:
+                continue
+            if not any(build_help.group_for(r, need["key"]) == bk for r in grp):
+                dead.append(f'{need["key"]}/{bk} ("{label}")')
+    if len(dead) > 6:
+        bad(f"{len(dead)} bucket rules match nothing, which is usually a label "
+            f"that was reworded without its rule: {dead[:4]}")
+    else:
+        ok(f"at most a few bucket rules are empty ({len(dead)}), and each is a "
+           "kind of help nobody in the directory offers yet")
 
     # The rail on each category page is that page's table of contents. A rail
     # entry pointing at a section that is not there is a dead link in the one

@@ -646,13 +646,13 @@ GROUPS = {
         ("more",      "More places that help", []),
     ],
     "crisis": [
+        ("young",     "For young people and LGBTQ+ people",
+         ["youth", "lgbtq", "trans", "queer", "trevor"]),
         ("now",       "Call or text right now",
          ["crisis", "hotline", "lifeline", "text crisis", "warmline", "988"]),
         ("using",     "Drinking, drugs, and overdose",
          ["addiction", "substance", "overdose", "treatment", "harm reduction",
           "recovery", "alcohol", "opioid"]),
-        ("young",     "For young people and LGBTQ+ people",
-         ["youth", "lgbtq", "trans", "queer", "trevor"]),
         ("ongoing",   "Someone to keep talking to",
          ["counsel", "therapy", "peer", "support", "clubhouse", "navigation"]),
         ("more",      "More places that help", []),
@@ -662,12 +662,13 @@ GROUPS = {
          ["locator", "reservation", "find", "map", "emergency food"]),
         ("pantry",    "Pantries and groceries",
          ["pantry", "grocer", "food network", "customer-choice", "kosher"]),
+        ("delivered", "Meals brought to you",
+         ["homebound", "delivered", "cooked for an illness", "citymeals"]),
         ("meals",     "Hot meals you can walk into",
          ["soup kitchen", "meals", "hot meal", "community kitchen"]),
         ("snap",      "SNAP, WIC, and school meals",
-         ["snap", "wic", "benefit", "nutrition", "school meal", "food purchasing"]),
-        ("delivered", "Meals brought to you",
-         ["homebound", "delivered", "medically tailored", "citymeals"]),
+         ["snap", "wic", "money for groceries", "food for pregnancy",
+          "school meal", "nutrition"]),
         ("more",      "More places that help", []),
     ],
     "housing": [
@@ -694,10 +695,11 @@ GROUPS = {
          ["denial", "appeal", "external review", "grievance", "complaint",
           "surprise bill"]),
         ("rx",        "Paying for prescriptions",
-         ["medication", "prescription", "pharmac", "copay", "co-pay", "drug"]),
+         ["medication", "medicine", "prescription", "pharmac", "copay",
+          "co-pay", "drug"]),
         ("cover",     "Getting covered in the first place",
-         ["enrollment", "medicaid", "medicare", "marketplace", "navigator",
-          "health access"]),
+         ["signing up", "enrollment", "medicaid", "medicare", "marketplace",
+          "health insurance", "a way in without insurance"]),
         ("more",      "More places that help", []),
     ],
     "doctor": [
@@ -718,21 +720,21 @@ GROUPS = {
         ("homeless",  "If you have nowhere to live",
          ["care for homeless", "homeless"]),
         ("start",     "The citywide networks",
-         ["health access program", "hospitals & clinics", "clinic locator",
-          "start-here", "public hospital"]),
-        ("clinic",    "Neighborhood health centers",
-         ["fqhc", "clinic", "health center", "primary care"]),
+         ["a way in without insurance", "public hospitals", "find a clinic",
+          "nowhere to live"]),
+        ("clinic",    "Neighbourhood health centres, across the city",
+         ["fqhc", "clinic", "health cent", "primary care", "medical care"]),
         ("rx",        "Help paying for a prescription",
-         ["medication", "prescription", "pharmac"]),
+         ["medication", "medicine", "prescription", "pharmac"]),
         ("more",      "More clinics and programs", []),
     ],
     "legal": [
         ("any",       "Free lawyers for almost anything",
-         ["free civil", "free legal", "legal hotline", "civil legal",
-          "legal info", "legal services"]),
+         ["free civil", "free lawyers", "legal hotline", "civil legal",
+          "find a free lawyer", "legal services", "everything around a case"]),
         ("immigration", "Immigration",
-         ["immigra", "deportation", "ice", "asylum", "citizenship", "daca",
-          "undocument"]),
+         ["immigra", "deportation", "detained", "asylum", "citizenship",
+          "daca", "undocument", "newly arrived"]),
         ("housing",   "Housing, eviction, and landlords",
          ["tenant", "eviction", "housing"]),
         ("money",     "Benefits, debt, and consumer problems",
@@ -777,15 +779,15 @@ GROUPS = {
     ],
     "senior": [
         ("start",     "One call to begin with",
-         ["info & referral", "aging connect", "senior info", "navigation"]),
+         ["one call", "aging connect", "navigation"]),
         ("meals",     "Meals",
          ["meals", "homebound", "nutrition", "citymeals"]),
-        ("centers",   "Centers, activities, and company",
-         ["center", "community centers", "social", "activities"]),
+        ("centers",   "Centres, activities, and company",
+         ["cent", "company", "at-home", "social", "activities"]),
         ("money",     "Money, rent, and benefits for older adults",
          ["scrie", "rent", "benefit", "medicare", "epic", "money"]),
         ("safety",    "If an older adult is being harmed",
-         ["protection", "at-risk", "abuse", "elder"]),
+         ["being harmed", "protection", "at-risk", "abuse", "elder"]),
         ("more",      "More help for older adults", []),
     ],
     "clothes": [
@@ -811,7 +813,8 @@ GROUPS = {
     ],
     "getting-there": [
         ("fare",      "Cheaper subway and bus fares",
-         ["half-fare", "fair fares", "reduced fare", "transit discount"]),
+         ["half-price", "half-fare", "fair fares", "reduced fare",
+          "cheaper fares", "discount"]),
         ("medical",   "Rides to medical appointments",
          ["medical", "appointment", "treatment"]),
         ("disability", "If you cannot use the subway or bus",
@@ -828,14 +831,14 @@ GROUPS = {
         ("health",    "Health care",
          ["healthcare", "health care", "va "]),
         ("housing",   "Housing and money",
-         ["housing", "benefits", "claims", "jobs"]),
+         ["housing", "benefits", "claiming", "jobs"]),
         ("start",     "Where to begin",
-         ["navigation", "veteran services", "info"]),
+         ["where veterans start", "navigation", "veteran services"]),
         ("more",      "More veteran programs", []),
     ],
     "disability": [
         ("start",     "Where to begin",
-         ["disability info", "info & referral"]),
+         ["one call", "disability info"]),
         ("senses",    "Sight and hearing",
          ["blind", "deaf", "vision", "hearing", "optometry", "eyes"]),
         ("getting",   "Getting around",
@@ -877,11 +880,12 @@ GROUPS = {
     ],
     "start": [
         ("call",      "One call, any question",
-         ["citywide info", "info & referral", "hotline", "311"]),
+         ["one call", "citywide info", "info & referral", "hotline", "311"]),
         ("check",     "Check what you already qualify for",
-         ["screener", "eligibility", "benefits"]),
+         ["check what you can get", "screener", "eligibility", "benefits"]),
         ("papers",    "Papers, ID, and proof",
-         ["identification", "idnyc", "document", "birth certificate"]),
+         ["getting an id", "identification", "idnyc", "document",
+          "birth certificate"]),
         # A settlement house does everything under one roof, which is exactly
         # the answer for somebody who cannot name what they need. Filing them
         # as "a directory to search" buried the most useful thing on the page —
@@ -891,14 +895,14 @@ GROUPS = {
         # The first of these carries the meaning; the rest are read straight
         # after it and only have to say where. Repeating the whole phrase five
         # times made the rail three lines deep per entry on a phone.
+        ("search",    "Search a directory yourself",
+         ["search", "directory", "locator", "library", "find a free lawyer"]),
         ("onestop",   "One place that does everything", ["citywide"]),
         ("os-bronx",  "In the Bronx", ["bronx"]),
         ("os-bklyn",  "In Brooklyn", ["brooklyn"]),
         ("os-mnhtn",  "In Manhattan", ["manhattan"]),
         ("os-queens", "In Queens", ["queens"]),
         ("os-si",     "On Staten Island", ["staten-island"]),
-        ("search",    "Search a directory yourself",
-         ["search", "directory", "locator", "library"]),
         ("more",      "Other places that point the way", []),
     ],
 }
@@ -1886,7 +1890,12 @@ def group_for(row, need_key):
             if any(w in where for w in words):
                 return key
             continue
-        if any(w in hay for w in words):
+        # Word starts, exactly as in needs_for. The same "ice" bug lived here
+        # too and was invisible until the labels changed: `ice` matched
+        # serv-*ice*-s and Just-*ice*, so "Immigrant services", "TakeRoot
+        # Justice" and "Brooklyn Defender Services" all filed themselves under
+        # Immigration.
+        if any(_fires(w, hay) for w in words):
             return key
     return buckets[-1][0]
 
@@ -2631,6 +2640,23 @@ if __name__ == "__main__":
         print("CROSS-REFERENCE KEYWORD TOO BROAD:", file=sys.stderr)
         for g in greedy:
             print("   ", g, file=sys.stderr)
+
+    # A bucket whose rule matches nothing is usually a rule that rotted when
+    # a label was reworded, not a kind of help nobody offers. Rewording the
+    # subcategories once left nine of them dead and it took a distribution
+    # dump to see it.
+    dead = []
+    for need in NEEDS:
+        grp = ordered(rows, need["key"])
+        for bk, label, words in GROUPS.get(need["key"], []):
+            if not words:
+                continue
+            if not any(group_for(r, need["key"]) == bk for r in grp):
+                dead.append(f'{need["key"]}/{bk} ("{label}") matches nothing')
+    if dead:
+        print("BUCKET RULE MATCHES NOTHING:", file=sys.stderr)
+        for d in dead:
+            print("   ", d, file=sys.stderr)
 
     missing = [r["Resource Name"] for r in rows
                if contact(r["Phone"])[0] == "none" and not r["Website"]]
