@@ -2226,12 +2226,31 @@ def check_directory_clusters():
                 continue
             if not any(build_help.group_for(r, need["key"]) == bk for r in grp):
                 dead.append(f'{need["key"]}/{bk} ("{label}")')
-    if len(dead) > 6:
-        bad(f"{len(dead)} bucket rules match nothing, which is usually a label "
-            f"that was reworded without its rule: {dead[:4]}")
+    # Named, not counted. A budget lets six rules rot one at a time and never
+    # says so; a list says exactly which emptiness was looked at and accepted.
+    EXPECTED_EMPTY = {
+        'doctor/women ("Pregnancy and new parents")':
+            "the maternal rows are filed under mental health and under family",
+        'legal/money ("Benefits, debt, and consumer problems")':
+            "the organisations that do this are filed under their main practice",
+        'veterans/crisis ("If you are in crisis")':
+            "the Veterans Crisis Line is filed under mental health",
+        'disability/health ("Health care")':
+            "the clinics are filed under health care and reach this page as "
+            "cross-references, which do not count toward a bucket being alive",
+    }
+    surprising = [d for d in dead if d not in EXPECTED_EMPTY]
+    stale = [d for d in EXPECTED_EMPTY if d not in dead]
+    if surprising:
+        bad(f"bucket rule(s) that now match nothing: {surprising}. Usually a "
+            "label was reworded and the rule pointing at it was not.")
+    elif stale:
+        ok(f"{len(dead)} bucket rules are empty, all of them known; "
+           f"{len(stale)} entry(ies) in the expected list have come back to life "
+           "and can be removed")
     else:
-        ok(f"at most a few bucket rules are empty ({len(dead)}), and each is a "
-           "kind of help nobody in the directory offers yet")
+        ok(f"the only empty bucket rules are the {len(dead)} already looked at "
+           "and accepted")
 
     # The rail on each category page is that page's table of contents. A rail
     # entry pointing at a section that is not there is a dead link in the one
