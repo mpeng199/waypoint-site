@@ -58,29 +58,13 @@ SETTLED = {
         "shows the Capital Region office",
     "Adult Protective Services (APS)":
         "we print the central APS line; the page lists the five borough offices",
-    "CIDNY (Center for Independence of the Disabled, NY)":
-        "we print the intake line from cidny.org/services; the homepage footer "
-        "shows the state independent-living council",
-    "Institute for Family Health":
-        "844-434-2778 is the appointment line the Institute publishes for new "
-        "patients; the contact page lists health centres one by one",
     "National Domestic Violence Hotline":
         "we print the hotline; the site shows press and administrative lines",
-    "National Runaway Safeline":
-        "we print 1-800-RUNAWAY; the site shows its Chicago office",
-    "The Bowery Mission":
-        "we print the flagship campus line from bowery.org/contact-and-directions; "
-        "the crawler lands on a page showing a programme number",
     "Good Days":
         "we print the patient assistance line; the site shows its Texas office",
     "Planned Parenthood of Greater New York":
         "we print PPGNY's main line; the national site lists health centres "
         "across the country",
-    "New York Cares Winter Wishes / Coat Drive":
-        "we print the main office line; the coat-drive page shows a programme line",
-    "RiseBoro Community Partnership":
-        "we print the main number from its contact page; the crawler picks up a "
-        "state health line printed alongside",
     "SAMHSA National Helpline":
         "we print 1-800-662-HELP; the site shows the disaster and TTY lines",
     "WIC (Women, Infants & Children)":
