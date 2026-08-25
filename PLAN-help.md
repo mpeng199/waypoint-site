@@ -253,3 +253,10 @@ otherwise is how the ActionNYC and SNAP links stayed dead:
   paragraph's text unguarded, an English month able to reach a translated
   page) are now closed, and it catches 12 of 12. Add a mutation whenever you
   add a guard.
+- `python3 audit_guards.py` alongside it. mutate.py asks whether the suite
+  notices a break; this asks whether any guard is asleep — a check that loops
+  over an empty list passes, and so does one whose pattern stopped matching
+  the markup it was written for. Three guards had gone quiet that way before
+  it existed: one read `langnote` panels that no longer exist, one checked a
+  hand-written page list that had drifted, one resolved a `--focus` colour to
+  no hex and skipped the case it was written to catch.
