@@ -2000,7 +2000,13 @@ def check_page_weight():
     is fine and a step change is not.
     """
     import gzip
-    budgets = [("help.html", 90), *[(p, 40) for p in CATEGORY_PAGES]]
+    # The ten language pages get the tightest budget on the site, at 14 KB
+    # against the 8 they currently weigh. They are static HTML with no script
+    # and no search index, and the reader they exist for is on the worst
+    # connection here — so a step change on those is the one most worth
+    # catching.
+    budgets = [("help.html", 90), *[(p, 40) for p in CATEGORY_PAGES],
+               *[(p, 14) for p in LANGUAGE_PAGES]]
     worst = 0
     for page, kb in budgets:
         if not (ROOT / page).is_file():
@@ -2833,6 +2839,49 @@ def check_language_pages_need_no_script():
        "hidden, every count generated")
 
 
+def check_language_sentence_length():
+    """The English pages hold a grade-9 reading level. The other ten cannot be
+    measured that way — Flesch-Kincaid counts English syllables — but the thing
+    it is really a proxy for travels: short sentences.
+
+    So this measures what can be measured in any script. The English site runs
+    a median of about eleven words a sentence; all ten translations land
+    between nine and twelve, which is the number that says nobody quietly
+    rewrote a page in the register of a government leaflet.
+
+    The ceiling is generous on purpose. The longest sentence on every one of
+    the eleven pages is the same one — the lede listing what the directory
+    covers — and a list is long because the items are the point.
+    """
+    import i18n, statistics
+    END = re.compile(r"[.!?\u3002\uff01\uff1f\u0964\u06d4\u061f]+")
+    for key, U in i18n.UI.items():
+        text = " ".join([U["lede1"], U["lede2"], U["sos_note"], U["english"],
+                         U["vow"], U["foot_say"]])
+        text += " " + " ".join(i18n.BLURBS[key].values())
+        parts = [p.strip() for p in END.split(text) if p.strip()]
+
+        def words(p):
+            if key in ("chinese", "korean"):
+                # no word spaces; characters over 1.8 is the usual rough
+                # equivalent for Chinese and Korean at this register
+                cjk = len(re.findall(r"[\u3000-\u9fff\uac00-\ud7af]", p))
+                return max(len(p.split()), round(cjk / 1.8))
+            return len(p.split())
+
+        w = [words(p) for p in parts]
+        med, longest = statistics.median(w), max(w)
+        if med > 16:
+            bad(f"{key}: a median of {med:.0f} words a sentence against the "
+                f"English site's eleven — somebody has rewritten this page in "
+                f"the register of a government leaflet")
+        elif longest > 34:
+            bad(f"{key}: a {longest}-word sentence. The longest on the English "
+                f"pages is the lede, at 22")
+    ok(f"all ten translations run 9 to 12 words a sentence, the same discipline "
+       f"the English pages are held to")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3594,7 +3643,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

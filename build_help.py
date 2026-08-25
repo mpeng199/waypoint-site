@@ -2450,6 +2450,17 @@ def checked_in(rows, key):
     return f"{one.format(a=m0, y=y0)}\u2013{one.format(a=m1, y=y1)}"
 
 
+def page_title(L, U):
+    """The masthead title as a tab reads it: no sentence-final stop.
+
+    A browser tab is not a sentence, and the stop lands right before the pipe
+    in every language that has one — including the Bengali danda and the Urdu
+    full stop, which are not the ASCII period a naive strip would look for.
+    """
+    t = U["title_a"] + i18n.TITLE_JOIN.get(L["key"], " ") + U["title_b"]
+    return t.rstrip(".\u0964\u06d4\u3002\uff0e ")
+
+
 def lang_header_frag(L, U):
     """The same bar, the same five tabs, the same order — read in this language.
 
@@ -2548,8 +2559,7 @@ def render_language(L, rows, by_need):
          f'<html lang="{L["tag"]}"{" dir=\"rtl\"" if rtl else ""}>', '<head>',
          '<meta charset="UTF-8" />',
          '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
-         f'<title>{esc(U["title_a"] + i18n.TITLE_JOIN.get(L["key"], " ") + U["title_b"])}'
-         f' | Waypoint</title>',
+         f'<title>{esc(page_title(L, U))} | Waypoint</title>',
          f'<meta name="description" content="{esc(U["lede1"].format(n=n))}" />',
          '<meta name="theme-color" content="#13231A" />',
          f'<meta property="og:title" content="'
