@@ -2004,15 +2004,22 @@ def head(title, desc, skip_href, skip_label):
 
 
 def header_frag():
+    """The same bar as the narrative side: same lockup, same three tabs, same
+    order. It used to be a second header that had drifted — three tabs here
+    against five there, a different pin, different padding, a drawer on one
+    half and a wrap on the other — which is how one organisation comes to look
+    like two. The look lives in tokens.css; this only says which page you are
+    standing on.
+    """
     return [
-        '<header class="hhead">',
-        '  <div class="hhead__in">',
+        '<header class="sitehead">',
+        '  <div class="sitehead__in">',
         '    <a class="brand" href="index.html" aria-label="Waypoint home">',
         f'      {PIN}',
         '      <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>',
         '    </a>',
-        '    <nav class="hhead__links" aria-label="Primary">',
-        '      <a href="help.html" aria-current="page">Find help</a>',
+        '    <nav class="sitehead__links" aria-label="Primary">',
+        '      <a href="help.html" class="is-find" aria-current="page">Find help</a>',
         '      <a href="index.html#students">Students</a>',
         '      <a href="index.html#partners">Partners</a>',
         '    </nav>',
@@ -2174,10 +2181,23 @@ def filters_frag(compact=False):
 
 
 def search_frag(placeholder, scope_note):
+    """Search, count and filters as one object.
+
+    They were four: a labelled box, an orphaned line of grey text under it, a
+    bordered card of chips, and — below all of it, outside everything — the
+    result count on the left and the print button on the right. Four slabs
+    that all did the same job, narrowing a list, arranged so that none of them
+    looked related to any other.
+
+    One card now, three zones divided by hairlines: what you type, what that
+    got you, and how to narrow it further. The count sits directly under the
+    box that changes it, and the scope note no longer repeats the number
+    standing next to it.
+    """
     return [
         '<section class="find" aria-labelledby="find-h" hidden>',
         '  <h2 id="find-h" class="sr-only">Search and narrow the list</h2>',
-        '  <div class="find__search">',
+        '  <div class="find__top">',
         '    <label for="q">Search for what you need</label>',
         '    <div class="find__box">',
         '      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
@@ -2186,11 +2206,12 @@ def search_frag(placeholder, scope_note):
         f'      <input id="q" type="search" autocomplete="off" placeholder="{esc(placeholder)}" />',
         '      <button type="button" class="find__clear" hidden>Clear</button>',
         '    </div>',
-        f'    <p class="find__scope">{scope_note}</p>',
         '  </div>',
-    ] + filters_frag() + [
-        '  <div class="find__foot">',
-        '    <p class="find__count" role="status" aria-live="polite"></p>',
+        '  <div class="find__bar">',
+        '    <div class="find__said">',
+        '      <p class="find__count" role="status" aria-live="polite"></p>',
+        f'      <p class="find__scope">{scope_note}</p>',
+        '    </div>',
         '    <button type="button" class="printbtn" hidden>'
         '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
         'stroke="currentColor" stroke-width="1.7" stroke-linecap="round" '
@@ -2198,6 +2219,7 @@ def search_frag(placeholder, scope_note):
         '0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>'
         'Print this list</button>',
         '  </div>',
+    ] + filters_frag() + [
         '</section>',
     ]
 
@@ -2329,7 +2351,7 @@ def render_overview(rows):
       'with all of that kind of help on it, and every phone number on this page '
       'dials.</p></noscript>')
     p += search_frag("Try: food, rent, dentist, lawyer",
-                     "Searches all " + str(n) + " places, not just the ones shown below.")
+                     "Searches every one of them, not only the ones shown below.")
 
     # ---- search results (built by help.js from the index below; empty until then)
     A('<section class="results" id="results" hidden aria-labelledby="results-h">')
@@ -2486,8 +2508,8 @@ def render_category(need, rows):
     A('</aside>')
 
     A('<div class="cat__main">')
-    p += search_frag(esc(need["ph"]), "Searches the " + str(len(group)) +
-                     " places on this page.")
+    p += search_frag(esc(need["ph"]),
+                     "Searches every place on this page.")
     A('<div class="printhead" aria-hidden="true">')
     A(f'  <p class="printhead__t">{esc(need["label"])}</p>')
     A('  <p class="printhead__s">Collected by Waypoint, a student volunteer '

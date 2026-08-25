@@ -87,33 +87,23 @@ b,strong{ font-weight:600; }
 .wrap{ max-width:var(--wrap); margin:0 auto; padding:0 var(--pad) 80px; }
 
 /* ---------------------------------------------------------------- header */
-.hhead{ position:sticky; top:0; z-index:60; background:rgba(252,254,247,.92);
-  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--line); }
-.hhead__in{ max-width:var(--wrap); margin:0 auto; padding:12px var(--pad);
-  display:flex; align-items:center; gap:20px; justify-content:space-between; }
-.brand{ display:inline-flex; align-items:center; gap:11px; text-decoration:none; }
-.brand svg{ width:26px; height:26px; flex:none; }
-.brand .pin{ fill:none; stroke:var(--green); stroke-width:2; }
-.brand .pin-dot{ fill:var(--gold); }
-/* Identical proportions to the narrative site's lockup: 20px Fraunces at 600
-   over a 9.5px .18em-tracked line. Two different lockups is two organisations. */
-.brand__txt{ font-family:var(--display); font-weight:600; font-size:20px; line-height:1;
-  display:flex; flex-direction:column; gap:4px; color:var(--ink); }
-.brand__txt small{ font-family:var(--sans); font-weight:500; font-size:9.5px;
-  letter-spacing:.18em; text-transform:uppercase; color:var(--ink-3); }
-/* Same geometry as the narrative site's nav — same pill, same tracking, same
-   weight — read on cream instead of over a lit door. The gold pill means "you
-   are on the resident side" in both places: on index.html it is the one link
-   out of the story, here it is the page you are standing on. */
-.hhead__links{ display:flex; gap:6px; align-items:center; }
-.hhead__links a{ text-decoration:none; font-weight:600; font-size:.9rem;
-  letter-spacing:.005em;
-  padding:10px 16px; border-radius:var(--r-pill); color:var(--ink-2);
-  transition:background .18s var(--ease), color .18s var(--ease); }
-.hhead__links a:hover{ background:var(--line-2); color:var(--ink); }
-.hhead__links a[aria-current="page"]{ background:var(--gold); color:var(--green-deep); }
-.hhead__links a[aria-current="page"]:hover{ background:var(--gold-lit); color:var(--green-deep); }
+/* The bar itself is .sitehead in tokens.css, shared with the narrative side.
+   All this half has to say is which six colours it wears and that it sticks
+   to the top rather than floating over a door. */
+.sitehead{
+  position:sticky; top:0;
+  --head-bg:rgba(252,254,247,.90);
+  --head-line:var(--line);
+  --head-ink:var(--ink);
+  --head-ink-2:var(--ink-2);
+  --head-ink-3:var(--ink-3);
+  --head-hover:var(--line-2);
+  --head-shadow:none;
+}
+/* transparent until you have scrolled: over cream, indistinguishable from the
+   page, which is the point — the bar appears when there is something behind
+   it to separate from. */
+.sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent; }
 
 /* ------------------------------------------------------------- language */
 /* First thing under the header, because somebody who cannot read the page
@@ -253,17 +243,27 @@ b,strong{ font-weight:600; }
   margin-bottom:clamp(28px,5vw,44px); max-width:68ch; color:var(--ink-2); }
 
 /* ---------------------------------------------------------- search/filter */
-.find{ margin-bottom:clamp(28px,5vw,44px); }
-.find__search label{ display:block; font-weight:600; margin-bottom:8px; font-size:.98rem; }
-.find__box{ display:flex; align-items:center; gap:12px; background:var(--surface);
-  border:2px solid var(--line); border-radius:var(--r); padding:0 16px;
+/* One card, three zones divided by hairlines: what you type, what that got
+   you, and how to narrow it further. It was four separate objects — a labelled
+   box, an orphaned grey line under it, a bordered card of chips, and the count
+   and the print button floating below everything, outside the lot. All four
+   did the same job, narrowing a list, and none of them looked related to any
+   other. Nothing inside the card carries a border of its own now. */
+.find{ margin-bottom:clamp(28px,5vw,44px);
+  background:var(--surface); border:1.5px solid var(--line);
+  border-radius:var(--r); overflow:hidden; }
+.find__top{ padding:clamp(15px,2.2vw,20px); }
+.find__top label{ display:block; font-weight:600; margin-bottom:9px; font-size:.98rem; }
+.find__box{ display:flex; align-items:center; gap:12px; background:var(--mint);
+  border:1.5px solid var(--line); border-radius:var(--r-s); padding:0 14px;
   transition:border-color .18s var(--ease), box-shadow .18s var(--ease); }
-.find__box:focus-within{ border-color:var(--green); box-shadow:0 0 0 4px rgba(30,53,40,.1); }
+.find__box:focus-within{ border-color:var(--green); background:var(--surface);
+  box-shadow:0 0 0 3px rgba(30,53,40,.10); }
 .find__box .ico{ width:22px; height:22px; color:var(--ink-3); flex:none; }
 /* min-width:0, or the flex item refuses to shrink below its placeholder's
    intrinsic width and takes the search box off the side of the screen. */
 .find__box input{ flex:1; min-width:0; border:0; background:none; font:inherit; color:inherit;
-  padding:16px 0; min-height:56px; outline:none; }
+  padding:14px 0; min-height:52px; outline:none; }
 /* The input hands its focus ring to the box around it, which is the right
    look and a trap: in Windows High Contrast the browser throws away our
    border colour and our shadow, and `outline:none` is the one thing it keeps.
@@ -274,13 +274,14 @@ b,strong{ font-weight:600; }
 }
 .find__box input::placeholder{ color:var(--ink-3); }
 .find__clear{ border:0; background:var(--line-2); color:var(--ink-2); font:inherit;
-  font-size:.88rem; font-weight:600; padding:8px 14px; border-radius:999px; cursor:pointer; }
+  font-size:.88rem; font-weight:600; padding:8px 14px; border-radius:999px; cursor:pointer;
+  min-height:36px; }
 .find__clear:hover{ background:var(--line); }
 
-.find__filters{ margin-top:16px; border:1.5px solid var(--line); border-radius:var(--r-s);
-  background:var(--surface); }
+.find__filters{ border-top:1px solid var(--line-2); }
 .find__filters > summary{ cursor:pointer; list-style:none; display:flex;
-  align-items:center; gap:10px; min-height:48px; padding:10px 16px;
+  align-items:center; gap:10px; min-height:48px;
+  padding:10px clamp(15px,2.2vw,20px);
   font-weight:600; font-size:.95rem; color:var(--ink-2); }
 .find__filters > summary::-webkit-details-marker{ display:none; }
 .find__filters > summary::after{ content:""; width:8px; height:8px; flex:none;
@@ -290,7 +291,7 @@ b,strong{ font-weight:600; }
 .find__filters[open] > summary::after{ transform:rotate(-135deg) translateY(-2px); }
 .find__filters > summary:hover{ color:var(--ink); background:var(--line-2); }
 .find__filters[open] > summary{ border-bottom:1px solid var(--line-2); }
-.find__filters > :not(summary){ margin:16px; }
+.find__filters > :not(summary){ margin:16px clamp(15px,2.2vw,20px); }
 .find__filters > .fset + .fset{ margin-top:0; }
 .fset{ border:0; padding:0; margin:0; }
 .fset legend{ font-weight:600; font-size:.88rem; color:var(--ink-2);
@@ -308,13 +309,22 @@ b,strong{ font-weight:600; }
 .reset,.linkish{ font:inherit; font-size:.94rem; font-weight:600; cursor:pointer;
   background:none; border:0; color:var(--green); text-decoration:underline;
   text-underline-offset:3px; padding:8px 0; justify-self:start; }
-.find__foot{ margin-top:16px; display:flex; flex-wrap:wrap; gap:12px 20px;
-  align-items:center; justify-content:space-between; }
-.find__count{ font-weight:600; color:var(--ink-2); font-size:.98rem; }
+/* what the box got you, immediately under the box, with the one action that
+   applies to it */
+.find__bar{ display:flex; flex-wrap:wrap; gap:10px 18px;
+  align-items:center; justify-content:space-between;
+  padding:12px clamp(15px,2.2vw,20px);
+  border-top:1px solid var(--line-2); background:var(--mint); }
+/* The count and its footnote stack; the button keeps the right-hand end of
+   the row. Side by side they were wide enough to push the button onto a line
+   of its own, which put a lone pill in the middle of the card. */
+.find__said{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+.find__count{ font-weight:600; color:var(--ink); font-size:.98rem; }
+.find__count:empty{ display:none; }
 .printbtn{ display:inline-flex; align-items:center; gap:9px; font:inherit;
   font-size:.94rem; font-weight:600; cursor:pointer; min-height:44px;
-  padding:9px 16px; border:1.5px solid var(--line); border-radius:999px;
-  background:var(--surface); color:var(--ink);
+  padding:9px 15px; border:1.5px solid var(--line); border-radius:999px;
+  background:var(--surface); color:var(--ink); flex:none;
   transition:border-color .16s var(--ease), background .16s var(--ease); }
 .printbtn:hover{ border-color:var(--green-2); background:var(--line-2); }
 .printbtn .ico{ width:18px; height:18px; }
@@ -505,7 +515,7 @@ b,strong{ font-weight:600; }
 .sos--slim .sos__num{ font-size:1.25rem; }
 .sos--slim .sos__for{ font-size:.82rem; }
 
-.find__scope{ margin-top:8px; font-size:.86rem; color:var(--ink-3); }
+.find__scope{ font-size:.88rem; color:var(--ink-3); }
 .grp__why{ margin:-6px 0 14px; font-size:.9rem; color:var(--ink-3); max-width:62ch; }
 
 .grp{ margin-bottom:clamp(38px,6vw,64px); scroll-margin-top:84px; }
@@ -612,8 +622,7 @@ b,strong{ font-weight:600; }
 .hfoot{ --focus:var(--gold-lit); background:var(--green-deep); color:var(--cream); }
 .hfoot__in{ max-width:var(--wrap); margin:0 auto; padding:clamp(34px,5vw,58px) var(--pad) clamp(26px,3vw,36px); }
 .hfoot .brand{ margin-bottom:18px; }
-.hfoot .brand .pin{ fill:var(--cream); stroke:none; }
-.hfoot .brand .pin-dot{ fill:var(--green-deep); }
+.hfoot .brand{ color:var(--cream); }
 .hfoot .brand__txt{ color:var(--cream); }
 .hfoot .brand__txt small{ color:var(--ink-faint); letter-spacing:.18em; }
 .hfoot__say{ max-width:62ch; color:var(--ink-soft); font-size:.97rem; }
@@ -627,12 +636,6 @@ b,strong{ font-weight:600; }
 
 /* ------------------------------------------------------------ responsive */
 @media (max-width:640px){
-  .hhead__in{ flex-wrap:wrap; gap:8px; padding-top:10px; padding-bottom:10px; }
-  /* Wrap rather than scroll sideways. At 200% text these three links are
-     wider than a 320px screen, and a scroll strip hides the last one behind a
-     gesture; stacking them just makes the header taller. */
-  .hhead__links{ width:100%; flex-wrap:wrap; gap:4px; }
-  .hhead__links a{ padding:10px 13px; }
   .rows,.clusters__grid,.sibs ul{ grid-template-columns:1fr; }
 
   /* Ten languages is four rows of pills and a quarter of the screen on a
@@ -697,7 +700,7 @@ b,strong{ font-weight:600; }
 /* Students hand people paper. A printed page has no Call button, so the
    number has to become text, and the interface around it has to vanish. */
 @media print{
-  .hhead,.find,.jump,.results,.sibs,.cat__rail,.crumb,
+  .sitehead,.find,.jump,.results,.sibs,.cat__rail,.crumb,
   .skip,.hfoot__links,.grp__top,.dir__none,.grp__why,
   .cl__all,.clusters__say,
   .langbar,.langnote,.sprite,.mast__bg{ display:none !important; }

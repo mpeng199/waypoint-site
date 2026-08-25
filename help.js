@@ -28,6 +28,21 @@
 (function () {
   "use strict";
 
+  /* The header is the same object as the narrative side's, and it follows the
+     same rule: transparent at the top of the page, the page's own ground once
+     you have scrolled past it. Over cream that is nearly invisible, which is
+     the point — the bar appears when there is something behind it to separate
+     from. Outside the early return below, because it is the one thing on
+     these pages that is not about the directory. */
+  var head = document.querySelector(".sitehead");
+  if (head) {
+    var stick = function () {
+      head.classList.toggle("stuck", (window.scrollY || window.pageYOffset || 0) > 40);
+    };
+    addEventListener("scroll", stick, { passive: true });
+    stick();
+  }
+
   var ixEl = document.getElementById("ix");
   var dir = document.getElementById("dir");
   if (!ixEl && !dir) return;

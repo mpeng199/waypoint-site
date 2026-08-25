@@ -18,14 +18,14 @@
 <body class="help" id="top">
 <a class="skip" href="#dir">Skip to the list</a>
 <svg class="sprite" aria-hidden="true"><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4 5.2 2 2 0 0 1 6 3Z"/></symbol><symbol id="i-text" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H4l2.2-2.6A8 8 0 1 1 21 12Z"/></symbol></svg>
-<header class="hhead">
-  <div class="hhead__in">
+<header class="sitehead">
+  <div class="sitehead__in">
     <a class="brand" href="index.html" aria-label="Waypoint home">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>
       <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>
     </a>
-    <nav class="hhead__links" aria-label="Primary">
-      <a href="help.html" aria-current="page">Find help</a>
+    <nav class="sitehead__links" aria-label="Primary">
+      <a href="help.html" class="is-find" aria-current="page">Find help</a>
       <a href="index.html#students">Students</a>
       <a href="index.html#partners">Partners</a>
     </nav>
@@ -371,14 +371,20 @@
 <div class="cat__main">
 <section class="find" aria-labelledby="find-h" hidden>
   <h2 id="find-h" class="sr-only">Search and narrow the list</h2>
-  <div class="find__search">
+  <div class="find__top">
     <label for="q">Search for what you need</label>
     <div class="find__box">
       <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" autocomplete="off" placeholder="Try: eviction, immigration, wages" />
       <button type="button" class="find__clear" hidden>Clear</button>
     </div>
-    <p class="find__scope">Searches the 36 places on this page.</p>
+  </div>
+  <div class="find__bar">
+    <div class="find__said">
+      <p class="find__count" role="status" aria-live="polite"></p>
+      <p class="find__scope">Searches every place on this page.</p>
+    </div>
+    <button type="button" class="printbtn" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6M7 19H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>Print this list</button>
   </div>
   <details class="find__filters">
     <summary><span>Narrow this list</span></summary>
@@ -411,10 +417,6 @@
     </div></fieldset>
     <button type="button" class="reset" hidden>Start over</button>
   </details>
-  <div class="find__foot">
-    <p class="find__count" role="status" aria-live="polite"></p>
-    <button type="button" class="printbtn" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6M7 19H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>Print this list</button>
-  </div>
 </section>
 <div class="printhead" aria-hidden="true">
   <p class="printhead__t">I need a lawyer, or I have an immigration question</p>

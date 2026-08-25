@@ -670,7 +670,7 @@ def check_a11y_basics():
 
 def check_nav_matches_sections():
     src = read("index.html")
-    nav = re.findall(r'<nav class="nav__links".*?</nav>', src, flags=re.S)
+    nav = re.findall(r'<nav class="sitehead__links".*?</nav>', src, flags=re.S)
     if not nav:
         bad("index.html: no primary nav block, so nav wiring cannot be checked")
         return
@@ -696,7 +696,7 @@ def check_nav_matches_sections():
     for page in ["privacy.html", "terms.html"]:
         if not (ROOT / page).is_file():
             continue
-        block = re.findall(r'<nav class="nav__links".*?</nav>', read(page), flags=re.S)
+        block = re.findall(r'<nav class="sitehead__links".*?</nav>', read(page), flags=re.S)
         if not block:
             bad(f"{page}: no primary nav")
             continue
@@ -985,7 +985,7 @@ def check_audience_order():
     src = read("index.html")
 
     # nav targets must appear in the page in the same order they appear in the nav
-    nav = re.search(r'<nav class="nav__links".*?</nav>', src, flags=re.S)
+    nav = re.search(r'<nav class="sitehead__links".*?</nav>', src, flags=re.S)
     if not nav:
         bad("audience: no primary nav block, so nav order cannot be checked")
         return
@@ -1076,12 +1076,16 @@ def check_mobile_budget():
         bad("mobile: the doorstage is back to opacity:0 alone, which keeps a "
             "full-screen WebGL layer alive in the compositor for the whole page")
 
-    # the menu button measured 30x22 — under even the 24px WCAG 2.5.8 minimum
-    if re.search(r"\.nav__tog::after[^{]*\{[^}]*inset:-13px", narrow):
-        ok("mobile: the menu button's hit area is widened past its glyph")
+    # The menu button measured 30x22 — under even the 24px WCAG 2.5.8 minimum.
+    # There is no menu button any more; the tabs are the primary navigation on
+    # a phone, so they are what has to be thumb-sized.
+    tok = read("tokens.css")
+    tall = re.search(r"\.sitehead__links a\{[^}]*min-height:(\d+)px", tok)
+    if tall and int(tall.group(1)) >= 44:
+        ok(f"mobile: a nav tab is at least {tall.group(1)}px tall, a thumb target")
     else:
-        bad("mobile: .nav__tog is back to a 30x22 hit area — the primary "
-            "navigation control on a phone, under the WCAG 2.5.8 minimum")
+        bad("mobile: the nav tabs are under 44px on a phone, and they are now "
+            "the primary navigation control — there is no menu to fall back to")
 
 
 def check_mobile_reads():
@@ -1098,56 +1102,46 @@ def check_mobile_reads():
     blocks = re.findall(r"@media \(max-width:900px\)\{(.*?)\n\}", css, flags=re.S)
     narrow = "\n".join(blocks)
 
-    # ---- the drawer ----
-    # 1. backdrop-filter on .nav makes it the containing block for its own
-    #    fixed child, so past 40px of scroll the drawer opened as a 375x77 strip
-    if re.search(r"\.menu-open \.nav[^{]*\{[^}]*backdrop-filter:none", css):
-        ok("drawer: the bar drops its blur while the menu is open")
-    else:
-        bad("drawer: .nav keeps backdrop-filter with the menu open, which makes "
-            "it the containing block for the fixed drawer — the menu collapses "
-            "to the height of the bar everywhere except the top of the page")
-    # 2. transform alone hides it from the eye and from nothing else
-    if re.search(r"\.nav__links\{[^}]*visibility:hidden", narrow) and \
-       re.search(r"\.nav__links\.open\{[^}]*visibility:visible", narrow):
-        ok("drawer: closed means closed to the keyboard too")
-    else:
-        bad("drawer: the closed drawer is only translated off-screen, so its "
-            "links keep tabindex 0 and a keyboard user tabs into a menu that "
-            "is not open")
-    # a panel, not a takeover — and the scrim is what earns the panel. Without
-    # it the strip of page beside the drawer shows a severed wordmark and two
-    # letters of the headline at full contrast, which is what drove it to
-    # full-screen the first time.
-    if re.search(r"\.nav__links\{[^}]*width:min\(", narrow):
-        ok("drawer: a bounded panel rather than the whole screen")
-    else:
-        bad("drawer: .nav__links has no bounded width — it covers the entire "
-            "viewport instead of sitting over the page as a panel")
-    if re.search(r"\.menu-open body::after\{[^}]*pointer-events:auto", css) and \
-       re.search(r"body::after\{[^}]*position:fixed", css):
-        ok("drawer: a scrim dims the page beside the panel and takes the tap")
-    else:
-        bad("drawer: no scrim. The page beside the panel reads at full "
-            "contrast, showing a wordmark cut in half by the panel edge")
-    if re.search(r'e\.target\.closest\("\.nav__links, \.nav__tog"\)', js):
-        ok("drawer: tapping the dimmed page closes it")
-    else:
-        bad("drawer: the scrim swallows taps without closing the menu, which "
-            "is the first gesture anyone tries on a panel")
+    # ---- the tabs, on a phone, without opening anything ----
+    # This used to be seven checks about a drawer: its scrim, its scroll lock,
+    # its Escape key, its focus round-trip, and a note about backdrop-filter
+    # making .nav the containing block for its own fixed child. Three links
+    # never needed any of it, and the drawer was the last place the two halves
+    # of the site behaved differently on a phone. What has to hold now is
+    # simpler and stricter: every tab is on the screen, always.
+    for dead, what in [(r"\.nav__tog", "the hamburger button"),
+                       (r"menu-open", "the drawer's body class"),
+                       (r"\.nav__links", "the drawer's own nav class")]:
+        left = [f for f, src in (("styles.css", css), ("script.js", js),
+                                 ("index.html", idx)) if re.search(dead, src)]
+        if left:
+            bad(f"{what} still appears in {', '.join(left)} — a half-removed "
+                f"drawer leaves dead CSS that can still match, or JS that "
+                f"queries an element nobody ships")
+        else:
+            ok(f"{what} is gone from every file")
 
-    # 3. a fixed layer over a document that is still scrolling underneath it
-    if "lenis.stop()" in js and 'style.overflow = open ? "hidden"' in js:
-        ok("drawer: opening it stops the page, Lenis included")
+    head = re.search(r'<header class="sitehead">.*?</header>', idx, flags=re.S)
+    if not head:
+        bad("index.html: no .sitehead, so the shared header is not on this half")
     else:
-        bad("drawer: nothing locks the scroll while the menu is open — a swipe "
-            "on the menu scrolls the journey behind it. Lenis drives the scroll "
-            "itself, so an overflow:hidden body alone does not stop it")
-    # 4. escape, and focus that makes the round trip
-    if re.search(r'e\.key === "Escape"', js) and "tog.focus()" in js:
-        ok("drawer: Escape closes it and focus returns to the button")
-    else:
-        bad("drawer: no Escape, or focus is left in the closed drawer")
+        block = head.group(0)
+        if re.search(r"position:fixed|display:none", narrow):
+            pass
+        hidden = re.search(r"\.sitehead__links\{[^}]*(?:display:none|visibility:hidden|"
+                           r"position:fixed)", narrow)
+        if hidden:
+            bad("the tabs are hidden or lifted out of the flow below 900px — "
+                "on a phone that means a control the reader has to find first")
+        else:
+            ok("the tabs stay in the flow on a phone; no menu to open")
+        tok = read("tokens.css")
+        if re.search(r"@media \(max-width:640px\)\{[^@]*\.sitehead__links\{[^}]*flex-wrap:wrap",
+                     tok, flags=re.S):
+            ok("the tabs wrap onto a second row rather than scrolling sideways")
+        else:
+            bad("nothing wraps the tabs on a narrow screen, so at 200% text "
+                "they run off the side")
 
     # ---- the hero has to fit a phone on its side ----
     if re.search(r"@media \(max-height:560px\) and \(max-width:900px\)", css):
@@ -2307,6 +2301,80 @@ def check_language_numbers_dial():
         ok(f"all {seen} language panels dial 911, 988 and 311 rather than printing them")
 
 
+def check_one_header():
+    """The same bar on all twenty pages: same lockup, same three tabs, same order.
+
+    They were two components that had drifted: five tabs on the narrative side
+    and three on the directory, a solid pin against an outlined one, 22px of
+    padding against 12px, a slide-out drawer on one half and a wrapped second
+    row on the other. Each difference was defensible on its own and together
+    they made one organisation look like two.
+
+    The look is in tokens.css. What varies per half is six colour tokens and
+    one line of positioning — and this fails if anything else does.
+    """
+    PAGES = [p for p in RESIDENT_PAGES + ["index.html", "privacy.html", "terms.html"]
+             if (ROOT / p).is_file()]
+    grab = re.compile(r'<header class="sitehead">(.*?)</header>', re.S)
+    tabs = re.compile(r'<a href="([^"]+)"[^>]*>([^<]+)</a>')
+
+    shapes = {}
+    for page in PAGES:
+        m = grab.search(read(page))
+        if not m:
+            bad(f"{page}: no shared header — this page is still its own component")
+            continue
+        block = m.group(1)
+        # the lockup, to the pixel: one pin path, one wordmark, one strapline
+        for want, what in [('class="pin"', "the pin"),
+                           ('class="pin-dot"', "the pin's centre"),
+                           ('<span class="brand__txt">Waypoint', "the wordmark"),
+                           ("<small>Student Health Corps</small>", "the strapline")]:
+            if want not in block:
+                bad(f"{page}: the header is missing {what}")
+        names = [t[1] for t in tabs.findall(block) if "brand" not in t[0]]
+        names = [n for n in names if n != "Waypoint"]
+        shapes.setdefault(tuple(names), []).append(page)
+
+    if len(shapes) == 1:
+        names = next(iter(shapes))
+        ok(f"all {len(PAGES)} pages carry the same tabs, in the same order: "
+           f"{' / '.join(names)}")
+    else:
+        for names, pages in sorted(shapes.items(), key=lambda kv: -len(kv[1])):
+            bad(f"{len(pages)} page(s) show tabs {list(names)} "
+                f"(e.g. {pages[0]}) — the two halves have drifted apart again")
+
+    # the gold pill means the same thing in both places
+    for page in PAGES:
+        m = grab.search(read(page))
+        if m and 'class="is-find"' not in m.group(1):
+            bad(f"{page}: 'Find help' is not the gold pill, so the one tab "
+                f"addressed to somebody in trouble looks like the others")
+            break
+    else:
+        ok("'Find help' is the gold pill on every page, both halves")
+
+    # everything that differs must be a token, not a second component
+    tok = read("tokens.css")
+    for sheet in ("help.css", "styles.css"):
+        src = read(sheet)
+        own = re.findall(r"\.sitehead[^{,]*\{([^}]*)\}", src)
+        for body in own:
+            for prop in re.findall(r"(?:^|;)\s*([a-z-]+):", body):
+                if prop.startswith("--") or prop in ("position", "inset", "top"):
+                    continue
+                bad(f"{sheet} restyles the shared header ({prop}) instead of "
+                    f"setting a token; that is how the two halves drifted")
+        if "--head-bg" not in src:
+            bad(f"{sheet} never sets --head-bg, so its header has no ground")
+    ok("each half sets only colours and position; the bar itself is shared")
+    if ".sitehead{" not in tok or ".sitehead__links a.is-find{" not in tok:
+        bad("tokens.css no longer owns the header; it has moved back into a sheet")
+    else:
+        ok("tokens.css owns the bar, the lockup and the pill")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3062,7 +3130,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
