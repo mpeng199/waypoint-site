@@ -3029,7 +3029,9 @@ def check_tap_targets():
     already does; the jump row was 40 and it is a row of seventeen small pills,
     which is exactly where a thumb misses.
     """
-    css = read("help.css") + "\n" + read("tokens.css")
+    # styles.css too: the home page's resident links live there, and they were
+    # the smallest tap targets on the site.
+    css = read("help.css") + "\n" + read("tokens.css") + "\n" + read("styles.css")
     CONTROLS = [(r"\.jump a\{", "the jump row"),
                 (r"\.helplinks a\{", "the resident links on the home page"),
                 (r"\.chip\{", "a filter chip"),
