@@ -1652,17 +1652,33 @@ MONTHS = ("January February March April May June July August September "
 
 
 def checked(rows):
-    """"Checked August 2026", derived from the data rather than typed.
+    """"Checked June-August 2026", derived from the data rather than typed.
 
     It was typed, in three places, and by the time anybody looked two of them
     said June and one said August — on the sheets students hand to people, as
     the answer to "how do I know this is still right".
+
+    Then, derived, it took the newest date in the file: one row checked this
+    morning let the sheet say August over a list a fifth of which nobody had
+    looked at since June. The newest date is the most flattering true number
+    available, which is the definition of a number not to print. This prints
+    the span, oldest first, and collapses to a single month when it honestly
+    is one.
     """
     dates = sorted(r["Last Verified"] for r in rows if r.get("Last Verified"))
     if not dates:
         return "not yet checked"
-    y, m, _ = dates[-1].split("-")
-    return f"{MONTHS[int(m) - 1]} {y}"
+
+    def part(d):
+        y, m, _ = d.split("-")
+        return MONTHS[int(m) - 1], y
+
+    (m0, y0), (m1, y1) = part(dates[0]), part(dates[-1])
+    if (m0, y0) == (m1, y1):
+        return f"{m0} {y0}"
+    if y0 == y1:
+        return f"{m0}\u2013{m1} {y1}"     # June–August 2026
+    return f"{m0} {y0}\u2013{m1} {y1}"
 
 
 def load():
@@ -2457,7 +2473,7 @@ def render_category(need, rows):
     A(f'  <p class="printhead__t">{esc(need["label"])}</p>')
     A('  <p class="printhead__s">Collected by Waypoint, a student volunteer '
       'corps. We do not run any of these programs &mdash; we help people find '
-      f'them. Checked {checked(rows)}; programs change.</p>')
+      f'them. Checked {checked(group)}; programs change.</p>')
     A('</div>')
     A(f'<div class="dir" id="dir" data-nw="{esc(needwords([key]))}">')
     A('<p class="dir__none" hidden>Nothing here matched that. Try a different word, or '

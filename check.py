@@ -2006,28 +2006,81 @@ def check_page_weight():
 
 
 def check_checked_date_is_derived():
-    """"Checked August 2026" must come from the data, not from a keystroke.
+    """"Checked June-August 2026" must come from the data, not from a keystroke.
+
+    Three failures live here, and all three shipped at least once.
 
     It was typed in three places, and by the time anybody looked two said June
     and one said August — on the sheet a student hands somebody, as the answer
     to "how do I know this is still right".
+
+    Then it was derived from the newest row, so one number confirmed this
+    morning let the whole sheet claim August over a list a fifth of which
+    nobody had touched since June.
+
+    And this check itself hunted for "Checked <Month> <Year>", so the moment
+    the wording became a span it matched nothing anywhere and passed with an
+    empty hand. A check that cannot fail is worse than no check, because it
+    reports a green square. So it now demands the sentence be *present* on
+    every page as well as correct.
     """
     import build_help
     rows = build_help.load()
-    want = build_help.checked(rows)
     months = "|".join(build_help.MONTHS)
-    stale = []
+
+    def span(rs):
+        """The oldest and newest month in a set of rows, worked out here.
+
+        Deliberately not build_help.checked(). A check that asks the code
+        under test what the right answer is agrees with that code even when
+        the code is wrong: an earlier version of this one derived its
+        expectation from checked(), so when checked() went back to printing
+        only the newest month — the bug this check exists to catch — the
+        check moved with it and reported a green square.
+        """
+        ds = sorted(r["Last Verified"] for r in rs if r.get("Last Verified"))
+        if not ds:
+            return "not yet checked"
+        lo, hi = ds[0].split("-"), ds[-1].split("-")
+        m0, y0 = build_help.MONTHS[int(lo[1]) - 1], lo[0]
+        m1, y1 = build_help.MONTHS[int(hi[1]) - 1], hi[0]
+        if (m0, y0) == (m1, y1):
+            return f"{m0} {y0}"
+        return f"{m0}\u2013{m1} {y1}" if y0 == y1 else f"{m0} {y0}\u2013{m1} {y1}"
+    SPAN = rf"(?:{months})(?: \d{{4}})?(?:\u2013(?:{months}) \d{{4}})?"
+    # Two sentences, two scopes, and they are allowed to differ. The printed
+    # header speaks for the resources on the page it is printed on; the site
+    # footer sits under "340 resources" and speaks for the file.
+    HEAD = re.compile(rf"Checked ({SPAN}); programs change")
+    FOOT = re.compile(rf"Last checked ({SPAN})\.")
+    whole = span(rows)
+    if whole != build_help.checked(rows):
+        bad(f"build_help.checked() says {build_help.checked(rows)!r}; the oldest and newest dates in the file are {whole!r}")
+
+    bad_pages, seen = [], 0
     for page in RESIDENT_PAGES:
-        for m in re.findall(rf"(?:Checked|Last checked) ({months}) (\d{{4}})", read(page)):
-            said = f"{m[0]} {m[1]}"
-            if said != want:
-                stale.append(f"{page} says {said!r}; the newest thing in the "
-                             f"directory was verified in {want}")
-    if stale:
-        for x in sorted(set(stale)):
+        src = read(page)
+        key = page[len("help-"):-len(".html")] if page.startswith("help-") else None
+        want = span(build_help.ordered(rows, key)) if key else whole
+        for pat, said_of, label in ((HEAD, want, "the resources on it were"),
+                                    (FOOT, whole, "the directory was")):
+            found = pat.findall(src)
+            if not found:
+                bad_pages.append(f"{page}: the {'printed header' if pat is HEAD else 'footer'} "
+                                 f"has no date sentence — the wording moved and this "
+                                 f"check went blind")
+                continue
+            for said in found:
+                seen += 1
+                if said != said_of:
+                    bad_pages.append(f"{page} says {said!r}; {label} checked {said_of}")
+
+    if bad_pages:
+        for x in sorted(set(bad_pages)):
             bad(x)
     else:
-        ok(f'every "checked" date on the resident pages is the generated one ({want})')
+        ok(f"every \"checked\" date on the resident pages is generated from that "
+           f"page's own rows ({seen} of them, {whole} overall)")
 
 
 def check_no_sideways_scroll():
