@@ -2369,6 +2369,31 @@ def check_one_header():
         if "--head-bg" not in src:
             bad(f"{sheet} never sets --head-bg, so its header has no ground")
     ok("each half sets only colours and position; the bar itself is shared")
+    # Nothing may sit between the skip link and the header. index.html had its
+    # journey rail — eleven fixed scroll-position dots — earlier in the DOM,
+    # so a keyboard user tabbed through all of them before reaching the site's
+    # primary navigation. The rail is position:fixed, so its place in the
+    # document only ever decided that.
+    # An empty container counts. The rail ships as <nav class="rail"></nav> and
+    # script.js fills it with eleven buttons, so looking for <button> in the
+    # source finds nothing and passes — which is exactly what this check did on
+    # its first draft. Anything that can hold controls has to come after.
+    HOLDER = re.compile(r"<(?:nav|form|menu)\b|<(?:a\s[^>]*href|button|input|"
+                        r"select|textarea|summary)\b", re.I)
+    for page in PAGES:
+        src = read(page)
+        skip = src.find('class="skip"')
+        head = src.find('<header class="sitehead">')
+        if skip < 0 or head < 0:
+            continue
+        between = HOLDER.findall(src[src.index(">", skip) + 1:head])
+        if between:
+            bad(f"{page}: {between[0]}…> comes before the header, so tabbing "
+                f"reaches whatever it holds before the site's primary "
+                f"navigation — and an empty container counts, because script "
+                f"fills it")
+    ok("on every page the header is the first thing after the skip link")
+
     if ".sitehead{" not in tok or ".sitehead__links a.is-find{" not in tok:
         bad("tokens.css no longer owns the header; it has moved back into a sheet")
     else:
