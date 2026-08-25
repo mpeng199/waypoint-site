@@ -19,7 +19,7 @@ under it asked that person for their organisation's letterhead. So: give
 residents their own front door and put the directory behind it, and keep the
 narrative for the audiences it was written for.
 
-## Where it stands, 329 resources and 48 commits on
+## Where it stands, 340 resources and 62 commits on
 
 - **`help.html` is a way in, not the directory.** One cluster per kind of
   help, three real places with real numbers under each, and a link to that
@@ -27,7 +27,7 @@ narrative for the audiences it was written for.
 - **Seventeen category pages**, each built to be skimmed: a rail of what is on
   it, resources in named buckets, a Start here block, and every neighbouring
   kind of help one tap away.
-- **329 verified resources** across 17 categories, 264 of them checked
+- **340 verified resources** across 17 categories, 276 of them checked
   against a first-party source on 24-25 August 2026.
 - **Ten languages** — Local Law 30's ten — each panel naming every kind of
   help in that language, and the search box understanding all ten.
@@ -76,6 +76,10 @@ narrative for the audiences it was written for.
 - [x] **S27** **Search in ten languages.** The tokenizer was deleting every
       non-ASCII character, so the page could be read in ten and searched in
       one. `NEED_WORDS` carries the query vocabulary; it ships once per page.
+- [x] **S27b** **Plain English.** Every agency word a reader meets said in
+      ordinary English: no FQHC, no DV, no sliding scale, no arrears, no slash
+      between two words, no claim with a clock on it, no statement of who
+      qualifies. Guarded, all of it.
 - [x] **S28** **Phone verification.** `verify_phones.py` asks each
       organisation's own site whether the number we print is its number.
       Eleven had drifted, one by a single digit.
@@ -84,7 +88,7 @@ narrative for the audiences it was written for.
 
 ## What still needs a human
 
-1. **The push.** 48 commits sit on
+1. **The push.** 62 commits sit on
    `claude/website-accessibility-redesign-2b15ac`, unpushed.
    `git push -u origin claude/website-accessibility-redesign-2b15ac`.
 2. **A native-speaker review of the ten in-language panels.** They are short,
@@ -114,7 +118,7 @@ narrative for the audiences it was written for.
 - **Staten Island is thin but no longer empty.** Project Hospitality and the
   Community Health Center of Richmond are now in, and the filter floats local
   results above citywide ones so the shape of the gap stays visible.
-- **65 rows still carry a June verification date** — not because anything is
+- **64 rows still carry a June verification date** — not because anything is
   known to be wrong with them, but because their sites draw the phone number
   in JavaScript or refuse a scripted request. `verify_phones.py` reports them
   as UNSEEN, never as confirmed.

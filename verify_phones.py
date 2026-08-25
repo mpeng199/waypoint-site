@@ -126,7 +126,10 @@ def fetch(url):
 # the page whose whole job is to carry it — and reporting those as "we could
 # not see it" is a report with eighty entries nobody reads.
 CONTACT_PATHS = ("/contact", "/contact-us", "/contact/", "/contact-us/",
-                 "/about/contact", "/get-help", "/about-us/contact-us/")
+                 "/about/contact", "/about-us/contact-us/", "/about/contact-us",
+                 "/get-help", "/get-help/", "/gethelp", "/help",
+                 "/contact-and-directions/", "/locations", "/locations/",
+                 "/services", "/programs", "/about", "/about-us")
 
 
 def root(url):
