@@ -1853,6 +1853,7 @@ def reading_grade(text):
 def check_reading_level():
     """The copy the site writes about itself has to be readable."""
     import build_help
+    rows = build_help.load()
     CEILING = 9.0
 
     # Only on prose. The formula is a ratio of words to sentences and
@@ -1887,6 +1888,28 @@ def check_reading_level():
         if len(need["short"]) > 26:
             over.append(f'{need["key"]}: the short name is {len(need["short"])} '
                         f'characters, too long for a chip — {need["short"]!r}')
+
+    # Agency words a reader has to already know. Each of these is fine in the
+    # Subcategory (internal filing) and in the Tags (search vocabulary); in the
+    # prose somebody reads, each has an ordinary-English version and the
+    # ordinary-English version is what ships.
+    JARGON = {
+        "sliding scale": "a price based on what you earn",
+        "federally qualified": "community health centre",
+        "case management": "a caseworker",
+        "arrears": "rent you have fallen behind on",
+        "warm handoff": "hand the person over",
+        "psychosocial": "",
+        "wraparound": "",
+        "means-tested": "",
+    }
+    for r in rows:
+        for field in ("Description", "Notes"):
+            low = (r[field] or "").lower()
+            for term, plain in JARGON.items():
+                if term in low:
+                    over.append(f'{r["Resource Name"]}: {field} says {term!r}'
+                                + (f' — say {plain!r}' if plain else ""))
 
     if over:
         for x in over:
