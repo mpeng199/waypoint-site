@@ -1363,6 +1363,24 @@ def urgent(row):
     return row["Resource Name"] in [name for name, _ in SOS]
 
 
+MONTHS = ("January February March April May June July August September "
+          "October November December").split()
+
+
+def checked(rows):
+    """"Checked August 2026", derived from the data rather than typed.
+
+    It was typed, in three places, and by the time anybody looked two of them
+    said June and one said August — on the sheets students hand to people, as
+    the answer to "how do I know this is still right".
+    """
+    dates = sorted(r["Last Verified"] for r in rows if r.get("Last Verified"))
+    if not dates:
+        return "not yet checked"
+    y, m, _ = dates[-1].split("-")
+    return f"{MONTHS[int(m) - 1]} {y}"
+
+
 def load():
     with open(CSV, encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
@@ -1741,7 +1759,7 @@ def vow_frag():
     ]
 
 
-def footer_frag(n):
+def footer_frag(n, when="recently"):
     return [
         '<footer class="hfoot">',
         '  <div class="hfoot__in">',
@@ -1758,7 +1776,7 @@ def footer_frag(n):
         '      <li><a href="privacy.html">Privacy &amp; legal</a></li>',
         '      <li><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@<wbr />gmail.com</a></li>',
         '    </ul>',
-        f'    <p class="hfoot__ver">{n} resources. Last checked June 2026. '
+        f'    <p class="hfoot__ver">{n} resources. Last checked {when}. '
         'Programs change &mdash; if something here is wrong, please tell us.</p>',
         '  </div>',
         '</footer>',
@@ -1942,6 +1960,15 @@ def render_overview(rows):
       'need to tell us anything. Pick what you need below, and call them yourself.</p>')
     A('</section>')
 
+    # Attribution, for paper only. A printed sheet with no source on it is a
+    # photocopy of nothing, and this one gets handed to people at a table.
+    A('<div class="printhead" aria-hidden="true">')
+    A('  <p class="printhead__s">Collected by Waypoint, a student volunteer '
+      'corps. We do not run any of these programs &mdash; we help people find '
+      f'them. Checked {checked(rows)}; programs change. Every one of these '
+      'headings has a page of its own with more places on it.</p>')
+    A('</div>')
+
     p += sos_frag(rows)
     A('<hr class="rule" />')
 
@@ -2006,7 +2033,7 @@ def render_overview(rows):
     p += vow_frag()
     A('</main>')
     A(f'<script type="application/json" id="ix">{index_json(rows)}</script>')
-    p += footer_frag(n)
+    p += footer_frag(n, checked(rows))
     return "\n".join(p) + "\n"
 
 
@@ -2113,7 +2140,7 @@ def render_category(need, rows):
     A(f'  <p class="printhead__t">{esc(need["label"])}</p>')
     A('  <p class="printhead__s">Collected by Waypoint, a student volunteer '
       'corps. We do not run any of these programs &mdash; we help people find '
-      'them. Checked June 2026; programs change.</p>')
+      f'them. Checked {checked(rows)}; programs change.</p>')
     A('</div>')
     A('<div class="dir" id="dir">')
     A('<p class="dir__none" hidden>Nothing here matched that. Try a different word, or '
@@ -2155,7 +2182,7 @@ def render_category(need, rows):
 
     p += vow_frag()
     A('</main>')
-    p += footer_frag(n_all)
+    p += footer_frag(n_all, checked(rows))
     return "\n".join(p) + "\n"
 
 

@@ -1785,6 +1785,31 @@ def _stem(w):
     return w
 
 
+def check_checked_date_is_derived():
+    """"Checked August 2026" must come from the data, not from a keystroke.
+
+    It was typed in three places, and by the time anybody looked two said June
+    and one said August — on the sheet a student hands somebody, as the answer
+    to "how do I know this is still right".
+    """
+    import build_help
+    rows = build_help.load()
+    want = build_help.checked(rows)
+    months = "|".join(build_help.MONTHS)
+    stale = []
+    for page in RESIDENT_PAGES:
+        for m in re.findall(rf"(?:Checked|Last checked) ({months}) (\d{{4}})", read(page)):
+            said = f"{m[0]} {m[1]}"
+            if said != want:
+                stale.append(f"{page} says {said!r}; the newest thing in the "
+                             f"directory was verified in {want}")
+    if stale:
+        for x in sorted(set(stale)):
+            bad(x)
+    else:
+        ok(f'every "checked" date on the resident pages is the generated one ({want})')
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -2485,6 +2510,7 @@ def main():
                check_directory_clusters, check_no_stale_counts,
                check_page_furniture, check_home_names_the_same_needs,
                check_critical_queries, check_no_sideways_scroll,
+               check_checked_date_is_derived,
                check_directory_a11y, check_directory_print,
                check_home_offers_help, check_doors_have_resources]:
         before = len(passes) + len(failures)
