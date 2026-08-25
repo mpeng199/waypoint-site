@@ -811,8 +811,9 @@ GROUPS = {
          ["job search", "training", "workforce", "career", "apprentice"]),
         ("young",     "Paid work for young people",
          ["youth paid", "youth job", "summer youth", "syep"]),
-        ("school",    "English classes and finishing school",
-         ["esol", "adult education", "ged", "hse", "literacy", "english"]),
+        ("school",    "English classes, school, and college",
+         ["esol", "adult education", "adult school", "ged", "hse", "literacy",
+          "english", "college", "degree"]),
         ("more",      "More work and class programs", []),
     ],
     "getting-there": [
