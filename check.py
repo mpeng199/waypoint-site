@@ -2790,6 +2790,49 @@ def check_script_typography():
     ok("the five scripts with no drawn italic carry the gold without one")
 
 
+def check_language_pages_need_no_script():
+    """A language page is the whole page with no JavaScript at all.
+
+    The English front page ships a search box, a filter panel and a print
+    button hidden, and reveals them from help.js — controls that genuinely
+    need script, with a <noscript> beside them saying where they went. A
+    language page has none of that: no script tag, nothing hidden, every count
+    correct in the markup.
+
+    That is not an accident of what got built. The reader these pages exist for
+    is disproportionately on an old phone on a bad connection, and the search
+    they would get is a box that returns English descriptions. Seventeen
+    labelled cards in their own language, with places named and dialable under
+    each, is both lighter and better — so the property is worth holding on to
+    rather than something to fill in later.
+    """
+    import build_help
+    rows = build_help.load()
+    by_need = {n["key"]: build_help.ordered(rows, n["key"]) for n in build_help.NEEDS}
+    for L in build_help.LANGUAGES:
+        page = build_help.lang_page(L["key"])
+        src = read(page)
+        if "<script" in src:
+            bad(f"{page} loads a script; this page works without one and the "
+                f"reader it is for is on the worst connection on the site")
+        hidden = re.findall(r"<(\w+)[^>]*\shidden[\s>]", src)
+        if hidden:
+            bad(f"{page} ships {len(hidden)} hidden element(s) ({hidden[0]}); "
+                f"with no script on the page nothing will ever reveal them")
+        # every count on a card is the number of resources on the page it opens
+        for key, group in by_need.items():
+            m = re.search(rf'id="n-{key}".*?class="cl__all"[^>]*>([^<]*)<', src, re.S)
+            if not m:
+                bad(f"{page} has no card for {key!r}")
+                continue
+            said = re.search(r"\d+", m.group(1))
+            if not said or int(said.group(0)) != len(group):
+                bad(f"{page}: the {key!r} card says {said.group(0) if said else 'nothing'} "
+                    f"and the page it opens has {len(group)}")
+    ok("all ten language pages are complete static HTML: no script, nothing "
+       "hidden, every count generated")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3535,7 +3578,7 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
