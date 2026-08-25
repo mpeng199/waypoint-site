@@ -713,6 +713,7 @@ def render(rows):
     A('<link rel="preconnect" href="https://fonts.googleapis.com" />')
     A('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />')
     A('<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />')
+    A('<link rel="stylesheet" href="tokens.css" />')
     A('<link rel="stylesheet" href="help.css" />')
     A('</head>')
     A('<body class="help" id="top">')
@@ -731,7 +732,7 @@ def render(rows):
     A('  <div class="hhead__in">')
     A('    <a class="brand" href="index.html" aria-label="Waypoint home">')
     A('      <svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>')
-    A('      <span class="brand__txt">Waypoint<small>Free help, New York City</small></span>')
+    A('      <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>')
     A('    </a>')
     A('    <nav class="hhead__links" aria-label="Primary">')
     A('      <a href="help.html" aria-current="page">Find help</a>')
@@ -773,15 +774,19 @@ def render(rows):
         A(f'  <a class="langnote__x" href="#top" lang="en" dir="ltr">Close</a></p>')
         A('</section>')
 
-    # ---- title
-    A('<div class="lede">')
-    A('  <h1>Find free help in New York City</h1>')
-    A(f'  <p class="lede__say">This is a list of <b>{n} places</b> that help New '
+    # ---- masthead
+    # The painted valley from index.html, in a frame. See help.css .mast for
+    # why this page goes dark exactly once and exactly here.
+    A('<section class="mast">')
+    A('  <div class="mast__bg" aria-hidden="true"></div>')
+    A('  <span class="eyebrow mast__eye">Waypoint &middot; New York City</span>')
+    A('  <h1>Find free help <em>in New York City.</em></h1>')
+    A(f'  <p class="mast__say">This is a list of <b>{n} places</b> that help New '
       'Yorkers with food, medical bills, housing, health care, legal problems and '
       'more. Nearly all of them are free. Most do not ask about immigration status.</p>')
-    A('  <p class="lede__say lede__say--2">You do not need an account. You do not '
+    A('  <p class="mast__say mast__say--2">You do not need an account. You do not '
       'need to tell us anything. Pick what you need below, and call them yourself.</p>')
-    A('</div>')
+    A('</section>')
 
     # ---- emergency
     A('<section class="sos" aria-labelledby="sos-h">')
@@ -920,6 +925,10 @@ def render(rows):
     # ---- footer
     A('<footer class="hfoot">')
     A('  <div class="hfoot__in">')
+    A('    <a class="brand" href="index.html">'
+      '<svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/>'
+      '<circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>'
+      '<span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>')
     A('    <p class="hfoot__say">Waypoint is a student volunteer corps in New York '
       'City. We do not run any of the programs on this page. We help people find '
       'them.</p>')

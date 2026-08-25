@@ -1,0 +1,88 @@
+/* ============================================================
+   tokens.css — the one place Waypoint is defined.
+
+   The site is two rooms. `index.html` is the dark one you walk
+   through: a painted valley, a lit door, gold on near-black green.
+   `help.html` and the category pages are what is on the other side
+   of that door: the same valley in daylight, read rather than
+   travelled.
+
+   They used to be two palettes that happened to agree. They now
+   share one, and each stylesheet only chooses which *key* of it to
+   play in. If a hue changes here, it changes on both sides, which
+   is the entire point — nothing below this line may redefine a
+   brand hue, only map it.
+   ============================================================ */
+
+:root{
+  /* ---- the greens: one ramp, dark to light ---------------- */
+  --green-deep:#13231A;   /* the room, and every dark ground   */
+  --green:#1E3528;        /* panels, solid buttons, the footer */
+  --green-2:#2C4A38;      /* hover, secondary strokes          */
+  --green-3:#3D5145;      /* secondary ink on light — 8.4:1    */
+  --green-4:#5A6E61;      /* tertiary ink on light — 5.3:1     */
+
+  /* ---- the lights ----------------------------------------- */
+  --cream:#FCFEF7;
+  --mint:#FBFFF4;
+  --mint-2:#E7EFE3;
+  --line:#DCE6D8;
+  --line-2:#EDF2EA;
+  --surface:#FFFFFF;
+
+  /* ---- the gold ------------------------------------------- */
+  /* --gold is the light through the door. It is a *light* on dark
+     ground and fails contrast as text on cream, so anything that
+     has to be read on a light ground uses --gold-deep (5.4:1). */
+  --gold:#E7C57E;
+  --gold-lit:#F0D69A;
+  --gold-deep:#8A6A22;
+  --sage:#A6C39A;
+
+  /* ---- the one warm alarm --------------------------------- */
+  /* A clay, never a fire engine: it has to read as "this one is for
+     right now" without making a frightened person more frightened. */
+  --clay:#8C3A2B;
+  --clay-bg:#FBF0EC;
+  --clay-ink:#FDF6F3;
+
+  /* ---- type ------------------------------------------------ */
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --sans:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --track-eyebrow:.22em;
+
+  /* ---- motion ---------------------------------------------- */
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+
+  /* ---- shape ----------------------------------------------- */
+  --r:16px;
+  --r-s:10px;
+  --r-pill:999px;
+}
+
+/* ============================================================
+   The three devices that must never drift apart, because they are
+   how somebody recognises the two halves as one organisation.
+   Each sets geometry only; colour belongs to the page's key.
+   ============================================================ */
+
+/* 1. The eyebrow — the small tracked line that opens a chapter. */
+.eyebrow,.ey,.phero__crumb{
+  font-family:var(--sans); font-weight:600;
+  letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+}
+
+/* 2. The two-tone display heading. Roman, then the same sentence
+      turning italic and gold. Used on the hero, every chapter
+      opener, and every resident page title. */
+:where(h1,h2,h3,.phrase,.phero__title) em{ font-style:italic; }
+
+/* 3. The arrow that leans forward on hover. */
+.arr{ display:inline-block; transition:transform .3s var(--ease); }
+:where(a,button):hover > .arr,
+:where(a,button):hover .arr{ transform:translateX(4px); }
+@media (prefers-reduced-motion:reduce){
+  .arr{ transition:none; }
+  :where(a,button):hover .arr{ transform:none; }
+}
