@@ -154,6 +154,39 @@ And two guards that were passing without checking anything: the date guard
 matched a wording that no longer existed, and derived its expectation from the
 function it was testing.
 
+## The language pages (25 August)
+
+Ten pages, one per Local Law 30 language, replacing the ten `:target` panels.
+Same components, same order, same spacing as the English front page.
+
+Six things the audits turned up while building them, each fixed at the cause:
+
+1. **Eighteen headings addressed only men.** "Nie jestem bezpieczny", "Я служил
+   в армии", "estoy solo", "خدمت في الجيش", "میں اکیلا نوجوان ہوں" — the
+   obvious first-person phrasing in Polish, Russian, Spanish, Arabic and Urdu
+   agrees with a gender the site cannot know. All eighteen now use a
+   construction that does not agree.
+2. **Ten thousand pixels of empty cream on Arabic and Urdu.** The skip link was
+   parked at `left:-9999px`, which on a right-to-left page is off the *end* —
+   the direction the page scrolls. The reflow check had been measuring
+   `body.scrollWidth` and the overflow was on the documentElement.
+3. **"Last checked June–August 2026"** in English on all ten, under a sentence
+   in Bengali. The date is the one thing on that line a reader checks.
+4. **Korean broke words in half**, four times on the first screen.
+5. **The names only a screen reader hears** — "Waypoint home", the primary nav —
+   were English on pages that were not.
+6. **The Chinese masthead had a space in the middle** of its title, because the
+   two halves were joined the way English joins them.
+
+And two guards that agreed with the code instead of checking it: the
+italic-script check asked `build_help.NO_ITALIC` which languages have an
+italic, and the `?lang=` check looked for one particular spelling of a guard
+clause.
+
+Still needs a human: **a native speaker of each language should read their own
+page end to end.** Nothing in `i18n.py` is machine output, and nothing in it
+has been read by somebody who speaks the language.
+
 ## Invariants that must not break
 
 - The honesty statement, verbatim, on every surface that offers help.

@@ -583,6 +583,51 @@ chosen for its size.
 - Body text: 17px with 1.6 line-height (ample breathing room)
 - Display headings: 2.6rem–6.4rem with tight leading (1.02) for visual hierarchy
 
+### The ten language pages
+
+Each of New York's ten Local Law 30 languages has **a page**, not a panel:
+`help-es.html`, `help-zh.html`, `help-ru.html`, `help-bn.html`, `help-ht.html`,
+`help-ko.html`, `help-ar.html`, `help-ur.html`, `help-fr.html`, `help-pl.html`.
+
+They were panels — a heading, three sentences and a Close link, revealed by
+`:target` under an otherwise English page. A blurb *about* the page rather
+than the page. Somebody who reads only Bengali got a paragraph in Bengali and
+then two hundred resources in English.
+
+Each page carries what the English front page carries, **in the same order and
+the same components**: masthead over the painted valley, four emergency
+numbers, seventeen kinds of help with places named and dialable under each,
+the promise, the footer. `i18n.py` holds every word — about 70 strings and 17
+blurbs per language — and is the file a translator gets handed.
+
+**What is not translated, and why.** The 340 resource descriptions are English
+and this site has no way to check 3,400 translations of them. So the cards name
+places and dial them — a proper noun and a number are the same in every
+language — and one quiet card near the top says the detail pages are in English
+and that 311 puts an interpreter on the line free, at any hour. Every link
+carries the language through (`help-food.html?lang=bengali`), so the filter is
+already applied when the reader lands, the chip is visibly pressed, and the
+English page shows the same sentence in their language so the words do not
+change mid-journey with nothing to say why.
+
+**Formatting adapted, not redesigned:**
+
+| script | what it needs | why |
+|---|---|---|
+| Korean | `word-break: keep-all` | breaks between eojeol; the default split 묻지 않/습니다 |
+| Bengali | leading 1.85 | a headline (matra) and ascenders English does not have |
+| Arabic, Urdu | leading 1.9, `dir="rtl"` | glyphs hang well below the baseline |
+| Chinese, Korean | measure 44ch, not 68 | no word spaces for the eye to rest on |
+| CJK, Bengali, Arabic, Urdu | `<b>` not `<em>` | Fraunces has a drawn italic; these have none, and a browser asked for one slants by matrix |
+
+Right-to-left is nearly free because the whole stylesheet is written in logical
+properties. The four things that must **not** mirror — a phone number, an
+organisation's name, the wordmark, an email — carry `dir="ltr"` in the markup.
+
+Guarded by `check_directory_languages`, `check_language_header`,
+`check_language_round_trip`, `check_language_print`, `check_language_voice`
+and `check_script_typography`.
+
 ### Multilingual & Plain Language
 
 - Vocabulary kept simple; no jargon
