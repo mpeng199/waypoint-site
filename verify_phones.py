@@ -47,6 +47,40 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
 PHONE = re.compile(r"(?:1[-. ]?)?\(?\b[2-9]\d{2}\)?[-. ]?\d{3}[-. ]\d{4}\b")
 
 
+# Disagreements that a person has already looked at and settled. Each entry
+# is a reason, not a mute: an organisation legitimately publishes a
+# switchboard on the page a link check lands on and the number somebody
+# actually needs somewhere else. Keeping them out of the report is what keeps
+# the report worth reading — but a NEW disagreement always shows up.
+SETTLED = {
+    "211 New York":
+        "we print the 211 short code and the statewide line; the site's footer "
+        "shows the Capital Region office",
+    "Adult Protective Services (APS)":
+        "we print the central APS line; the page lists the five borough offices",
+    "CIDNY (Center for Independence of the Disabled, NY)":
+        "we print the intake line from cidny.org/services; the homepage footer "
+        "shows the state independent-living council",
+    "Institute for Family Health":
+        "844-434-2778 is the appointment line the Institute publishes for new "
+        "patients; the contact page lists health centres one by one",
+    "National Domestic Violence Hotline":
+        "we print the hotline; the site shows press and administrative lines",
+    "National Runaway Safeline":
+        "we print 1-800-RUNAWAY; the site shows its Chicago office",
+    "New York Cares Winter Wishes / Coat Drive":
+        "we print the main office line; the coat-drive page shows a programme line",
+    "RiseBoro Community Partnership":
+        "we print the main number from its contact page; the crawler picks up a "
+        "state health line printed alongside",
+    "SAMHSA National Helpline":
+        "we print 1-800-662-HELP; the site shows the disaster and TTY lines",
+    "WIC (Women, Infants & Children)":
+        "we print the Growing Up Healthy hotline; the state page shows its "
+        "Albany office",
+}
+
+
 def digits(s):
     d = re.sub(r"\D", "", s or "")
     return d[1:] if len(d) == 11 and d.startswith("1") else d
@@ -93,6 +127,8 @@ def one(row):
         return name, "CONFIRMED", ""
     if not found:
         return name, "UNSEEN", "no phone number in the page's text"
+    if name in SETTLED:
+        return name, "SETTLED", SETTLED[name]
     show = ", ".join(sorted(found)[:6])
     return name, "OTHER", f"we print {cell[:28]!r}; the page shows {show}"
 
@@ -117,6 +153,12 @@ def main(argv):
             print(".", end="", flush=True)
     print("\n")
 
+    stale = sorted(set(SETTLED) - {r["Resource Name"] for r in rows})
+    if stale and "--stale" not in argv:
+        print("\n-- settled entries for resources that are gone --")
+        for name in stale:
+            print(f"  {name}")
+
     if "--stamp" in argv and confirmed:
         today = datetime.date.today().isoformat()
         with open(CSV, encoding="utf-8-sig", newline="") as f:
@@ -132,7 +174,7 @@ def main(argv):
             w.writeheader()
             w.writerows(allrows)
         print(f"dated {n} confirmed row(s) {today}\n")
-    for k in ("CONFIRMED", "OTHER", "UNSEEN", "SKIP"):
+    for k in ("CONFIRMED", "SETTLED", "OTHER", "UNSEEN", "SKIP"):
         if k in tally:
             print(f"{k:10} {tally[k]}")
     for verdict in ("OTHER", "UNSEEN"):
