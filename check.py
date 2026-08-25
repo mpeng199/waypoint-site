@@ -97,6 +97,10 @@ FORBIDDEN = [
     (r"\bsecond track\b", "roadmap vocabulary; name the work, not its position in a plan"),
     (r"\bsequenced behind\b", "roadmap vocabulary; the reader is not managing our backlog"),
     (r"\bhalf-built\b", "roadmap vocabulary; an internal justification, not visitor copy"),
+    # Hedging the one promise that costs a reader nothing to believe. "We never
+    # charge" is either true everywhere or it is not a promise.
+    (r"charge for most|we (?:may|sometimes|usually) charge|usually free",
+     "a hedged version of \"we never charge for anything\""),
 ]
 
 failures, passes = [], []
@@ -3339,6 +3343,91 @@ def check_also_tags_are_real_needs():
     ok(f"{n} cross-filings across {len(used)} kinds of help, all naming a real one")
 
 
+def check_the_data_itself():
+    """Four things about the CSV that nothing else was looking at.
+
+    Found by mutation testing: twelve plausible regressions were introduced one
+    at a time and the suite caught five. These are three of the seven it missed
+    — a phone number with nine digits, a category nobody recognises, and a
+    language whose short label is still the English one.
+    """
+    import csv as _csv
+    import build_help
+    import i18n
+    with open(ROOT / "data" / "resources.csv", encoding="utf-8-sig", newline="") as f:
+        rows = list(_csv.DictReader(f))
+
+    # 1. a printed number has to be dialable. "800-621-467" is nine digits and
+    #    every guard in this suite was happy with it.
+    # Split on the punctuation that separates two numbers before measuring
+    # one: "646-692-2273 (646-NYC-CARE)" is one number written twice, and a
+    # greedy pattern reads it as a thirteen-digit one.
+    # A short code counts only when it is the WHOLE part. "\b\d{3}\b" matched
+    # the "800" inside "800-621-467" and pronounced a nine-digit number fine.
+    PHONE = re.compile(r"\d{3}[\-\. ]\d{3}[\-\. ]\d{4}")
+    SHORT = re.compile(r"^\s*(\d{3}|\d{6})\s*$")
+    broken = []
+    for r in rows:
+        for part in re.split(r"[(/,;]|\bor\b|\bthen\b", r["Phone"] or ""):
+            # Per part, not per cell: "800-621-467 (800-621-HOPE); TTY
+            # 866-604-5350" has a broken number in it and a good one after,
+            # and testing the cell as a whole finds the good one and stops.
+            n = len(re.sub(r"\D", "", part))
+            # Letters mean a vanity number or a texting instruction
+            # ("646-NYC-CARE", "Text HOME to 741741") and are counted by hand
+            # in check_phone_numbers_are_reachable. Everything else is digits,
+            # and digits only come in four lengths anybody can dial.
+            if n and not re.search(r"[A-Za-z]", part) and n not in (3, 6, 10, 11):
+                broken.append(f"{r['Resource Name']!r} has {part.strip()!r} in "
+                              f"its phone column: {n} digits is not a number "
+                              f"anybody can dial")
+            for m in PHONE.findall(part):
+                d = re.sub(r"\D", "", m)
+                if d.startswith("1") and len(d) == 11:
+                    d = d[1:]
+                if len(d) not in (3, 6, 10):    # 311, a text shortcode, a number
+                    broken.append(f"{r['Resource Name']!r} prints {m.strip()!r}, "
+                                  f"which is {len(d)} digits and cannot be dialled")
+    for b in broken[:5]:
+        bad(b)
+    if not broken:
+        ok(f"every phone number in the directory is a dialable shape")
+
+    # 2. a category nobody recognises files the row under "not sure where to
+    #    start" and nothing says so
+    known = set()
+    for need in build_help.NEEDS:
+        known.update(need.get("cats", []))
+    strays = sorted({r["Category"] for r in rows if r["Category"] not in known})
+    for c in strays[:4]:
+        bad(f"category {c!r} belongs to no kind of help, so its rows land in "
+            f"'I am not sure where to start' with nothing to say why")
+    if not strays:
+        ok(f"all {len(known)} categories in the CSV map to a kind of help")
+
+    # 3. a short label left in English is invisible to every other check,
+    #    because for a Latin-script language English looks like the language
+    for lang, short in i18n.SHORT.items():
+        if lang in ("english",):
+            continue
+        same = [k for k, v in short.items()
+                if v == next(n["short"] for n in build_help.NEEDS if n["key"] == k)]
+        if same:
+            bad(f"{lang}: the short label for {same[0]!r} is still the English "
+                f"one ({short[same[0]]!r})")
+    ok("no language's jump row is still showing an English label")
+
+    # 4. every row can be dialled or opened. merge_rows refuses one with
+    #    neither; this is the check that it stayed true.
+    orphan = [r["Resource Name"] for r in rows
+              if not (r["Phone"] or "").strip() and not (r["Website"] or "").strip()]
+    for o in orphan[:3]:
+        bad(f"{o!r} has neither a phone number nor a website: there is no way "
+            f"to act on it")
+    if not orphan:
+        ok(f"all {len(rows)} resources can be reached, by phone or by link")
+
+
 def check_no_sideways_scroll():
     """The two CSS mistakes that make this page scroll sideways.
 
@@ -3406,7 +3495,22 @@ def _js_constants():
             return None
         got[name] = float(m.group(1))
     m = re.search(r"if \(v < ([\d.]+)\) v = [\d.]+;", js)
-    got["IDF_FLOOR"] = float(m.group(1)) if m else 0.15
+    if not m:
+        bad("help.js no longer floors the inverse document frequency; either "
+            "the weighting is gone or its shape changed, and the model in "
+            "check.py is now modelling something else")
+        return None
+    got["IDF_FLOOR"] = float(m.group(1))
+    # And the weighting itself, not just its floor. Replacing the body of idf()
+    # with `return 1` left the floor line readable and the model still applying
+    # a weighting the page had stopped applying.
+    if not re.search(r"function idf\(w\)[\s\S]{0,700}?Math\.log\(n / df\)", js):
+        bad("help.js computes no inverse document frequency any more, so a "
+            "word in half the rows scores the same as a word in one")
+        return None
+    if not re.search(r"points \+= p \* idf\(w\)", js):
+        bad("help.js no longer multiplies a field score by the word's rarity")
+        return None
     return got
 
 
@@ -4218,6 +4322,73 @@ def check_doors_have_resources():
 
 
 
+def check_the_promises_are_still_there():
+    """The honesty paragraph is the site's boundary, so it is checked as text.
+
+    Every clause in it is a promise somebody could quietly soften later — the
+    difference between "we never charge for anything" and "we do not charge for
+    most things" is invisible in a diff review and enormous to a reader
+    deciding whether to call. Each clause is required verbatim on every page
+    that carries the paragraph.
+    """
+    clauses = [
+        "trained student volunteers",
+        "not doctors, lawyers, benefits counselors, or insurance experts",
+        "do not read your bills, fill out your forms, or tell you what you "
+        "qualify for",
+        "they do it for free",
+        "never charge for anything",
+    ]
+    # The anchor is a sentence that appears nowhere else. privacy.html and
+    # terms.html make the same promises in their own legal wording, and this
+    # guard is about the resident-facing paragraph, not about those.
+    anchor = "We connect you to people who do that"
+    carriers = [f for f in sorted(str(q) for q in Path(".").glob("*.html"))
+                if anchor in read(f)]
+    if not carriers:
+        bad("no page carries the honesty paragraph any more")
+        return
+    for f in carriers:
+        html = re.sub(r"<[^>]+>", "", read(f))
+        html = html.replace("&nbsp;", " ")
+        for c in clauses:
+            if c in html:
+                ok(f"{f} still promises: {c[:40]}")
+            else:
+                bad(f"{f} carries the honesty paragraph but no longer says "
+                    f"{c!r}. That sentence is a promise to a reader deciding "
+                    f"whether it is safe to call. Restore it or take the whole "
+                    f"paragraph down deliberately.")
+
+
+def check_no_english_month_on_a_language_page():
+    """A date is the one English word that sneaks onto a translated page.
+
+    Every other string on the ten language pages comes out of i18n.py, but the
+    "checked" date is assembled from a month name, and reaching for the English
+    formatter instead of the translated one produces a page that reads
+    perfectly until the last line, where it says August.
+    """
+    months = re.compile(
+        r"\b(January|February|March|April|May|June|July|August|September|"
+        r"October|November|December)\b")
+    import build_help
+
+    for key in build_help.LANG_SLUG:
+        f = build_help.lang_page(key)
+        if not os.path.exists(f):
+            bad(f"{f} is missing")
+            continue
+        text = re.sub(r"<[^>]+>", " ", read(f))
+        found = sorted(set(months.findall(text)))
+        if found:
+            bad(f"{f} prints the English month {', '.join(found)}. The date "
+                f"comes from checked_in(rows, key), which translates it; "
+                f"checked(rows) does not.")
+        else:
+            ok(f"{f} dates itself in its own language")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -4225,7 +4396,9 @@ def main():
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
                check_one_block_at_a_time, check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
-               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_one_typo_does_not_empty_the_page, check_every_category_page_answers_its_own_questions, check_also_tags_are_real_needs, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_one_typo_does_not_empty_the_page, check_every_category_page_answers_its_own_questions, check_also_tags_are_real_needs, check_the_data_itself, check_focus_ring, check_heading_order, check_language_numbers_dial,
+               check_the_promises_are_still_there,
+               check_no_english_month_on_a_language_page,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
