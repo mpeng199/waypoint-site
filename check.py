@@ -1766,6 +1766,24 @@ CRITICAL_QUERIES = [
     ("free wifi",                   "New York Public Library — help at the branch"),
     ("interpreter",                 "NYC 311"),
     ("who do i call",               "NYC 311"),
+
+    # The ten languages, searched rather than only read. Each of these
+    # returned nothing at all until the tokenizer stopped deleting every
+    # character outside ASCII and the vocabulary existed to match.
+    ("comida",                      "Food Help NYC (official finder)"),
+    ("abogado",                     "ActionNYC Immigration Legal Hotline"),
+    ("violencia doméstica",         "NYC HOPE — 24-Hour DV Hotline (Safe Horizon)"),
+    ("\u98df\u7269",                        "Food Help NYC (official finder)"),
+    ("\u533b\u751f",                        "NYC Care"),
+    ("\u0435\u0434\u0430",                       "Food Help NYC (official finder)"),
+    ("\u0432\u0440\u0430\u0447",                     "NYC Care"),
+    ("manje",                       "Food Help NYC (official finder)"),
+    ("\uc74c\uc2dd",                        "Food Help NYC (official finder)"),
+    ("\u0637\u0639\u0627\u0645",                     "Food Help NYC (official finder)"),
+    ("\u06a9\u06be\u0627\u0646\u0627",                    "Food Help NYC (official finder)"),
+    ("nourriture",                  "Food Help NYC (official finder)"),
+    ("jedzenie",                    "Food Help NYC (official finder)"),
+    ("\u0996\u09be\u09ac\u09be\u09b0",                   "Food Help NYC (official finder)"),
 ]
 
 # The stop list and the stemmer, kept in step with help.js by hand. Both are
@@ -1779,6 +1797,8 @@ _STOP = set((" i me my mine we our you your a an the is am are be been it its th
 
 
 def _stem(w):
+    if not w.isascii():
+        return w
     for suf, keep in (("ing", 3), ("ies", 3), ("ed", 2), ("es", 2), ("s", 1), ("ly", 2)):
         if len(w) - keep >= 4 and w.endswith(suf):
             return w[: -len(suf)]
@@ -1895,6 +1915,7 @@ def check_critical_queries():
     def searchable(r):
         return " ".join([r["Resource Name"], r["Subcategory"],
                          build_help.tagtext(r), build_help.haystack(r),
+                         build_help.needwords(r["_needs"]),
                          r["Description"]]).lower()
 
     hays = {r["Resource Name"]: searchable(r) for r in rows}
@@ -1902,6 +1923,14 @@ def check_critical_queries():
     def hits(hay, words):
         n = 0
         for w in words:
+            # Outside ASCII a word boundary is meaningless: \b is defined by
+            # ASCII word characters, so "\bкризис" can never match and
+            # "\b食物" asks a question about nothing. help.js matches those
+            # plainly, and so does this.
+            if not w.isascii():
+                if w in hay:
+                    n += 1
+                continue
             if (re.search(r"\b" + re.escape(w), hay)
                     or re.search(r"\b" + re.escape(_stem(w)), hay)):
                 n += 1
@@ -1914,8 +1943,10 @@ def check_critical_queries():
             broken.append(f"{query!r} should reach {target!r}, which is not in "
                           "the directory any more")
             continue
-        words = [w for w in re.split(r"[^a-z0-9\-]+", query.lower().replace("’", ""))
-                 if w and w not in _STOP and len(w) >= 2
+        words = [w for w in re.split(r"[^\w\-]+", query.lower().replace("’", ""),
+                                     flags=re.UNICODE)
+                 if w and w not in _STOP
+                 and (len(w) >= 2 or not w.isascii())
                  and not (w.isdigit() and len(w) < 3)]
         # help.js keeps the rows that matched the most words, so the promise
         # this makes is the same one: the target has to be in that top tier.

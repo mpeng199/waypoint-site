@@ -371,7 +371,237 @@ def prose(s):
     return (s or "").translate(CURLY)
 
 
+# ------------------------------------------------- the words in ten languages
+# The page offers ten languages and, until this table existed, could be read in
+# ten and searched in one. Somebody who opened the Spanish panel, understood
+# it, and then typed "comida" into the box got nothing.
+#
+# So every resource under a need also matches the words somebody would type for
+# that need in each of the ten. These are queries, not translations: short,
+# concrete, the noun a person reaches for. They are attached to rows rather
+# than translated into the interface, which means no page has to be duplicated
+# and a search in Bengali lands on exactly the same resource an English search
+# would.
+#
+# help.js matches a non-ASCII term as a plain substring, because \b is defined
+# by ASCII word characters and means nothing in Chinese or Arabic.
+NEED_WORDS = {
+    "food": [
+        "comida alimentos despensa hambre comer cupones de alimentos",
+        "食物 食品 免费食物 食物救济 粮食券 吃饭",
+        "еда продукты питание талоны на еду голод",
+        "খাবার খাদ্য বিনামূল্যে খাবার",
+        "manje manje gratis grangou",
+        "음식 식품 무료급식 푸드뱅크",
+        "طعام غذاء بنك الطعام مساعدة غذائية",
+        "کھانا خوراک مفت کھانا",
+        "nourriture alimentation banque alimentaire manger",
+        "jedzenie żywność bank żywności",
+    ],
+    "doctor": [
+        "médico doctor clínica dentista salud sin seguro",
+        "医生 看病 诊所 牙医 医疗 免费诊所",
+        "врач доктор клиника стоматолог здоровье",
+        "ডাক্তার চিকিৎসা ক্লিনিক দাঁতের ডাক্তার",
+        "doktè dantis klinik sante",
+        "의사 병원 치과 진료 무료진료",
+        "طبيب عيادة أسنان رعاية صحية",
+        "ڈاکٹر علاج کلینک دانتوں کا ڈاکٹر",
+        "médecin clinique dentiste santé",
+        "lekarz przychodnia dentysta zdrowie",
+    ],
+    "bills": [
+        "factura médica cuenta del hospital seguro deuda médica negaron",
+        "医疗账单 医院账单 保险 拒赔 医疗债务",
+        "счёт за лечение медицинский счёт страховка отказ",
+        "চিকিৎসার বিল হাসপাতালের বিল বীমা",
+        "bòdwo medikal bòdwo lopital asirans",
+        "의료비 병원비 보험 거절 의료비청구서",
+        "فاتورة طبية فاتورة المستشفى تأمين رفض",
+        "طبی بل ہسپتال کا بل انشورنس",
+        "facture médicale hôpital assurance refus",
+        "rachunek za leczenie szpital ubezpieczenie",
+    ],
+    "housing": [
+        "vivienda renta alquiler desalojo refugio albergue sin hogar",
+        "住房 房租 驱逐 庇护所 收容所 无家可归",
+        "жильё аренда выселение приют бездомный",
+        "বাসস্থান বাড়ি ভাড়া উচ্ছেদ আশ্রয়",
+        "lojman kay lwaye degèpi abri",
+        "주거 집세 퇴거 쉼터 노숙",
+        "سكن إيجار إخلاء مأوى تشرد",
+        "رہائش کرایہ بے دخلی پناہ",
+        "logement loyer expulsion hébergement sans-abri",
+        "mieszkanie czynsz eksmisja schronisko bezdomny",
+    ],
+    "legal": [
+        "abogado ayuda legal inmigración deportación derechos",
+        "律师 法律援助 移民 遣返 权利",
+        "адвокат юрист иммиграция депортация права",
+        "আইনজীবী আইনি সাহায্য অভিবাসন",
+        "avoka èd legal imigrasyon depòtasyon",
+        "변호사 법률지원 이민 추방",
+        "محامي مساعدة قانونية هجرة ترحيل",
+        "وکیل قانونی مدد امیگریشن",
+        "avocat aide juridique immigration expulsion",
+        "prawnik pomoc prawna imigracja deportacja",
+    ],
+    "safety": [
+        "violencia doméstica maltrato abuso orden de protección golpea",
+        "家庭暴力 虐待 保护令 打我",
+        "домашнее насилие побои жестокое обращение",
+        "পারিবারিক সহিংসতা নির্যাতন",
+        "vyolans lakay abi bat mwen",
+        "가정폭력 학대 접근금지",
+        "عنف أسري إساءة أمر حماية يضربني",
+        "گھریلو تشدد زیادتی مارتا ہے",
+        "violence conjugale maltraitance ordonnance de protection",
+        "przemoc domowa znęcanie",
+    ],
+    "crisis": [
+        "crisis suicidio ayuda emocional drogas alcohol adicción",
+        "危机 自杀 心理健康 毒品 酗酒 成瘾",
+        "кризис суицид психическое здоровье наркотики алкоголь",
+        "আত্মহত্যা মানসিক স্বাস্থ্য মাদক",
+        "kriz swisid sante mantal dwòg",
+        "자살 정신건강 위기 중독 마약",
+        "أزمة انتحار صحة نفسية إدمان مخدرات",
+        "خودکشی ذہنی صحت نشہ",
+        "crise suicide santé mentale drogue alcool",
+        "kryzys samobójstwo zdrowie psychiczne uzależnienie",
+    ],
+    "money": [
+        "dinero ayuda económica efectivo luz gas impuestos beneficios",
+        "现金补助 经济援助 电费 报税 福利",
+        "деньги пособие счета налоги льготы",
+        "আর্থিক সাহায্য নগদ কর",
+        "lajan èd ekonomik kouran taks",
+        "현금지원 공과금 세금 복지",
+        "مساعدة مالية فواتير ضرائب إعانة",
+        "مالی مدد بل ٹیکس",
+        "aide financière factures impôts allocations",
+        "pomoc finansowa rachunki podatki zasiłek",
+    ],
+    "family": [
+        "niños guardería cuidado infantil hijos escuela",
+        "儿童 托儿 幼儿园 孩子 课后",
+        "дети детский сад ребёнок",
+        "শিশু ডে কেয়ার সন্তান",
+        "timoun gadri pitit",
+        "아이 어린이집 보육 방과후",
+        "أطفال حضانة رعاية الطفل",
+        "بچے ڈے کیئر بچوں کی دیکھ بھال",
+        "enfants garderie crèche",
+        "dzieci żłobek przedszkole opieka",
+    ],
+    "senior": [
+        "personas mayores ancianos tercera edad jubilados",
+        "长者 老人 老年人 安老",
+        "пожилые пенсионеры престарелые",
+        "প্রবীণ বয়স্ক",
+        "granmoun aje",
+        "어르신 노인 경로",
+        "كبار السن مسنين رعاية المسنين",
+        "بزرگ عمر رسیدہ",
+        "personnes âgées aînés retraités",
+        "seniorzy osoby starsze emeryci",
+    ],
+    "clothes": [
+        "ropa abrigo pañales cosas de bebé",
+        "衣服 外套 尿布 婴儿用品",
+        "одежда куртка подгузники",
+        "জামাকাপড় কোট ডায়াপার",
+        "rad manto kouchèt",
+        "옷 외투 기저귀",
+        "ملابس معطف حفاضات",
+        "کپڑے کوٹ ڈائپر",
+        "vêtements manteau couches",
+        "ubrania kurtka pieluchy",
+    ],
+    "work": [
+        "trabajo empleo clases de inglés capacitación",
+        "工作 就业 英语课 职业培训",
+        "работа трудоустройство курсы английского",
+        "কাজ চাকরি ইংরেজি ক্লাস",
+        "travay djòb kou anglè",
+        "일자리 취업 영어수업 직업훈련",
+        "عمل وظيفة دروس إنجليزية تدريب",
+        "نوکری کام انگریزی کلاس",
+        "emploi travail cours d'anglais formation",
+        "praca zatrudnienie kursy angielskiego",
+    ],
+    "getting-there": [
+        "transporte metrocard pasaje viaje al médico",
+        "交通 地铁卡 车费 就医交通",
+        "транспорт проезд метрокарта",
+        "যাতায়াত পরিবহন",
+        "transpò kat metro",
+        "교통 지하철 교통비",
+        "مواصلات نقل بطاقة المترو",
+        "سفر ٹرانسپورٹ",
+        "transport métro déplacement",
+        "transport przejazd metro",
+    ],
+    "veterans": [
+        "veterano militar ejército",
+        "退伍军人 军人",
+        "ветеран военнослужащий",
+        "প্রাক্তন সৈনিক",
+        "veteran lame",
+        "재향군인 참전용사",
+        "محارب قديم جندي",
+        "سابق فوجی",
+        "ancien combattant vétéran armée",
+        "weteran wojsko",
+    ],
+    "disability": [
+        "discapacidad silla de ruedas ciego sordo incapacidad",
+        "残疾 轮椅 失明 聋 残障",
+        "инвалидность коляска слепой глухой",
+        "প্রতিবন্ধী অক্ষমতা",
+        "andikap chèz woulant avèg soud",
+        "장애 휠체어 시각장애 청각장애",
+        "إعاقة كرسي متحرك أعمى أصم",
+        "معذوری وہیل چیئر نابینا بہرا",
+        "handicap fauteuil roulant aveugle sourd",
+        "niepełnosprawność wózek niewidomy głuchy",
+    ],
+    "record": [
+        "antecedentes penales salir de prisión cárcel condena",
+        "犯罪记录 出狱 监狱 前科",
+        "судимость тюрьма освобождение",
+        "জেল অপরাধের রেকর্ড",
+        "prizon kazye jidisyè",
+        "전과 출소 교도소",
+        "سجل جنائي سجن الإفراج",
+        "جیل مجرمانہ ریکارڈ",
+        "casier judiciaire prison sortie de prison",
+        "wyrok więzienie karalność",
+    ],
+    "start": [
+        "no sé por dónde empezar ayuda información recursos",
+        "不知道从哪开始 帮助 资源 咨询",
+        "не знаю с чего начать помощь информация",
+        "সাহায্য তথ্য",
+        "èd enfòmasyon ki kote pou kòmanse",
+        "도움 정보 어디서 시작",
+        "مساعدة معلومات من أين أبدأ",
+        "مدد معلومات",
+        "aide information par où commencer",
+        "pomoc informacja od czego zacząć",
+    ],
+}
+
+for _k, _v in NEED_WORDS.items():
+    if len(_v) != 10:
+        raise SystemExit(f"NEED_WORDS[{_k!r}] has {len(_v)} language(s), expected 10")
+
+
+
 for _need in NEEDS:
+    if _need["key"] not in NEED_WORDS:
+        raise SystemExit(f'{_need["key"]}: no NEED_WORDS, so this kind of help '
+                         'cannot be searched for in any language but English')
     _need.update(COPY[_need["key"]])
     for _f in ("label", "blurb", "short", "h1a", "h1b", "intro", "ph", "seo"):
         _need[_f] = prose(_need[_f])
@@ -729,6 +959,7 @@ LANGUAGES = [
                "cualquier hora, llame al 988. Los dos son gratis.",
         "interp": "La lista está escrita en inglés. Llame al 311 y pida un "
                   "intérprete de español. Es gratis, a cualquier hora.",
+        "search": "También puede escribir en español en el buscador. Por ejemplo: comida, abogado, vivienda.",
         "browse": "¿Qué necesita?",
         "cta": "Ver los lugares que atienden en español",
         "needs": {
@@ -760,6 +991,7 @@ LANGUAGES = [
         "sos": "如果有危险，请拨打 911。任何时间想找人倾诉，请拨打 988。两者都免费。",
         "interp": "下面的列表是英文的。请拨打 311 并要求中文口译员，"
                   "可以说明您需要普通话还是广东话。这项服务免费，任何时间都可以使用。",
+        "search": "您也可以在搜索框中用中文输入。例如：食物、医生、住房。",
         "browse": "您需要什么帮助？",
         "cta": "查看提供中文服务的机构",
         "needs": {
@@ -795,6 +1027,7 @@ LANGUAGES = [
         "interp": "Список ниже составлен на английском языке. Позвоните по "
                   "номеру 311 и попросите переводчика на русский язык. Это "
                   "бесплатно и круглосуточно.",
+        "search": "В строке поиска можно писать по-русски. Например: еда, врач, жильё.",
         "browse": "Что вам нужно?",
         "cta": "Показать места, где помогают на русском языке",
         "needs": {
@@ -829,6 +1062,7 @@ LANGUAGES = [
                "988 নম্বরে ফোন করুন। দুটোই বিনামূল্যে।",
         "interp": "নিচের তালিকাটি ইংরেজিতে লেখা। 311 নম্বরে ফোন করুন এবং বাংলা "
                   "দোভাষী চান। এটি বিনামূল্যে, যেকোনো সময়।",
+        "search": "আপনি সার্চ বক্সে বাংলায়ও লিখতে পারেন। যেমন: খাবার, ডাক্তার, বাসস্থান।",
         "browse": "আপনার কী দরকার?",
         "cta": "বাংলায় সেবা দেয় এমন জায়গা দেখুন",
         "needs": {
@@ -862,6 +1096,7 @@ LANGUAGES = [
                "988. Toude gratis.",
         "interp": "Lis ki anba a ekri an anglè. Rele 311 epi mande yon "
                   "entèprèt kreyòl ayisyen. Li gratis, nenpòt lè.",
+        "search": "Ou ka ekri an kreyòl nan bwat rechèch la tou. Pa egzanp: manje, doktè, lojman.",
         "browse": "Ki sa ou bezwen?",
         "cta": "Gade kote ki sèvi moun ki pale kreyòl",
         "needs": {
@@ -895,6 +1130,7 @@ LANGUAGES = [
                "988로 전화하세요. 둘 다 무료입니다.",
         "interp": "아래 목록은 영어로 되어 있습니다. 311로 전화해서 한국어 "
                   "통역사를 요청하세요. 무료이며 언제든지 이용할 수 있습니다.",
+        "search": "검색창에 한국어로 입력해도 됩니다. 예: 음식, 의사, 주거.",
         "browse": "무엇이 필요하신가요?",
         "cta": "한국어로 도와주는 기관 보기",
         "needs": {
@@ -928,6 +1164,7 @@ LANGUAGES = [
                "اتصل بالرقم 988. كلاهما مجاني.",
         "interp": "القائمة أدناه مكتوبة بالإنجليزية. اتصل بالرقم 311 واطلب "
                   "مترجمًا للغة العربية. هذه الخدمة مجانية ومتاحة في أي وقت.",
+        "search": "يمكنك أيضًا الكتابة بالعربية في مربع البحث. مثلاً: طعام، طبيب، سكن.",
         "browse": "ما الذي تحتاج إليه؟",
         "cta": "عرض الأماكن التي تقدم خدمات بالعربية",
         "needs": {
@@ -961,6 +1198,7 @@ LANGUAGES = [
                "وقت 988 پر فون کریں۔ دونوں مفت ہیں۔",
         "interp": "نیچے دی گئی فہرست انگریزی میں ہے۔ 311 پر فون کریں اور اردو "
                   "مترجم مانگیں۔ یہ مفت ہے اور ہر وقت دستیاب ہے۔",
+        "search": "آپ سرچ باکس میں اردو میں بھی لکھ سکتے ہیں۔ مثلاً: کھانا، ڈاکٹر، رہائش۔",
         "browse": "آپ کو کس چیز کی ضرورت ہے؟",
         "cta": "وہ جگہیں دیکھیں جو اردو میں مدد کرتی ہیں",
         "needs": {
@@ -995,6 +1233,7 @@ LANGUAGES = [
                "toute heure, appelez le 988. Les deux sont gratuits.",
         "interp": "La liste ci-dessous est en anglais. Appelez le 311 et "
                   "demandez un interprète en français. C'est gratuit, à toute heure.",
+        "search": "Vous pouvez aussi écrire en français dans la barre de recherche. Par exemple : nourriture, avocat, logement.",
         "browse": "De quoi avez-vous besoin ?",
         "cta": "Voir les lieux qui aident en français",
         "needs": {
@@ -1029,6 +1268,7 @@ LANGUAGES = [
                "porozmawiać o każdej porze, zadzwoń pod numer 988. Oba są bezpłatne.",
         "interp": "Lista poniżej jest po angielsku. Zadzwoń pod numer 311 i "
                   "poproś o tłumacza języka polskiego. To bezpłatne, o każdej porze.",
+        "search": "W wyszukiwarce możesz pisać po polsku. Na przykład: jedzenie, prawnik, mieszkanie.",
         "browse": "Czego potrzebujesz?",
         "cta": "Zobacz miejsca, które pomagają po polsku",
         "needs": {
@@ -1056,6 +1296,9 @@ LANGUAGES = [
 # Every language must name every need, or somebody who cannot read English
 # reaches a heading that is not there. Checked at build time, not by eye.
 for _L in LANGUAGES:
+    for _f in ("title", "body", "sos", "interp", "browse", "cta", "search"):
+        if not _L.get(_f):
+            raise SystemExit(f'{_L["name_en"]} panel has no {_f!r}')
     _missing = [n["key"] for n in NEEDS if n["key"] not in _L["needs"]]
     if _missing:
         raise SystemExit(f'{_L["name_en"]} has no label for: {_missing}')
@@ -1463,6 +1706,20 @@ def haystack(r):
     return " ".join(extra).lower()
 
 
+def needwords(keys):
+    """The ten-language query vocabulary for a set of needs, as one string.
+
+    Shipped once per page and once in the search index, never once per row.
+    Attached to every row it applies to, it added 160 KB to the front page —
+    the same eighteen words repeated three hundred times — for something that
+    is identical across every row sharing a need.
+    """
+    out = []
+    for key in keys:
+        out.extend(NEED_WORDS.get(key, []))
+    return " ".join(out).lower()
+
+
 # --------------------------------------------------------------- rendering
 # Every icon is one path on a 24-box, drawn in currentColor. Inline because a
 # sprite sheet is one more request on the page most likely to be opened on a
@@ -1739,6 +1996,7 @@ def langbar_frag():
         # reader who cannot read English is told in their language that the
         # list below is in English, and then left with it.
         out += [
+            f'  <p class="langnote__search">{esc(L["search"])}</p>',
             f'  <h3 class="langnote__h3">{esc(L["browse"])}</h3>',
             '  <ul class="langneeds">',
         ]
@@ -1947,6 +2205,7 @@ def index_json(rows):
             "k": r["Subcategory"],
             "d": r["Description"],
             "g": r["_needs"][0],
+            "k2": r["_needs"],
             "c": kind,
             "p": label,
             "h": href,
@@ -1960,6 +2219,9 @@ def index_json(rows):
     doc = {
         "needs": {nd["key"]: nd["short"] for nd in NEEDS},
         "page": {nd["key"]: page_for(nd["key"]) for nd in NEEDS},
+        # The ten-language query vocabulary, once, keyed by need. Each row
+        # carries the need keys it belongs to and help.js composes them.
+        "nw": {k: " ".join(v).lower() for k, v in NEED_WORDS.items()},
         "rows": out,
     }
     # `</` inside a JSON string would close the script element early.
@@ -2175,7 +2437,7 @@ def render_category(need, rows):
       'corps. We do not run any of these programs &mdash; we help people find '
       f'them. Checked {checked(rows)}; programs change.</p>')
     A('</div>')
-    A('<div class="dir" id="dir">')
+    A(f'<div class="dir" id="dir" data-nw="{esc(needwords([key]))}">')
     A('<p class="dir__none" hidden>Nothing here matched that. Try a different word, or '
       '<button type="button" class="linkish reset">show everything again</button>. '
       'If you cannot find it, call <a href="tel:311">311</a> &mdash; they will point '

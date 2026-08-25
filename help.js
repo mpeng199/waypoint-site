@@ -76,8 +76,20 @@
      above the immigration lawyers. Anchoring to a word start keeps the useful
      looseness (a search for "dent" still finds "dental" and "dentist") and
      drops the noise. */
+  /* Unicode-aware where the browser allows it, and the old ASCII class where
+     it does not — a six-year-old Android may predate \p{L} in regexes, and
+     falling back to the previous behaviour is better than throwing. */
+  var SPLIT = (function () {
+    try { return new RegExp("[^\\p{L}\\p{N}\\-]+", "u"); }
+    catch (e) { return /[^a-z0-9\-]+/; }
+  })();
+  var ASCII = /^[\x00-\x7F]*$/;
+
   var reCache = {};
   function starts(hay, word) {
+    // \b is defined by ASCII word characters, so "\bкризис" can never match
+    // and "\b食物" is meaningless. Anything outside ASCII matches plainly.
+    if (!ASCII.test(word)) return hay.indexOf(word) !== -1;
     var re = reCache[word];
     if (!re) {
       var esc = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -99,6 +111,7 @@
   var stemCache = {};
   function stem(word) {
     if (word in stemCache) return stemCache[word];
+    if (!ASCII.test(word)) return (stemCache[word] = word);
     var out = word;
     var cut = [["ing", 3], ["ies", 3], ["ed", 2], ["es", 2], ["s", 1], ["ly", 2]];
     for (var i = 0; i < cut.length; i++) {
@@ -121,13 +134,18 @@
   function termsFor(raw, corpus) {
     var text = raw.toLowerCase().trim().replace(/[’']/g, "");
     if (!text) return [];
-    var all = text.split(/[^a-z0-9\-]+/).filter(Boolean);
+    // Split on anything that is not a letter or a number IN ANY SCRIPT. The
+    // old class was [^a-z0-9-], which silently deleted every Cyrillic,
+    // Arabic, Bengali, Korean and Chinese character before matching — so the
+    // ten languages the page offers could be read and not searched.
+    var all = text.split(SPLIT).filter(Boolean);
     var content = all.filter(function (w) {
       if (STOP.indexOf(w) !== -1) return false;
       if (/^\d+$/.test(w) && w.length < 3) return false;
-      // A lone letter matches the start of a quarter of the page. "pre k"
-      // spent its "k" on every word beginning with one.
-      if (w.length < 2) return false;
+      // A lone Latin letter matches the start of a quarter of the page — "pre
+      // k" spent its "k" on every word beginning with one. A lone CJK
+      // character is a whole word.
+      if (w.length < 2 && ASCII.test(w)) return false;
       return true;
     });
     if (!content.length) content = all;
@@ -229,6 +247,7 @@
 
   var exactCache = {};
   function hasExact(hay, word) {
+    if (!ASCII.test(word)) return hay.indexOf(word) !== -1;
     var re = exactCache[word];
     if (!re) {
       var esc = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -347,7 +366,11 @@
       it.name = (it.n || "").toLowerCase();
       it.kind = (it.k || "").toLowerCase();
       it.tags = (it.t || "").toLowerCase().replace(/\s+/g, " ");
-      it.alias = (it.s || "").toLowerCase().replace(/\s+/g, " ");
+      // The row's own synonyms plus the ten-language vocabulary for every
+      // need it belongs to, composed here rather than repeated on the wire.
+      it.alias = ((it.s || "") + " " +
+        (it.k2 || [it.g]).map(function (k) { return ix.nw[k] || ""; }).join(" "))
+        .toLowerCase().replace(/\s+/g, " ");
       it.body = (it.d || "").toLowerCase();
       it._find = (it.name + " " + it.kind + " " + it.tags + " " +
                   it.alias + " " + it.body);
@@ -470,6 +493,9 @@
     // data-find adds what is NOT on screen: the internal tags and category,
     // and the plain-English phrases SYNONYMS attaches — which is how "food
     // stamps" finds SNAP and "kicked out" finds an eviction hotline.
+    // Every row on a category page answers that page's need, so the
+    // ten-language vocabulary for it is shipped once, on the container.
+    var pageWords = dir.dataset.nw || "";
     var BODY = [".r__what", ".r__badges", ".r__facts dl", ".r__note"];
     function textOf(r, sel) {
       var el = r.querySelector(sel);
@@ -479,7 +505,8 @@
       r.name = textOf(r, ".r__name").toLowerCase();
       r.kind = textOf(r, ".r__kind").toLowerCase();
       r.tags = (r.dataset.tags || "").toLowerCase().replace(/\s+/g, " ");
-      r.alias = (r.dataset.find || "").toLowerCase().replace(/\s+/g, " ");
+      r.alias = ((r.dataset.find || "") + " " + pageWords)
+        .toLowerCase().replace(/\s+/g, " ");
       r.body = BODY.map(function (sel) { return textOf(r, sel); })
         .join(" ").toLowerCase().replace(/\s+/g, " ");
       r._find = r.name + " " + r.kind + " " + r.tags + " " + r.alias +
