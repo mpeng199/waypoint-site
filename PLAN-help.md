@@ -244,3 +244,11 @@ otherwise is how the ActionNYC and SNAP links stayed dead:
 - Every guard added is break-tested: deliberately tripped to confirm it fails
   when the thing it protects fails.
 - `python3 check.py` green before every commit.
+- `python3 mutate.py` before trusting a green `check.py`. It breaks the site
+  twelve ways on purpose and reports whether the suite noticed. Break-testing
+  proves a guard fails when *you* trip it; this proves the suite fails when a
+  plausible commit trips it. The first run caught 5 of 12 — the three real
+  holes it found (a truncated phone number reading as valid, the honesty
+  paragraph's text unguarded, an English month able to reach a translated
+  page) are now closed, and it catches 12 of 12. Add a mutation whenever you
+  add a guard.
