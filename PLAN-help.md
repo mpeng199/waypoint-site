@@ -309,6 +309,14 @@ otherwise is how the ActionNYC and SNAP links stayed dead:
   `data/browser-checked.txt`; all 34 were opened on 25 August 2026 and every
   title named its own subject. Redo quarterly — nyc.gov's soft 404 is titled
   "Page Not Found", so the title is the evidence.
+- `python3 serve.py` to preview, never `python3 -m http.server`. The stdlib
+  server sends no Cache-Control at all, so the browser decides for itself — and
+  for a navigation to `index.html#bills` it serves the copy in memory without
+  asking whether the file changed. That is invisible and maddening: you edit a
+  page, reload the page you are on and see the change, click a nav tab, and
+  land on a version from before the edit. `serve.py` is the same server with
+  `no-store` on every response. The preview config in `.claude/launch.json`
+  points at it.
 - `python3 audit_guards.py` alongside it. mutate.py asks whether the suite
   notices a break; this asks whether any guard is asleep — a check that loops
   over an empty list passes, and so does one whose pattern stopped matching
