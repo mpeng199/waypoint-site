@@ -5128,6 +5128,39 @@ def check_the_browser_pass_covers_the_pages_that_need_it():
         ok(f"{len(extra)} recorded page(s) no longer in the directory")
 
 
+def check_the_language_carryover_cannot_be_fed_anything():
+    """`?lang=` comes off the URL and goes into a selector.
+
+    A reader arriving from help-es.html carries `?lang=spanish`, and the
+    category page reveals the one note written in their language. The value is
+    read from `location.search` — which is to say, from whatever anybody puts
+    in a link — and interpolated into a querySelector. That is only safe
+    because the pattern that reads it accepts lowercase letters and hyphens and
+    nothing else, so the worst a crafted link can do is match no note.
+
+    Widening that character class is the way this becomes a real hole, and it
+    would look like a harmless generalisation in a diff.
+    """
+    js = read("help.js")
+    m = re.search(r"/\[\?&\]lang=\(([^)]+)\)/", js)
+    if not m:
+        bad("help.js no longer reads ?lang= through a fixed pattern; if it "
+            "takes the value raw, a crafted link chooses what the selector "
+            "matches")
+        return
+    cls = m.group(1)
+    if not re.fullmatch(r"\[a-z-\]\{\d+,\d+\}", cls):
+        bad(f"help.js reads ?lang= as {cls!r}. It has to be a bounded class of "
+            f"lowercase letters and hyphens — the value goes straight into a "
+            f"querySelector, and anything wider than that lets a link say what "
+            f"gets selected.")
+    else:
+        ok("?lang= is bounded to letters and hyphens before it reaches a selector")
+
+    if 'querySelector(\'.enote--carry[data-lang="\' + ' not in js:
+        ok("the carryover no longer builds a selector by concatenation")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -5153,6 +5186,7 @@ def main():
                check_a_number_dials_what_it_shows,
                check_the_data_file_keeps_its_shape,
                check_the_browser_pass_covers_the_pages_that_need_it,
+               check_the_language_carryover_cannot_be_fed_anything,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
