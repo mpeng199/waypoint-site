@@ -106,6 +106,9 @@ MUTATIONS = [
  ("a deep link goes back to racing the browser on a timer",
   "help.js", 'addEventListener("scroll", landOnFragment, { passive: true });',
   'setTimeout(landOnFragment, 300);'),
+ ("a card shows one number and dials another",
+  "build_help.py", '<a class="pv__call" href="tel:{esc(href)}">',
+  '<a class="pv__call" href="tel:311">'),
  # ---- round three: print, contrast, motion, forms, search feedback, SEO
  ("printing loses the numbers under every card",
   "help.css", ".cl__b{ font-size:7pt; color:#000; }",

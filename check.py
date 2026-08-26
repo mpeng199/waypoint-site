@@ -4978,6 +4978,45 @@ def check_a_deep_link_lands_where_it_says():
             ok(f"{f} lands a deep link clear of the header, once, and lets go")
 
 
+def check_a_number_dials_what_it_shows():
+    """The one failure on this site nobody could recover from.
+
+    A card that shows 311 and dials 911 is worse than a card with no number on
+    it: the reader has no way to know, and the person who answers is not the
+    person they needed. It cannot happen by hand — every number is generated —
+    but it can happen by a template edit that pairs the wrong two fields, and
+    it would look completely normal on the page.
+
+    So: for every tel: link on every page, the digits it dials have to be the
+    digits it shows. A link whose text carries a sentence as well as a number
+    is measured on its first number-shaped run, which is how the emergency
+    strip is built.
+    """
+    RUN = re.compile(r"\d[\d\-.– ()]{4,}\d|\b\d{3}\b|\b\d{6}\b")
+    checked, wrong = 0, []
+    for f in sorted(str(q) for q in Path(".").glob("*.html")):
+        src = read(f)
+        for m in re.finditer(r'<a[^>]*href="tel:([^"]+)"[^>]*>(.*?)</a>', src, re.S):
+            dialled = re.sub(r"\D", "", m.group(1))
+            text = html.unescape(re.sub(r"<[^>]+>", " ", m.group(2)))
+            run = RUN.search(text)
+            if not run:
+                wrong.append(f"{f}: a link dials {dialled} with no number in "
+                             f"its text — {text.strip()[:40]!r}")
+                continue
+            shown = re.sub(r"\D", "", run.group(0))
+            norm = lambda x: re.sub(r"^1(?=\d{10}$)", "", x)
+            checked += 1
+            if norm(shown) != norm(dialled):
+                wrong.append(f"{f}: shows {run.group(0).strip()!r} and dials "
+                             f"{dialled}. Somebody in trouble taps the number "
+                             f"they read.")
+    for w in wrong[:10]:
+        bad(w)
+    if not wrong:
+        ok(f"all {checked} phone links dial exactly the number they print")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -5000,6 +5039,7 @@ def main():
                check_every_resource_says_what_it_is,
                check_a_page_without_script_does_not_trust_head_h,
                check_a_deep_link_lands_where_it_says,
+               check_a_number_dials_what_it_shows,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
