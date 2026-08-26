@@ -745,7 +745,10 @@ img,svg{ display:block; max-width:100%; }
      roll slow enough to read the officialese going past. */
   --k:clamp(0, calc((var(--t,0) - var(--at)) / .22), 1); }
 .reel__k{ font-size:9.5px; letter-spacing:.2em; text-transform:uppercase;
-  color:rgba(252,254,247,.42); }
+  /* .42 measured 3.94:1 against the deep green behind it — under AA, on the
+     four words that name what a denial letter actually says. .52 is 5.30:1
+     and still reads as the quieter half of the row. */
+  color:rgba(252,254,247,.52); }
 
 /* the window. Height is one line exactly, and the sizer is what gives it width */
 /* --line is in rem/vw, NEVER em. A custom property is substituted as tokens
