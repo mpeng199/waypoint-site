@@ -14,6 +14,18 @@
    brand hue, only map it.
    ============================================================ */
 
+/* The `hidden` attribute has to actually hide.
+
+   The browser's own rule is `[hidden]{display:none}`, which any author rule
+   naming a display loses to — an author stylesheet beats the user agent's at
+   equal specificity. `.r` sets `display:flex`, so setting `hidden` on a
+   resource card did nothing at all: searching "kosher" on the food page said
+   "Showing 3 of 30" and left sixteen cards on the screen, because the ones
+   that did not match were hidden in the only way that could not work.
+
+   One rule, once, for every element the scripts hide this way. */
+[hidden]{ display:none !important; }
+
 :root{
   /* ---- the greens: one ramp, dark to light ---------------- */
   --green-deep:#13231A;   /* the room, and every dark ground   */

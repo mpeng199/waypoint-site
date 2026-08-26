@@ -116,6 +116,8 @@ MUTATIONS = [
   "padding:140px var(--pad)"),
  ("--head-h goes back to guessing at phone widths",
   "tokens.css", "@media (max-width:359px){ :root{ --head-h:210px; } }", ""),
+ ("the hidden attribute stops hiding",
+  "tokens.css", "[hidden]{ display:none !important; }", "[hidden]{ display:none; }"),
  # ---- round three: print, contrast, motion, forms, search feedback, SEO
  ("printing loses the numbers under every card",
   "help.css", ".cl__b{ font-size:7pt; color:#000; }",

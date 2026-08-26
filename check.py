@@ -5206,6 +5206,44 @@ def check_nothing_starts_under_the_bar_without_script():
         ok(".phero clears the header it is under")
 
 
+def check_the_hidden_attribute_actually_hides():
+    """The scripts hide things by setting `hidden`. That has to work.
+
+    The browser's own rule is `[hidden]{display:none}`, and an author rule that
+    names a display beats it — an author stylesheet wins over the user agent's
+    at equal specificity, whatever order they are in. `.r` sets `display:flex`,
+    so `r.hidden = true` did nothing at all: searching "kosher" on the food
+    page said "Showing 3 of 30" and left sixteen cards on the screen. The
+    reader is told a number and shown a different one, and the number they can
+    see is the wrong one.
+
+    One rule in tokens.css fixes every element the scripts hide this way, and
+    it needs !important, because that is what it takes to beat a class.
+    """
+    # Comments out first: this file's own comment quotes the browser rule it
+    # is fixing, and a naive search finds that instead.
+    tok = re.sub(r"/\*.*?\*/", "", read("tokens.css"), flags=re.S)
+    m = re.search(r"\[hidden\]\s*\{([^}]*)\}", tok)
+    if not m:
+        bad("tokens.css has no [hidden] rule. The scripts hide resource cards, "
+            "groups and whole blocks by setting the attribute, and any class "
+            "that names a display beats the browser's own [hidden] rule — so "
+            "the search hides nothing and the count contradicts the page.")
+        return
+    if "!important" not in m.group(1):
+        bad("the [hidden] rule needs !important; without it .r's display:flex "
+            "wins and a hidden card stays on screen")
+    else:
+        ok("[hidden] hides, whatever a class says about display")
+
+    # …and the ones that would otherwise beat it, named, so this stays honest
+    css = read("help.css")
+    for cls in (".r", ".cl", ".dir"):
+        rule = re.search(rf"^\{re.escape(cls)}\{{([^}}]*)\}}", css, re.M | re.S)
+        if rule and re.search(r"display\s*:", rule.group(1)):
+            ok(f"{cls} names a display and is covered by the [hidden] rule")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -5233,6 +5271,7 @@ def main():
                check_the_browser_pass_covers_the_pages_that_need_it,
                check_the_language_carryover_cannot_be_fed_anything,
                check_nothing_starts_under_the_bar_without_script,
+               check_the_hidden_attribute_actually_hides,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
