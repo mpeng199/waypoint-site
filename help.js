@@ -54,6 +54,49 @@
     new ResizeObserver(function () {
       document.documentElement.style.setProperty("--head-h", head.offsetHeight + "px");
     }).observe(head);
+
+    /* A page opened AT a fragment lands the target under the bar.
+
+       The browser scrolls to the fragment using the scroll-margin it can see,
+       which is the calc() fallback in tokens.css — 116px against a bar that is
+       203px at 320px. The resource somebody was linked to ends up 72px behind
+       the header. That is the path that matters most: each of the ten language
+       pages carries eighty-five deep links straight to a named place on an
+       English page, and every shared or bookmarked link takes it too.
+
+       Correcting this on a timer does not work. On a page this size Chrome
+       defers the fragment scroll until layout is stable, which measured well
+       past two seconds — a polling loop spends its whole window watching a
+       target that is still four thousand pixels down, gives up, and then the
+       browser scrolls. So listen for the scroll rather than race it: the
+       browser's own jump fires one, and that is the moment the target is
+       finally somewhere we can measure.
+
+       One correction, then done. A reader who has started scrolling themselves
+       is never moved. */
+    var settling = true;
+    var done = function () { settling = false; };
+    addEventListener("wheel", done, { passive: true, once: true });
+    addEventListener("touchstart", done, { passive: true, once: true });
+    addEventListener("keydown", done, { once: true });
+    setTimeout(done, 8000);
+
+    var landOnFragment = function () {
+      if (!settling || !location.hash) return;
+      var t = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (t && t.getBoundingClientRect().top < head.offsetHeight) {
+        settling = false;
+        t.scrollIntoView({ block: "start", behavior: "instant" });
+      }
+    };
+    addEventListener("scroll", landOnFragment, { passive: true });
+    addEventListener("load", landOnFragment);
+    addEventListener("hashchange", function () {
+      settling = true;
+      setTimeout(landOnFragment, 0);
+      setTimeout(done, 1000);
+    });
+    landOnFragment();
   }
 
   if (head) {

@@ -4945,6 +4945,39 @@ def check_a_page_without_script_does_not_trust_head_h():
                 f"this guard's premise is gone and the static rule can go too")
 
 
+def check_a_deep_link_lands_where_it_says():
+    """A page opened AT a fragment scrolls before the header is measured.
+
+    The browser jumps using the scroll-margin it can see, which is the calc()
+    fallback in tokens.css — 116px against a bar that is 203px at 320px. The
+    resource somebody was linked to ends up 72px behind the header. That is the
+    path that matters most: each of the ten language pages carries eighty-five
+    deep links straight to a named place on an English page, and every shared
+    or bookmarked link takes it too.
+
+    Both scripts correct it by listening for the browser's own fragment scroll
+    rather than racing it on a timer — measured, Chrome defers that scroll well
+    past two seconds on a page this size, so a polling loop watches a target
+    four thousand pixels away, gives up, and then the browser jumps.
+    """
+    for f in ("help.js", "script.js"):
+        js = read(f)
+        if "landOnFragment" not in js:
+            bad(f"{f} no longer corrects where a deep link lands, so every "
+                f"link to a named resource puts it behind the header")
+            continue
+        if not re.search(r'addEventListener\("scroll", landOnFragment', js):
+            bad(f"{f} corrects the landing but not on the scroll event. A "
+                f"timer cannot win this race: the browser defers the fragment "
+                f"scroll until layout settles, which is seconds on these "
+                f"pages.")
+        elif not re.search(r'addEventListener\("(?:wheel|touchstart)"', js):
+            bad(f"{f} corrects the landing with nothing to stop it, so a "
+                f"reader who has scrolled somewhere themselves gets moved")
+        else:
+            ok(f"{f} lands a deep link clear of the header, once, and lets go")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -4966,6 +4999,7 @@ def main():
                check_every_page_names_itself,
                check_every_resource_says_what_it_is,
                check_a_page_without_script_does_not_trust_head_h,
+               check_a_deep_link_lands_where_it_says,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

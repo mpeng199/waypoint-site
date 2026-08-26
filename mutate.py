@@ -103,6 +103,9 @@ MUTATIONS = [
  ("the skip link lands the list under the header again",
   "help.css", ".dir{ display:flex; flex-direction:column;\n  scroll-margin-top:calc(var(--head-h) + 14px); }",
   ".dir{ display:flex; flex-direction:column; }"),
+ ("a deep link goes back to racing the browser on a timer",
+  "help.js", 'addEventListener("scroll", landOnFragment, { passive: true });',
+  'setTimeout(landOnFragment, 300);'),
  # ---- round three: print, contrast, motion, forms, search feedback, SEO
  ("printing loses the numbers under every card",
   "help.css", ".cl__b{ font-size:7pt; color:#000; }",
