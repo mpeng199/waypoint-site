@@ -805,7 +805,8 @@ def check_doors():
     if not block:
         bad("doors: no .ways__blurb rule; the height reserve is gone")
         return
-    body = block.group(1)
+    # Comments first: a brace inside one derails any brace-counting after it.
+    body = re.sub(r"/\*.*?\*/", "", block.group(1), flags=re.S)
     if re.search(r"max-width:\s*\d+ch", body):
         ok("doors: the blurb measure is still capped in ch")
     else:
@@ -4709,7 +4710,8 @@ def check_the_printed_page_keeps_its_numbers():
     if not block:
         bad("help.css has no @media print block; the leave-behind is gone")
         return
-    body = block.group(1)
+    # Comments first: a brace inside one derails any brace-counting after it.
+    body = re.sub(r"/\*.*?\*/", "", block.group(1), flags=re.S)
     # The selectors that carry a phone number onto paper.
     carriers = [".cl__b", ".cl__pv", ".pv__call", ".pv__n", ".cl h3 a"]
     for sel in carriers:
@@ -4721,6 +4723,29 @@ def check_the_printed_page_keeps_its_numbers():
                 f"student hands somebody; it is numbers or it is nothing.")
         else:
             ok(f"print keeps {sel}")
+    # And the controls have to be gone. The rule that hides them is one long
+    # selector list, and it lost its terminating line in an edit — what was
+    # left ended in a comma, which CSS joined to the next rule, so the header,
+    # the search box, the jump nav, the breadcrumb and the footer links
+    # stopped being hidden and started printing as three-column grids. Six
+    # sheets instead of three, and nobody prints the site to check.
+    CHROME = [".sitehead", ".find", ".jump", ".crumb", ".skip",
+              ".hfoot__links", ".cl__all", ".langbar", ".printbtn"]
+    for sel in CHROME:
+        hidden = False
+        for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", body):
+            names = [x.strip().split()[0] if x.strip() else ""
+                     for x in m.group(1).split(",")]
+            if sel in names and re.search(r"display\s*:\s*none", m.group(2)):
+                hidden = True
+                break
+        if hidden:
+            ok(f"print hides {sel}")
+        else:
+            bad(f"the print stylesheet does not hide {sel}, so it prints. The "
+                f"leave-behind is answers and phone numbers; a search box on "
+                f"paper is a control nobody can use.")
+
     # And the numbers have to be black on white, not a grey nobody can read
     # through a photocopier.
     if "color:#000" not in body:

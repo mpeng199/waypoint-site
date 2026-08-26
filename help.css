@@ -738,14 +738,24 @@ b,strong{ font-weight:600; }
 /* Students hand people paper. A printed page has no Call button, so the
    number has to become text, and the interface around it has to vanish. */
 @media print{
+  /* Everything that is a control rather than an answer. The rule ended
+     with .langbar, .langnote, .sprite and .mast__bg carrying the
+     display:none, until .langnote was deleted with the blurb panels and the
+     whole terminating line went with it. What was left was a selector list ending in a comma,
+     which CSS happily joined to the next rule — so the header, the search
+     box, the jump nav, the breadcrumb, the footer links and the rest stopped
+     being hidden and started printing as three-column grids. Found by
+     rendering the print block, not by reading it. */
   .sitehead,.find,.jump,.results,.sibs,.cat__rail,.crumb,
-  .skip,.hfoot__links,.grp__top,.dir__none,.grp__why,
-  .cl__all,.clusters__say,
+  .skip,.hfoot__links,.grp__top,.dir__none,.printbtn,
+  .cl__all,.clusters__say,.langbar,.sprite,.mast__bg{ display:none !important; }
 
   /* The front page's printed form is the leave-behind students hand across a
-     table: fifteen kinds of help, three real places under each, every phone
-     number in plain type. Two sheets, not the forty the old single-page
-     directory produced. */
+     table: seventeen kinds of help, three real places under each, every
+     phone number in plain type. Rendered at 8.5in with half-inch margins it
+     is three sheets, against the forty the old single-page directory
+     produced — and against the six it was silently printing while the
+     controls above were escaping the hide rule. */
   .clusters__grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:6pt; }
   .clusters__head h2{ font-size:12.5pt; margin-bottom:5pt; }
   .cl{ border:0.75pt solid #666; border-radius:0; padding:5pt 6pt;

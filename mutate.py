@@ -97,6 +97,9 @@ MUTATIONS = [
  ("the search box loses its focus ring again",
   "help.css", ".find__box:has(input:focus-visible){\n  outline:3px solid var(--focus);",
   ".find__box:has(input:focus-visible){\n  outline:0;"),
+ ("the print hide-list loses its terminator again",
+  "help.css", ".cl__all,.clusters__say,.langbar,.sprite,.mast__bg{ display:none !important; }",
+  ".cl__all,.clusters__say,.langbar,.sprite,"),
  # ---- round three: print, contrast, motion, forms, search feedback, SEO
  ("printing loses the numbers under every card",
   "help.css", ".cl__b{ font-size:7pt; color:#000; }",
