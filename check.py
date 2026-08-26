@@ -5090,7 +5090,8 @@ def check_the_browser_pass_covers_the_pages_that_need_it():
     with open("data/resources.csv", encoding="utf-8-sig", newline="") as f:
         for r in _csv.DictReader(f):
             u = (r["Website"] or "").strip()
-            if re.match(r"https?://(?:www\.)?(?:nyc\.gov|finder\.nyc\.gov)", u):
+            if re.match(r"https?://(?:www\.)?"
+                        r"(?:nyc\.gov|finder\.nyc\.gov|nystateofhealth\.ny\.gov)", u):
                 need.add(u)
 
     log = "data/browser-checked.txt"

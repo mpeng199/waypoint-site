@@ -269,7 +269,13 @@ def unverifiable_by_phone(row):
 # Two hosts, not all of nyc.gov: access.nyc.gov and schools.nyc.gov serve
 # their content in the HTML and can be read here. www.nyc.gov's CMS does not,
 # and finder.nyc.gov serves a 1.7 KB shell.
-NEEDS_A_BROWSER = ("www.nyc.gov", "nyc.gov", "finder.nyc.gov")
+# nystateofhealth.ny.gov joins them for a different reason: it answers a
+# scripted request with 503 and a browser with the page. Two sweeps in a row
+# reported it NOT REACHABLE while it was serving 855-355-5777 to anyone who
+# opened it. A failure list is only worth reading if everything on it is a real
+# failure, so this one moves to the list a person checks.
+NEEDS_A_BROWSER = ("www.nyc.gov", "nyc.gov", "finder.nyc.gov",
+                   "nystateofhealth.ny.gov")
 # What a person saw when they last opened them, and when.
 BROWSER_LOG = "data/browser-checked.txt"
 SERVES_ITS_CONTENT = ("access.nyc.gov", "schools.nyc.gov", "on.nyc.gov",
@@ -367,9 +373,17 @@ def main():
             print(".", end="", flush=True)
 
     print("\n")
-    browser = [(n, u) for n, u, _x in ok + redirects if needs_a_browser(u)]
+    # A host on this list is one a script cannot judge, whatever it answered.
+    # Pull it out of every bucket, not just the happy ones: nystateofhealth
+    # answers 503 to a script and serves the page to a browser, and reporting
+    # that as NOT REACHABLE puts a live site on the list somebody is meant to
+    # panic about.
+    browser = [(n, u) for n, u, _x in ok + redirects + dead + blocked
+               if needs_a_browser(u)]
     ok = [t for t in ok if not needs_a_browser(t[1])]
     redirects = [t for t in redirects if not needs_a_browser(t[1])]
+    dead = [t for t in dead if not needs_a_browser(t[1])]
+    blocked = [t for t in blocked if not needs_a_browser(t[1])]
     print(f"reachable          {len(ok)}")
     print(f"reachable via redirect {len(redirects)}")
     print(f"blocked our request    {len(blocked)}  (probably fine in a browser)")
