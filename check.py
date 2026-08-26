@@ -5035,6 +5035,41 @@ def check_a_number_dials_what_it_shows():
         ok(f"all {checked} phone links dial exactly the number they print")
 
 
+def check_the_data_file_keeps_its_shape():
+    """A rewrite that changes nothing changes every line.
+
+    data/resources.csv quotes every field and ends every line with CRLF. Python
+    's csv writer defaults to quoting only what needs it, so a script that
+    reads the file and writes it back produces a semantically identical file
+    and a 352-line diff — which makes the ten rows somebody actually changed
+    impossible to see in review. That happened once; this is so it cannot
+    happen quietly again.
+    """
+    raw = open("data/resources.csv", "rb").read()
+    if not raw.startswith(b"\xef\xbb\xbf"):
+        bad("data/resources.csv has lost its byte-order mark; Excel opens it "
+            "as mojibake for whoever maintains it")
+    else:
+        ok("the data file keeps its byte-order mark")
+
+    text = raw.decode("utf-8-sig")
+    lines = [l for l in text.split("\r\n") if l.strip()]
+    if len(lines) < 2:
+        bad("data/resources.csv is not CRLF-delimited any more, so every line "
+            "of it will show as changed in the next diff")
+        return
+    ok(f"{len(lines)} CRLF lines")
+
+    unquoted = [i for i, l in enumerate(lines, 1) if not l.startswith('"')]
+    if unquoted:
+        bad(f"data/resources.csv line(s) {unquoted[:5]} do not start with a "
+            f"quote. Every field in this file is quoted; a writer that quotes "
+            f"only what it must rewrites all 352 lines and buries the ones "
+            f"that changed.")
+    else:
+        ok("every row is fully quoted, so a diff shows only what moved")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -5058,6 +5093,7 @@ def main():
                check_a_page_without_script_does_not_trust_head_h,
                check_a_deep_link_lands_where_it_says,
                check_a_number_dials_what_it_shows,
+               check_the_data_file_keeps_its_shape,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
