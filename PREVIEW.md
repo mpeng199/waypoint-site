@@ -15,6 +15,9 @@ version of the site from before the directory existed.
 or use the Browser pane's `waypoint` config, which `.claude/launch.json` now
 points at this directory and at `serve.py`.
 
+`serve.py` also binds IPv6 as well as IPv4: macOS Chrome tries `::1` before
+`127.0.0.1`, and the stdlib server listens on IPv4 only.
+
 **Do not use `python3 -m http.server`.** It sends no `Cache-Control`, so the
 browser caches every stylesheet and script and decides for itself when to look
 again. Navigating to `index.html#bills` will serve the copy in memory without
@@ -24,8 +27,32 @@ edit. `serve.py` is the same server with `no-store` on every response.
 
 ## If you already have the stale version cached
 
-One hard reload clears it — **Cmd+Shift+R** on macOS. After that `no-store`
-keeps it from happening again.
+Open this once:
+
+    http://localhost:8753/index.html?fresh=1
+
+The query string means that URL has no cache entry, so the browser must go to
+the network — and every HTML response from `serve.py` carries
+`Clear-Site-Data: "cache"`, which throws away the whole origin's cache,
+stale copies included. After that one load `no-store` keeps it clean.
+
+Why anything is needed at all: a response cached earlier can be considered
+fresh for *days*. The heuristic is a tenth of the file's age, and the stale
+`index.html` was a month old, so Chrome will not even ask whether it changed.
+It serves it from cache with no network request, so no header can reach it.
+Something has to force one fetch.
+
+## If the pages suddenly look old again
+
+Check what the worktree is actually checked out to:
+
+    git -C .claude/worktrees/website-accessibility-redesign-2b15ac rev-parse --abbrev-ref HEAD
+
+It should say `claude/website-accessibility-redesign-2b15ac`. If another
+session checks this worktree out to a different branch, the server keeps
+serving the same directory and the files underneath it change — the preview
+goes back in time with no error anywhere. **Uncommitted edits are lost in that
+switch**, so commit before stepping away.
 
 ## What to open
 
