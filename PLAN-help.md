@@ -195,6 +195,39 @@ Still needs a human: **a native speaker of each language should read their own
 page end to end.** Nothing in `i18n.py` is machine output, and nothing in it
 has been read by somebody who speaks the language.
 
+## The afternoon and evening of 25 August
+
+Ten defects that 3,400 static checks could not see, found by rendering the site
+and clicking it rather than reading it. In the order they were found:
+
+1. A bar that covered the heading every in-page link jumped to, on all ten
+   language pages, at every phone width.
+2. `.dialn` — the phone number inside translated prose — measured 24x20, the
+   smallest target on the site and the one a reader of a translated page is
+   most likely to reach for.
+3. `.inl` kept its 17-22px box in a paragraph, because the rule widening it
+   said `li > .inl`.
+4. Three text colours under AA, measured against the ground actually behind
+   them: `.reel__k` at 3.94:1 and two greys on the internal pages.
+5. The search box had no focus ring at all — it sets `outline:none` and the box
+   around it gave back a 1.5px border change and a halo at 1.03:1.
+6. A trailing comma in the print stylesheet joined the hide-list to the next
+   rule, so printing the directory printed the header, the search box and the
+   jump nav as three-column grids. Six sheets instead of three.
+7. "Skip to the list" landed the list under 203px of header on all seventeen
+   category pages.
+8. Every deep link into the directory landed its resource behind the header —
+   including the eighty-five on each language page.
+9. Seven stale counts in the docs, and two that a reader would use to judge how
+   current the directory is.
+10. The link sweep's failure list had a live site on it.
+
+Ten of the twelve rows stuck on a June date were confirmed by opening their
+sites in a browser; the VA's numbers live in a `va-telephone` web component,
+which is shadow DOM and invisible to anything reading the markup. Two remain,
+and both are honest: Masbia and the Salvation Army's Greater New York page
+print no phone number at all.
+
 ## The afternoon of 25 August
 
 Three wrong phone numbers and two dead links, found by opening pages a script
