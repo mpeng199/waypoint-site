@@ -78,12 +78,22 @@
     var done = function () { settling = false; };
     addEventListener("wheel", done, { passive: true, once: true });
     addEventListener("touchstart", done, { passive: true, once: true });
-    addEventListener("keydown", done, { once: true });
+    /* Only the keys that actually scroll. Ending on any keydown meant a
+       keyboard reader who pressed Tab on arrival — which is most of them, and
+       the ones this correction is most for — switched it off before it ran. */
+    var SCROLLS = { " ": 1, PageUp: 1, PageDown: 1, Home: 1, End: 1,
+                    ArrowUp: 1, ArrowDown: 1 };
+    addEventListener("keydown", function (e) { if (SCROLLS[e.key]) done(); });
     setTimeout(done, 8000);
 
     var landOnFragment = function () {
       if (!settling || !location.hash) return;
-      var t = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      var id = location.hash.slice(1);
+      /* decodeURIComponent throws on a stray percent — "#100%" is a legal
+         fragment and an illegal escape, and an exception here would fire on
+         every scroll event for the life of the page. */
+      try { id = decodeURIComponent(id); } catch (e) { /* use it raw */ }
+      var t = document.getElementById(id);
       if (t && t.getBoundingClientRect().top < head.offsetHeight) {
         settling = false;
         t.scrollIntoView({ block: "start", behavior: "instant" });
