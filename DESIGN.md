@@ -657,6 +657,16 @@ its screen the bar was holding. `check_a_page_without_script_does_not_trust_head
 holds the arrangement together: a page that trusts `--head-h` has to be a page
 that corrects it.
 
+What that costs, stated plainly: below 1080px a language page's bar no longer
+follows the reader, so the five nav tabs are not on screen while scrolling. It
+is a real difference from the English half and it was weighed rather than
+overlooked. Those five tabs point at the English narrative site — the least
+useful links on a page written in Urdu — and the footer carries the same
+destinations plus a link back to the top of the page. Against that, the bar was
+holding a third of a 320px screen and putting every heading a reader jumped to
+behind itself. Above 1080px, where the bar is one row and `--head-h` is right
+within a pixel, both halves are sticky and identical.
+
 **What is not translated, and why.** The resource descriptions are English
 and this site has no way to check ten translations of every one of them. So the cards name
 places and dial them — a proper noun and a number are the same in every
