@@ -621,7 +621,8 @@ assert set(COPY) == {n["key"] for n in NEEDS}, "COPY and NEEDS disagree"
 # a page somebody can skim in ten seconds and leave with a phone number.
 #
 # The CSV's own Subcategory column cannot do this job: it is free text and
-# nearly every value is unique (118 rows carried 96 distinct subcategories),
+# nearly every value is unique (the directory carries almost as many distinct
+# subcategories as rows),
 # so grouping by it produces groups of one. These are curated buckets instead,
 # matched against the row's subcategory, tags and name, in order — first rule
 # that fires wins, so put the specific rules above the general ones.
@@ -1631,7 +1632,8 @@ def boroughs_for(row):
     return hits or [k for k, _ in BOROUGHS] + ["citywide"]
 
 
-# "Multiple" is what 77 of the 118 rows say under Languages, and on its own it
+# "Multiple" is what more than half the rows say under Languages, and on its
+# own it
 # matched no chip at all — so filtering by Español hid two thirds of the
 # directory, and filtering by العربية, which no row names explicitly, left six
 # places out of a hundred and eighteen. A filter that hides help is worse than

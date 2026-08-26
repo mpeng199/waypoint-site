@@ -119,7 +119,7 @@ narrative for the audiences it was written for.
 - **Staten Island is thin but no longer empty.** Project Hospitality and the
   Community Health Center of Richmond are now in, and the filter floats local
   results above citywide ones so the shape of the gap stays visible.
-- **63 rows still carry a June verification date** — not because anything is
+- **12 rows still carry a June verification date** — not because anything is
   known to be wrong with them, but because their sites draw the phone number
   in JavaScript or refuse a scripted request. `verify_phones.py` reports them
   as UNSEEN, never as confirmed.

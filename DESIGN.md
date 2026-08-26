@@ -590,7 +590,7 @@ Two tools stamp it, and between them they cover every row —
   is what their date means, and this is the paragraph that says so.
 
 A row whose number the sweep could not confirm keeps its older date. It is
-never stamped on a guess: 31 rows still read June for that reason, and the
+never stamped on a guess: 12 rows still read June for that reason, and the
 pages say "Checked June–August 2026" rather than rounding up.
 
 ### Tap targets

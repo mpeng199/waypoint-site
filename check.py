@@ -4710,11 +4710,28 @@ def check_the_docs_do_not_carry_a_stale_count():
                                 f"{n}. Fix the number, or drop it — a count "
                                 f"nobody regenerates is a count that goes "
                                 f"wrong quietly.")
+    # The other number the docs assert is how many rows are still dated June —
+    # the honest edge of the verification sweep, and the one a reader of
+    # DESIGN.md would use to judge how current the directory is. It moves every
+    # time somebody confirms one, and it had drifted to 31 and 63 in two
+    # different files while the file held 12.
+    june = sum(1 for r in build_help.load()
+               if (r["Last Verified"] or "").startswith("2026-06"))
+    stale = re.compile(r"\b(\d{1,4})\s+rows?\s+(?:still\s+)?(?:read|carry|carries)\b")
+    for f in ("DESIGN.md", "PLAN-help.md"):
+        for i, line in enumerate(read(f).split("\n"), 1):
+            for m in stale.finditer(line):
+                if int(m.group(1)) != june:
+                    hits.append(f"{f}:{i} says {m.group(0)!r}; {june} rows are "
+                                f"dated June. That number is how a reader "
+                                f"judges whether this directory is current.")
+
     if hits:
         for h in hits[:8]:
             bad(h)
     else:
-        ok(f"no doc, comment or docstring miscounts the {n} resources")
+        ok(f"no doc miscounts the {n} resources or the {june} rows still "
+           f"awaiting a person")
 
 
 def check_the_printed_page_keeps_its_numbers():
