@@ -119,10 +119,17 @@ narrative for the audiences it was written for.
 - **Staten Island is thin but no longer empty.** Project Hospitality and the
   Community Health Center of Richmond are now in, and the filter floats local
   results above citywide ones so the shape of the gap stays visible.
-- **12 rows still carry a June verification date** — not because anything is
-  known to be wrong with them, but because their sites draw the phone number
-  in JavaScript or refuse a scripted request. `verify_phones.py` reports them
-  as UNSEEN, never as confirmed.
+- **2 rows still carry a June verification date** — not because anything is
+  known to be wrong with them, but because their own sites do not print a
+  number at all. Masbia's homepage names none, and the Salvation Army's
+  Greater New York contact page offers a location finder and a donations FAQ
+  and no divisional line. `verify_phones.py` reports them as UNSEEN, never as
+  confirmed; both need a person to ring.
+
+  The other ten that were stuck here were confirmed on 25 August by opening
+  each site in a browser rather than fetching it. That is what it took: the
+  VA prints its numbers inside a `va-telephone` web component, which is in the
+  shadow DOM and invisible to a script reading the HTML.
 - **Some rows have no phone**, only a website. Correct for a lottery portal or
   an online screener; a gap for anything else. `merge_rows.py` refuses a row
   with neither.
