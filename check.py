@@ -5070,6 +5070,63 @@ def check_the_data_file_keeps_its_shape():
         ok("every row is fully quoted, so a diff shows only what moved")
 
 
+def check_the_browser_pass_covers_the_pages_that_need_it():
+    """Thirty-four pages a script cannot read, and a record of who looked.
+
+    www.nyc.gov and finder.nyc.gov render their bodies client-side, so a fetch
+    sees a shell and a soft 404 is indistinguishable from a working page.
+    Somebody has to open them. data/browser-checked.txt is what they saw and
+    when — one line per page, with the page title as the evidence, because
+    nyc.gov's soft 404 is titled "Page Not Found" and a title that names its
+    subject is a page that is really there.
+
+    This does not check the pages; nothing offline can. It checks that the
+    record covers every URL that needs one, so the list cannot grow a page
+    nobody has ever opened.
+    """
+    import csv as _csv
+
+    need = set()
+    with open("data/resources.csv", encoding="utf-8-sig", newline="") as f:
+        for r in _csv.DictReader(f):
+            u = (r["Website"] or "").strip()
+            if re.match(r"https?://(?:www\.)?(?:nyc\.gov|finder\.nyc\.gov)", u):
+                need.add(u)
+
+    log = "data/browser-checked.txt"
+    if not os.path.exists(log):
+        bad(f"{log} is gone, so nobody knows when the {len(need)} pages only a "
+            f"browser can read were last looked at")
+        return
+    seen = {}
+    for i, line in enumerate(read(log).split("\n"), 1):
+        if line.startswith("#") or not line.strip():
+            continue
+        parts = line.split("\t")
+        if len(parts) != 3:
+            bad(f"{log}:{i} is not date/title/URL separated by tabs")
+            continue
+        when, title, url = parts
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", when):
+            bad(f"{log}:{i} does not start with a date")
+        if re.search(r"page not found|outdated or non-existing", title, re.I):
+            bad(f"{log}:{i} records {url} as a soft 404 — the row pointing at "
+                f"it sends somebody to a dead page")
+        seen[url] = when
+
+    missing = sorted(need - set(seen))
+    for m in missing[:6]:
+        bad(f"{m} needs a browser and has never been opened. Run "
+            f"`python3 check_links_live.py --browser-list`, open it, and record "
+            f"the title you see in {log}.")
+    if not missing:
+        ok(f"all {len(need)} browser-only pages have been opened and recorded")
+
+    extra = sorted(set(seen) - need)
+    if extra:
+        ok(f"{len(extra)} recorded page(s) no longer in the directory")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -5094,6 +5151,7 @@ def main():
                check_a_deep_link_lands_where_it_says,
                check_a_number_dials_what_it_shows,
                check_the_data_file_keeps_its_shape,
+               check_the_browser_pass_covers_the_pages_that_need_it,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

@@ -48,6 +48,7 @@ the ones where the path itself changed.
 """
 
 import csv
+import datetime as dt
 import datetime
 import concurrent.futures
 import re
@@ -269,6 +270,8 @@ def unverifiable_by_phone(row):
 # their content in the HTML and can be read here. www.nyc.gov's CMS does not,
 # and finder.nyc.gov serves a 1.7 KB shell.
 NEEDS_A_BROWSER = ("www.nyc.gov", "nyc.gov", "finder.nyc.gov")
+# What a person saw when they last opened them, and when.
+BROWSER_LOG = "data/browser-checked.txt"
 SERVES_ITS_CONTENT = ("access.nyc.gov", "schools.nyc.gov", "on.nyc.gov",
                       "a069-access.nyc.gov", "home.nyc.gov")
 
@@ -297,9 +300,40 @@ def main():
         with open(CSV, encoding="utf-8-sig", newline="") as f:
             urls = sorted({r["Website"].strip() for r in csv.DictReader(f)
                            if needs_a_browser(r.get("Website"))})
-        print("\n".join(urls))
-        print(f"\n{len(urls)} page(s) that only a browser can verify. Open each "
-              f"and look for \"outdated or non-existing\".")
+        # What the last pass found, so this prints a to-do rather than a list.
+        seen, oldest = {}, None
+        try:
+            with open(BROWSER_LOG, encoding="utf-8") as f:
+                for line in f:
+                    if line.startswith("#") or not line.strip():
+                        continue
+                    when, title, url = line.rstrip("\n").split("\t")
+                    seen[url] = (when, title)
+                    oldest = when if oldest is None else min(oldest, when)
+        except FileNotFoundError:
+            pass
+
+        for u in urls:
+            if u in seen:
+                when, title = seen[u]
+                print(f"  {when}  {title[:44]:46}  {u}")
+            else:
+                print(f"  {'NEVER':10}  {'—':46}  {u}")
+        missing = [u for u in urls if u not in seen]
+        stale = [u for u in seen if u not in urls]
+        print(f"\n{len(urls)} page(s) that only a browser can verify.")
+        if missing:
+            print(f"{len(missing)} of them have never been opened. Open each and "
+                  f"read the title: nyc.gov's soft 404 is titled \"Page Not "
+                  f"Found\", so a title naming the subject is a live page.")
+        if stale:
+            print(f"{len(stale)} line(s) in {BROWSER_LOG} are for URLs no longer "
+                  f"in the directory; they can go.")
+        if oldest and not missing:
+            age = (dt.date.today() - dt.date.fromisoformat(oldest)).days
+            print(f"Oldest check: {oldest} ({age} days ago)."
+                  + ("  Due — redo the pass." if age > 92 else "  Redo quarterly."))
+        print(f"Record a pass in {BROWSER_LOG}: date, title, URL, tab-separated.")
         return 0
     with open(CSV, encoding="utf-8-sig", newline="") as f:
         all_rows = list(csv.DictReader(f))

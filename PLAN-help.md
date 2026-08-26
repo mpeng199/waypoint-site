@@ -260,6 +260,13 @@ otherwise is how the ActionNYC and SNAP links stayed dead:
   paragraph's text unguarded, an English month able to reach a translated
   page) are now closed, and it catches 12 of 12. Add a mutation whenever you
   add a guard.
+- `python3 check_links_live.py --browser-list` for the pages a script cannot
+  read. www.nyc.gov and finder.nyc.gov render their bodies client-side, so a
+  fetch sees a shell and a soft 404 is indistinguishable from a working page.
+  It now prints when each was last opened and by what title, from
+  `data/browser-checked.txt`; all 34 were opened on 25 August 2026 and every
+  title named its own subject. Redo quarterly — nyc.gov's soft 404 is titled
+  "Page Not Found", so the title is the evidence.
 - `python3 audit_guards.py` alongside it. mutate.py asks whether the suite
   notices a break; this asks whether any guard is asleep — a check that loops
   over an empty list passes, and so does one whose pattern stopped matching
