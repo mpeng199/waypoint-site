@@ -277,6 +277,15 @@ b,strong{ font-weight:600; }
    border colour and our shadow, and `outline:none` is the one thing it keeps.
    The control would focus with no sign of it at all. Highlight is the colour
    the user chose for exactly this. */
+/* And the ring the box gave it was not the ring the rest of the site gives:
+   a 1.5px border change plus a 3px halo at 10% alpha, which measured 1.03:1
+   against the ground behind it. Visible if you already knew where to look.
+   Every other control on the site takes 3px of --focus, and so does this one
+   now — the busiest control on the directory should not be the quietest.
+   :has(:focus-visible) rather than :focus-within, so a mouse click does not
+   ring it, which is what :focus-visible does everywhere else. */
+.find__box:has(input:focus-visible){
+  outline:3px solid var(--focus); outline-offset:3px; }
 @media (forced-colors: active){
   .find__box:focus-within{ outline:3px solid Highlight; outline-offset:2px; }
 }

@@ -2205,6 +2205,22 @@ def check_focus_ring():
     else:
         ok("one :focus-visible rule, in the shared sheet, paints the ring")
 
+    # The search input opts out of that rule with outline:none and hands its
+    # ring to the box around it. Tabbed to, it had no ring at all: the box's
+    # own indication was a 1.5px border change and a halo at 10% alpha, 1.03:1
+    # against the ground. The busiest control on the directory was the
+    # quietest, and nothing said so, because the guard above only asks whether
+    # the shared rule exists.
+    if re.search(r"\.find__box input\{[^}]*outline\s*:\s*none", read("help.css")):
+        if not re.search(r"\.find__box:has\(input:focus-visible\)\s*\{[^}]*"
+                         r"outline\s*:\s*3px solid var\(--focus\)", read("help.css"),
+                         re.S):
+            bad("the search input sets outline:none and nothing gives the box "
+                "around it the site's 3px ring, so tabbing to the busiest "
+                "control on the directory shows nothing")
+        else:
+            ok("the search box takes the same ring as everything else")
+
     # 1. every --focus must beat the ground it is declared next to
     pairs = 0
     for sheet in ("help.css", "styles.css", "tokens.css"):

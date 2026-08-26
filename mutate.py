@@ -94,6 +94,9 @@ MUTATIONS = [
  ("an inline link is tappable only inside a list again",
   "styles.css", "  .inl{ position:relative; }\n  .inl::after{",
   "  li > .inl{ position:relative; }\n  li > .inl::after{"),
+ ("the search box loses its focus ring again",
+  "help.css", ".find__box:has(input:focus-visible){\n  outline:3px solid var(--focus);",
+  ".find__box:has(input:focus-visible){\n  outline:0;"),
  # ---- round three: print, contrast, motion, forms, search feedback, SEO
  ("printing loses the numbers under every card",
   "help.css", ".cl__b{ font-size:7pt; color:#000; }",
