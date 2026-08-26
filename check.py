@@ -373,15 +373,33 @@ def check_forms():
 
 
 def check_labels():
-    """Every input/select/textarea needs a label bound to it."""
+    """Every input/select/textarea needs a label bound to it.
+
+    Every page, not just index.html — admin.html has a password field and
+    help.html has the search box, and a guard that reads one file cannot say
+    anything about either.
+    """
+    for f in sorted(str(q) for q in Path(".").glob("*.html")):
+        page = read(f)
+        fors = set(re.findall(r'<label for="([^"]+)"', page))
+        for tag in re.findall(r"<(?:input|select|textarea)\b[^>]*>", page):
+            if re.search(r'type="(?:hidden|submit|button|reset)"', tag):
+                continue
+            # The honeypot is deliberately nameless and aria-hidden; the check
+            # that it stays that way is below.
+            if 'aria-hidden="true"' in tag:
+                continue
+            fid = re.search(r'\sid="([^"]+)"', tag)
+            named = ("aria-label=" in tag or "aria-labelledby=" in tag
+                     or (fid and fid.group(1) in fors))
+            if named:
+                ok(f"{f}: labelled field {fid.group(1) if fid else tag[:30]}")
+            else:
+                bad(f"{f}: {tag[:60]} has nothing that names it — no <label "
+                    f"for>, no aria-label. A screen reader announces it as "
+                    f"'edit text' and nothing else.")
+
     src = read("index.html")
-    fors = set(re.findall(r'<label for="([^"]+)"', src))
-    fields = re.findall(r'<(?:input|select|textarea)[^>]*\sid="([^"]+)"', src)
-    for fid in fields:
-        if fid in fors:
-            ok(f"labelled field #{fid}")
-        else:
-            bad(f"field #{fid} has no <label for>")
     traps = re.findall(r'class="trap"[^>]*', src)
     for t in traps:
         if 'aria-hidden="true"' in t and 'tabindex="-1"' in t:
