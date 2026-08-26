@@ -44,6 +44,15 @@ window.waypointAudit = async function (pages, width) {
     f.style.cssText = 'width:' + width + 'px;height:900px;border:0;position:fixed;left:0;top:0;opacity:0.01';
     document.body.appendChild(f);
     await new Promise(function (r) { f.onload = r; f.src = base + p + '?audit=' + Date.now(); });
+    /* Let the page settle before measuring. Note a real limit of this
+       harness: help.js publishes the measured --head-h through a
+       ResizeObserver, and an offscreen iframe does not get its observer
+       callbacks delivered — so on a page that has a script, the anchor test
+       below reports every jump as landing under the header whether it does or
+       not. It is right about the ten language pages, which have no script.
+       For the scripted pages, navigate to them and run the anchor test there;
+       that is how the .dir skip-link bug was confirmed. */
+    await new Promise(function (r) { setTimeout(r, 400); });
     var d = f.contentDocument, cw = f.contentWindow, found = [];
 
     /* 1. contrast, against the ground actually behind it */
@@ -85,9 +94,10 @@ window.waypointAudit = async function (pages, width) {
           ' — .' + (a.className || '(none)') + ' "' + a.textContent.trim().slice(0, 24) + '"');
     }
 
-    /* 3. anchors that land under the header */
+    /* 3. anchors that land under the header — see the note above: only
+       meaningful on a page with no script. */
     var head = d.querySelector('.sitehead');
-    if (head) {
+    if (head && !d.querySelector('script[src]')) {
       var seen = {}, as = d.querySelectorAll('a[href^="#"]');
       for (var k = 0; k < as.length && k < 40; k++) {
         var id = as[k].getAttribute('href');

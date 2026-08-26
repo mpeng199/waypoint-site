@@ -100,6 +100,9 @@ MUTATIONS = [
  ("the print hide-list loses its terminator again",
   "help.css", ".cl__all,.clusters__say,.langbar,.sprite,.mast__bg{ display:none !important; }",
   ".cl__all,.clusters__say,.langbar,.sprite,"),
+ ("the skip link lands the list under the header again",
+  "help.css", ".dir{ display:flex; flex-direction:column;\n  scroll-margin-top:calc(var(--head-h) + 14px); }",
+  ".dir{ display:flex; flex-direction:column; }"),
  # ---- round three: print, contrast, motion, forms, search feedback, SEO
  ("printing loses the numbers under every card",
   "help.css", ".cl__b{ font-size:7pt; color:#000; }",

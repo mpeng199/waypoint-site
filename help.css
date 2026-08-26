@@ -450,7 +450,12 @@ b,strong{ font-weight:600; }
 /* --------------------------------------------------------- the directory */
 /* A column so the groups can be reordered by relevance during a search; see
    help.js. Source order is preserved when nothing is being searched. */
-.dir{ display:flex; flex-direction:column; }
+/* The skip link on every category page says "Skip to the list" and points
+   here. Without a scroll-margin it landed the whole list under the header —
+   203px of bar at 320px, over exactly the thing a keyboard user had just
+   asked to be taken to. */
+.dir{ display:flex; flex-direction:column;
+  scroll-margin-top:calc(var(--head-h) + 14px); }
 .dir__none{ order:-9999; background:var(--surface); border:1.5px dashed var(--line);
   border-radius:var(--r); padding:24px; font-size:1.02em; color:var(--ink-2);
   max-width:66ch; }

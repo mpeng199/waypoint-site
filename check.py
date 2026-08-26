@@ -4580,6 +4580,27 @@ def check_the_skip_link_works():
                 f"page — it would send a keyboard reader nowhere")
         else:
             ok(f"{f} skips to #{m.group(1)}")
+            # …and arriving there has to mean arriving where you can see it.
+            # "Skip to the list" pointed at .dir, which had no scroll-margin,
+            # so at 320px the list landed under 203px of header — the bar
+            # sitting on exactly the thing the reader asked to be taken to.
+            tag = re.search(rf'<[a-z]+ class="([^"]+)"[^>]*id="{m.group(1)}"', src)
+            if not tag:
+                continue
+            cls = tag.group(1).split()[0]
+            if 'class="sitehead"' not in src:
+                continue
+            rule = re.search(rf"\.{re.escape(cls)}\b[^{{}}]*\{{([^}}]*)\}}", css, re.S)
+            # A section that fills the viewport and centres its own content
+            # does not need one: index.html skips to .scene, and measured at
+            # 320px the first line of it lands at 227px against a header that
+            # ends at 203.
+            if rule and re.search(r"min-height\s*:\s*100(?:s?v|d)h", rule.group(1)):
+                continue
+            if not (rule and "scroll-margin-top" in rule.group(1)):
+                bad(f"{f} skips to .{cls}, which has no scroll-margin-top. "
+                    f"The sticky header lands on top of it, so the skip link "
+                    f"takes a keyboard reader to a heading they cannot see.")
 
 
 def check_category_pages_keep_their_jump_nav():
