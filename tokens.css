@@ -262,11 +262,32 @@
   .brand::after{ content:""; position:absolute; inset:-13px -10px; }
 }
 
+/* --head-h before the script runs, and for anyone whose script never does.
+
+   The calc() below assumes the tab row wraps to exactly two rows. It does not:
+   how many rows the five tabs take depends on how wide the labels are at the
+   width you are reading at. Measured on the English pages —
+
+     up to 359px   203    two rows of tabs and the lockup
+     360 to 767    155
+     768 to 1080   107
+     above 1080     73    one row
+
+   — against a calc that said 116 at every one of them. On help.html and
+   index.html a ResizeObserver replaces it within a frame, so nothing looked
+   wrong. With JavaScript off it stands, and at 320px it put privacy.html's
+   breadcrumb 58px behind the fixed bar and the page title 16px behind it.
+
+   So the fallback is measured now, rounded up a little because a reader with
+   a larger default font size has a taller bar than any of these. The observer
+   still publishes the exact height wherever a script runs; this is only what
+   the page looks like before it does. */
 @media (max-width:1080px){
-  :root{ --head-pad:10px;
-         --head-h:calc(var(--head-pad) * 2 + var(--head-row) * 2 + var(--head-gap)); }
+  :root{ --head-pad:10px; --head-h:112px; }
   .sitehead__in{ flex-wrap:wrap; gap:var(--head-gap); }
   .sitehead__links{ width:100%; flex-wrap:wrap; gap:4px; justify-content:flex-start;
     margin-inline-start:-13px; }   /* the pill's padding, so labels line up with the wordmark */
   .sitehead__links a{ padding:10px 13px; }
 }
+@media (max-width:767px){ :root{ --head-h:160px; } }
+@media (max-width:359px){ :root{ --head-h:210px; } }

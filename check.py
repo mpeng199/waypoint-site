@@ -5161,6 +5161,51 @@ def check_the_language_carryover_cannot_be_fed_anything():
         ok("the carryover no longer builds a selector by concatenation")
 
 
+def check_nothing_starts_under_the_bar_without_script():
+    """What the narrative pages look like before the script runs.
+
+    index.html, privacy.html and terms.html carry a fixed header, so anything
+    at the top of their first section has to be pushed clear of it. That push
+    reads --head-h, and until a ResizeObserver publishes the measured height
+    --head-h is whatever tokens.css says — which is what a reader with
+    JavaScript off gets permanently, and what everybody else gets for the first
+    frame.
+
+    Two things were wrong. The token was a calc() assuming the tab row wraps to
+    two rows, which is 116px against a bar that is 203px at 320px; it is a
+    measured value per breakpoint now. And .phero's top padding was a flat
+    140px that never read the token at all, so at 320px privacy.html's
+    breadcrumb sat 58px behind the bar and its title 16px behind.
+    """
+    tok = read("tokens.css")
+    # a measured fallback per breakpoint, not one calc() for all of them
+    for width, want in ((359, 210), (767, 160), (1080, 112)):
+        m = re.search(rf"@media \(max-width:{width}px\)\{{[^}}]*--head-h:\s*(\d+)px",
+                      tok, re.S)
+        if not m:
+            bad(f"tokens.css no longer gives --head-h a measured fallback at "
+                f"{width}px. The calc() it replaces said 116px at every width "
+                f"below 1080, against a bar that is 203px at 320.")
+        elif int(m.group(1)) < want - 12:
+            bad(f"tokens.css sets --head-h to {m.group(1)}px at {width}px; the "
+                f"bar measures about {want} there, so anything positioned "
+                f"below it starts underneath the bar until a script says "
+                f"otherwise")
+        else:
+            ok(f"--head-h falls back to {m.group(1)}px at {width}px")
+
+    css = read("styles.css")
+    hero = re.search(r"\.phero\{([^}]*)\}", css, re.S)
+    if not hero:
+        bad("styles.css has no .phero rule")
+    elif "--head-h" not in hero.group(1):
+        bad(".phero's padding does not read --head-h, so the sub-page heroes "
+            "start at a fixed distance from the top whatever the bar is doing. "
+            "It was 140px against a 203px bar.")
+    else:
+        ok(".phero clears the header it is under")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -5187,6 +5232,7 @@ def main():
                check_the_data_file_keeps_its_shape,
                check_the_browser_pass_covers_the_pages_that_need_it,
                check_the_language_carryover_cannot_be_fed_anything,
+               check_nothing_starts_under_the_bar_without_script,
                check_directory_is_generated, check_directory_reachable,
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,

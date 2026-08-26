@@ -284,7 +284,13 @@ img,svg{ display:block; max-width:100%; }
    SUBPAGES (consistent: landscape hero + green body)
    ============================================================ */
 .subpage{ background:var(--green-deep); }
-.phero{ position:relative; min-height:62vh; display:flex; align-items:flex-end; padding:140px var(--pad) clamp(40px,6vw,72px); overflow:hidden; }
+/* 140px was a number, not a measurement: the bar is 203px tall at 320px, and
+   when the hero's content is taller than its 62vh the content starts at the
+   padding and the breadcrumb lands behind the bar. The three .hero__ui rules
+   below already take the header into account; this one did not. */
+.phero{ position:relative; min-height:62vh; display:flex; align-items:flex-end;
+  padding:max(140px, calc(var(--head-h) + 20px)) var(--pad) clamp(40px,6vw,72px);
+  overflow:hidden; }
 .phero__bg{ position:absolute; inset:0; background-size:cover; background-position:center; z-index:0; }
 .phero__bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(12,22,16,.35), rgba(19,35,26,.6) 60%, var(--green-deep)); }
 .phero__in{ position:relative; z-index:2; max-width:var(--container); margin-inline:auto; width:100%; }

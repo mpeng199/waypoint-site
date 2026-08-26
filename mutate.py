@@ -111,6 +111,11 @@ MUTATIONS = [
   '<a class="pv__call" href="tel:311">'),
  ("the language carryover takes the URL raw",
   "help.js", "/[?&]lang=([a-z-]{2,20})/", "/[?&]lang=(.+)/"),
+ ("the sub-page hero stops clearing the bar",
+  "styles.css", "padding:max(140px, calc(var(--head-h) + 20px)) var(--pad)",
+  "padding:140px var(--pad)"),
+ ("--head-h goes back to guessing at phone widths",
+  "tokens.css", "@media (max-width:359px){ :root{ --head-h:210px; } }", ""),
  # ---- round three: print, contrast, motion, forms, search feedback, SEO
  ("printing loses the numbers under every card",
   "help.css", ".cl__b{ font-size:7pt; color:#000; }",
