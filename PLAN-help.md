@@ -197,7 +197,7 @@ has been read by somebody who speaks the language.
 
 ## The afternoon and evening of 25 August
 
-Ten defects that 3,400 static checks could not see, found by rendering the site
+Twelve defects that 3,400 static checks could not see, found by rendering the site
 and clicking it rather than reading it. In the order they were found:
 
 1. A bar that covered the heading every in-page link jumped to, on all ten
@@ -221,6 +221,15 @@ and clicking it rather than reading it. In the order they were found:
 9. Seven stale counts in the docs, and two that a reader would use to judge how
    current the directory is.
 10. The link sweep's failure list had a live site on it.
+11. With JavaScript off — or for the first frame with it on — the legal pages
+    started under the fixed bar: privacy.html's breadcrumb 58px behind it and
+    its title 16px behind. Two hard-coded numbers standing in for a
+    measurement: `--head-h`'s calc, and `.phero`'s flat 140px top padding.
+12. Search on a category page hid nothing and said it had. `.r` sets
+    `display:flex`, which beats the browser's own `[hidden]{display:none}`, so
+    "kosher" on the food page read "Showing 3 of 30" over sixteen visible
+    cards. It had been true on all seventeen pages since the cards got a flex
+    layout, and it looked like it worked because whole groups do hide.
 
 Ten of the twelve rows stuck on a June date were confirmed by opening their
 sites in a browser; the VA's numbers live in a `va-telephone` web component,
