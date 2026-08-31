@@ -39,6 +39,7 @@
 <nav class="langbar" aria-labelledby="langbar-h">
   <h2 id="langbar-h" class="langbar__h">Get help in your language</h2>
   <ul class="langbar__list">
+    <li><span class="langbar__here" lang="en" aria-current="page">English</span></li>
     <li><a href="help-es.html#n-bills" lang="es" data-lang="spanish">Español</a></li>
     <li><a href="help-zh.html#n-bills" lang="zh-Hans" data-lang="chinese">中文</a></li>
     <li><a href="help-ru.html#n-bills" lang="ru" data-lang="russian">Русский</a></li>
@@ -49,7 +50,6 @@
     <li><a href="help-ur.html#n-bills" lang="ur" data-lang="urdu" dir=rtl>اردو</a></li>
     <li><a href="help-fr.html#n-bills" lang="fr" data-lang="french">Français</a></li>
     <li><a href="help-pl.html#n-bills" lang="pl" data-lang="polish">Polski</a></li>
-    <li><span class="langbar__here" lang="en" aria-current="page">English</span></li>
   </ul>
 </nav>
 <section class="mast mast--cat">
@@ -109,37 +109,63 @@
     </div>
     <button type="button" class="printbtn" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6M7 19H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>Print this list</button>
   </div>
-  <details class="find__filters">
-    <summary><span>Narrow this list</span></summary>
-    <fieldset class="fset"><legend>Where you are</legend><div class="chips">
-      <button type="button" class="chip" data-f="boro" data-v="bronx" aria-pressed="false">Bronx</button>
-      <button type="button" class="chip" data-f="boro" data-v="brooklyn" aria-pressed="false">Brooklyn</button>
-      <button type="button" class="chip" data-f="boro" data-v="manhattan" aria-pressed="false">Manhattan</button>
-      <button type="button" class="chip" data-f="boro" data-v="queens" aria-pressed="false">Queens</button>
-      <button type="button" class="chip" data-f="boro" data-v="staten-island" aria-pressed="false">Staten Island</button>
-    </div></fieldset>
-    <fieldset class="fset"><legend>Language you speak</legend>
-      <p class="fset__hint">Shows places that name your language, and places that work through interpreters. Ask when you call.</p>
-      <div class="chips">
-      <button type="button" class="chip" data-f="lang" data-v="spanish" aria-pressed="false" lang="es">Español</button>
-      <button type="button" class="chip" data-f="lang" data-v="chinese" aria-pressed="false" lang="zh-Hans">中文</button>
-      <button type="button" class="chip" data-f="lang" data-v="russian" aria-pressed="false" lang="ru">Русский</button>
-      <button type="button" class="chip" data-f="lang" data-v="bengali" aria-pressed="false" lang="bn">বাংলা</button>
-      <button type="button" class="chip" data-f="lang" data-v="haitian-creole" aria-pressed="false" lang="ht">Kreyòl Ayisyen</button>
-      <button type="button" class="chip" data-f="lang" data-v="korean" aria-pressed="false" lang="ko">한국어</button>
-      <button type="button" class="chip" data-f="lang" data-v="arabic" aria-pressed="false" lang="ar">العربية</button>
-      <button type="button" class="chip" data-f="lang" data-v="urdu" aria-pressed="false" lang="ur">اردو</button>
-      <button type="button" class="chip" data-f="lang" data-v="french" aria-pressed="false" lang="fr">Français</button>
-      <button type="button" class="chip" data-f="lang" data-v="polish" aria-pressed="false" lang="pl">Polski</button>
-    </div></fieldset>
-    <fieldset class="fset"><legend>Only show</legend><div class="chips">
-      <button type="button" class="chip" data-f="flags" data-v="free" aria-pressed="false">Free</button>
-      <button type="button" class="chip" data-f="flags" data-v="open-247" aria-pressed="false">Open 24/7</button>
-      <button type="button" class="chip" data-f="flags" data-v="no-status" aria-pressed="false">Does not ask immigration status</button>
-      <button type="button" class="chip" data-f="flags" data-v="phone" aria-pressed="false">You can call</button>
-    </div></fieldset>
+  <div class="find__filters">
+    <span class="find__filters-h">Narrow this list</span>
+    <details class="facet" data-facet="boro">
+      <summary class="facet__btn">
+        <span class="facet__label">Where you are</span>
+        <span class="facet__n" hidden></span>
+        <svg class="facet__caret" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </summary>
+      <div class="facet__menu" role="group" aria-label="Where you are">
+        <div class="chips">
+          <button type="button" class="chip" data-f="boro" data-v="bronx" aria-pressed="false">Bronx</button>
+          <button type="button" class="chip" data-f="boro" data-v="brooklyn" aria-pressed="false">Brooklyn</button>
+          <button type="button" class="chip" data-f="boro" data-v="manhattan" aria-pressed="false">Manhattan</button>
+          <button type="button" class="chip" data-f="boro" data-v="queens" aria-pressed="false">Queens</button>
+          <button type="button" class="chip" data-f="boro" data-v="staten-island" aria-pressed="false">Staten Island</button>
+        </div>
+      </div>
+    </details>
+    <details class="facet" data-facet="lang">
+      <summary class="facet__btn">
+        <span class="facet__label">Language you speak</span>
+        <span class="facet__n" hidden></span>
+        <svg class="facet__caret" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </summary>
+      <div class="facet__menu" role="group" aria-label="Language you speak">
+        <p class="facet__hint">Shows places that name your language, and places that work through interpreters. Ask when you call.</p>
+        <div class="chips">
+          <button type="button" class="chip" data-f="lang" data-v="spanish" aria-pressed="false" lang="es">Español</button>
+          <button type="button" class="chip" data-f="lang" data-v="chinese" aria-pressed="false" lang="zh-Hans">中文</button>
+          <button type="button" class="chip" data-f="lang" data-v="russian" aria-pressed="false" lang="ru">Русский</button>
+          <button type="button" class="chip" data-f="lang" data-v="bengali" aria-pressed="false" lang="bn">বাংলা</button>
+          <button type="button" class="chip" data-f="lang" data-v="haitian-creole" aria-pressed="false" lang="ht">Kreyòl Ayisyen</button>
+          <button type="button" class="chip" data-f="lang" data-v="korean" aria-pressed="false" lang="ko">한국어</button>
+          <button type="button" class="chip" data-f="lang" data-v="arabic" aria-pressed="false" lang="ar">العربية</button>
+          <button type="button" class="chip" data-f="lang" data-v="urdu" aria-pressed="false" lang="ur">اردو</button>
+          <button type="button" class="chip" data-f="lang" data-v="french" aria-pressed="false" lang="fr">Français</button>
+          <button type="button" class="chip" data-f="lang" data-v="polish" aria-pressed="false" lang="pl">Polski</button>
+        </div>
+      </div>
+    </details>
+    <details class="facet" data-facet="flags">
+      <summary class="facet__btn">
+        <span class="facet__label">Only show</span>
+        <span class="facet__n" hidden></span>
+        <svg class="facet__caret" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </summary>
+      <div class="facet__menu" role="group" aria-label="Only show">
+        <div class="chips">
+          <button type="button" class="chip" data-f="flags" data-v="free" aria-pressed="false">Free</button>
+          <button type="button" class="chip" data-f="flags" data-v="open-247" aria-pressed="false">Open 24/7</button>
+          <button type="button" class="chip" data-f="flags" data-v="no-status" aria-pressed="false">Does not ask immigration status</button>
+          <button type="button" class="chip" data-f="flags" data-v="phone" aria-pressed="false">You can call</button>
+        </div>
+      </div>
+    </details>
     <button type="button" class="reset" hidden>Start over</button>
-  </details>
+  </div>
 </section>
 <div class="printhead" aria-hidden="true">
   <p class="printhead__t">I got a medical bill, or my insurance said no</p>

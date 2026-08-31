@@ -905,30 +905,48 @@
      the moment the reader touches the control themselves: after that the
      state is theirs and the viewport does not get a vote. */
   var filters = document.querySelector(".find__filters");
-  var WIDE = "(min-width: 900px)";
-  var mq = window.matchMedia ? window.matchMedia(WIDE) : null;
-  var userSet = false;
+  var facets = Array.prototype.slice.call(document.querySelectorAll(".facet"));
 
-  var syncing = false;
-  function syncFilters() {
-    if (!filters || userSet) return;
-    var w = window.innerWidth || document.documentElement.clientWidth || 0;
-    // `toggle` fires for our own writes too, and marking those as the
-    // reader's choice would make the very first sync the last one.
-    syncing = true;
-    filters.open = !w || w >= 900;   // width unknown: hide nothing
-    syncing = false;
+  /* One open at a time, and the page closes them.
+
+     A <details> is a real disclosure and not a menu: it will happily sit open
+     while you open the next one, and it does not close when you click the
+     page behind it. Both are fine for a disclosure and wrong for a dropdown —
+     three panels open at once is the flat row this replaced, and a panel that
+     will not go away covers the list it is meant to be narrowing. */
+  function closeFacets(except) {
+    facets.forEach(function (f) { if (f !== except) f.open = false; });
   }
-  if (filters) {
-    syncFilters();
-    filters.addEventListener("toggle", function () {
-      if (!syncing) userSet = true;
+  facets.forEach(function (f) {
+    f.addEventListener("toggle", function () { if (f.open) closeFacets(f); });
+  });
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest || !e.target.closest(".facet")) closeFacets(null);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    var open = facets.filter(function (f) { return f.open; })[0];
+    if (!open) return;
+    open.open = false;
+    /* Escape puts you back on the button you opened, not at the top of the
+       document — otherwise closing a menu costs a keyboard reader their
+       place. */
+    var btn = open.querySelector(".facet__btn");
+    if (btn) btn.focus();
+  });
+
+  /* A shut dropdown has to say whether it is doing anything. Without this the
+     list is shorter and the reason is behind a button. */
+  function countFacets() {
+    facets.forEach(function (f) {
+      var n = f.querySelectorAll('.chip[aria-pressed="true"]').length;
+      var badge = f.querySelector(".facet__n");
+      if (!badge) return;
+      badge.textContent = n ? String(n) : "";
+      badge.hidden = !n;
     });
-    if (mq && mq.addEventListener) mq.addEventListener("change", syncFilters);
-    else if (mq && mq.addListener) mq.addListener(syncFilters);
   }
 
-  /* Opening a filter from a language panel is useless if the filter is shut. */
   function revealFilters() { if (filters && !filters.open) filters.open = true; }
 
   document.addEventListener("click", function (e) {
@@ -940,6 +958,7 @@
       var i = list.indexOf(val);
       if (i === -1) list.push(val); else list.splice(i, 1);
       chip.setAttribute("aria-pressed", i === -1 ? "true" : "false");
+      countFacets();
       mode.apply();
       return;
     }
@@ -973,6 +992,7 @@
     if (active.lang.indexOf(key) === -1) active.lang.push(key);
     var chip = document.querySelector('.chip[data-f="lang"][data-v="' + key + '"]');
     if (chip) chip.setAttribute("aria-pressed", "true");
+    countFacets();
     revealFilters();
     mode.apply();
   }
@@ -984,6 +1004,8 @@
     Array.prototype.forEach.call(
       document.querySelectorAll('.chip[aria-pressed="true"]'),
       function (c) { c.setAttribute("aria-pressed", "false"); });
+    countFacets();
+    closeFacets(null);
     mode.apply();
     var home = mode.home();
     if (home) home.scrollIntoView({ block: "start" });

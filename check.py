@@ -5244,6 +5244,109 @@ def check_the_hidden_attribute_actually_hides():
             ok(f"{cls} names a display and is covered by the [hidden] rule")
 
 
+def check_english_opens_the_language_row():
+    """Eleven pages, one row, same order, English first.
+
+    English was last, which on the English page meant reading past ten scripts
+    you cannot read to find the one marking where you already are. It is the
+    language the page is written in; it goes first. The order after it is the
+    same on all eleven, because the row is meant to be somewhere you can go
+    back to, and a row that reshuffles is not.
+    """
+    import build_help
+
+    pages = ["help.html"] + [build_help.lang_page(k) for k in build_help.LANG_SLUG]
+    orders = {}
+    for f in pages:
+        if not os.path.exists(f):
+            bad(f"{f} is missing")
+            continue
+        m = re.search(r'<ul class="langbar__list">(.*?)</ul>', read(f), re.S)
+        if not m:
+            bad(f"{f} has no language row")
+            continue
+        names = re.findall(r"<(?:a|span)[^>]*>([^<]+)</(?:a|span)>", m.group(1))
+        if not names:
+            bad(f"{f}'s language row is empty")
+            continue
+        if names[0] != "English":
+            bad(f"{f} opens its language row with {names[0]!r}. English is the "
+                f"language this site is written in and goes first; anything "
+                f"else makes a reader search the row for where they already "
+                f"are.")
+        orders[f] = tuple(names)
+
+    distinct = set(orders.values())
+    if len(distinct) > 1:
+        bad(f"the language row is in {len(distinct)} different orders across "
+            f"the eleven pages. It is meant to be one object somebody can go "
+            f"back to.")
+    elif orders:
+        ok(f"all {len(orders)} language rows open with English, in one order")
+
+
+def check_the_filters_are_a_row_of_dropdowns():
+    """Three facets, three buttons, and a count on each.
+
+    They were nineteen chips laid out flat inside one disclosure that help.js
+    opened on any screen 900px or wider — so every desktop reader met a wall
+    of choices before the first phone number. Each facet is a dropdown now.
+
+    Two things make that honest rather than merely smaller. Every facet
+    carries a count of what is selected inside it, or a shut dropdown hides
+    the reason the list got shorter. And the card must not clip its own
+    overflow: `.find` had `overflow:hidden` to keep the mint bar inside its
+    rounded corners, which also clipped away a 450px menu opening below a
+    284px card. The panel was there, measurable, and seven pixels of it were
+    visible.
+    """
+    import build_help
+
+    src = read("help.html")
+    facets = re.findall(r'<details class="facet" data-facet="([a-z]+)"', src)
+    if sorted(facets) != ["boro", "flags", "lang"]:
+        bad(f"help.html has facets {facets}, expected boro, lang and flags")
+    else:
+        ok("three facets, one dropdown each")
+
+    for key in ("boro", "lang", "flags"):
+        block = re.search(rf'<details class="facet" data-facet="{key}">(.*?)</details>',
+                          src, re.S)
+        if not block:
+            continue
+        if 'class="facet__n"' not in block.group(1):
+            bad(f"the {key} facet has no count badge, so a reader cannot tell "
+                f"it is filtering without opening it")
+        if 'role="group"' not in block.group(1):
+            bad(f"the {key} facet's menu is not a named group, so a screen "
+                f"reader hears the chips without hearing what they are for")
+
+    css = read("help.css")
+    menu = re.search(r"\.facet__menu\{([^}]*)\}", css, re.S)
+    if not menu:
+        bad("help.css has no .facet__menu rule")
+        return
+    floats = "position:absolute" in menu.group(1).replace(" ", "")
+    find = re.search(r"\.find\{([^}]*)\}", css, re.S)
+    if floats and find and re.search(r"overflow\s*:\s*hidden", find.group(1)):
+        bad(".find clips its overflow while .facet__menu floats out of it, so "
+            "the dropdown panel is drawn and then cut off at the card's edge")
+    else:
+        ok("the dropdown panels can leave the card they open from")
+
+    js = read("help.js")
+    for fn, why in [("countFacets", "nothing keeps the counts on the buttons honest"),
+                    ("closeFacets", "three panels can be open at once, which is "
+                                    "the flat row this replaced")]:
+        if fn not in js:
+            bad(f"help.js has no {fn}: {why}")
+        else:
+            ok(f"help.js {fn}")
+    if 'e.key !== "Escape"' not in js and "'Escape'" not in js:
+        bad("no Escape handler: a dropdown that will not close covers the list "
+            "it is meant to be narrowing")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -5270,6 +5373,8 @@ def main():
                check_the_data_file_keeps_its_shape,
                check_the_browser_pass_covers_the_pages_that_need_it,
                check_the_language_carryover_cannot_be_fed_anything,
+               check_english_opens_the_language_row,
+               check_the_filters_are_a_row_of_dropdowns,
                check_nothing_starts_under_the_bar_without_script,
                check_the_hidden_attribute_actually_hides,
                check_directory_is_generated, check_directory_reachable,

@@ -259,7 +259,15 @@ b,strong{ font-weight:600; }
    other. Nothing inside the card carries a border of its own now. */
 .find{ margin-bottom:clamp(28px,5vw,44px);
   background:var(--surface); border:1.5px solid var(--line);
-  border-radius:var(--r); overflow:hidden; }
+  border-radius:var(--r); }
+/* This card used to clip its own overflow, to keep the mint bar's fill inside
+   the rounded corners. That also clipped away the facet dropdowns, which open
+   below the last zone and are 450px tall against a 284px card — the panel was
+   there, measurable, and 7px of it was visible. The bar is never the first or
+   last zone, so it never reaches a corner; rounding the two zones that do is
+   enough, and the menus can leave the box. */
+.find > :first-child{ border-start-start-radius:inherit; border-start-end-radius:inherit; }
+.find > :last-child{ border-end-start-radius:inherit; border-end-end-radius:inherit; }
 .find__top{ padding:clamp(15px,2.2vw,20px); }
 .find__top label{ display:block; font-weight:600; margin-bottom:9px; font-size:.98rem; }
 .find__box{ display:flex; align-items:center; gap:12px; background:var(--mint);
@@ -295,25 +303,65 @@ b,strong{ font-weight:600; }
   min-height:36px; }
 .find__clear:hover{ background:var(--line); }
 
-.find__filters{ border-top:1px solid var(--line-2); }
-.find__filters > summary{ cursor:pointer; list-style:none; display:flex;
-  align-items:center; gap:10px; min-height:48px;
-  padding:10px clamp(15px,2.2vw,20px);
-  font-weight:600; font-size:.95rem; color:var(--ink-2); }
-.find__filters > summary::-webkit-details-marker{ display:none; }
-.find__filters > summary::after{ content:""; width:8px; height:8px; flex:none;
-  margin-inline-start:auto; border-right:2px solid currentColor;
-  border-bottom:2px solid currentColor; transform:rotate(45deg) translateY(-2px);
+/* The third zone of the find card: one row, three dropdowns.
+
+   It was nineteen chips laid out flat inside a disclosure — 860px on a phone,
+   three screens of chrome in front of somebody who mostly wants to type a
+   word. Each facet is a button now, and its choices open over the page
+   instead of pushing it down, so the resting state is one row whatever the
+   width. */
+.find__filters{ border-top:1px solid var(--line-2);
+  display:flex; align-items:center; flex-wrap:wrap; gap:8px;
+  padding:12px clamp(15px,2.2vw,20px); }
+.find__filters-h{ font-weight:600; font-size:.88rem; color:var(--ink-3);
+  text-transform:uppercase; letter-spacing:.06em; margin-inline-end:4px; }
+
+.facet{ position:relative; }
+.facet__btn{ cursor:pointer; list-style:none; display:inline-flex;
+  align-items:center; gap:8px; min-height:44px; padding:9px 14px;
+  font-weight:600; font-size:.94rem; color:var(--ink-2);
+  background:var(--surface); border:1.5px solid var(--line);
+  border-radius:var(--r-pill);
+  transition:border-color .16s var(--ease), color .16s var(--ease),
+             background .16s var(--ease); }
+.facet__btn::-webkit-details-marker{ display:none; }
+.facet__btn:hover{ border-color:var(--green-2); color:var(--ink); }
+.facet[open] > .facet__btn{ border-color:var(--green); color:var(--ink); }
+.facet__caret{ width:16px; height:16px; flex:none; opacity:.6;
   transition:transform .2s var(--ease); }
-.find__filters[open] > summary::after{ transform:rotate(-135deg) translateY(-2px); }
-.find__filters > summary:hover{ color:var(--ink); background:var(--line-2); }
-.find__filters[open] > summary{ border-bottom:1px solid var(--line-2); }
-.find__filters > :not(summary){ margin:16px clamp(15px,2.2vw,20px); }
-.find__filters > .fset + .fset{ margin-top:0; }
-.fset{ border:0; padding:0; margin:0; }
-.fset legend{ font-weight:600; font-size:.88rem; color:var(--ink-2);
-  text-transform:uppercase; letter-spacing:.06em; padding:0 0 8px; }
-.fset__hint{ font-size:.88rem; color:var(--ink-3); margin:0 0 10px; max-width:60ch; }
+.facet[open] .facet__caret{ transform:rotate(180deg); }
+
+/* What the button says while it is shut. A dropdown that hides the reason the
+   list got shorter is worse than the flat row it replaced. */
+.facet__n{ display:inline-flex; align-items:center; justify-content:center;
+  min-width:20px; height:20px; padding:0 6px; flex:none;
+  font-size:.78rem; font-weight:700; font-variant-numeric:tabular-nums;
+  background:var(--green); color:var(--mint); border-radius:999px;
+  /* A green room on a cream page: anything that ever becomes focusable in
+     here needs a ring that is not also green. Nothing is focusable in a count
+     today; the token costs nothing and stops that being a trap later. */
+  --focus:var(--gold-lit); }
+.facet:has(.facet__n:not([hidden])) > .facet__btn{ border-color:var(--green); }
+
+.facet__menu{ position:absolute; z-index:40; inset-block-start:calc(100% + 6px);
+  inset-inline-start:0; min-width:max(316px, 100%); max-width:min(92vw, 460px);
+  background:var(--surface); border:1.5px solid var(--line);
+  border-radius:var(--r); box-shadow:var(--shadow-lg, var(--shadow));
+  padding:14px; }
+.facet__hint{ font-size:.88rem; color:var(--ink-3); margin:0 0 10px; }
+
+/* Narrow enough that a floating panel would hang off the side: let it sit in
+   the flow instead. Only one facet is open at a time, so the row still costs
+   one panel rather than three. */
+@media (max-width:560px){
+  .facet{ position:static; }
+  .facet__menu{ position:static; inset:auto; min-width:0; max-width:none;
+    margin-block-start:8px; width:100%; }
+  .find__filters{ flex-direction:column; align-items:stretch; }
+  .facet__btn{ justify-content:space-between; }
+  .facet__caret{ margin-inline-start:auto; }
+}
+
 .chips{ display:flex; flex-wrap:wrap; gap:8px; }
 .chip{ font:inherit; font-size:.94rem; font-weight:500; cursor:pointer;
   background:var(--surface); color:var(--ink-2);

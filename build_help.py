@@ -2150,20 +2150,22 @@ def langbar_frag(need=None):
     # thing in English and a large one when you have just spent a minute
     # working out where you were.
     at = f'#n-{need}' if need else ''
+    # English opens the row on every one of the eleven, marked rather than
+    # linked on the page you are already reading. First because it is the
+    # language this page is written in — a row that makes you read to the end
+    # to find where you already are reads as an afterthought — and because the
+    # row is then the same object in the same order wherever you are, which is
+    # what makes it somewhere to go back to.
     out = ['<nav class="langbar" aria-labelledby="langbar-h">',
            '  <h2 id="langbar-h" class="langbar__h">Get help in your language</h2>',
-           '  <ul class="langbar__list">']
+           '  <ul class="langbar__list">',
+           '    <li><span class="langbar__here" lang="en" aria-current="page">'
+           'English</span></li>']
     for L in LANGUAGES:
         out.append(f'    <li><a href="{lang_page(L["key"])}{at}" lang="{L["tag"]}" '
                    f'data-lang="{L["key"]}"{" dir=rtl" if L["dir"] == "rtl" else ""}>'
                    f'{esc(L["endonym"])}</a></li>')
-    # English closes the row on every one of the eleven, marked rather than
-    # linked on the page you are already reading. The row is then the same
-    # object in the same order wherever you are, which is what makes it
-    # somewhere to go back to.
-    out += ['    <li><span class="langbar__here" lang="en" aria-current="page">'
-            'English</span></li>',
-            '  </ul>', '</nav>']
+    out += ['  </ul>', '</nav>']
     return out
 
 
@@ -2231,43 +2233,63 @@ def footer_frag(n, when="recently"):
 
 
 def filters_frag(compact=False):
-    """The three facets. Identical on the front page and on every category
-    page, because a chip that means one thing here and another thing there is
-    a chip nobody trusts.
+    """The three facets, one dropdown each.
 
-    They live in a disclosure. Nineteen chips is 860px on a phone — three
-    screens of chrome between somebody arriving and the first phone number —
-    and they are a refinement, not the way in. help.js opens it on a wide
-    screen, where the space is free, and leaves it closed on a narrow one.
-    The whole block is already script-only (a filter that cannot filter is
-    worse than no filter), so nothing is lost when there is no script: the
-    disclosure never ships at all.
+    Identical on the front page and on every category page, because a chip
+    that means one thing here and another thing there is a chip nobody trusts.
+
+    They used to be nineteen chips laid out flat inside one disclosure: 860px
+    on a phone, three screens of chrome between somebody arriving and the
+    first phone number, and a wall of choices in front of a reader who mostly
+    wants to type a word. Now each facet is a button that opens over the page,
+    so the resting state is one row — three buttons and nothing else — and the
+    choices appear only when somebody asks for them.
+
+    A collapsed dropdown has to say whether it is doing anything, or it hides
+    the reason the list got shorter. Each button carries a count of what is
+    selected inside it, and the row carries Start over once anything is on.
+
+    The whole block is script-only (a filter that cannot filter is worse than
+    no filter), so nothing is lost when there is no script: `.find` ships
+    hidden and this never appears.
     """
-    out = ['  <details class="find__filters">',
-           '    <summary><span>Narrow this list</span></summary>',
-           '    <fieldset class="fset"><legend>Where you are</legend><div class="chips">']
-    for key, label in BOROUGHS:
-        out.append(f'      <button type="button" class="chip" data-f="boro" data-v="{key}" '
-                   f'aria-pressed="false">{label}</button>')
-    out += ['    </div></fieldset>',
-            '    <fieldset class="fset"><legend>Language you speak</legend>',
-            '      <p class="fset__hint">Shows places that name your language, and '
-            'places that work through interpreters. Ask when you call.</p>',
-            '      <div class="chips">']
-    for L in LANGUAGES:
-        out.append(f'      <button type="button" class="chip" data-f="lang" data-v="{L["key"]}" '
-                   f'aria-pressed="false" lang="{L["tag"]}">{esc(L["endonym"])}</button>')
-    out += ['    </div></fieldset>',
-            '    <fieldset class="fset"><legend>Only show</legend><div class="chips">']
-    for key, label in [("free", "Free"), ("open-247", "Open 24/7"),
-                       ("no-status", "Does not ask immigration status"),
-                       ("phone", "You can call")]:
-        out.append(f'      <button type="button" class="chip" data-f="flags" data-v="{key}" '
-                   f'aria-pressed="false">{label}</button>')
-    out += ['    </div></fieldset>',
-            '    <button type="button" class="reset" hidden>Start over</button>',
-            '  </details>']
-    return out
+    def facet(key, label, chips, hint=None):
+        out = [f'    <details class="facet" data-facet="{key}">',
+               f'      <summary class="facet__btn">',
+               f'        <span class="facet__label">{label}</span>',
+               f'        <span class="facet__n" hidden></span>',
+               '        <svg class="facet__caret" viewBox="0 0 24 24" aria-hidden="true" '
+               'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" '
+               'stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+               '      </summary>',
+               f'      <div class="facet__menu" role="group" aria-label="{label}">']
+        if hint:
+            out.append(f'        <p class="facet__hint">{hint}</p>')
+        out.append('        <div class="chips">')
+        out += chips
+        out += ['        </div>', '      </div>', '    </details>']
+        return out
+
+    boro = [f'          <button type="button" class="chip" data-f="boro" data-v="{key}" '
+            f'aria-pressed="false">{label}</button>' for key, label in BOROUGHS]
+    lang = [f'          <button type="button" class="chip" data-f="lang" '
+            f'data-v="{L["key"]}" aria-pressed="false" lang="{L["tag"]}">'
+            f'{esc(L["endonym"])}</button>' for L in LANGUAGES]
+    only = [f'          <button type="button" class="chip" data-f="flags" data-v="{key}" '
+            f'aria-pressed="false">{label}</button>'
+            for key, label in [("free", "Free"), ("open-247", "Open 24/7"),
+                               ("no-status", "Does not ask immigration status"),
+                               ("phone", "You can call")]]
+
+    return (['  <div class="find__filters">',
+             '    <span class="find__filters-h">Narrow this list</span>']
+            + facet("boro", "Where you are", boro)
+            + facet("lang", "Language you speak", lang,
+                    hint="Shows places that name your language, and places that "
+                         "work through interpreters. Ask when you call.")
+            + facet("flags", "Only show", only)
+            + ['    <button type="button" class="reset" hidden>Start over</button>',
+               '  </div>'])
 
 
 def search_frag(placeholder, scope_note):
@@ -2624,7 +2646,8 @@ def lang_switch_frag(L, U):
     page somebody is struggling to read."""
     out = [f'<nav class="langbar" aria-label="{esc(U["langbar_h"])}">',
            f'  <span class="langbar__h">{esc(U["langbar_h"])}</span>',
-           '  <ul class="langbar__list">']
+           '  <ul class="langbar__list">',
+           '    <li><a href="help.html" lang="en">English</a></li>']
     for O in LANGUAGES:
         d = ' dir="rtl"' if O["dir"] == "rtl" else ''
         if O["key"] == L["key"]:
@@ -2633,8 +2656,7 @@ def lang_switch_frag(L, U):
         else:
             out.append(f'    <li><a href="{lang_page(O["key"])}" lang="{O["tag"]}"{d}>'
                        f'{esc(O["endonym"])}</a></li>')
-    out += ['    <li><a href="help.html" lang="en">English</a></li>',
-            '  </ul>', '</nav>']
+    out += ['  </ul>', '</nav>']
     return out
 
 
