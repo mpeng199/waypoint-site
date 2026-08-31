@@ -1523,13 +1523,6 @@ def check_directory_is_generated():
             "data/resources.csv changed without a rebuild — either way the next "
             "`python3 build_help.py` silently discards the difference. Run it.")
 
-    home = read("index.html")
-    if build_help.home_links() in home:
-        ok("index.html's list of what the directory holds is the generated one")
-    else:
-        bad("index.html's list of what the directory holds is not what "
-            "build_help.py produces. Run `python3 build_help.py`.")
-
     orphans = sorted(p.name for p in ROOT.glob("help-*.html") if p.name not in want)
     if orphans:
         bad(f"stale category page(s) with no need behind them: {orphans}. A need "
@@ -3111,7 +3104,6 @@ def check_tap_targets():
     # the smallest tap targets on the site.
     css = read("help.css") + "\n" + read("tokens.css") + "\n" + read("styles.css")
     CONTROLS = [(r"\.jump a\{", "the jump row"),
-                (r"\.helplinks a\{", "the resident links on the home page"),
                 (r"\.chip\{", "a filter chip"),
                 (r"\.langbar__list a\{", "a language link"),
                 (r"\.langbar__here\{", "the language you are on"),
@@ -3767,41 +3759,6 @@ def check_critical_queries():
            f"first, scored the way help.js scores them")
 
 
-def check_home_names_the_same_needs():
-    """The narrative page and the directory must name the same things.
-
-    They are two halves of one site and a reader crosses between them: the
-    home page's list is the first thing somebody in trouble sees, and if it
-    offers eight of sixteen kinds of help, the other eight do not exist as far
-    as that reader is concerned. Worse, if it words them differently, the two
-    halves read as two organisations with overlapping lists.
-    """
-    import build_help
-    src = read("index.html")
-    block = re.search(r'<ul class="helplinks">.*?</ul>', src, re.S)
-    if not block:
-        bad("index.html: the list of what the directory holds is gone")
-        return
-    hrefs = re.findall(r'href="(help-[a-z\-]+\.html)"', block.group(0))
-    want = [build_help.page_for(n["key"]) for n in build_help.NEEDS]
-    if hrefs != want:
-        missing = [h for h in want if h not in hrefs]
-        bad(f"index.html lists {len(hrefs)} of the {len(want)} kinds of help"
-            + (f"; missing {missing}" if missing else "; in a different order"))
-    else:
-        ok(f"index.html names all {len(want)} kinds of help, in the same order")
-
-    labels = [html.unescape(x) for x in
-              re.findall(r'href="help-[a-z\-]+\.html">([^<]+)</a>', block.group(0))]
-    wrong = [(a, b) for a, b in zip(labels, [n["label"] for n in build_help.NEEDS])
-             if a != b]
-    if wrong:
-        bad(f"index.html words a kind of help differently from the directory: "
-            f"{wrong[:2]}")
-    else:
-        ok("index.html words each kind of help exactly as the directory does")
-
-
 def check_page_furniture():
     """Two small things that only show up on a phone, and both look like bugs.
 
@@ -4342,31 +4299,51 @@ def check_home_offers_help():
     else:
         bad("index.html: the hero does not offer the directory at all")
 
-    if re.search(r'<section class="scene[^"]*" id="help">', src):
-        ok("index.html: the resident chapter is present")
+    # The #help chapter — a heading, seventeen need links and the ten language
+    # links — was removed deliberately. That makes the hero's button the only
+    # route from this page to the directory, so the check above stops being a
+    # nicety and becomes the whole of it. Nothing else on the front page takes
+    # somebody in trouble anywhere.
+    routes = set(re.findall(r'href="(help(?:-[a-z-]+)?\.html)"', src))
+    if not routes:
+        bad("index.html no longer links to the directory at all. Somebody who "
+            "lands here with a bill they cannot pay has nowhere to go.")
     else:
-        bad("index.html: the resident chapter (#help) is gone")
+        ok(f"index.html reaches the directory ({', '.join(sorted(routes))})")
 
-    # It has to arrive before the page starts talking to organisations.
-    pos_help = src.find('id="help"')
+    # And the resident story still has to come before the two pitches.
+    pos_bills = src.find('id="bills"')
     pos_students = src.find('id="students"')
     pos_partners = src.find('id="partners"')
-    if -1 < pos_help < pos_students < pos_partners:
+    if -1 < pos_bills < pos_students < pos_partners:
         ok("index.html: residents, then students, then partners")
     else:
         bad("index.html: the resident chapter no longer comes first. Somebody "
             "in trouble should not scroll past a volunteer pitch and a partner "
             "pitch to reach the help.")
 
-    # They used to point at a panel further down help.html. They point at the
-    # ten pages now, which is the difference between being told the site knows
-    # your language and being handed a page in it.
+    # The ten language pages used to be linked from this page directly, in the
+    # #help chapter. That chapter was removed, so the route is now a chain:
+    # this page reaches the directory, and the directory carries the language
+    # row. The property being protected is the same one — somebody who cannot
+    # read the headline has a way to a page in their language — and it is worth
+    # knowing that it is now two taps instead of one, and that it breaks
+    # entirely if either link goes.
     import build_help
     want = {build_help.lang_page(L["key"]) for L in build_help.LANGUAGES}
-    langs = sorted(w for w in want if f'href="{w}"' in src)
-    if len(langs) == len(want):
-        ok(f"index.html: all {len(langs)} language pages are reachable from the "
-           f"home page")
+    direct = sorted(w for w in want if f'href="{w}"' in src)
+    if len(direct) == len(want):
+        ok(f"index.html: all {len(direct)} language pages are linked directly")
+    elif 'href="help.html"' in src:
+        onward = read("help.html")
+        missing = sorted(w for w in want if f'href="{w}' not in onward)
+        if missing:
+            bad(f"index.html reaches the directory but the directory does not "
+                f"reach {missing[:3]}. With the #help chapter gone that chain "
+                f"is the only route a reader who cannot read English has.")
+        else:
+            ok(f"index.html reaches all {len(want)} language pages through the "
+               f"directory (two taps, since the #help chapter was removed)")
     else:
         bad(f"index.html: only {len(langs)} of {len(want)} language pages linked; somebody who "
             f"cannot read the headline needs a way in from here")
@@ -5381,7 +5358,7 @@ def main():
                check_directory_emergency, check_directory_no_js_contract,
                check_directory_languages, check_directory_needs,
                check_directory_clusters, check_no_stale_counts,
-               check_page_furniture, check_home_names_the_same_needs,
+               check_page_furniture,
                check_critical_queries, check_no_sideways_scroll,
                check_checked_date_is_derived, check_page_weight,
                check_reading_level,

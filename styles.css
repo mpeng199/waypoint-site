@@ -989,32 +989,16 @@ img,svg{ display:block; max-width:100%; }
    Two lists that describe the same thing in different words are two products.
    A list, deliberately, not a grid of cards: this is still the journey, and
    the journey does not have card grids in it. */
-.helplinks{ list-style:none; margin:30px 0 0; padding:0; max-width:none;
-  columns:2; column-gap:52px; }
-@media (min-width:1180px){ .helplinks{ columns:3; } }
-.helplinks li{ break-inside:avoid; margin-bottom:2px; }
 /* 44px, not 36. These seventeen are the links on the narrative page that are
    addressed to somebody in trouble rather than to a volunteer or a partner,
    and they were the smallest tap targets on it. Padding rather than a widened
    pseudo-element, because they are stacked and an invisible overlap trades a
    small target for a mis-hit. */
-.helplinks a{ display:inline-flex; align-items:baseline; gap:10px;
-  padding:11px 0; min-height:44px; font-size:clamp(.98rem,1.05vw,1.06rem); font-weight:500;
-  line-height:1.35;
-  color:var(--cream); text-shadow:0 1px 18px rgba(12,22,16,.7);
-  border-bottom:1px solid transparent; transition:border-color .25s var(--ease), color .25s; }
-.helplinks a::after{ content:"→"; color:var(--gold); opacity:0; transform:translateX(-5px);
-  transition:opacity .25s var(--ease), transform .25s var(--ease); }
-.helplinks a:hover, .helplinks a:focus-visible{ color:#fff; border-bottom-color:var(--gold); }
-.helplinks a:hover::after, .helplinks a:focus-visible::after{ opacity:1; transform:none; }
 
 /* The gold "Find help" pill is .is-find in tokens.css, the same object on
    both halves: the one nav item addressed to somebody in trouble rather than
    to an organisation, so it is the one that does not look like the others. */
 
-@media (max-width:900px){
-  .helplinks{ columns:1; margin-top:24px; }
-}
 
 /* ---------- language, on the home page ----------
    The same ten doors the directory opens with — the ten citywide languages

@@ -3049,35 +3049,6 @@ def selfcheck():
                 f"{r['Resource Name']}: unusable tel: {href!r} from {r['Phone']!r}"
 
 
-HOME = ROOT / "index.html"
-
-
-def home_links():
-    """The one block of index.html this build owns.
-
-    The narrative page is hand-written and stays that way. But its list of
-    what the directory holds is not prose — it is the directory's own table of
-    contents, rendered on the other side of the site, and hand-maintaining it
-    meant it offered eight of sixteen kinds of help for as long as nobody
-    looked. Generated from NEEDS, like everything else that has to agree with
-    NEEDS.
-    """
-    return ("      <ul class=\"helplinks\">\n"
-            + "\n".join(f'        <li><a href="{page_for(n["key"])}">'
-                        f'{esc(n["label"])}</a></li>' for n in NEEDS)
-            + "\n      </ul>")
-
-
-def sync_home():
-    src = HOME.read_text(encoding="utf-8")
-    block = re.search(r'      <ul class="helplinks">.*?</ul>', src, re.S)
-    if not block:
-        raise SystemExit("index.html: no helplinks list to keep in step with NEEDS")
-    fresh = src.replace(block.group(0), home_links(), 1)
-    if fresh != src:
-        HOME.write_text(fresh, encoding="utf-8")
-        return True
-    return False
 
 
 def build():
@@ -3115,8 +3086,6 @@ def build():
         path.write_text(render_language(L, rows, by_need), encoding="utf-8")
         written.append(path)
 
-    if sync_home():
-        print("updated index.html's list of what the directory holds")
     return rows, written
 
 

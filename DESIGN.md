@@ -667,6 +667,22 @@ holding a third of a 320px screen and putting every heading a reader jumped to
 behind itself. Above 1080px, where the bar is one row and `--head-h` is right
 within a pixel, both halves are sticky and identical.
 
+**The front page no longer carries the directory's table of contents.** It
+used to: a chapter headed "Here is where it is." with the seventeen kinds of
+help and the ten language pages listed under it, generated from `NEEDS` so it
+could not drift. That chapter was removed deliberately, which leaves the hero's
+own button as the single route from the narrative half to the directory.
+
+Two things follow, and both are checked rather than remembered.
+`check_home_offers_help` used to treat the hero's call to action as a nicety on
+top of the chapter; with the chapter gone it is the whole of it, so the guard
+now fails if the front page links to the directory nowhere at all. And the ten
+language pages were linked from that chapter directly — the route is a chain
+now, front page to directory to language row, which is two taps instead of one
+and breaks entirely if either link goes. The guard follows the chain and says
+so. If the front page should offer languages directly again, the cheapest place
+is the footer, which is on every page and costs no scroll.
+
 **What is not translated, and why.** The resource descriptions are English
 and this site has no way to check ten translations of every one of them. So the cards name
 places and dial them — a proper noun and a number are the same in every
