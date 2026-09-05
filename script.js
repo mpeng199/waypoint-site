@@ -54,59 +54,90 @@
   });
 
   /* ---------- nav chrome ---------- */
-  var nav = $(".nav");
+
+  /* --------------------------------------------------------------------
+     The bar publishes its own height.
+
+     With five tabs it wraps onto one, two or three rows depending on the
+     width and the text size — 73px at a desk, 203px at 320px — so no amount
+     of calc() in a stylesheet can know it. Everything that has to clear a
+     fixed header reads --head-h: the hero's first line, and every
+     scroll-margin on the directory, where an anchor was landing 84px down a
+     page whose header is 203px tall and putting the heading you asked for
+     behind the bar.
+
+     The calc() in tokens.css stays as the no-JS fallback; it is exact at the
+     widths where the tabs fit on one row. (Same block in help.js — five lines
+     duplicated rather than a third script tag on twenty pages.) */
+  var head = document.querySelector(".sitehead");
+  if (head && window.ResizeObserver) {
+    new ResizeObserver(function () {
+      document.documentElement.style.setProperty("--head-h", head.offsetHeight + "px");
+    }).observe(head);
+
+    /* A page opened AT a fragment lands the target under the bar.
+
+       The browser scrolls to the fragment using the scroll-margin it can see,
+       which is the calc() fallback in tokens.css — 116px against a bar that is
+       203px at 320px. The resource somebody was linked to ends up 72px behind
+       the header. That is the path that matters most: each of the ten language
+       pages carries eighty-five deep links straight to a named place on an
+       English page, and every shared or bookmarked link takes it too.
+
+       Correcting this on a timer does not work. On a page this size Chrome
+       defers the fragment scroll until layout is stable, which measured well
+       past two seconds — a polling loop spends its whole window watching a
+       target that is still four thousand pixels down, gives up, and then the
+       browser scrolls. So listen for the scroll rather than race it: the
+       browser's own jump fires one, and that is the moment the target is
+       finally somewhere we can measure.
+
+       One correction, then done. A reader who has started scrolling themselves
+       is never moved. */
+    var settling = true;
+    var done = function () { settling = false; };
+    addEventListener("wheel", done, { passive: true, once: true });
+    addEventListener("touchstart", done, { passive: true, once: true });
+    /* Only the keys that actually scroll. Ending on any keydown meant a
+       keyboard reader who pressed Tab on arrival — which is most of them, and
+       the ones this correction is most for — switched it off before it ran. */
+    var SCROLLS = { " ": 1, PageUp: 1, PageDown: 1, Home: 1, End: 1,
+                    ArrowUp: 1, ArrowDown: 1 };
+    addEventListener("keydown", function (e) { if (SCROLLS[e.key]) done(); });
+    setTimeout(done, 8000);
+
+    var landOnFragment = function () {
+      if (!settling || !location.hash) return;
+      var id = location.hash.slice(1);
+      /* decodeURIComponent throws on a stray percent — "#100%" is a legal
+         fragment and an illegal escape, and an exception here would fire on
+         every scroll event for the life of the page. */
+      try { id = decodeURIComponent(id); } catch (e) { /* use it raw */ }
+      var t = document.getElementById(id);
+      if (t && t.getBoundingClientRect().top < head.offsetHeight) {
+        settling = false;
+        t.scrollIntoView({ block: "start", behavior: "instant" });
+      }
+    };
+    addEventListener("scroll", landOnFragment, { passive: true });
+    addEventListener("load", landOnFragment);
+    addEventListener("hashchange", function () {
+      settling = true;
+      setTimeout(landOnFragment, 0);
+      setTimeout(done, 1000);
+    });
+    landOnFragment();
+  }
+
+  var nav = head;
   function chrome() { if (nav) nav.classList.toggle("stuck", (window.scrollY || 0) > 40); }
 
-  /* ---------- mobile menu ----------
-     One setter, because there were three ways to close this and each of them
-     open-coded the same three lines. What none of them did was stop the page:
-     the drawer is a fixed layer over a document that was still scrolling
-     underneath it, so a swipe anywhere on an open menu scrolled the journey
-     behind it and left you somewhere else when it shut. Lenis has to be told
-     as well as the body — it drives the scroll itself, and an overflow:hidden
-     body does not stop it.
-
-     Escape closes it, and focus makes the round trip: into the drawer when it
-     opens, back onto the button that opened it when it shuts. Without the
-     return, closing the menu drops the caret at the top of the document and a
-     keyboard user starts the page again. */
-  var tog = $(".nav__tog"), links = $(".nav__links");
-  var menuOpen = false;
-  function setMenu(open) {
-    if (!tog || !links || open === menuOpen) return;
-    menuOpen = open;
-    links.classList.toggle("open", open);
-    tog.classList.toggle("open", open);
-    tog.setAttribute("aria-expanded", String(open));
-    root.classList.toggle("menu-open", open);
-    document.body.style.overflow = open ? "hidden" : "";
-    root.style.overflow = open ? "hidden" : "";
-    if (lenis) { if (open) lenis.stop(); else lenis.start(); }
-    if (open) { var first = links.querySelector("a"); if (first) first.focus(); }
-    else if (document.activeElement && links.contains(document.activeElement)) tog.focus();
-  }
-  if (tog && links) {
-    tog.addEventListener("click", function () { setMenu(!menuOpen); });
-    links.addEventListener("click", function (e) { if (e.target.closest("a")) setMenu(false); });
-    document.addEventListener("keydown", function (e) {
-      if (menuOpen && (e.key === "Escape" || e.key === "Esc")) { e.preventDefault(); setMenu(false); }
-    });
-    /* tap the dimmed page to close, which is the gesture a panel implies and
-       the one people reach for before they look for the X. The scrim is the
-       only thing outside the panel that can be hit while it is open — it
-       covers the viewport — so anything landing outside the drawer and the
-       button is that tap. Capture phase, so it closes before the page's own
-       anchor handler can act on whatever is underneath. */
-    document.addEventListener("click", function (e) {
-      if (!menuOpen) return;
-      if (e.target.closest(".nav__links, .nav__tog")) return;
-      e.preventDefault(); e.stopPropagation();
-      setMenu(false);
-    }, true);
-    /* the drawer is a max-width:900px element; crossing back to a desktop
-       width leaves the body locked and the class on with nothing to show it */
-    narrow.addEventListener("change", function (e) { if (!e.matches) setMenu(false); });
-  }
+  /* The mobile menu used to be a drawer — a fixed panel, a scrim, a body
+     scroll-lock, a focus round-trip, an Escape handler and a tap-outside
+     handler in the capture phase. Three links do not need a drawer, and it
+     was the last place the two halves of the site behaved differently on a
+     phone: the directory has always wrapped its tabs onto a second row.
+     Both halves wrap now, from one rule in tokens.css. */
 
   /* ============================================================
      THE DOOR — the hero's scroll drives it, and the closing scene
@@ -303,7 +334,7 @@
   function drawSpiral() {
     if (!sctx) return;
     sctx.clearRect(0, 0, sw, sh);
-    if (window.matchMedia("(max-width:900px)").matches) return;
+    if (window.matchMedia("(max-width:640px)").matches) return;
     if (spiralAlpha < 0.02) return;
     if (parseFloat(root.style.getPropertyValue("--worldShow") || "1") < 0.02) return;
 
@@ -412,12 +443,12 @@
   /* ---------- tubelight nav ---------- */
   var lamp = $("#navLamp");
   var navSections = ["bills", "work", "students", "partners"].map(function (id) {
-    return { id: id, el: document.getElementById(id), link: $('.nav__links a[href="#' + id + '"]') };
+    return { id: id, el: document.getElementById(id), link: $('.sitehead__links a[href="#' + id + '"]') };
   }).filter(function (s) { return s.el && s.link; });
 
   function navActive() {
     if (!lamp || !navSections.length) return;
-    if (window.matchMedia("(max-width:900px)").matches) {
+    if (window.matchMedia("(max-width:640px)").matches) {
       lamp.classList.remove("on");
       navSections.forEach(function (s) { s.link.classList.remove("current"); });
       return;

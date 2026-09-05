@@ -1,0 +1,1029 @@
+/* ============================================================
+   help.css — the resident surfaces.
+
+   Deliberately NOT styles.css. That stylesheet is 1000 lines of
+   scroll-choreography for a full-viewport narrative: pinned scenes, a WebGL
+   poster, six stacked compositing layers. All of it is craft aimed at a
+   partner with a laptop, and all of it is a tax on the person this page is
+   for — somebody frightened, possibly on a six-year-old Android, possibly at
+   a library terminal, possibly using a screen reader or 200% text.
+
+   So the register flips, but the world does not. The narrative site is a
+   dark green room you walk through; this is what is on the other side of that
+   door, in daylight — cream ground, near-black green ink, nothing moving that
+   you did not touch.
+
+   Every hue, both typefaces, the easings and the radii come from tokens.css,
+   which the narrative site loads too. The masthead carries the same painted
+   valley the door opens onto, the headings use the same roman-then-gold-italic
+   device, and the footer is the same deep green. What is NOT carried across is
+   the machinery: no WebGL, no inertial scroll, no pinned scenes, no
+   scroll-driven anything. Those are craft for a partner with a laptop and a
+   tax on the person this page is for.
+   ============================================================ */
+
+:root{
+  /* The hues, the typefaces, the easings and the radii come from tokens.css,
+     which index.html loads too. What is chosen here is only the *key*: which
+     of the shared greens is ground, which is ink. The dark room and this lit
+     page are the same palette played an octave apart. */
+  --ground:var(--cream);
+  --ink:var(--green-deep);
+  /* Secondary ink. 8.4:1 on the ground — a "muted" grey that fails AA is the
+     single most common way a directory like this becomes unreadable to the
+     people who need it most, so the muted tone is a dark green, not a grey. */
+  --ink-2:var(--green-3);
+  --ink-3:var(--green-4);
+  --urgent:var(--clay);
+  --urgent-bg:var(--clay-bg);
+
+  /* the same column the header uses, so the wordmark sits directly over the
+     first thing under it. Both come from tokens.css; neither is typed twice. */
+  --wrap:var(--head-wrap);
+  --pad:var(--head-gutter);
+  --shadow:0 1px 2px rgba(19,35,26,.04), 0 8px 24px -12px rgba(19,35,26,.16);
+  --shadow-up:0 2px 4px rgba(19,35,26,.06), 0 18px 40px -18px rgba(19,35,26,.28);
+}
+
+*{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
+@media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
+
+body.help{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--sans);
+  /* 18px floor. The reference audience includes people over 70 reading on a
+     phone at arm's length; 16px is a design default, not a decision. */
+  font-size:clamp(1.0625rem,.98rem + .35vw,1.1875rem);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  /* WCAG 1.4.4: text has to reach 200% without a horizontal scrollbar. At 2x
+     on a 320px screen a single long token — an email address, a hyphenated
+     programme name — is wider than the viewport on its own, and one of them
+     pushes the whole page sideways. Breaking inside a word is ugly and is
+     still the correct answer at that size. */
+  overflow-wrap:break-word;
+}
+
+h1,h2,h3{ font-family:var(--display); font-weight:400; line-height:1.12; margin:0; letter-spacing:-.01em; }
+p{ margin:0; }
+ul{ margin:0; padding:0; list-style:none; }
+a{ color:inherit; }
+b,strong{ font-weight:600; }
+
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+.sprite{ position:absolute; width:0; height:0; overflow:hidden; }
+
+/* The focus ring lives in tokens.css, because both halves of the site need
+   the same one. Dark surfaces below re-point --focus; light ones inherit. */
+
+/* Parked off-screen by clipping it to nothing, not by left:-9999px.
+   On the two right-to-left pages, left:-9999px overflows into the direction
+   the page actually scrolls: the document became 10,695px wide and could be
+   panned ten thousand pixels into empty cream — on Arabic and Urdu, the two
+   pages whose readers can least afford a page that behaves strangely. Clipping
+   takes no space in any direction. */
+.skip{ position:absolute; width:1px; height:1px; overflow:hidden;
+  clip-path:inset(50%); white-space:nowrap;
+  background:var(--green); color:var(--mint); padding:14px 20px;
+  font-weight:600; border-radius:0 0 var(--r-s) 0; z-index:200; }
+.skip:focus{ position:fixed; inset-block-start:0; inset-inline-start:0;
+  width:auto; height:auto; overflow:visible; clip-path:none; }
+
+.wrap{ max-width:var(--wrap); margin:0 auto; padding:0 var(--pad) 80px; }
+
+/* ---------------------------------------------------------------- header */
+/* The bar itself is .sitehead in tokens.css, shared with the narrative side.
+   All this half has to say is which six colours it wears and that it sticks
+   to the top rather than floating over a door. */
+.sitehead{
+  position:sticky; top:0;
+  --head-bg:rgba(252,254,247,.90);
+  --head-line:var(--line);
+  --head-ink:var(--ink);
+  --head-ink-2:var(--ink-2);
+  --head-ink-3:var(--ink-3);
+  --head-hover:var(--line-2);
+  --head-dot:var(--gold);      /* on cream the mark wants a counter */
+  --head-shadow:none;
+}
+/* --head-h is a guess, and on ten pages nothing corrects it.
+
+   The token computes the bar's height from the assumption that the tab row
+   wraps to exactly two rows. How many rows it actually takes depends on how
+   long the tab labels are, which is a different answer in each of the ten
+   languages: at 320px the Spanish bar is 251px tall and the French one too,
+   the English one 203, the Arabic and Chinese ones 155 — against a declared
+   116 in every case.
+
+   On help.html and index.html a ResizeObserver publishes the measured height
+   and the guess never survives first paint. The ten language pages ship no
+   JavaScript on purpose — a page somebody opens frightened, in a language
+   they read, should not depend on a script loading — so there the guess
+   stands, and a tap on any section link landed the heading up to 121px
+   underneath a bar that was still covering it.
+
+   Below the width where the row wraps at all, the bar stops following the
+   page. Nothing can then cover a heading in any language, the jump lands
+   where it says it will, and a 320px phone gets back the third of its screen
+   the bar was holding. Above that width the bar is one row, --head-h is right
+   within a pixel, and it stays sticky. */
+@media (max-width:1080px){
+  body[data-lang] .sitehead{ position:static; }
+  body[data-lang] :is(.clusters,.cl,.grp,.results){ scroll-margin-top:14px; }
+}
+
+/* transparent until you have scrolled: over cream, indistinguishable from the
+   page, which is the point — the bar appears when there is something behind
+   it to separate from. */
+.sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent; }
+
+/* ------------------------------------------------------------- language */
+/* First thing under the header, because somebody who cannot read the page
+   should not have to read the page to find their way off it. */
+.langbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px;
+  padding:16px 0 4px; }
+.langbar__h{ font-family:var(--sans); font-size:.86rem; font-weight:600;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); }
+.langbar__list{ display:flex; flex-wrap:wrap; gap:8px; }
+.langbar__list a{ display:inline-flex; align-items:center; min-height:44px;
+  padding:8px 16px; border:1.5px solid var(--line); border-radius:999px;
+  background:var(--surface); text-decoration:none; font-weight:500;
+  font-size:1rem; color:var(--ink);
+  transition:border-color .16s var(--ease), background .16s var(--ease); }
+.langbar__list a:hover{ border-color:var(--green-2); background:var(--line-2); }
+
+/* Closed until its own id is the fragment. No script involved: this is the
+   one entry point on the page whose reader is least likely to have working
+   JavaScript, so it must not depend on any. */
+/* The emergency line sits above the interpreter line, because a reader who
+   stops after two sentences should already have the two numbers that matter. */
+/* The box understands these languages too, and nobody would guess that. */
+/* The numbers inside a translated sentence are links, and have to look like
+   one to a reader who cannot read the sentence around them. Gold on the deep
+   green panel, underlined, at the weight of the surrounding text. */
+.dialn{ color:var(--gold-lit); font-weight:600;
+  text-decoration:underline; text-underline-offset:3px;
+  text-decoration-thickness:2px;
+  /* Measured 24x20 on every language page — the smallest target on the site,
+     and the one thing on a translated page a reader is most likely to be
+     reaching for. The glyph box of three digits is what it is; the hit area
+     is widened to the 44px the rest of the site uses. */
+  position:relative; }
+.dialn::after{ content:""; position:absolute; inset:-12px -10px; }
+.dialn:hover{ color:#FFF; }
+
+/* An RTL panel keeps its own direction; the page around it stays LTR. */
+
+/* ------------------------------------------------------------------ mast */
+/* The masthead is the one place this page goes dark, and it is deliberate:
+   it is the same painted valley the door on index.html opens onto, so
+   somebody who arrived from the story lands somewhere they recognise, and
+   somebody who arrived here first meets the brand before they meet the list.
+
+   It is a framed panel rather than a full-bleed banner because this page's
+   whole vocabulary is framed panels on cream — the emergency strip, the
+   language notes, the promise at the bottom. A full-bleed hero would be the
+   one element not speaking the page's language.
+
+   It costs one 22 KB image and no vertical space: the title and the two
+   sentences of lede were already here. */
+.mast{ position:relative; overflow:hidden; border-radius:var(--r);
+  margin:clamp(16px,2.5vw,26px) 0 clamp(24px,4vw,38px);
+  padding:clamp(34px,5.5vw,68px) clamp(24px,4vw,52px) clamp(30px,4.5vw,56px);
+  background:var(--green-deep); color:var(--cream); isolation:isolate;
+  --focus:var(--gold-lit); }
+.mast__bg{ position:absolute; inset:0; z-index:-1;
+  background-image:url("assets/band.webp");
+  background-size:cover; background-position:50% 42%; }
+/* Two veils, not one. The linear keeps the type legible over whatever the
+   photograph is doing at that width; the radial keeps the light coming from
+   the same place it comes from on the door. */
+.mast__bg::after{ content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(120% 150% at 78% 12%, rgba(231,197,126,.20) 0%, transparent 58%),
+    linear-gradient(100deg, rgba(12,22,16,.88) 0%, rgba(12,22,16,.72) 44%, rgba(19,53,40,.42) 100%); }
+.mast__eye{ display:block; font-size:.72rem; color:rgba(231,197,126,.92);
+  margin-bottom:clamp(14px,2vw,22px); }
+.mast h1{ font-size:clamp(2.1rem,1.35rem + 3.3vw,3.8rem); letter-spacing:-.025em;
+  line-height:1.04; max-width:20ch; text-wrap:balance; }
+.mast h1 em{ color:var(--gold); }
+.mast__say{ margin-top:clamp(16px,2.2vw,26px); max-width:58ch; font-size:1.04em;
+  line-height:1.6; color:var(--ink-soft); }
+.mast__say b{ color:var(--cream); font-weight:600; }
+.mast__say--2{ margin-top:.75em; }
+/* A device the narrative site uses at every chapter edge. Here it separates
+   the masthead from the emergency numbers without drawing a hard line. */
+.rule{ height:1px; border:0; margin:clamp(26px,4vw,44px) 0;
+  background:linear-gradient(90deg, var(--gold) 0%, rgba(220,230,216,.9) 34%, rgba(220,230,216,0) 100%); }
+
+/* --------------------------------------------------------------- the sos */
+/* A solid panel rather than a tinted box with an accent stripe down one side.
+   Somebody scanning this page in a panic gets one block that is unmistakably
+   a different thing from the directory below it, and the numbers inside it
+   are the only white objects on the page. */
+.sos{ --focus:#FFF; background:var(--urgent); color:var(--clay-ink); border-radius:var(--r);
+  padding:clamp(22px,3.4vw,34px); margin-bottom:clamp(28px,5vw,48px); }
+.sos__h{ font-size:clamp(1.35rem,1.2rem + .7vw,1.7rem); color:#FFF; margin-bottom:.7em; }
+/* Fixed 1 / 2 / 4, not auto-fit. There are exactly four numbers here and
+   auto-fit gave three columns plus an orphan at most desktop widths, which
+   reads as though the fourth were an afterthought. It is 311 — the one that
+   answers in any language. */
+.sos__list{ display:grid; gap:10px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+@media (min-width:1080px){ .sos__list{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media (max-width:560px){ .sos__list{ grid-template-columns:1fr; } }
+.sos__list a{ display:flex; flex-direction:column; gap:2px; text-decoration:none; min-width:0;
+  background:var(--surface); border-radius:var(--r-s);
+  padding:14px 16px; min-height:60px; justify-content:center;
+  transition:transform .16s var(--ease), box-shadow .16s var(--ease); }
+.sos__list a:hover{ transform:translateY(-2px); box-shadow:var(--shadow-up); }
+.sos__num{ font-family:var(--display); font-size:1.55rem; color:var(--urgent); line-height:1.1; }
+.sos__for{ font-size:.9rem; color:var(--ink-2); line-height:1.35; }
+.sos__note{ margin-top:16px; font-size:.94rem; color:rgba(253,246,243,.88); max-width:70ch; }
+
+/* Same call as the emergency panel: a plain bordered card, not a tinted box
+   with an accent stripe down one edge. */
+.noscript-note{ background:var(--line-2); border:1.5px solid var(--line);
+  border-radius:var(--r); padding:18px 22px;
+  margin-bottom:clamp(28px,5vw,44px); max-width:68ch; color:var(--ink-2); }
+
+/* ---------------------------------------------------------- search/filter */
+/* One card, three zones divided by hairlines: what you type, what that got
+   you, and how to narrow it further. It was four separate objects — a labelled
+   box, an orphaned grey line under it, a bordered card of chips, and the count
+   and the print button floating below everything, outside the lot. All four
+   did the same job, narrowing a list, and none of them looked related to any
+   other. Nothing inside the card carries a border of its own now. */
+.find{ margin-bottom:clamp(28px,5vw,44px);
+  background:var(--surface); border:1.5px solid var(--line);
+  border-radius:var(--r); }
+/* This card used to clip its own overflow, to keep the mint bar's fill inside
+   the rounded corners. That also clipped away the facet dropdowns, which open
+   below the last zone and are 450px tall against a 284px card — the panel was
+   there, measurable, and 7px of it was visible. The bar is never the first or
+   last zone, so it never reaches a corner; rounding the two zones that do is
+   enough, and the menus can leave the box. */
+.find > :first-child{ border-start-start-radius:inherit; border-start-end-radius:inherit; }
+.find > :last-child{ border-end-start-radius:inherit; border-end-end-radius:inherit; }
+.find__top{ padding:clamp(15px,2.2vw,20px); }
+.find__top label{ display:block; font-weight:600; margin-bottom:9px; font-size:.98rem; }
+.find__box{ display:flex; align-items:center; gap:12px; background:var(--mint);
+  border:1.5px solid var(--line); border-radius:var(--r-s); padding:0 14px;
+  transition:border-color .18s var(--ease), box-shadow .18s var(--ease); }
+.find__box:focus-within{ border-color:var(--green); background:var(--surface);
+  box-shadow:0 0 0 3px rgba(30,53,40,.10); }
+.find__box .ico{ width:22px; height:22px; color:var(--ink-3); flex:none; }
+/* min-width:0, or the flex item refuses to shrink below its placeholder's
+   intrinsic width and takes the search box off the side of the screen. */
+.find__box input{ flex:1; min-width:0; border:0; background:none; font:inherit; color:inherit;
+  padding:14px 0; min-height:52px; outline:none; }
+/* The input hands its focus ring to the box around it, which is the right
+   look and a trap: in Windows High Contrast the browser throws away our
+   border colour and our shadow, and `outline:none` is the one thing it keeps.
+   The control would focus with no sign of it at all. Highlight is the colour
+   the user chose for exactly this. */
+/* And the ring the box gave it was not the ring the rest of the site gives:
+   a 1.5px border change plus a 3px halo at 10% alpha, which measured 1.03:1
+   against the ground behind it. Visible if you already knew where to look.
+   Every other control on the site takes 3px of --focus, and so does this one
+   now — the busiest control on the directory should not be the quietest.
+   :has(:focus-visible) rather than :focus-within, so a mouse click does not
+   ring it, which is what :focus-visible does everywhere else. */
+.find__box:has(input:focus-visible){
+  outline:3px solid var(--focus); outline-offset:3px; }
+@media (forced-colors: active){
+  .find__box:focus-within{ outline:3px solid Highlight; outline-offset:2px; }
+}
+.find__box input::placeholder{ color:var(--ink-3); }
+.find__clear{ border:0; background:var(--line-2); color:var(--ink-2); font:inherit;
+  font-size:.88rem; font-weight:600; padding:8px 14px; border-radius:999px; cursor:pointer;
+  min-height:36px; }
+.find__clear:hover{ background:var(--line); }
+
+/* The third zone of the find card: one row, three dropdowns.
+
+   It was nineteen chips laid out flat inside a disclosure — 860px on a phone,
+   three screens of chrome in front of somebody who mostly wants to type a
+   word. Each facet is a button now, and its choices open over the page
+   instead of pushing it down, so the resting state is one row whatever the
+   width. */
+.find__filters{ border-top:1px solid var(--line-2);
+  display:flex; align-items:center; flex-wrap:wrap; gap:8px;
+  padding:12px clamp(15px,2.2vw,20px); }
+.find__filters-h{ font-weight:600; font-size:.88rem; color:var(--ink-3);
+  text-transform:uppercase; letter-spacing:.06em; margin-inline-end:4px; }
+
+.facet{ position:relative; }
+.facet__btn{ cursor:pointer; list-style:none; display:inline-flex;
+  align-items:center; gap:8px; min-height:44px; padding:9px 14px;
+  font-weight:600; font-size:.94rem; color:var(--ink-2);
+  background:var(--surface); border:1.5px solid var(--line);
+  border-radius:var(--r-pill);
+  transition:border-color .16s var(--ease), color .16s var(--ease),
+             background .16s var(--ease); }
+.facet__btn::-webkit-details-marker{ display:none; }
+.facet__btn:hover{ border-color:var(--green-2); color:var(--ink); }
+.facet[open] > .facet__btn{ border-color:var(--green); color:var(--ink); }
+.facet__caret{ width:16px; height:16px; flex:none; opacity:.6;
+  transition:transform .2s var(--ease); }
+.facet[open] .facet__caret{ transform:rotate(180deg); }
+
+/* What the button says while it is shut. A dropdown that hides the reason the
+   list got shorter is worse than the flat row it replaced. */
+.facet__n{ display:inline-flex; align-items:center; justify-content:center;
+  min-width:20px; height:20px; padding:0 6px; flex:none;
+  font-size:.78rem; font-weight:700; font-variant-numeric:tabular-nums;
+  background:var(--green); color:var(--mint); border-radius:999px;
+  /* A green room on a cream page: anything that ever becomes focusable in
+     here needs a ring that is not also green. Nothing is focusable in a count
+     today; the token costs nothing and stops that being a trap later. */
+  --focus:var(--gold-lit); }
+.facet:has(.facet__n:not([hidden])) > .facet__btn{ border-color:var(--green); }
+
+.facet__menu{ position:absolute; z-index:40; inset-block-start:calc(100% + 6px);
+  inset-inline-start:0; min-width:max(316px, 100%); max-width:min(92vw, 460px);
+  background:var(--surface); border:1.5px solid var(--line);
+  border-radius:var(--r); box-shadow:var(--shadow-lg, var(--shadow));
+  padding:14px; }
+.facet__hint{ font-size:.88rem; color:var(--ink-3); margin:0 0 10px; }
+
+/* Narrow enough that a floating panel would hang off the side: let it sit in
+   the flow instead. Only one facet is open at a time, so the row still costs
+   one panel rather than three. */
+@media (max-width:560px){
+  .facet{ position:static; }
+  .facet__menu{ position:static; inset:auto; min-width:0; max-width:none;
+    margin-block-start:8px; width:100%; }
+  .find__filters{ flex-direction:column; align-items:stretch; }
+  .facet__btn{ justify-content:space-between; }
+  .facet__caret{ margin-inline-start:auto; }
+}
+
+.chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip{ font:inherit; font-size:.94rem; font-weight:500; cursor:pointer;
+  background:var(--surface); color:var(--ink-2);
+  border:1.5px solid var(--line); border-radius:999px;
+  padding:10px 16px; min-height:44px;
+  transition:background .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease); }
+.chip:hover{ border-color:var(--green-2); color:var(--ink); }
+.chip[aria-pressed="true"]{ background:var(--green); border-color:var(--green);
+  color:var(--mint); }
+.reset,.linkish{ font:inherit; font-size:.94rem; font-weight:600; cursor:pointer;
+  background:none; border:0; color:var(--green); text-decoration:underline;
+  text-underline-offset:3px; padding:8px 0; justify-self:start; }
+/* what the box got you, immediately under the box, with the one action that
+   applies to it */
+.find__bar{ display:flex; flex-wrap:wrap; gap:10px 18px;
+  align-items:center; justify-content:space-between;
+  padding:12px clamp(15px,2.2vw,20px);
+  border-top:1px solid var(--line-2); background:var(--mint); }
+/* The count and its footnote stack; the button keeps the right-hand end of
+   the row. Side by side they were wide enough to push the button onto a line
+   of its own, which put a lone pill in the middle of the card. */
+.find__said{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+.find__count{ font-weight:600; color:var(--ink); font-size:.98rem; }
+.find__count:empty{ display:none; }
+.printbtn{ display:inline-flex; align-items:center; gap:9px; font:inherit;
+  font-size:.94rem; font-weight:600; cursor:pointer; min-height:44px;
+  padding:9px 15px; border:1.5px solid var(--line); border-radius:999px;
+  background:var(--surface); color:var(--ink); flex:none;
+  transition:border-color .16s var(--ease), background .16s var(--ease); }
+.printbtn:hover{ border-color:var(--green-2); background:var(--line-2); }
+.printbtn .ico{ width:18px; height:18px; }
+
+/* Screen-invisible, paper-only. */
+.printhead{ display:none; }
+
+/* ---------------------------------------------------------- the clusters */
+/* The front page used to be every resource in the directory, one after
+   another, fifteen headings deep. That is a wall, and the person it is for
+   arrives frightened, on a phone, wanting one phone number.
+
+   So the front page is now a way in: fifteen clusters, each showing what kind
+   of thing is behind it — three real places, with real numbers — and opening
+   a page built for that one kind of help. Nobody has to read past the cluster
+   that matches their sentence. */
+.clusters{ margin-bottom:clamp(34px,6vw,60px); scroll-margin-top:calc(var(--head-h) + 14px); }
+.clusters__head h2{ font-size:clamp(1.7rem,1.3rem + 1.6vw,2.4rem); }
+.clusters__say{ margin-top:.55em; color:var(--ink-2); max-width:56ch; }
+
+/* A way past fifteen cards without scrolling through fifteen cards. */
+.jump{ margin:clamp(18px,2.6vw,26px) 0 clamp(20px,3vw,30px);
+  padding-bottom:2px; }
+.jump ul{ display:flex; flex-wrap:wrap; gap:8px; }
+.jump li{ display:flex; min-width:0; }
+.jump a{ min-width:0; }
+/* 44, like every other tap target on the site. It was 40 — under the
+   minimum this directory holds itself to, on a row of seventeen small
+   pills, which is exactly where a thumb misses. */
+.jump a{ display:inline-flex; align-items:center; min-height:44px;
+  padding:6px 14px; border:1.5px solid var(--line); border-radius:var(--r-pill);
+  background:var(--surface); font-size:.9rem; font-weight:500;
+  text-decoration:none; color:var(--ink-2);
+  transition:border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease); }
+.jump a:hover{ border-color:var(--green-2); background:var(--line-2); color:var(--ink); }
+
+.clusters__grid{ display:grid; gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); }
+.cl{ display:flex; flex-direction:column; height:100%; min-width:0;
+  background:var(--surface); border:1.5px solid var(--line);
+  border-radius:var(--r); padding:clamp(18px,2.2vw,24px);
+  box-shadow:var(--shadow); scroll-margin-top:calc(var(--head-h) + 14px);
+  transition:border-color .18s var(--ease), box-shadow .18s var(--ease); }
+.cl:hover{ border-color:var(--green-2); box-shadow:var(--shadow-up); }
+.cl:focus-within{ border-color:var(--green-2); }
+.cl__head{ display:grid; grid-template-columns:auto minmax(0,1fr); gap:14px;
+  align-items:start; }
+.cl__head .ico{ width:26px; height:26px; color:var(--green-2); margin-top:2px; }
+.cl h3{ font-size:1.2rem; line-height:1.2; }
+/* The whole heading is the link, so the tap target is the sentence somebody
+   read, not a chevron beside it. */
+.cl h3 a{ text-decoration:none; color:var(--ink);
+  display:flex; align-items:center; min-height:44px; }
+.cl h3 a:hover{ color:var(--green-2); text-decoration:underline;
+  text-underline-offset:3px; text-decoration-thickness:1.5px; }
+.cl__b{ margin-top:5px; font-size:.9rem; color:var(--ink-2); line-height:1.45; }
+
+.cl__pv{ margin:16px 0 0; padding:14px 0 0; border-top:1px solid var(--line-2);
+  display:grid; gap:12px; }
+.pv{ min-width:0; }
+/* A resource's name is a link in a list, not a link in a sentence, so the
+   inline exception to WCAG 2.5.8 does not cover it — and at 20px tall it was
+   under even the 24px floor, let alone the 44 the rest of this site holds to.
+   Real padding rather than a widened pseudo-element, because these are
+   stacked: growing them invisibly would make adjacent targets overlap, which
+   trades a small target for a mis-hit and is worse. */
+.pv__n{ font-family:var(--display); font-size:1.02rem; line-height:1.25;
+  display:flex; align-items:center; min-height:44px;
+  color:var(--ink); text-decoration:none;
+  text-decoration-line:underline; text-decoration-color:transparent;
+  text-underline-offset:3px; text-decoration-thickness:1.5px;
+  transition:text-decoration-color .16s var(--ease), color .16s var(--ease); }
+.pv__n:hover{ color:var(--green-2); text-decoration-color:var(--gold-deep); }
+.pv__d{ margin-top:2px; font-size:.86rem; color:var(--ink-2); line-height:1.4; }
+/* A phone number on the front page is the shortest path there is between
+   somebody arriving and somebody being helped, so the preview carries one. */
+/* This is the most important tap target on the site: the number somebody
+   frightened, one-handed, on a phone, reaches for. It was 36px — eight under
+   what the rest of this site holds itself to, on the one control where a miss
+   costs the most. */
+.pv__call{ display:inline-flex; align-items:center; gap:7px; margin-top:7px;
+  min-height:44px; padding:5px 14px; border-radius:var(--r-pill);
+  background:var(--line-2); border:1.5px solid var(--line);
+  font-size:.86rem; font-weight:600; color:var(--green);
+  text-decoration:none; transition:background .16s var(--ease), border-color .16s var(--ease); }
+.pv__call:hover{ background:var(--mint-2); border-color:var(--green-2); }
+.pv__call .ico{ width:15px; height:15px; flex:none; }
+
+.cl__all{ margin-top:16px; padding-top:14px; border-top:1px solid var(--line-2);
+  display:inline-flex; align-items:center; gap:9px; min-height:44px;
+  font-weight:600; font-size:.95rem; color:var(--green); text-decoration:none; }
+.cl__all .arr{ color:var(--gold-deep); }
+.cl__all:hover{ color:var(--green-deep); text-decoration:underline;
+  text-underline-offset:4px; }
+
+/* ------------------------------------------------------------- results */
+/* Search results on the front page. The front page does not carry every
+   resource any more, so these are built by help.js from the index at the
+   bottom of the document — using the same .r markup as a real row, so there
+   is exactly one resource card design on this site. */
+.results{ margin-bottom:clamp(30px,5vw,50px); scroll-margin-top:calc(var(--head-h) + 14px); }
+.results__h{ font-size:clamp(1.4rem,1.15rem + 1vw,1.9rem); margin-bottom:.8em; }
+.r__where{ margin-top:10px; font-size:.86rem; }
+.r__where a{ color:var(--green); font-weight:600; text-underline-offset:3px; }
+
+/* --------------------------------------------------------- the directory */
+/* A column so the groups can be reordered by relevance during a search; see
+   help.js. Source order is preserved when nothing is being searched. */
+/* The skip link on every category page says "Skip to the list" and points
+   here. Without a scroll-margin it landed the whole list under the header —
+   203px of bar at 320px, over exactly the thing a keyboard user had just
+   asked to be taken to. */
+.dir{ display:flex; flex-direction:column;
+  scroll-margin-top:calc(var(--head-h) + 14px); }
+.dir__none{ order:-9999; background:var(--surface); border:1.5px dashed var(--line);
+  border-radius:var(--r); padding:24px; font-size:1.02em; color:var(--ink-2);
+  max-width:66ch; }
+.dir__none a{ color:var(--green); font-weight:600; }
+
+/* ============================================================
+   CATEGORY PAGES — one kind of help, built to be skimmed.
+
+   The rail is the difference between a page you read and a page you scan:
+   "somewhere to sleep tonight / stop an eviction / money for the rent" tells
+   somebody in four seconds whether their sentence is on this page and where.
+   On a phone it becomes a row of chips above the list, which is the same
+   information in the shape a thumb can use.
+   ============================================================ */
+.crumb{ display:flex; flex-wrap:wrap; align-items:center; gap:10px;
+  padding:18px 0 2px; font-size:.86rem; color:var(--ink-3); }
+.crumb a{ display:inline-flex; align-items:center; gap:8px; min-height:44px;
+  font-weight:600; color:var(--green); text-decoration:none; }
+.crumb a:hover{ text-decoration:underline; text-underline-offset:3px; }
+.crumb__back{ color:var(--gold-deep); }
+.crumb a:hover .crumb__back{ transform:translateX(-4px); }
+/* --line is 1.26:1 against the page: the separator was there and nobody
+   could see it, so the breadcrumb read as two words with a gap. */
+.crumb__sep{ color:var(--ink-3); }
+
+/* minmax(0,1fr), never a bare 1fr, and min-width:0 on both children.
+   A grid track is max-content wide by default and a grid item refuses to
+   shrink below its own min-content, so at 320px with text at 200% the rail's
+   longest chip made the whole page 437px wide and the reader got a horizontal
+   scrollbar — on the narrowest screen, at the largest text, which is exactly
+   the combination this page exists to survive. */
+.cat{ display:grid; grid-template-columns:minmax(0,1fr);
+  gap:clamp(20px,3vw,40px); align-items:start; }
+@media (min-width:940px){
+  .cat{ grid-template-columns:236px minmax(0,1fr); }
+  .cat__rail{ position:sticky; top:calc(var(--head-h) + 8px); }
+}
+.cat__rail,.cat__main{ min-width:0; }
+.rail__h{ font-family:var(--sans); font-size:.8rem; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3);
+  margin-bottom:10px; }
+.rail__nav ul{ display:flex; flex-wrap:wrap; gap:6px; }
+.rail__nav li{ display:flex; min-width:0; }
+.rail__nav a{ flex:1; min-width:0; display:flex;
+  align-items:center; justify-content:space-between;
+  gap:10px; min-height:44px; padding:8px 14px; border-radius:var(--r-pill);
+  border:1.5px solid var(--line); background:var(--surface);
+  font-size:.9rem; font-weight:500; color:var(--ink-2); text-decoration:none;
+  transition:border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease); }
+.rail__nav a:hover{ border-color:var(--green-2); background:var(--line-2); color:var(--ink); }
+/* The label wraps inside its own box; the count never leaves the first line.
+   Letting the anchor itself wrap put the number underneath a three-line
+   label and made every rail entry on a phone twice as tall as it needed. */
+.rail__t{ flex:1; min-width:0; }
+.rail__n{ flex:none; font-size:.78rem; font-weight:700; color:var(--gold-deep);
+  font-variant-numeric:tabular-nums; }
+@media (min-width:940px){
+  .rail__nav ul{ display:grid; gap:4px; }
+  .rail__nav a{ border-color:transparent; background:none; border-radius:var(--r-s);
+    padding:9px 12px; }
+  .rail__nav a:hover{ border-color:transparent; background:var(--line-2); }
+}
+
+/* Neighbouring kinds of help. Somebody who came here for food and turns out
+   to need a lawyer should not have to go back to the front page to find out
+   we have one. */
+.sibs{ margin-top:clamp(34px,5vw,56px); padding-top:clamp(26px,3.5vw,38px);
+  border-top:1px solid var(--line); }
+.sibs h2{ font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem); margin-bottom:.7em; }
+.sibs ul{ display:grid; gap:8px;
+  grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr)); }
+.sibs li{ min-width:0; }
+.sibs a{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:12px;
+  min-width:0;
+  align-items:center; min-height:52px; padding:10px 14px;
+  border:1.5px solid var(--line); border-radius:var(--r-s);
+  background:var(--surface); text-decoration:none; color:var(--ink);
+  transition:border-color .16s var(--ease), background .16s var(--ease); }
+.sibs a:hover{ border-color:var(--green-2); background:var(--line-2); }
+.sibs .ico{ width:20px; height:20px; color:var(--green-2); }
+.sibs__t{ font-size:.93rem; line-height:1.3; }
+.sibs__n{ font-size:.8rem; font-weight:700; color:var(--gold-deep);
+  font-variant-numeric:tabular-nums; }
+.sibs__all{ margin-top:18px; }
+.sibs__all a{ display:inline-flex; align-items:center; gap:9px; min-height:44px;
+  border:0; padding:0; background:none; font-weight:600; color:var(--green); }
+.sibs__all a:hover{ background:none; text-decoration:underline; text-underline-offset:4px; }
+.sibs__all .arr{ color:var(--gold-deep); }
+
+/* A slim emergency strip for the category pages. The front page's version
+   explains itself; here the numbers alone are right, because somebody who
+   reached this page has already been told once. */
+.sos--slim{ padding:clamp(16px,2.2vw,22px) clamp(18px,2.4vw,26px); }
+.sos--slim .sos__h{ font-size:1.05rem; margin-bottom:.6em; }
+.sos--slim .sos__list a{ padding:10px 13px; }
+.sos--slim .sos__num{ font-size:1.25rem; }
+.sos--slim .sos__for{ font-size:.82rem; }
+
+.find__scope{ font-size:.88rem; color:var(--ink-3); }
+.grp__why{ margin:-6px 0 14px; font-size:.9rem; color:var(--ink-3); max-width:62ch; }
+
+.grp{ margin-bottom:clamp(38px,6vw,64px); scroll-margin-top:calc(var(--head-h) + 14px); }
+/* The first block on a category page is the call somebody should make if they
+   read nothing else. It gets the gold rule the narrative site uses to open a
+   chapter, so it reads as the beginning of something rather than as one more
+   heading in a list. */
+.grp--lead .grp__head{ border-bottom-color:var(--gold); }
+.grp--lead .grp__head h2{ color:var(--ink); }
+.grp--lead .r{ border-color:var(--gold-deep); box-shadow:var(--shadow-up); }
+.grp__head{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:16px;
+  align-items:start; padding-bottom:16px; margin-bottom:20px;
+  border-bottom:2px solid var(--line); }
+.grp__head .ico{ width:30px; height:30px; color:var(--green-2); margin-top:4px; }
+.grp__head h2{ font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem); }
+.grp__head p{ color:var(--ink-2); font-size:.96rem; margin-top:4px; max-width:60ch; }
+.grp__top{ font-size:.88rem; font-weight:600; color:var(--green);
+  text-decoration:none; white-space:nowrap; padding:8px 14px;
+  display:inline-flex; align-items:center; min-height:44px;
+  border:1.5px solid var(--line); border-radius:999px; }
+.grp__top:hover{ background:var(--line-2); }
+
+/* grid, and order-aware: help.js floats the places that name the reader's
+   language to the front of their group when a language chip is on. */
+.rows{ display:grid; gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr)); }
+
+/* ------------------------------------------------------------- one row */
+/* min-width:0 on every grid child, here and below.
+   A grid item defaults to min-width:auto, which means it refuses to be
+   narrower than its own min-content — and one wide descendant (the two-column
+   fact list, a long programme name) then pushes the whole card, and with it
+   the page, past the edge of the screen. Invisible at 100% text on a laptop;
+   at 200% text on a 320px phone it put the page into horizontal scroll, which
+   is exactly the reader this page exists for. */
+.r{ background:var(--surface); border:1.5px solid var(--line);
+  border-radius:var(--r); padding:20px; display:flex; flex-direction:column;
+  gap:12px; scroll-margin-top:calc(var(--head-h) + 14px); min-width:0; }
+.r__name{ font-size:1.22rem; line-height:1.2; }
+.r__kind{ font-size:.8rem; font-weight:600; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--ink-3); margin-top:5px; }
+.r__what{ color:var(--ink-2); font-size:.97rem; line-height:1.5; }
+.r__badges{ display:flex; flex-wrap:wrap; gap:6px; }
+.bdg{ font-size:.78rem; font-weight:600; padding:5px 10px; border-radius:999px;
+  letter-spacing:.01em; }
+.bdg--free{ background:#E8F2E4; color:#2A4A22; }
+.bdg--open-247{ background:#FBF1DC; color:#6E5210; }
+.bdg--no-status{ background:#E6EEF5; color:#1F4260; }
+
+.r__do{ display:flex; flex-wrap:wrap; gap:10px; margin-top:auto; padding-top:4px; }
+.call{ display:inline-flex; align-items:center; gap:10px; text-decoration:none;
+  background:var(--green); color:var(--mint); border-radius:var(--r-s);
+  padding:11px 18px; min-height:52px; font-weight:600;
+  transition:background .16s var(--ease); }
+.call:hover{ background:var(--green-2); }
+.call .ico{ width:20px; height:20px; flex:none; }
+.call span{ display:flex; flex-direction:column; line-height:1.2; min-width:0; }
+.call small{ font-size:.72rem; font-weight:500; opacity:.8; letter-spacing:.04em;
+  text-transform:uppercase; }
+.visit{ display:inline-flex; align-items:center; gap:7px; text-decoration:none;
+  border:1.5px solid var(--line); border-radius:var(--r-s);
+  padding:11px 16px; min-height:52px; font-weight:600; color:var(--ink);
+  transition:border-color .16s var(--ease), background .16s var(--ease); }
+.visit:hover{ border-color:var(--green-2); background:var(--line-2); }
+.visit .arr{ color:var(--gold-deep); }
+
+.r__more{ border-top:1px solid var(--line-2); padding-top:12px; }
+/* 44px, not the 32 it was. WCAG's AA floor for a pointer target is 24px and
+   this cleared it, but the reference reader here is somebody in their
+   seventies tapping on a phone, and AAA's 44 is the number written for them. */
+.r__more summary{ cursor:pointer; font-weight:600; font-size:.92rem;
+  color:var(--green); list-style:none; display:flex; align-items:center; gap:8px;
+  min-height:44px; }
+.r__more summary::-webkit-details-marker{ display:none; }
+.r__more summary::after{ content:""; width:8px; height:8px; flex:none;
+  border-right:2px solid currentColor; border-bottom:2px solid currentColor;
+  transform:rotate(45deg) translateY(-2px); transition:transform .2s var(--ease); }
+.r__more[open] summary::after{ transform:rotate(-135deg) translateY(-2px); }
+.r__facts{ padding-top:12px; }
+.r__facts dl{ display:grid; grid-template-columns:minmax(0,auto) minmax(0,1fr);
+  gap:6px 14px; margin:0; font-size:.9rem; }
+.r__facts dt{ font-weight:600; color:var(--ink-3); }
+.r__facts dd{ margin:0; color:var(--ink-2); min-width:0; }
+.r__note{ margin-top:12px; font-size:.9rem; color:var(--ink-2);
+  background:var(--line-2); border-radius:var(--r-s); padding:10px 12px; }
+.r__ver{ margin-top:10px; font-size:.8rem; color:var(--ink-3); }
+
+/* ----------------------------------------------------------- the honesty */
+/* The most important text on the page, and it is placed where somebody who
+   has just found a phone number will pass it: after the list, before the
+   footer. Never reworded — check_honesty_statement in check.py owns it. */
+.vowbox{ --focus:var(--gold-lit); background:var(--green); color:var(--mint); border-radius:var(--r);
+  padding:clamp(26px,4vw,44px); margin-top:clamp(20px,4vw,40px); }
+.vowbox h2{ font-size:clamp(1.5rem,1.2rem + 1.2vw,2.1rem); margin-bottom:.6em; }
+.vowbox__full{ font-size:1.06em; line-height:1.65; max-width:68ch;
+  color:var(--ink-strong); }
+.vowbox__src{ margin-top:1em; font-size:.88rem; color:var(--ink-faint); }
+
+/* ------------------------------------------------------------------ foot */
+/* The same footer as the narrative site, to the hue: deep green ground, cream
+   text at .78, gold on hover, the brand lockup top-left. It is the last thing
+   on both halves of the site and there is no reason on earth for it to be two
+   different objects. */
+.hfoot{ --focus:var(--gold-lit); background:var(--green-deep); color:var(--cream); }
+.hfoot__in{ max-width:var(--wrap); margin:0 auto; padding:clamp(34px,5vw,58px) var(--pad) clamp(26px,3vw,36px); }
+.hfoot .brand{ margin-bottom:18px; }
+.hfoot .brand{ color:var(--cream); }
+.hfoot .brand__txt{ color:var(--cream); }
+.hfoot .brand__txt small{ color:var(--ink-faint); letter-spacing:.18em; }
+.hfoot__say{ max-width:62ch; color:var(--ink-soft); font-size:.97rem; }
+.hfoot__links{ display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:22px;
+  padding-top:22px; border-top:1px solid var(--hair); }
+.hfoot__links a{ font-weight:500; color:var(--ink-soft); text-underline-offset:3px;
+  display:inline-flex; align-items:center; min-height:44px; overflow-wrap:anywhere; }
+.hfoot__links a:hover{ color:var(--gold); }
+.hfoot__ver{ margin-top:20px; padding-top:18px; font-size:.84rem;
+  border-top:1px solid var(--hair); color:var(--ink-faint); }
+
+/* ------------------------------------------------------------ responsive */
+@media (max-width:640px){
+  .rows,.clusters__grid,.sibs ul{ grid-template-columns:1fr; }
+
+  /* Ten languages is four rows of pills and a quarter of the screen on a
+     phone, ahead of everything. It has to stay first and it has to stay
+     complete — hiding a language from the people who read it is exactly
+     backwards — so it gets tighter instead of shorter. 44px stays: that is
+     the smallest a touch target may be. */
+  .langbar{ gap:6px 12px; padding:12px 0 2px; }
+  .langbar__list{ gap:6px; }
+  .langbar__list a{ padding:6px 13px; font-size:.95rem; }
+
+  /* Get to the emergency numbers inside the first screen and a bit. */
+  .mast{ padding:26px 20px 28px; }
+  .mast h1{ font-size:clamp(1.9rem,7.5vw,2.5rem); }
+  .mast__say{ margin-top:14px; }
+
+  /* Four cards, one per row, at 150px each is most of a screen for four phone
+     numbers. Number and reason share a row instead. */
+  .sos{ padding:18px 18px 20px; }
+  .sos__list a{ display:grid; grid-template-columns:minmax(0,auto) minmax(0,1fr);
+    align-items:center; gap:4px 12px; padding:10px 13px; }
+  /* A ten-digit number set at the same size as "911" takes two thirds of the
+     row and squeezes the reason into four lines. It only has to be the biggest
+     thing in its own row, not the biggest thing on the page. */
+  .sos__num{ font-size:1.22rem; white-space:nowrap; }
+  .sos__for{ font-size:.85rem; }
+
+  /* Sixteen chips is a screen of chips before the thing they point at. Two
+     columns, tighter, and it becomes a table of contents that saves ten
+     screens of scrolling instead of costing one. */
+  .jump ul,.rail__nav ul{ display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+  .rail__nav a{ padding:7px 11px; font-size:.84rem; line-height:1.2; }
+  .jump a{ flex:1; min-height:44px; padding:6px 11px; font-size:.84rem;
+    line-height:1.2; }
+  .cl{ padding:16px 16px 18px; }
+  /* The back-link was hidden here, on the one device where the scroll is
+     longest and there is no other way up. Because the groups interleave, a
+     link at the head of each one is never more than a group away while
+     scrolling — so it moves to its own row under the heading rather than
+     disappearing. */
+  .grp__head{ grid-template-columns:auto minmax(0,1fr); }
+  .grp__top{ grid-column:1/-1; justify-self:start; margin-top:4px; }
+  .r__do{ flex-direction:column; align-items:stretch; }
+  .call,.visit{ justify-content:center; }
+}
+
+/* --------------------------------------------------------------- motion */
+@media (prefers-reduced-motion:reduce){
+  *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  .sos__list a:hover{ transform:none; }
+}
+
+/* -------------------------------------------------------- high contrast */
+@media (prefers-contrast:more){
+  :root{ --ink-2:#1B2E22; --ink-3:#2B4033; --line:#9FB3A2; }
+  .r,.cl,.jump a,.rail__nav a,.sibs a,.find__box,
+  .enote,.langbar__list a,.printbtn,.pv__call{ border-width:2px; }
+  /* The gold rule down the side of the language note is the only thing that
+     marks it as a note rather than a paragraph; at higher contrast it needs
+     to be a colour that survives, not a tint. */
+  .enote{ border-inline-start-color:var(--gold-deep); }
+  .enote__h{ color:var(--ink-2); }
+}
+
+/* ---------------------------------------------------------------- print */
+/* Students hand people paper. A printed page has no Call button, so the
+   number has to become text, and the interface around it has to vanish. */
+@media print{
+  /* Everything that is a control rather than an answer. The rule ended
+     with .langbar, .langnote, .sprite and .mast__bg carrying the
+     display:none, until .langnote was deleted with the blurb panels and the
+     whole terminating line went with it. What was left was a selector list ending in a comma,
+     which CSS happily joined to the next rule — so the header, the search
+     box, the jump nav, the breadcrumb, the footer links and the rest stopped
+     being hidden and started printing as three-column grids. Found by
+     rendering the print block, not by reading it. */
+  .sitehead,.find,.jump,.results,.sibs,.cat__rail,.crumb,
+  .skip,.hfoot__links,.grp__top,.dir__none,.printbtn,
+  .cl__all,.clusters__say,.langbar,.sprite,.mast__bg{ display:none !important; }
+
+  /* The front page's printed form is the leave-behind students hand across a
+     table: seventeen kinds of help, three real places under each, every
+     phone number in plain type. Rendered at 8.5in with half-inch margins it
+     is three sheets, against the forty the old single-page directory
+     produced — and against the six it was silently printing while the
+     controls above were escaping the hide rule. */
+  .clusters__grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:6pt; }
+  .clusters__head h2{ font-size:12.5pt; margin-bottom:5pt; }
+  .cl{ border:0.75pt solid #666; border-radius:0; padding:5pt 6pt;
+    box-shadow:none; break-inside:avoid; }
+  .cl h3{ font-size:9.5pt; }
+  .cl h3 a{ color:#000; }
+  .cl__head .ico{ width:11pt; height:11pt; }
+  .cl__b{ font-size:7pt; color:#000; }
+  .cl__pv{ margin-top:5pt; padding-top:4pt; gap:4pt; }
+  .pv__n{ font-size:8.5pt; color:#000; }
+  .pv__d{ font-size:7pt; color:#000; }
+  .pv__call{ background:none !important; border:0; padding:0; min-height:0;
+    margin-top:2pt; font-size:8.5pt; font-weight:700; color:#000; }
+  .pv__call .ico{ display:none; }
+
+  /* The one line a translated sheet must keep: what is in this language and
+     what is not, and the number that puts an interpreter on the call. On
+     paper it is the difference between a list somebody can use and a list
+     they will put down. */
+  .enote{ border:0; border-inline-start:2pt solid #000; border-radius:0;
+    padding:3pt 0 3pt 6pt; margin:0 0 7pt; break-inside:avoid; }
+  .enote__h{ font-size:7pt; color:#000; margin-bottom:2pt; }
+  .enote__p{ font-size:8.5pt; color:#000; max-width:none; }
+  .enote__p .dialn{ color:#000; font-weight:700; }
+  .langbar__here{ display:none; }
+
+  body.help{ background:#fff; color:#000; font-size:9.5pt; line-height:1.35; }
+  .wrap{ max-width:none; padding:0; }
+  a{ text-decoration:none; color:#000; }
+
+  /* The page's own h1 is the printed title — printing a second one under it
+     just says the same thing twice. What paper needs that the screen does not
+     is the attribution: who collected this, that we do not run any of it, and
+     when it was last checked. */
+  /* The masthead is a painted dark panel on screen and plain black type on
+     paper: the photograph costs ink, tells a reader nothing, and on most
+     printers turns the title into white-on-grey. */
+  .mast{ background:none !important; color:#000 !important; border-radius:0;
+    padding:0 0 6pt; margin:0; }
+  .mast__eye{ display:none; }
+  .mast h1{ font-size:19pt; margin-bottom:4pt; max-width:none; }
+  .mast h1 em{ color:#000 !important; }
+  .mast__say{ font-size:8.5pt; color:#000 !important; max-width:none; margin-top:3pt; }
+  /* The count is set in cream, for a masthead that is dark on screen. On
+     paper that is white on white, and the sentence read "This is a list of
+     that help New Yorkers with food". */
+  .mast__say b{ color:#000 !important; }
+  .mast__say--2{ display:none; }
+  .rule{ display:none; }
+  .printhead{ display:block; margin:0 0 10pt; padding-bottom:6pt;
+    border-bottom:1.5pt solid #000; }
+  .printhead__t{ font-family:var(--display); font-size:12pt; }
+  .printhead__s{ font-size:8pt; max-width:none; }
+  .cat{ display:block; }
+
+  /* The emergency numbers lead the sheet, as they lead the screen. */
+  .sos{ background:none !important; color:#000 !important; border:1.5pt solid #000;
+    border-radius:0; padding:6pt 8pt; margin:0 0 10pt; break-inside:avoid; }
+  .sos__h{ color:#000 !important; font-size:11pt; margin-bottom:4pt; }
+  .sos__list{ grid-template-columns:1fr 1fr 1fr 1fr; gap:6pt; }
+  .sos__list a{ background:none; padding:0; min-height:0; }
+  .sos__num{ color:#000; font-size:11pt; }
+  .sos__for{ color:#000; font-size:7.5pt; }
+  .sos__note{ color:#000 !important; font-size:7.5pt; margin-top:5pt; }
+
+  .grp{ margin:0 0 10pt; break-inside:auto; }
+  .grp__head{ border-bottom:1pt solid #000; padding-bottom:3pt; margin-bottom:6pt;
+    grid-template-columns:auto 1fr; break-after:avoid; }
+  .grp__head .ico{ width:14pt; height:14pt; }
+  .grp__head h2{ font-size:12.5pt; }
+  .grp__head p{ font-size:8pt; color:#000; }
+
+  /* Two columns of cards, each kept whole across the page break. A row split
+     down the middle by a page break is a phone number on one sheet and the
+     name it belongs to on another. */
+  .rows{ grid-template-columns:1fr 1fr; gap:6pt; }
+  .r{ border:0.75pt solid #666; border-radius:0; padding:6pt 7pt; gap:4pt;
+     break-inside:avoid; }
+  .r__name{ font-size:10.5pt; }
+  .r__kind{ font-size:7pt; margin-top:2pt; }
+  .r__what{ font-size:8pt; color:#000; }
+  .r__badges{ gap:3pt; }
+  .bdg{ background:none !important; color:#000 !important; font-size:7pt;
+    border:0.5pt solid #666; padding:1pt 4pt; }
+
+  /* Stacked, so the number and the address are two lines rather than two
+     things fighting over one. */
+  .r__do{ display:block; padding-top:2pt; }
+  .visit__t{ display:none; }
+  .call{ background:none !important; color:#000 !important; padding:0;
+    min-height:0; font-weight:700; font-size:10pt; }
+  .call .ico,.visit .arr,.printbtn{ display:none !important; }
+  .call small{ font-size:7pt; opacity:1; }
+  .visit{ display:block; border:0; padding:0; min-height:0; font-size:7.5pt;
+    font-weight:400; }
+  .visit::after{ content:attr(href); word-break:break-all; }
+
+  /* On paper the hours, address and languages are the useful lines and there
+     is nothing to tap, so help.js opens every disclosure before printing. */
+  .r__more{ border-top:0.5pt solid #999; padding-top:3pt; }
+  .r__more summary{ display:none; }
+  .r__facts{ padding-top:0; }
+  .r__facts dl{ font-size:7.5pt; gap:1pt 6pt; }
+  .r__facts dt{ color:#000; }
+  .r__facts dd{ color:#000; }
+  .r__note{ background:none; padding:0; margin-top:3pt; font-size:7.5pt; color:#000; }
+  .r__ver{ display:none; }
+
+  /* The honesty statement prints on every sheet it can reach. It is the one
+     piece of copy that exists to stop somebody mistaking a student for a
+     professional, and a leave-behind is exactly where that happens. */
+  .vowbox{ background:none !important; color:#000 !important;
+    border:1.5pt solid #000; border-radius:0; padding:7pt 9pt; margin-top:10pt;
+    break-inside:avoid; }
+  .vowbox h2{ font-size:11pt; }
+  .vowbox__full{ color:#000 !important; font-size:8.5pt; max-width:none; }
+  .vowbox__src{ color:#000 !important; font-size:7.5pt; }
+
+  .hfoot{ background:none; border-top:1pt solid #000; }
+  .hfoot__in{ padding:6pt 0 0; }
+  .hfoot__say,.hfoot__ver{ font-size:7.5pt; color:#000; }
+
+  @page{ margin:12mm 10mm; }
+}
+
+/* ============================================================
+   THE TEN LANGUAGE PAGES
+
+   Same components, same spacing, same rhythm as the English page. These rules
+   only handle what a different script needs, and none of them changes the
+   shape of anything.
+
+   1. Room. Bengali has ascenders and a headline English does not; Arabic and
+      Urdu hang well below the baseline. At English's leading they collide.
+      They get more leading, not a different type scale.
+   2. No mechanical italic. Fraunces has a drawn italic; CJK, Bengali, Arabic
+      and Urdu do not, so a browser asked for one slants the glyphs by matrix
+      and native readers see it immediately. The masthead's emphasis is gold in
+      every language — that is what carries it — and build_help emits <b>
+      rather than <em> for those five.
+   3. Direction. Arabic and Urdu set dir=rtl on <html>; everything else is
+      already written in logical properties, so the page mirrors on its own.
+      The four things that must NOT mirror — a phone number, an organisation's
+      name, the wordmark, an email — carry dir="ltr" in the markup.
+   ============================================================ */
+
+/* ---- the one thing this page has that the English one does not ---- */
+/* A quiet card, the same object as everything else here: one fact a reader
+   needs early, not a warning. It sits between the emergency numbers and the
+   seventeen kinds of help — where somebody looks up from the numbers. */
+.enote{ background:var(--surface); border:1.5px solid var(--line);
+  border-inline-start:4px solid var(--gold); border-radius:var(--r-s);
+  padding:clamp(16px,2.4vw,22px) clamp(16px,2.4vw,24px);
+  margin-bottom:clamp(28px,5vw,44px); }
+.enote__h{ font-family:var(--sans); font-size:.8rem; font-weight:700;
+  letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  color:var(--ink-3); margin-bottom:.7em; }
+.enote__p{ font-size:1.02rem; line-height:1.65; max-width:68ch; color:var(--ink); }
+.enote__p .dialn{ color:var(--gold-deep); }
+
+/* ---- a card that names places without describing them ---- */
+/* The English sentence under each name is the one part of a resource this
+   page cannot check, so it is left out rather than printed untranslated. What
+   remains — a proper noun and a number — is the same in every language, and
+   is what somebody says and dials. */
+.cl__pv--bare .pv{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; }
+.cl__pv--bare .pv__n{ flex:1 1 auto; min-width:0; }
+.cl__pv--bare .pv__call{ margin-top:0; }
+
+/* ---- the switcher marks where you already are ---- */
+/* --focus is declared even though nothing focusable sits inside this marker
+   today: the rule is that a dark surface on a light page names its own ring,
+   and a rule with one exception in it stops being a rule. */
+.langbar__here{ --focus:var(--gold-lit);
+  display:inline-flex; align-items:center; min-height:44px;
+  padding:8px 15px; border-radius:var(--r-pill);
+  background:var(--green); color:var(--mint);
+  font-weight:600; font-size:.98rem; }
+
+/* ---- room to breathe, per script ---- */
+.help--bn .mast__title{ line-height:1.35; }
+.help--bn .cl__b,.help--bn .enote__p,.help--bn .vowbox__full,
+.help--bn .sos__for,.help--bn .mast__say,.help--bn .hfoot__say{ line-height:1.85; }
+.help--ar .mast__title,.help--ur .mast__title{ line-height:1.4; }
+.help--ar .cl__b,.help--ar .enote__p,.help--ar .vowbox__full,
+.help--ar .sos__for,.help--ar .mast__say,.help--ar .hfoot__say,
+.help--ur .cl__b,.help--ur .enote__p,.help--ur .vowbox__full,
+.help--ur .sos__for,.help--ur .mast__say,.help--ur .hfoot__say{ line-height:1.9; }
+/* CJK has no word spaces, so the eye wants the line shorter, not looser. */
+.help--zh .mast__say,.help--ko .mast__say,
+.help--zh .vowbox__full,.help--ko .vowbox__full,
+.help--zh .enote__p,.help--ko .enote__p{ line-height:1.8; max-width:44ch; }
+.help--zh .cl__b,.help--ko .cl__b{ line-height:1.75; }
+/* Korean breaks between eojeol — the space-separated word units — not inside
+   one. The default treats every syllable as a break opportunity, and the
+   masthead came out "묻지 않 / 습니다": one word split across two lines, four
+   times on the first screen. Chinese does break anywhere and is left alone.
+   overflow-wrap catches the one case keep-all cannot: a single unit longer
+   than the column, which would otherwise push the page sideways. */
+.help--ko{ word-break:keep-all; overflow-wrap:anywhere; }
+.help--zh .eyebrow,.help--ko .eyebrow,
+.help--zh .enote__h,.help--ko .enote__h{ letter-spacing:.12em; }
+.help--ru .eyebrow{ letter-spacing:.14em; }
+
+/* ---- the five scripts with no drawn italic ---- */
+/* build_help emits <b> for these, so this only has to stop it reading as bold
+   text and make it read as the emphasis the <em> carries elsewhere. */
+.mast__title b{ font-style:normal; font-weight:inherit; color:var(--gold); }
+
+/* ---- right to left ---- */
+/* Small on purpose: everything above is in logical properties. What is here
+   is what is genuinely directional, and what must stay LTR inside a mirrored
+   page. */
+[dir="rtl"] .arr{ transform:scaleX(-1); }
+[dir="rtl"] :where(a,button):hover > .arr,
+[dir="rtl"] :where(a,button):hover .arr{ transform:scaleX(-1) translateX(4px); }
+[dir="rtl"] .pv__call,[dir="rtl"] .sos__num{ direction:ltr; }
+[dir="rtl"] .cl__pv--bare .pv__n{ text-align:start; }

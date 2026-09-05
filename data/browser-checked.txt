@@ -1,0 +1,45 @@
+# The pages www.nyc.gov and finder.nyc.gov will not show a script.
+# Their CMS renders the body client-side, so a fetch sees a shell and a
+# soft 404 looks exactly like a working page. Somebody has to open them.
+#
+# One line per page: date last opened, the title it had, the URL. The
+# title is the evidence — nyc.gov's soft 404 is titled "Page Not Found",
+# so a title that names the subject is a page that is really there.
+#
+# `python3 check_links_live.py --browser-list` reads this and says how
+# old the pass is. Redo it quarterly.
+2026-08-25	Food Help NYC	https://finder.nyc.gov/foodhelp/locations
+2026-08-25	NYC Hope	https://www.nyc.gov/nychope
+2026-08-25	Human Rights	https://www.nyc.gov/site/cchr/index.page
+2026-08-25	File Complaint - DCWP	https://www.nyc.gov/site/dca/consumers/file-complaint.page
+2026-08-25	DCWP - Consumers - Get Tips - File Your Taxes	https://www.nyc.gov/site/dca/consumers/file-your-taxes.page
+2026-08-25	DCWP - Consumers - Manage Money - Get Free Financial Counseling	https://www.nyc.gov/site/dca/consumers/get-free-financial-counseling.page
+2026-08-25	Worker Rights - DCWP	https://www.nyc.gov/site/dca/workers/worker-rights.page
+2026-08-25	Department of Environmental Protection	https://www.nyc.gov/site/dep/index.page
+2026-08-25	Department for the Aging	https://www.nyc.gov/site/dfta/index.page
+2026-08-25	Find Help - NYC Aging	https://www.nyc.gov/site/dfta/services/find-help.page
+2026-08-25	Health Insurance Assistance - NYC Aging	https://www.nyc.gov/site/dfta/services/health-insurance-assistance.page
+2026-08-25	In-Home Services - NYC Aging	https://www.nyc.gov/site/dfta/services/in-home-services.page
+2026-08-25	Transportation - NYC Aging	https://www.nyc.gov/site/dfta/services/transportation.page
+2026-08-25	Welcome to the NYC Department of Homeless Services - DHS	https://www.nyc.gov/site/dhs/index.page
+2026-08-25	Families with Children: Applying for Temporary Housing Assistance - DHS	https://www.nyc.gov/site/dhs/shelter/families/families-with-children-applying.page
+2026-08-25	Single Adults - DHS	https://www.nyc.gov/site/dhs/shelter/singleadults/single-adults.page
+2026-08-25	Abortion - NYC Health	https://www.nyc.gov/site/doh/health/health-topics/abortion.page
+2026-08-25	Postpartum Depression - NYC Health	https://www.nyc.gov/site/doh/health/health-topics/post-partum-depression.page
+2026-08-25	How to Order Birth and Death Records - NYC Health	https://www.nyc.gov/site/doh/services/birth-death-records-ordering.page
+2026-08-25	Sexual Health Clinics - NYC Health	https://www.nyc.gov/site/doh/services/sexual-health-clinics.page
+2026-08-25	Fair Fares NYC	https://www.nyc.gov/site/fairfares/index.page
+2026-08-25	NYC Housing Connect - HPD	https://www.nyc.gov/site/hpd/services-and-information/nyc-housing-connect.page
+2026-08-25	Adult Protective Services - HRA	https://www.nyc.gov/site/hra/help/adult-protective-services.page
+2026-08-25	Burial Assistance - HRA	https://www.nyc.gov/site/hra/help/burial-assistance.page
+2026-08-25	Cash Assistance - HRA	https://www.nyc.gov/site/hra/help/cash-assistance.page
+2026-08-25	Homebase - HRA	https://www.nyc.gov/site/hra/help/homebase.page
+2026-08-25	IDNYC	https://www.nyc.gov/site/idnyc/index.page
+2026-08-25	Asylum Seeker Resources	https://www.nyc.gov/site/immigrants/legal-resources/asylum-seeker-resources.page
+2026-08-25	MOIA Immigration Legal Support Hotline - MOIA	https://www.nyc.gov/site/immigrants/legal-resources/moia-immigration-legal-support-hotline.page
+2026-08-25	Mayor's Office for People with Disabilities	https://www.nyc.gov/site/mopd/index.page
+2026-08-25	Family Justice Centers - ENDGBV	https://www.nyc.gov/site/ocdv/programs/family-justice-centers.page
+2026-08-25	Mayor's Office to Prevent Gun Violence	https://www.nyc.gov/site/peacenyc/index.page
+2026-08-25	Workforce1 Career Centers - SBS	https://www.nyc.gov/site/sbs/careers/wf1-career-centers.page
+2026-08-25	Department of Veterans' Services	https://www.nyc.gov/site/veterans/index.page
+2026-08-25	New York State of Health | Health Plan Marketplace	https://nystateofhealth.ny.gov

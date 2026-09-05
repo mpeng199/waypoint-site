@@ -3,9 +3,10 @@
   "configurations": [
     {
       "name": "waypoint",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8753"],
-      "port": 8753
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "exec python3 serve.py \"${PORT:-8753}\""],
+      "port": 8753,
+      "autoPort": true
     }
   ]
 }

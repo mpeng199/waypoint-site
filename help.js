@@ -1,0 +1,1047 @@
+/* help.js — narrows a directory that is already fully rendered.
+
+   Everything on these pages works before this file loads: every resource on a
+   category page, in labelled groups, every phone number a real tel: link, the
+   cluster index a set of plain anchors. That is the contract. On a category
+   page this script only ever *hides* things, so the worst case when it fails
+   to load, fails to parse, or is blocked outright is that somebody sees the
+   whole list — which is the thing they came for anyway.
+
+   Two pages, two modes:
+
+   - CATEGORY (help-food.html and friends). Every resource for that need is in
+     the markup. Filtering hides rows. Nothing is ever built here.
+
+   - FRONT (help.html). The front page carries fifteen clusters of three
+     examples, not the whole directory — that split is the entire reason the
+     page is 117 KB instead of a quarter of a megabyte. So search there needs
+     its own copy of the facts, which ships as <script type="application/json"
+     id="ix"> at the bottom of the document, and results are built from it
+     using exactly the same .r markup a real row uses. There is one resource
+     card design on this site, not two.
+
+   Hence the `hidden` attributes in the markup: the search-and-filter block,
+   the "no matches" line and the print button are the controls that genuinely
+   need JavaScript, so they ship hidden and this file reveals them, with a
+   <noscript> beside them saying where they went. Nobody is offered a control
+   that cannot work. check.py enforces both halves. */
+(function () {
+  "use strict";
+
+  /* The header is the same object as the narrative side's, and it follows the
+     same rule: transparent at the top of the page, the page's own ground once
+     you have scrolled past it. Over cream that is nearly invisible, which is
+     the point — the bar appears when there is something behind it to separate
+     from. Outside the early return below, because it is the one thing on
+     these pages that is not about the directory. */
+
+  /* --------------------------------------------------------------------
+     The bar publishes its own height.
+
+     With five tabs it wraps onto one, two or three rows depending on the
+     width and the text size — 73px at a desk, 203px at 320px — so no amount
+     of calc() in a stylesheet can know it. Everything that has to clear a
+     fixed header reads --head-h: the hero's first line, and every
+     scroll-margin on the directory, where an anchor was landing 84px down a
+     page whose header is 203px tall and putting the heading you asked for
+     behind the bar.
+
+     The calc() in tokens.css stays as the no-JS fallback; it is exact at the
+     widths where the tabs fit on one row. (Same block in script.js — five lines
+     duplicated rather than a third script tag on twenty pages.) */
+  var head = document.querySelector(".sitehead");
+  if (head && window.ResizeObserver) {
+    new ResizeObserver(function () {
+      document.documentElement.style.setProperty("--head-h", head.offsetHeight + "px");
+    }).observe(head);
+
+    /* A page opened AT a fragment lands the target under the bar.
+
+       The browser scrolls to the fragment using the scroll-margin it can see,
+       which is the calc() fallback in tokens.css — 116px against a bar that is
+       203px at 320px. The resource somebody was linked to ends up 72px behind
+       the header. That is the path that matters most: each of the ten language
+       pages carries eighty-five deep links straight to a named place on an
+       English page, and every shared or bookmarked link takes it too.
+
+       Correcting this on a timer does not work. On a page this size Chrome
+       defers the fragment scroll until layout is stable, which measured well
+       past two seconds — a polling loop spends its whole window watching a
+       target that is still four thousand pixels down, gives up, and then the
+       browser scrolls. So listen for the scroll rather than race it: the
+       browser's own jump fires one, and that is the moment the target is
+       finally somewhere we can measure.
+
+       One correction, then done. A reader who has started scrolling themselves
+       is never moved. */
+    var settling = true;
+    var done = function () { settling = false; };
+    addEventListener("wheel", done, { passive: true, once: true });
+    addEventListener("touchstart", done, { passive: true, once: true });
+    /* Only the keys that actually scroll. Ending on any keydown meant a
+       keyboard reader who pressed Tab on arrival — which is most of them, and
+       the ones this correction is most for — switched it off before it ran. */
+    var SCROLLS = { " ": 1, PageUp: 1, PageDown: 1, Home: 1, End: 1,
+                    ArrowUp: 1, ArrowDown: 1 };
+    addEventListener("keydown", function (e) { if (SCROLLS[e.key]) done(); });
+    setTimeout(done, 8000);
+
+    var landOnFragment = function () {
+      if (!settling || !location.hash) return;
+      var id = location.hash.slice(1);
+      /* decodeURIComponent throws on a stray percent — "#100%" is a legal
+         fragment and an illegal escape, and an exception here would fire on
+         every scroll event for the life of the page. */
+      try { id = decodeURIComponent(id); } catch (e) { /* use it raw */ }
+      var t = document.getElementById(id);
+      if (t && t.getBoundingClientRect().top < head.offsetHeight) {
+        settling = false;
+        t.scrollIntoView({ block: "start", behavior: "instant" });
+      }
+    };
+    addEventListener("scroll", landOnFragment, { passive: true });
+    addEventListener("load", landOnFragment);
+    addEventListener("hashchange", function () {
+      settling = true;
+      setTimeout(landOnFragment, 0);
+      setTimeout(done, 1000);
+    });
+    landOnFragment();
+  }
+
+  if (head) {
+    var stick = function () {
+      head.classList.toggle("stuck", (window.scrollY || window.pageYOffset || 0) > 40);
+    };
+    addEventListener("scroll", stick, { passive: true });
+    stick();
+  }
+
+  var ixEl = document.getElementById("ix");
+  var dir = document.getElementById("dir");
+  if (!ixEl && !dir) return;
+
+  var q = document.getElementById("q");
+  var countEl = document.querySelector(".find__count");
+  var clearBtn = document.querySelector(".find__clear");
+  var resetBtn = document.querySelector(".find__filters .reset");
+
+  var active = { boro: [], lang: [], flags: [] };
+  var words = [];
+  var dropped = [];
+  var corrected = [];
+
+  /* ---------------------------------------------------------------- shared */
+
+  /* Turning what somebody typed into terms to match on.
+
+     Every word must appear, in any order, so "free food brooklyn" and "cheap
+     dentist brooklyn" both work. Two rules earned by testing real queries:
+
+     1. Words that appear in no row at all are dropped. "cant pay my con ed
+        bill" returned nothing because of "my" and "cant". Ignoring a word
+        that matches nothing can only widen the result, and a widened result
+        beats the blank page somebody gets otherwise. If no word survives, the
+        query really is unknown and the empty state is honest.
+     2. Numbers shorter than three digits are dropped. "section 8" matched 71
+        rows because "8" appears in every street address on the page. 311 and
+        988 are real searches; 8 is not.
+
+     There used to be a phrase-first pass here — if the whole query appeared
+     verbatim in any row, only those rows matched. It was covering for
+     substring matching, and it actively hid better answers: "homeless
+     shelter" appears word-for-word in three descriptions, so it returned
+     those three and never reached the city's actual shelter intake, which
+     matches both words separately. Same for "job training" hiding
+     Workforce1. Matching on word starts removed the reason it existed. */
+  var STOP = (" i me my mine we our you your a an the is am are be been it its this that " +
+    "to of for and or in on at with from about need needs help please do does did " +
+    "how where what who can cant cannot get got some any my im ive have has had " +
+    "there here now they them he she his her not no " +
+    /* "being" carries nothing and was deciding results: "i am being evicted"
+       and "my daughter is being abused" both opened with Adult Protective
+       Services, which says "being harmed" in its description, over the
+       eviction lawyers and the domestic violence line. */
+    "being ").split(" ");
+
+  /* Match at word starts, not anywhere in the string.
+     Plain substring matching made "ice detained" return 58 rows, because
+     "ice" is inside serv*ice*, off*ice*, just*ice* and pr*ice*s — so somebody
+     whose relative had just been detained got a food pantry and a DV hotline
+     above the immigration lawyers. Anchoring to a word start keeps the useful
+     looseness (a search for "dent" still finds "dental" and "dentist") and
+     drops the noise. */
+  /* Unicode-aware where the browser allows it, and the old ASCII class where
+     it does not — a six-year-old Android may predate \p{L} in regexes, and
+     falling back to the previous behaviour is better than throwing. */
+  var SPLIT = (function () {
+    try { return new RegExp("[^\\p{L}\\p{N}\\-]+", "u"); }
+    catch (e) { return /[^a-z0-9\-]+/; }
+  })();
+  var ASCII = /^[\x00-\x7F]*$/;
+
+  var reCache = {};
+  function starts(hay, word) {
+    // \b is defined by ASCII word characters, so "\bкризис" can never match
+    // and "\b食物" is meaningless. Anything outside ASCII matches plainly.
+    if (!ASCII.test(word)) return hay.indexOf(word) !== -1;
+    var re = reCache[word];
+    if (!re) {
+      var esc = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      re = reCache[word] = new RegExp("\\b" + esc);
+    }
+    return re.test(hay);
+  }
+
+  /* Prefix matching only works one way. "dent" finds "dentist" because the
+     query is a prefix of the word on the page — but "abused" finds nothing,
+     because the page says "abuse", and "my daughter is being abused" is not a
+     query that may return a housing lottery.
+
+     So the query word is also tried with a common English ending removed.
+     Deliberately crude: no dictionary, no real stemmer, four suffixes, and
+     only when at least four letters survive — enough for abus(ed), evict(ed),
+     deni(ed), wage(s), meal(s), class(es), and short of anything that starts
+     matching words it should not. */
+  var stemCache = {};
+  function stem(word) {
+    if (word in stemCache) return stemCache[word];
+    if (!ASCII.test(word)) return (stemCache[word] = word);
+    var out = word;
+    var cut = [["ing", 3], ["ies", 3], ["ed", 2], ["es", 2], ["s", 1], ["ly", 2]];
+    for (var i = 0; i < cut.length; i++) {
+      var suf = cut[i][0];
+      /* Three characters left, not four. At four, "paying" did not reduce to
+         "pay", so "help paying for a funeral" could not reach the row that
+         says "when a family cannot pay for one". Three still refuses "using"
+         (leaves "us") and "dying" (leaves "dy"), which are the shapes that
+         over-stem. */
+      if (word.length - cut[i][1] >= 3 &&
+          word.slice(-suf.length) === suf) {
+        out = word.slice(0, -suf.length);
+        break;
+      }
+    }
+    return (stemCache[word] = out);
+  }
+
+  function hasWord(hay, word) {
+    if (starts(hay, word)) return true;
+    var st = stem(word);
+    return st !== word && starts(hay, st);
+  }
+
+  /* A match through the stemmer is a weaker match than a match on the word
+     somebody actually typed. "free counseling" opened with Right to Counsel —
+     the eviction lawyers — because stripping -ing leaves "counsel", and legal
+     counsel and therapeutic counselling share a root that English does not
+     distinguish. The rows that say "counseling" now outrank the row that only
+     says "counsel", without either being thrown away. */
+  var STEMMED = 0.7;
+  function stemOnly(hay, word) {
+    return !starts(hay, word) && hasWord(hay, word);
+  }
+
+  /* The words the page actually contains, built once, for the typo fallback. */
+  var vocabCache = null, vocabFor = null;
+  function vocabulary(corpus) {
+    if (vocabFor === corpus) return vocabCache;
+    var seen = Object.create(null);
+    for (var i = 0; i < corpus.length; i++) {
+      var parts = corpus[i].split(SPLIT);
+      for (var j = 0; j < parts.length; j++) {
+        var w = parts[j];
+        if (w.length >= 4 && ASCII.test(w)) seen[w] = 1;
+      }
+    }
+    vocabFor = corpus;
+    vocabCache = Object.keys(seen);
+    return vocabCache;
+  }
+
+  /* True when one insertion, deletion, substitution or TRANSPOSITION turns a
+     into b. Transposition matters most: swapping two letters is the commonest
+     typing mistake there is, and it is two edits under plain Levenshtein, so
+     "hosuing" and "shleter" both came back empty until this was here. */
+  function oneEditApart(a, b) {
+    if (a.length === b.length) {
+      for (var t = 0; t < a.length - 1; t++) {
+        if (a.charAt(t) !== b.charAt(t)) {
+          if (a.charAt(t) === b.charAt(t + 1) && a.charAt(t + 1) === b.charAt(t) &&
+              a.slice(t + 2) === b.slice(t + 2)) return true;
+          break;
+        }
+      }
+    }
+    var la = a.length, lb = b.length;
+    if (Math.abs(la - lb) > 1) return false;
+    var i = 0, j = 0, edits = 0;
+    while (i < la && j < lb) {
+      if (a.charAt(i) === b.charAt(j)) { i++; j++; continue; }
+      if (++edits > 1) return false;
+      if (la > lb) i++;
+      else if (lb > la) j++;
+      else { i++; j++; }
+    }
+    return edits + (la - i) + (lb - j) <= 1;
+  }
+
+  var nearCache = {};
+  function nearestWord(word, corpus) {
+    if (word.length < 4 || !ASCII.test(word)) return null;
+    if (word in nearCache) return nearCache[word];
+    /* Among the candidates one edit away, take the one this page uses most.
+       "lawer" is one edit from "later", "lower" and "lawyer"; alphabetical
+       order picked "later" and answered a question about lawyers with
+       NeedyMeds. How often a word appears here is the only evidence available
+       about which one somebody meant, and it is good evidence. */
+    var vocab = vocabulary(corpus), best = null, bestDf = -1;
+    for (var i = 0; i < vocab.length; i++) {
+      if (!oneEditApart(word, vocab[i])) continue;
+      var df = 0;
+      for (var c = 0; c < corpus.length; c++) if (starts(corpus[c], vocab[i])) df++;
+      if (df > bestDf || (df === bestDf && best && vocab[i] < best)) {
+        best = vocab[i]; bestDf = df;
+      }
+    }
+    return (nearCache[word] = best);
+  }
+
+  function termsFor(raw, corpus) {
+    var text = raw.toLowerCase().trim().replace(/[’']/g, "");
+    if (!text) return [];
+    // Split on anything that is not a letter or a number IN ANY SCRIPT. The
+    // old class was [^a-z0-9-], which silently deleted every Cyrillic,
+    // Arabic, Bengali, Korean and Chinese character before matching — so the
+    // ten languages the page offers could be read and not searched.
+    corrected = [];
+    var all = text.split(SPLIT).filter(Boolean);
+    var content = all.filter(function (w) {
+      if (STOP.indexOf(w) !== -1) return false;
+      if (/^\d+$/.test(w) && w.length < 3) return false;
+      // A lone Latin letter matches the start of a quarter of the page — "pre
+      // k" spent its "k" on every word beginning with one. A lone CJK
+      // character is a whole word.
+      if (w.length < 2 && ASCII.test(w)) return false;
+      return true;
+    });
+    if (!content.length) content = all;
+    var useful = content.filter(function (w) {
+      return corpus.some(function (hay) { return hasWord(hay, w); });
+    });
+    /* One typo should not empty the page.
+
+       "fod", "docter", "lawer", "sucide", "landlrd", "aprtment" all returned
+       nothing. This is read on a phone by somebody upset, and a blank page is
+       the one answer that helps nobody — so a word that matched nothing is
+       given one more try against the words the page actually contains,
+       allowing a single insertion, deletion or substitution.
+
+       Only when nothing matched at all, only for words of four characters or
+       more (below that a single edit is a different word: "fod"/"for",
+       "bed"/"bad"), and only for ASCII, where "one character" means what it
+       looks like. */
+    if (!useful.length) {
+      var fixed = [];
+      for (var ci = 0; ci < content.length; ci++) {
+        var near = nearestWord(content[ci], corpus);
+        if (near) fixed.push(near);
+      }
+      if (fixed.length) {
+        corrected = fixed.slice();
+        useful = fixed;
+      }
+    }
+    // Say which words went nowhere. Dropping a word that matches nothing can
+    // only widen the result and beats the blank page — but doing it silently
+    // is how "free wifi" returned a hundred and seventy-four places that are
+    // free and none that have wifi, with no hint that half the question had
+    // been thrown away.
+    dropped = useful.length ? content.filter(function (w) {
+      return useful.indexOf(w) === -1;
+    }) : [];
+    return useful.length ? useful : content;
+  }
+
+  /* OR inside a facet, AND across facets: "Brooklyn or Queens" but
+     "Brooklyn AND Spanish". Anything else surprises people.
+     A language chip also matches a row that works in many languages through
+     an interpreter — see VAGUE_LANG in build_help.py. Without this, filtering
+     by a language hides most of the directory. */
+  function facetsOk(get) {
+    for (var facet in active) {
+      var want = active[facet];
+      if (!want.length) continue;
+      var has = (get(facet) || "").split(" ");
+      var hit = want.some(function (v) {
+        return has.indexOf(v) !== -1 ||
+               (facet === "lang" && has.indexOf("many") !== -1);
+      });
+      if (!hit) return false;
+    }
+    return true;
+  }
+
+  /* Is this row a closer match than the generic ones that also survived?
+     Two facets have the same shape of problem: most rows answer them
+     generically. 97 of the rows serve every borough, and most record their
+     languages as "Multiple". Filtering by Staten Island or by Bengali is
+     therefore honest but barely narrows anything — so the rows that answer
+     SPECIFICALLY lead their group, and the generic ones follow.
+
+     Nothing is hidden either way. "They are in your borough" and "they cover
+     the whole city" are both useful; they are just not the same answer. */
+  function isCloserMatch(get) {
+    if (active.lang.length) {
+      var langs = (get("lang") || "").split(" ");
+      if (active.lang.some(function (v) { return langs.indexOf(v) !== -1; })) return true;
+    }
+    if (active.boro.length) {
+      var boros = (get("boro") || "").split(" ");
+      // A citywide row carries every borough plus the "citywide" marker, so
+      // the absence of that marker is what makes a row local.
+      if (boros.indexOf("citywide") === -1 &&
+          active.boro.some(function (v) { return boros.indexOf(v) !== -1; })) return true;
+    }
+    return false;
+  }
+
+  /* How well a row answers the query, and whether it answers it at all.
+
+     Two things this has to get right, both learned from watching real
+     phrasings fail:
+
+     1. EVERY word matching is the ideal, and it is often too much to ask.
+        "i cant pay my hospital bill" returned nothing, because no single row
+        contains "pay" and "hospital" and "bill"; so did "landlord wont fix
+        anything" and "my benefits were cut off". A blank page is the worst
+        possible answer for somebody who has just typed a sentence about their
+        life. So: all-words if anything matches, otherwise most-words-matched.
+        Nothing is invented — every row shown really does match part of what
+        they typed — and the count says plainly that it is not exact.
+
+     2. WHERE the word matched decides the order. "i need food today" matched
+        forty-two rows and opened with a benefits screener, because "food"
+        appears in its description. A word in the resource's name is a much
+        stronger signal than the same word in a paragraph about it, and a page
+        that opens with the wrong three answers has failed even when the right
+        one is eleventh. */
+  /* Four fields, four weights. What a resource is CALLED is the strongest
+     signal, what it calls itself next, the alternative words we attached to
+     it next, and a paragraph about it weakest.
+
+     The alias field earns its own weight rather than sharing the subcategory's
+     because it is deliberately generous — every row tagged "disability"
+     carries the words "blind", "deaf" and "wheelchair" so that those searches
+     find something. Weighted equally, a meal-delivery service outranked
+     Lighthouse Guild on the query "im blind". Explicit beats attached. */
+  var W_NAME = 6, W_KIND = 4, W_TAG = 3, W_ALIAS = 2, W_BODY = 1;
+  /* Below the row's own description on purpose. These are the words a row
+     inherits from its CATEGORY, and a category is coarse: "Housing & Shelter"
+     contains "shelter", so Ronald McDonald House — a place for the family of
+     a child in cancer treatment — used to come back first for "somewhere to
+     sleep tonight", ahead of the City's shelter intake. Category vocabulary
+     can still find a row nothing else would; it can no longer outrank a row
+     that actually says the word. */
+  var W_CAT = 0.6;
+  /* A whole word beats a word start. Prefix matching is what lets "dent"
+     find "dentist", and it is also why "who do i call" opened with
+     Callen-Lorde. */
+  var EXACT = 1.5;
+  /* And a query that appears verbatim in what we attached to a row is the
+     strongest signal there is, because those phrases were written down FOR
+     this — "cant pay my hospital bill", "who do i call", "i want to die". */
+  var W_PHRASE = 14;
+  /* Above the phrase bonus, because a name typed in full is a stronger signal
+     than a phrase found inside something longer. */
+  var W_NAME_EXACT = 20;
+
+  var exactCache = {};
+  function hasExact(hay, word) {
+    if (!ASCII.test(word)) return hay.indexOf(word) !== -1;
+    var re = exactCache[word];
+    if (!re) {
+      var esc = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      re = exactCache[word] = new RegExp("\\b" + esc + "\\b");
+    }
+    return re.test(hay);
+  }
+
+  function fieldScore(hay, w, weight) {
+    if (!hasWord(hay, w)) return 0;
+    if (stemOnly(hay, w)) return weight * STEMMED;
+    return hasExact(hay, w) ? weight * EXACT : weight;
+  }
+
+  /* How much a word is worth depends on how rare it is.
+
+     "free eyeglasses" opened with naloxone and eviction defence. Both of
+     those have "free" in their NAME, which is the heaviest field, and the
+     one row that knows about eyeglasses has it only in its body. So a word
+     in three hundred rows outscored the word that meant something.
+     "help paying for a funeral" did the same thing and answered with the
+     Mayor's Office to Prevent Gun Violence.
+
+     Inverse document frequency, computed once from the rows on the page:
+     a word in nearly every row is worth almost nothing, a word in one row is
+     worth its full weight. Floored at 0.35 so a common word still breaks a
+     tie, and capped at 1 so nothing scores above its field weight and the
+     ordering above stays the ordering. */
+  var idfCorpus = null, idfCache = {};
+  function idfOver(corpus) {
+    /* Computed over every row the page holds, not over what a filter has left,
+       so narrowing to Brooklyn does not change what a word is worth. The
+       corpus is already an array of one flattened string per row — the same
+       strings the filter searches — so this counts documents, not fields. */
+    if (idfCorpus !== corpus) { idfCorpus = corpus; idfCache = {}; }
+  }
+  function idf(w) {
+    if (idfCache[w] !== undefined) return idfCache[w];
+    var c = idfCorpus, n = (c && c.length) || 0;
+    if (n < 2) return 1;                     // nothing to compare against
+    var df = 0;
+    for (var i = 0; i < n; i++) if (hasWord(c[i], w)) df++;
+    var v = df ? Math.log(n / df) / Math.log(n) : 1;
+    /* 0.15, not 0.35. At 0.35 a word in half the rows still scored 6 x 1.5 x
+       0.35 = 3.15 when it sat in a NAME, which beat the one row that knew
+       what an eyeglass was scoring 2 x 1.5 x 1.0 = 3 from its alias. The
+       floor exists so a common word can still break a tie, not so it can win
+       one. */
+    if (v < 0.15) v = 0.15;
+    if (v > 1) v = 1;
+    return (idfCache[w] = v);
+  }
+
+  function score(row, ws, phrase) {
+    var hits = 0, points = 0;
+    for (var i = 0; i < ws.length; i++) {
+      var w = ws[i];
+      var p = fieldScore(row.name, w, W_NAME) ||
+              fieldScore(row.kind, w, W_KIND) ||
+              fieldScore(row.tags, w, W_TAG) ||
+              fieldScore(row.alias, w, W_ALIAS) ||
+              fieldScore(row.body, w, W_BODY) ||
+              fieldScore(row.cat || "", w, W_CAT);
+      if (p) { hits++; points += p * idf(w); }
+    }
+    /* Tags count for this too. A row's tags are where somebody writing this
+       directory puts the exact sentence a reader types — "cant pay my rent",
+       "job with a felony", "my child was suspended" — and until now those
+       phrases scored as three separate words while the alias field got the
+       whole-phrase bonus. So the row that had been given the sentence lost to
+       a row that happened to contain its words. */
+    if (hits && phrase && phrase.length > 6 &&
+        (row.alias.indexOf(phrase) !== -1 || row.name.indexOf(phrase) !== -1 ||
+         row.tags.indexOf(phrase) !== -1)) {
+      points += W_PHRASE;
+    }
+    /* Typing an organisation's name should reach that organisation, not the
+       one whose longer name contains it. "Safe Horizon" opened with Safe
+       Horizon Streetwork Project, and "Met Council" with Met Council on
+       Housing Tenant Hotline: both are the phrase bonus landing on two rows
+       at once, and the longer row winning on the words around it. */
+    if (phrase && row.name === phrase) points += W_NAME_EXACT;
+    return { hits: hits, points: points };
+  }
+
+  /* Rank, then cut.
+
+     Every word matching is the ideal and is often too much to ask, so the cut
+     starts at the best any row managed and relaxes a word at a time until
+     there are enough answers to be worth showing. Exact matches still lead —
+     relaxing adds rows below them, it never reorders them — and the count
+     says plainly when the query was not matched in full. */
+  var ENOUGH = 5;
+  /* A loosened search is a guess, and a guess three screens long is not more
+     helpful than a guess one screen long. "free wifi" matched "free" in a
+     hundred and seventy-four rows. */
+  var LOOSE_MAX = 24;
+
+  function rank(rows, ws, phrase) {
+    if (!ws.length) return { keep: rows.map(function (r) { return r.ref; }), loose: false };
+    idfOver(mode.all ? mode.all() : null);
+    var scored = rows.map(function (r) {
+      var s = score(r, ws, phrase);
+      return { r: r, hits: s.hits, points: s.points };
+    });
+    var best = 0;
+    scored.forEach(function (s) { if (s.hits > best) best = s.hits; });
+    if (!best) return { keep: [], loose: false };
+
+    var need = best;
+    var kept = scored.filter(function (s) { return s.hits >= need; });
+    // Relaxing exists to avoid a blank page, not to pad a good answer. If
+    // something matched the whole query, that IS the answer, however few: "free
+    // coat" found the coat drive, then relaxed to one word and returned a
+    // hundred and seventy-four rows containing "free".
+    while (best < ws.length && kept.length < ENOUGH && need > 1) {
+      need--;
+      kept = scored.filter(function (s) { return s.hits >= need; });
+    }
+    kept.sort(function (a, b) {
+      if (b.hits !== a.hits) return b.hits - a.hits;
+      return b.points - a.points;
+    });
+    var loose = need < ws.length;
+    if (loose && kept.length > LOOSE_MAX) kept = kept.slice(0, LOOSE_MAX);
+    return {
+      keep: kept.map(function (s) { return s.r.ref; }),
+      loose: loose,
+    };
+  }
+
+  /* "Nothing here matched X." — said once, in front of whatever did match. */
+  function missNote() {
+    /* Say when a spelling was corrected, for the same reason the page says
+       when a word was dropped: a list that changed under you without
+       explanation is a list you cannot trust. */
+    if (corrected.length) {
+      var c = corrected.map(function (w) { return "\u201c" + w + "\u201d"; });
+      return "Showing results for " + (c.length === 1 ? c[0]
+        : c.slice(0, -1).join(", ") + " and " + c[c.length - 1]) + ". ";
+    }
+    if (!dropped.length) return "";
+    var q = dropped.map(function (w) { return "\u201c" + w + "\u201d"; });
+    var list = q.length === 1 ? q[0]
+             : q.slice(0, -1).join(", ") + " or " + q[q.length - 1];
+    return "Nothing here matched " + list + ". ";
+  }
+
+  function narrowed() {
+    return !!(words.length || active.boro.length || active.lang.length ||
+              active.flags.length);
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  /* ------------------------------------------------------------- the modes */
+  var mode = ixEl ? front(JSON.parse(ixEl.textContent)) : category();
+
+  /* --------------------------------------------------------------- FRONT */
+  function front(ix) {
+    var items = ix.rows;
+    var clusters = document.querySelector(".clusters");
+    var jump = document.querySelector(".jump");
+    var results = document.getElementById("results");
+    var resultRows = document.getElementById("resultRows");
+    var resultsH = document.querySelector(".results__h");
+    var noneEl = results.querySelector(".dir__none");
+    var TOTAL = items.length;
+
+    // Three haystacks, not one, so the ranker can tell a name from a
+    // paragraph. `s` — the internal tags and the plain-English synonyms
+    // build_help.py attaches — counts as "what this is", which is how "food
+    // stamps" reaches SNAP and "kicked out" reaches an eviction hotline.
+    items.forEach(function (it) {
+      it.name = (it.n || "").toLowerCase();
+      it.kind = (it.k || "").toLowerCase();
+      it.tags = (it.t || "").toLowerCase().replace(/\s+/g, " ");
+      // The row's own synonyms plus the ten-language vocabulary for every
+      // need it belongs to, composed here rather than repeated on the wire.
+      it.alias = ((it.s || "") + " " +
+        (it.k2 || [it.g]).map(function (k) { return ix.nw[k] || ""; }).join(" "))
+        .toLowerCase().replace(/\s+/g, " ");
+      it.cat = (it.sc || "").toLowerCase();
+      it.body = (it.d || "").toLowerCase();
+      it._find = (it.name + " " + it.kind + " " + it.tags + " " +
+                  it.alias + " " + it.body + " " + it.cat);
+      it.ref = it;
+    });
+    var corpus = items.map(function (it) { return it._find; });
+
+    var BADGES = [["free", "Free"], ["open-247", "Open 24/7"],
+                  ["no-status", "No immigration status asked"]];
+
+    /* Built here, but the same markup build_help.py writes for a real row, so
+       every rule in help.css applies unchanged and there is one card design
+       to maintain rather than two that drift. What a built row does NOT carry
+       is the fact list — hours, address, languages are not in the index, on
+       purpose, because they are what makes the index large. The last line is
+       the way to the full entry. */
+    function rowHTML(it) {
+      var a = [];
+      a.push('<li class="r" data-key="' + esc(it.i) + '">');
+      a.push('<div class="r__head"><h3 class="r__name">' + esc(it.n) + "</h3>");
+      if (it.k) a.push('<p class="r__kind">' + esc(it.k) + "</p>");
+      a.push("</div>");
+      a.push('<p class="r__what">' + esc(it.d) + "</p>");
+      var flags = (it.f || "").split(" ");
+      var bdg = BADGES.filter(function (b) { return flags.indexOf(b[0]) !== -1; })
+        .map(function (b) { return '<span class="bdg bdg--' + b[0] + '">' + b[1] + "</span>"; });
+      if (bdg.length) a.push('<p class="r__badges">' + bdg.join("") + "</p>");
+      a.push('<div class="r__do">');
+      if (it.c === "call") {
+        a.push('<a class="call" href="tel:' + esc(it.h) + '">' +
+          '<svg class="ico" aria-hidden="true"><use href="#i-phone"/></svg>' +
+          "<span><small>Call</small>" + esc(it.p) + "</span></a>");
+      } else if (it.c === "text") {
+        a.push('<a class="call call--text" href="' + esc(it.h) + '">' +
+          '<svg class="ico" aria-hidden="true"><use href="#i-text"/></svg>' +
+          "<span><small>Text</small>" + esc(it.p) + "</span></a>");
+      }
+      if (it.w) {
+        a.push('<a class="visit" href="' + esc(it.w) + '" rel="noopener">' +
+          '<span class="visit__t">Open website</span>' +
+          '<span class="arr" aria-hidden="true">&#8599;</span></a>');
+      }
+      a.push("</div>");
+      a.push('<p class="r__where"><a href="' + esc(ix.page[it.g]) + "#r-" +
+        esc(it.g) + "-" + esc(it.i) + '">Hours, address and more &mdash; under &ldquo;' +
+        esc(ix.needs[it.g]) + '&rdquo;</a></p>');
+      a.push("</li>");
+      return a.join("");
+    }
+
+    function apply() {
+      if (!narrowed()) {
+        results.hidden = true;
+        resultRows.innerHTML = "";
+        clusters.hidden = false;
+        countEl.textContent = TOTAL + " places to get help";
+        if (clearBtn) clearBtn.hidden = true;
+        if (resetBtn) resetBtn.hidden = true;
+        return;
+      }
+      var eligible = items.filter(function (it) {
+        return facetsOk(function (f) {
+          return f === "boro" ? it.b : f === "lang" ? it.l : it.f;
+        });
+      });
+      var ranked = rank(eligible, words, mode.phrase());
+      var hits = ranked.keep;
+      // Rows that answer the borough or the language *specifically* lead,
+      // without disturbing the relevance order among equals.
+      hits.sort(function (a, b) {
+        var A = isCloserMatch(function (f) {
+          return f === "boro" ? a.b : f === "lang" ? a.l : a.f; }) ? 0 : 1;
+        var B = isCloserMatch(function (f) {
+          return f === "boro" ? b.b : f === "lang" ? b.l : b.f; }) ? 0 : 1;
+        return A - B;
+      });
+
+      clusters.hidden = true;
+      results.hidden = false;
+      resultRows.innerHTML = hits.map(rowHTML).join("");
+      resultsH.textContent = missNote() + (hits.length === 0
+        ? "Nothing matched that"
+        : ranked.loose
+          ? "No exact match. Here are the " + hits.length + " closest."
+          : hits.length + (hits.length === 1 ? " place matches" : " places match"));
+      noneEl.hidden = hits.length !== 0;
+      countEl.textContent = hits.length === 0
+        ? "Nothing matched"
+        : ranked.loose
+          ? "No exact match. Showing the " + hits.length + " closest."
+          : "Showing " + hits.length + " of " + TOTAL + " places";
+      if (clearBtn) clearBtn.hidden = !words.length;
+      if (resetBtn) resetBtn.hidden = false;
+    }
+
+    return {
+      apply: apply,
+      terms: function (raw) { return termsFor(raw, corpus); },
+      home: function () { return clusters; },
+      phrase: function () { return phrase; },
+      all: function () { return corpus; },
+      jump: jump,
+      total: TOTAL,
+    };
+  }
+
+  /* ------------------------------------------------------------ CATEGORY */
+  function category() {
+    var rows = Array.prototype.slice.call(dir.querySelectorAll(".r"));
+    var groups = Array.prototype.slice.call(dir.querySelectorAll(".grp"));
+    var railLinks = Array.prototype.slice.call(document.querySelectorAll(".rail__nav a"));
+    var noneEl = document.querySelector(".dir .dir__none");
+
+    // Search text, built once from the row's CONTENT — deliberately not its
+    // textContent, which also carries the interface. Every row has a button
+    // reading "Call" and one reading "Open website", and a disclosure reading
+    // "More about this", so searching for any of those words matched every
+    // row; so did "checked" and "2026", from the verification line. Words the
+    // page says about itself are not facts about the resource.
+    //
+    // data-find adds what is NOT on screen: the internal tags and category,
+    // and the plain-English phrases SYNONYMS attaches — which is how "food
+    // stamps" finds SNAP and "kicked out" finds an eviction hotline.
+    // Every row on a category page answers that page's need, so the
+    // ten-language vocabulary for it is shipped once, on the container.
+    var pageWords = dir.dataset.nw || "";
+    var BODY = [".r__what", ".r__badges", ".r__facts dl", ".r__note"];
+    function textOf(r, sel) {
+      var el = r.querySelector(sel);
+      return el ? el.textContent : "";
+    }
+    rows.forEach(function (r) {
+      r.name = textOf(r, ".r__name").toLowerCase();
+      r.kind = textOf(r, ".r__kind").toLowerCase();
+      r.tags = (r.dataset.tags || "").toLowerCase().replace(/\s+/g, " ");
+      r.alias = ((r.dataset.find || "") + " " + pageWords)
+        .toLowerCase().replace(/\s+/g, " ");
+      r.cat = (r.dataset.cat || "").toLowerCase().replace(/\s+/g, " ");
+      r.body = BODY.map(function (sel) { return textOf(r, sel); })
+        .join(" ").toLowerCase().replace(/\s+/g, " ");
+      r._find = r.name + " " + r.kind + " " + r.tags + " " + r.alias +
+                " " + r.body + " " + r.cat;
+      r._key = r.dataset.key;
+      r.ref = r;
+    });
+
+    // Unique resources, not rendered rows: a resource can appear both in its
+    // own bucket and under "Also worth calling", so counting <li> elements
+    // would overstate the page by exactly the number we cross-filed.
+    var TOTAL = (function () {
+      var seen = Object.create(null), n = 0;
+      rows.forEach(function (r) { if (!seen[r._key]) { seen[r._key] = 1; n++; } });
+      return n;
+    })();
+
+    var corpus = rows.map(function (r) { return r._find; });
+
+    function apply() {
+      var shown = Object.create(null);
+      var n = 0;
+      var eligible = rows.filter(function (r) {
+        return facetsOk(function (f) { return r.dataset[f]; });
+      });
+      var ranked = rank(eligible, words, mode.phrase());
+      var live = Object.create(null);
+      ranked.keep.forEach(function (r, i) { r._rank = i; live[r.id] = 1; });
+
+      rows.forEach(function (r) {
+        var ok = !!live[r.id];
+        r.hidden = !ok;
+        if (ok && !shown[r._key]) { shown[r._key] = 1; n++; }
+        // Relevance first, then a local answer ahead of a citywide one. Order
+        // is a small integer so the two can be combined without a sort.
+        r.style.order = words.length
+          ? String((r._rank || 0) * 2 +
+                   (isCloserMatch(function (f) { return r.dataset[f]; }) ? 0 : 1))
+          : (isCloserMatch(function (f) { return r.dataset[f]; }) ? "-1" : "");
+      });
+
+      // A group heading over nothing reads as "we have none of this", when the
+      // truth is the filter excluded them. Hide the whole section instead —
+      // and take its rail entry with it, because a rail link to a hidden
+      // section is a link to nowhere.
+      var perGroup = Object.create(null);
+      groups.forEach(function (g) {
+        var live = g.querySelectorAll(".r:not([hidden])").length;
+        g.hidden = live === 0;
+        perGroup["#" + g.id] = live;
+        g.style.order = words.length ? String(-live) : "";
+      });
+      railLinks.forEach(function (a) {
+        var live = perGroup[a.getAttribute("href")];
+        if (live === undefined) return;
+        var el = a.querySelector(".rail__n");
+        if (el) el.textContent = live;
+        a.parentNode.hidden = live === 0;
+      });
+
+      countEl.textContent = !narrowed()
+        ? TOTAL + (TOTAL === 1 ? " place on this page" : " places on this page")
+        : n === 0 ? "Nothing matched"
+        : ranked.loose
+          ? "No exact match. Showing the " + n + " closest."
+          : "Showing " + n + " of " + TOTAL;
+      if (noneEl) noneEl.hidden = n !== 0;
+      if (clearBtn) clearBtn.hidden = !words.length;
+      if (resetBtn) resetBtn.hidden = !narrowed();
+    }
+
+    return {
+      apply: apply,
+      terms: function (raw) { return termsFor(raw, corpus); },
+      home: function () { return document.querySelector(".cat__main"); },
+      phrase: function () { return phrase; },
+      all: function () { return corpus; },
+      jump: null,
+      total: TOTAL,
+    };
+  }
+
+  /* -------------------------------------------------------------- wiring */
+  var phrase = "";
+  function onType() {
+    phrase = q.value.toLowerCase().trim().replace(/[\u2019']/g, "").replace(/\s+/g, " ");
+    words = mode.terms(q.value);
+    mode.apply();
+  }
+
+  if (q) {
+    // Filtering runs straight off the keystroke: a pass over a prebuilt
+    // string, ~1ms on a slow phone. Coalescing that into a frame would be
+    // debouncing something cheaper than the debounce, and rAF does not fire
+    // at all in a background tab, which is what made it untestable.
+    q.addEventListener("input", onType);
+    // Enter in a lone search field submits nothing here; stop the page jumping.
+    q.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") e.preventDefault();
+      if (e.key === "Escape") { q.value = ""; onType(); }
+    });
+  }
+
+  var findBlock = document.querySelector(".find");
+  if (findBlock) findBlock.hidden = false;
+
+  /* The filters are a refinement, not the way in. Open where the space is
+     free; closed on a phone, where nineteen chips is three screens between
+     somebody arriving and the first phone number. Set once, from here rather
+     than from the markup, because the markup has to be the same on every
+     device and this is the one thing that should not be. */
+  /* Open is the safe default: it hides nothing. Only a positive signal that
+     the viewport is narrow closes it — asking a media query and trusting the
+     answer fails in the wrong direction when layout has not happened yet
+     (innerWidth is 0 in a backgrounded tab, every media query is false, and a
+     desktop page ships with its filters shut for no visible reason).
+
+     It re-syncs on rotation, which is a thing phones do mid-task, and stops
+     the moment the reader touches the control themselves: after that the
+     state is theirs and the viewport does not get a vote. */
+  var filters = document.querySelector(".find__filters");
+  var facets = Array.prototype.slice.call(document.querySelectorAll(".facet"));
+
+  /* One open at a time, and the page closes them.
+
+     A <details> is a real disclosure and not a menu: it will happily sit open
+     while you open the next one, and it does not close when you click the
+     page behind it. Both are fine for a disclosure and wrong for a dropdown —
+     three panels open at once is the flat row this replaced, and a panel that
+     will not go away covers the list it is meant to be narrowing. */
+  function closeFacets(except) {
+    facets.forEach(function (f) { if (f !== except) f.open = false; });
+  }
+  facets.forEach(function (f) {
+    f.addEventListener("toggle", function () { if (f.open) closeFacets(f); });
+  });
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest || !e.target.closest(".facet")) closeFacets(null);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    var open = facets.filter(function (f) { return f.open; })[0];
+    if (!open) return;
+    open.open = false;
+    /* Escape puts you back on the button you opened, not at the top of the
+       document — otherwise closing a menu costs a keyboard reader their
+       place. */
+    var btn = open.querySelector(".facet__btn");
+    if (btn) btn.focus();
+  });
+
+  /* A shut dropdown has to say whether it is doing anything. Without this the
+     list is shorter and the reason is behind a button. */
+  function countFacets() {
+    facets.forEach(function (f) {
+      var n = f.querySelectorAll('.chip[aria-pressed="true"]').length;
+      var badge = f.querySelector(".facet__n");
+      if (!badge) return;
+      badge.textContent = n ? String(n) : "";
+      badge.hidden = !n;
+    });
+  }
+
+  function revealFilters() { if (filters && !filters.open) filters.open = true; }
+
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest) return;
+    var chip = e.target.closest(".chip");
+    if (chip) {
+      var facet = chip.dataset.f, val = chip.dataset.v;
+      var list = active[facet];
+      var i = list.indexOf(val);
+      if (i === -1) list.push(val); else list.splice(i, 1);
+      chip.setAttribute("aria-pressed", i === -1 ? "true" : "false");
+      countFacets();
+      mode.apply();
+      return;
+    }
+    if (e.target.closest(".reset")) { reset(); return; }
+    if (e.target === clearBtn) { q.value = ""; words = []; mode.apply(); q.focus(); }
+
+  });
+
+  /* Arriving from a language page.
+
+     help-es.html links here as help-food.html?lang=spanish, because somebody
+     who has just read a page in Spanish and tapped "I need food" is telling
+     us something. The chip shows as pressed and the filters open, so the
+     shorter list has a visible reason and one tap undoes it. Anything not in
+     the ten is ignored: this reads a URL, and a URL is not to be trusted. */
+  (function () {
+    var m = /[?&]lang=([a-z-]{2,20})/.exec(location.search);
+    if (!m) return;
+    var chip = document.querySelector('.chip[data-f="lang"][data-v="' + m[1] + '"]');
+    if (!chip) return;
+    useLanguage(m[1]);
+    /* and say, in their language, why the words around them just changed */
+    var note = document.querySelector('.enote--carry[data-lang="' + m[1] + '"]');
+    if (note) note.removeAttribute("hidden");
+  })();
+
+  /* The follow-through: the list below should now be the places that speak
+     the language, and the matching chip should show as pressed so they can
+     see why the list got shorter — and turn it off again. */
+  function useLanguage(key) {
+    if (active.lang.indexOf(key) === -1) active.lang.push(key);
+    var chip = document.querySelector('.chip[data-f="lang"][data-v="' + key + '"]');
+    if (chip) chip.setAttribute("aria-pressed", "true");
+    countFacets();
+    revealFilters();
+    mode.apply();
+  }
+
+  function reset() {
+    words = [];
+    if (q) q.value = "";
+    active = { boro: [], lang: [], flags: [] };
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.chip[aria-pressed="true"]'),
+      function (c) { c.setAttribute("aria-pressed", "false"); });
+    countFacets();
+    closeFacets(null);
+    mode.apply();
+    var home = mode.home();
+    if (home) home.scrollIntoView({ block: "start" });
+  }
+
+  /* ---- printing.
+     Whatever is on screen is what prints: the rows the filter hid carry the
+     hidden attribute, so a sheet printed after narrowing a category page to
+     Brooklyn is exactly those places and nothing else. That is the leave-
+     behind students actually need, and it costs no separate print view. The
+     front page prints its fifteen clusters with three numbers each, which is
+     the one-or-two-sheet version somebody can hand across a table.
+
+     The one thing screen and paper disagree about is the details disclosure.
+     On screen "More about this" is closed, because a row that states its
+     hours, address and languages up front is a row nobody scans. On paper
+     those are the most useful lines on the sheet and there is nothing to tap,
+     so every disclosure is opened for the print and put back afterwards.
+     beforeprint covers Ctrl+P as well as the button. */
+  var reopened = [];
+  window.addEventListener("beforeprint", function () {
+    reopened = [];
+    Array.prototype.forEach.call(document.querySelectorAll(".r__more"), function (d) {
+      if (!d.open) { d.open = true; reopened.push(d); }
+    });
+  });
+  window.addEventListener("afterprint", function () {
+    reopened.forEach(function (d) { d.open = false; });
+    reopened = [];
+  });
+
+  var printBtn = document.querySelector(".printbtn");
+  if (printBtn) {
+    printBtn.hidden = false;
+    printBtn.addEventListener("click", function () { window.print(); });
+  }
+
+  mode.apply();
+})();

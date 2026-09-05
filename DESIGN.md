@@ -460,7 +460,164 @@ All form inputs:
 
 - All animations disabled under `@media (prefers-reduced-motion: reduce)`
 - Entrance reveals use crossfade as fallback (no blur or scale)
-- Focus indicators available on buttons and form fields
+
+### The header
+
+One component, `.sitehead` in `tokens.css`, on all twenty pages. Same lockup,
+same five tabs in the same order — **Find help · Bills & denials · How it
+works · Students · Partners** — same gold "Find help" pill, same tubelight
+lamp, same wrap rule, same stuck-on-scroll rule. It was two headers that had
+drifted: five tabs on one half against three on the other, a solid pin against
+an outlined one, 22px of padding against 12px, a drawer against a wrap.
+
+On the directory the four section links point back into the narrative page,
+because that is where those sections are, and the lamp ships with them and
+never lights: there is nothing on a directory page for it to slide between.
+Shipping it anyway is what lets the two headers be one string of markup.
+
+Each half sets **six colour tokens and one line of positioning**, nothing else:
+
+| token | narrative | directory |
+|---|---|---|
+| `--head-bg` | `rgba(19,35,26,.55)` | `rgba(252,254,247,.90)` |
+| `--head-line` | `--hair` | `--line` |
+| `--head-ink` | `--cream` | `--ink` |
+| `--head-ink-2` | `--ink-soft` | `--ink-2` |
+| `--head-ink-3` | `--ink-faint` | `--ink-3` |
+| `--head-hover` | `rgba(252,254,247,.10)` | `--line-2` |
+| `--head-dot` (the pin's centre) | `transparent` | `--gold` |
+| `--head-shadow` | `0 1px 12px rgba(12,22,16,.6)` | `none` |
+| position | `fixed` (floats over the door) | `sticky` (sits under the top edge) |
+
+Both are **transparent until you have scrolled past 40px**, then take their own
+page's ground with a blur. Over cream that is nearly invisible, which is the
+point: the bar appears when there is something behind it to separate from. It
+fades in over 120ms and out over 400ms — appearing is the safe direction to
+hurry, because during the fade the bar's own type sits half-transparent over
+whatever is passing under it.
+
+The pin is **solid, filled with the header's ink** — cream on the dark half,
+deep green on the light one, the same mark either way. Its centre is the one
+piece that adapts: nothing on the dark ground, where the filled pin reads on
+its own, and gold on cream, where the mark wants a counter.
+
+**The bar has its own column.** It used to inherit each page's — 1280px with
+an 80px gutter on the narrative side, 1160px with 44px on the directory — so
+the wordmark sat 32 to 40px apart depending on the width and you could watch it
+move when you switched pages. `--head-wrap` and `--head-gutter` are set once in
+`tokens.css`; the directory's page column is derived from them, so the wordmark
+still sits directly over the first thing under it.
+
+Every class the bar is built from is styled in `tokens.css` — `.sitehead`,
+`.brand`, `.brand__txt`, `.nav-lamp`, all of it. `check_one_header` fails if a
+page sheet targets any of them, because only one half loads each sheet: the
+lamp lived in `styles.css` and shipped ruleless on eighteen directory pages,
+standing in the flow as an inline element and pushing every tab 4px right, and
+the wordmark's widened phone hit-area was narrative-only.
+
+Measured at nine widths from 320px to 1920px, on six pages: the bar, the
+lockup, the pin, the wordmark, the strapline, the lamp and every tab box are
+**pixel-identical**.
+
+Below about 1050px the tabs take a row of their own, which reads as a
+deliberate second line rather than the ragged two-then-three a plain wrap gives
+between 700 and 1000px.
+
+**`--head-h` is published by the bar itself.** With five tabs it comes to 73px
+at a desk, 155px at 375px and 203px at 320px — no `calc()` in a stylesheet can
+know that, so a `ResizeObserver` in `script.js` and `help.js` sets the custom
+property from the measured height; the `calc()` in `tokens.css` is the no-JS
+fallback and is exact wherever the tabs fit on one row. Everything that has to
+clear a fixed header reads it: the hero's top padding is `max(what it wanted,
+--head-h + a gap)` in all three places that set it, and every `scroll-margin`
+on the directory is `calc(var(--head-h) + 14px)` — those were a flat 84px,
+which on a phone landed the heading you asked for 70px behind the bar.
+
+`check_one_header` fails if the tabs differ between pages, if the gold pill
+comes off, if the lockup is edited on one half, or if either stylesheet so
+much as restyles a padding on the shared bar.
+
+### The focus ring
+
+One ring, in `tokens.css`, for both halves of the site:
+
+```css
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{
+  outline:3px solid var(--focus); outline-offset:3px; border-radius:6px;
+}
+```
+
+The colour is a **property of the surface, not of the control**. Because the
+ring is offset outward it is painted on the ground the control sits on, so a
+button cannot know what colour its own ring should be. `--focus` defaults to
+`--green` for the light directory; each dark room re-points it once and
+everything inside inherits:
+
+| Surface | `--focus` | Ratio against its ground |
+|---|---|---|
+| the directory page | `--green` | 13.2:1 on white |
+| `.mast`, `.hfoot`, `.langnote`, `.vowbox` | `--gold-lit` | 11.5:1 on `--green-deep` |
+| `.sos` (the clay emergency panel) | `#FFF` | 7.6:1 |
+| `body` on the narrative side | `--gold-lit` | 11.5:1 |
+
+Dark *controls* — `.skip`, `.call`, a pressed `.chip` — deliberately set
+nothing: their ring lands on the light page outside them.
+
+Two controls hand their ring to a wrapper and set `outline:none`; both restore
+a `Highlight` ring under `@media (forced-colors: active)`, where the border
+and box-shadow standing in for it are discarded.
+
+`check_focus_ring` guards all of it, including telling a dark room from a dark
+control by asking the built HTML whether the class ever appears on something
+focusable.
+
+### Headings
+
+One `h1` per page, no level skipped, on all twenty pages
+(`check_heading_order`). Footer column labels are `h2` with a class, not `h4`
+chosen for its size.
+
+### What a "checked" date means
+
+Two tools stamp it, and between them they cover every row —
+`check_every_row_has_someone_to_verify_it` fails if one falls through:
+
+- **`verify_phones.py`** asks each organisation's own site whether the number
+  we print is its number. It owns every row with a ten-digit number in it.
+- **`check_links_live.py --stamp`** owns the rest: a row whose "phone" is 311,
+  or `Text FOOD to 726879`, or nothing at all. For those, verifying can only
+  mean *the site is live and still on the organisation's own domain* — so that
+  is what their date means, and this is the paragraph that says so.
+
+A row whose number the sweep could not confirm keeps its older date. It is
+never stamped on a guess: 2 rows still read June for that reason, and the
+pages say "Checked June–August 2026" rather than rounding up.
+
+### Tap targets
+
+**44px minimum on every control**, not the 24 of WCAG 2.5.8: this is read on a
+phone by somebody who is frightened, often one-handed, often in a hurry. The
+exception is a link inside a sentence — the 911 in a translated paragraph —
+which 2.5.8 exempts and which cannot grow without breaking the line.
+
+Stacked links get **real padding**, not a widened pseudo-element: growing them
+invisibly makes adjacent targets overlap, which trades a small target for a
+mis-hit. Standalone controls (the wordmark on a phone) get the pseudo-element,
+which leaves the glyph and the layout untouched. `check_tap_targets` names
+seven controls and fails on any under 44.
+
+### Reflow
+
+At 320px with text at 200% — the narrowest screen at the largest type — no
+page may scroll or be dragged sideways. `html, body { overflow-x: clip }` on
+the narrative side: `hidden` on one axis coerces the other from `visible` to
+`auto`, which makes body its own scroll container and leaves the document
+element scrolling instead. `clip` clips without creating a scroll container,
+so every `position: sticky` on the page keeps working.
+
+Nothing is hidden by a physical offset. `left: -9999px` is off the *end* on a
+right-to-left page, not off-screen — it made help-ur.html 10,695px wide. The
+skip link and the spam honeypot are clipped to a 1px box instead.
 
 ### Text Sizing & Readability
 
@@ -468,12 +625,379 @@ All form inputs:
 - Body text: 17px with 1.6 line-height (ample breathing room)
 - Display headings: 2.6rem–6.4rem with tight leading (1.02) for visual hierarchy
 
+### The ten language pages
+
+Each of New York's ten Local Law 30 languages has **a page**, not a panel:
+`help-es.html`, `help-zh.html`, `help-ru.html`, `help-bn.html`, `help-ht.html`,
+`help-ko.html`, `help-ar.html`, `help-ur.html`, `help-fr.html`, `help-pl.html`.
+
+They were panels — a heading, three sentences and a Close link, revealed by
+`:target` under an otherwise English page. A blurb *about* the page rather
+than the page. Somebody who reads only Bengali got a paragraph in Bengali and
+then two hundred resources in English.
+
+Each page carries what the English front page carries, **in the same order and
+the same components**: masthead over the painted valley, four emergency
+numbers, seventeen kinds of help with places named and dialable under each,
+the promise, the footer. `i18n.py` holds every word — about 70 strings and 17
+blurbs per language — and is the file a translator gets handed.
+
+**The header's height is a guess, and only script makes it true.** `--head-h`
+computes the bar from the assumption that the tab row wraps to two rows. How
+many rows it takes depends on how long the tab labels are, which is a different
+answer in every language. Measured at 320px, the bar is 251px in Spanish and
+French, 203 in English and Russian, 155 in Arabic and Chinese — against a
+declared 116 in all six. On `help.html` and `index.html` a `ResizeObserver`
+publishes the measured height and the guess never survives first paint. The ten
+language pages ship no script on purpose, so there it stood: a tap on any
+section link put the heading up to 121px under a bar that was still covering
+it. Below 1080px those pages take the bar out of the flow instead. Nothing can
+cover a heading then, in any language, and a 320px phone gets back the third of
+its screen the bar was holding. `check_a_page_without_script_does_not_trust_head_h`
+holds the arrangement together: a page that trusts `--head-h` has to be a page
+that corrects it.
+
+What that costs, stated plainly: below 1080px a language page's bar no longer
+follows the reader, so the five nav tabs are not on screen while scrolling. It
+is a real difference from the English half and it was weighed rather than
+overlooked. Those five tabs point at the English narrative site — the least
+useful links on a page written in Urdu — and the footer carries the same
+destinations plus a link back to the top of the page. Against that, the bar was
+holding a third of a 320px screen and putting every heading a reader jumped to
+behind itself. Above 1080px, where the bar is one row and `--head-h` is right
+within a pixel, both halves are sticky and identical.
+
+**The front page no longer carries the directory's table of contents.** It
+used to: a chapter headed "Here is where it is." with the seventeen kinds of
+help and the ten language pages listed under it, generated from `NEEDS` so it
+could not drift. That chapter was removed deliberately, which leaves the hero's
+own button as the single route from the narrative half to the directory.
+
+Two things follow, and both are checked rather than remembered.
+`check_home_offers_help` used to treat the hero's call to action as a nicety on
+top of the chapter; with the chapter gone it is the whole of it, so the guard
+now fails if the front page links to the directory nowhere at all. And the ten
+language pages were linked from that chapter directly — the route is a chain
+now, front page to directory to language row, which is two taps instead of one
+and breaks entirely if either link goes. The guard follows the chain and says
+so. If the front page should offer languages directly again, the cheapest place
+is the footer, which is on every page and costs no scroll.
+
+**What is not translated, and why.** The resource descriptions are English
+and this site has no way to check ten translations of every one of them. So the cards name
+places and dial them — a proper noun and a number are the same in every
+language — and one quiet card near the top says the detail pages are in English
+and that 311 puts an interpreter on the line free, at any hour. Every link
+carries the language through (`help-food.html?lang=bengali`), so the filter is
+already applied when the reader lands, the chip is visibly pressed, and the
+English page shows the same sentence in their language so the words do not
+change mid-journey with nothing to say why.
+
+**Formatting adapted, not redesigned:**
+
+| script | what it needs | why |
+|---|---|---|
+| Korean | `word-break: keep-all` | breaks between eojeol; the default split 묻지 않/습니다 |
+| Bengali | leading 1.85 | a headline (matra) and ascenders English does not have |
+| Arabic, Urdu | leading 1.9, `dir="rtl"` | glyphs hang well below the baseline |
+| Chinese, Korean | measure 44ch, not 68 | no word spaces for the eye to rest on |
+| CJK, Bengali, Arabic, Urdu | `<b>` not `<em>` | Fraunces has a drawn italic; these have none, and a browser asked for one slants by matrix |
+
+Per-script CSS may set **typography and nothing else** — leading, tracking,
+word breaking, the measure. Never padding, margin, gap, radius or box size:
+those are the page's rhythm, and a language page is the English page in
+another language, not another design of it. Measured at 1280px, Spanish,
+Chinese, Bengali and Arabic come back with the same 26px from the language row
+to the masthead, the same 37px to the emergency panel, the same 60px to the
+promise, and the same 24px card padding and 16px radius as English.
+(`check_language_spacing_is_shared`)
+
+Month names and date spans are per-language too (`i18n.MONTHS`,
+`i18n.DATE_SPAN`) — Chinese and Korean put the year first, Spanish takes "de".
+A date is the one thing on that line a reader actually checks.
+
+Right-to-left is nearly free because the whole stylesheet is written in logical
+properties. The four things that must **not** mirror — a phone number, an
+organisation's name, the wordmark, an email — carry `dir="ltr"` in the markup.
+
+Guarded by `check_directory_languages`, `check_language_header`,
+`check_language_round_trip`, `check_language_print`, `check_language_voice`
+and `check_script_typography`.
+
 ### Multilingual & Plain Language
 
 - Vocabulary kept simple; no jargon
 - Generous spacing for better scannability (especially for older adults)
 - All form labels clearly associated with inputs
 - Alt text and ARIA labels on interactive elements
+- **Numbers dial in every language.** `dial()` links 911, 988 and 311 inside
+  the translated sentences at build time, so the ten language panels tap
+  through like the rest of the site rather than printing digits to memorise
+  (`check_language_numbers_dial`).
+
+## The resident side — eighteen generated pages
+
+The whole verified NYC resource directory, grouped by the sentence somebody
+arrives with rather than by the categories the agencies use. It is the only
+part of the site that is generated, and `python3 build_help.py` writes all of
+it in one go.
+
+```
+help.html            the way in: one cluster per kind of help, three examples each
+help-<need>.html     one page per kind of help, with everything in it
+```
+
+**To change anything in it, edit the source and rebuild:**
+
+```
+python3 build_help.py
+```
+
+- **Resource data** lives in `data/resources.csv` — one row per resource, with
+  the columns the original NYC directory used. Add, correct, or remove rows
+  there. New rows go through `merge_rows.py`, which refuses one with a missing
+  column, no verification date, or no way to reach it, and skips duplicates.
+- **Everything else** — the needs and their wording, the second-level buckets,
+  the search vocabulary, the emergency numbers, the ten in-language panels —
+  lives in tables at the top of `build_help.py`, each with a comment saying
+  what it is for.
+- **Never hand-edit a generated page.** A fix typed into one survives until
+  the next build and then disappears. `check.py` compares every one of them
+  against the generator's output and fails if any differs.
+- The build also rewrites one block of `index.html`: the list of what the
+  directory holds. That list is the directory's table of contents rendered on
+  the other side of the site, and hand-maintaining it is how it came to offer
+  eight of sixteen kinds of help.
+
+### Why it is split, and where the split falls
+
+It used to be one page carrying every resource: 250 KB of markup, sixteen
+headings deep, opened by somebody frightened, on a phone, looking for one
+phone number. Now:
+
+- **The front page is a way in, not the directory.** One cluster per need —
+  icon, the sentence, three real places with real numbers, and a link to that
+  need's own page. Nobody has to read past the cluster that matches their
+  sentence.
+- **Each category page is built to be skimmed**: a rail of what is on it with
+  counts, resources in named buckets ("somewhere to sleep tonight" / "stop an
+  eviction" / "money for the rent") rather than one run of forty, a Start here
+  block holding the best first call, and every neighbouring kind of help one
+  tap away.
+- **Everything on a category page is bucketed by subject**, whether it got
+  there through its own category or through a cross-reference keyword. These
+  used to be two sections, with cross-references collected at the bottom under
+  "Also worth calling"; on a need that cuts across everything that made the
+  page five rows and then a heap.
+
+Two rules that are not obvious and are load-bearing:
+
+- **A cross-reference keyword matches at a word start, never anywhere.**
+  Plain substring matching put a soup kitchen, a diaper bank and a
+  hospital-bill charity on the disability page, because `ssi` is inside
+  a-ssi-stance, mi-ssi-on and a-ssi-stors.
+- **A row is filed by what it IS — its name and subcategory — never by its
+  tags.** Tags are search vocabulary and are deliberately generous; a health
+  centre is tagged "dental" so a search for a dentist finds it. Letting that
+  decide where rows file put sixteen general clinics under "Teeth".
+
+### Why generated rather than fetched
+
+The reader is plausibly on a six-year-old Android, on transit data, at a
+locked-down library terminal, or using a screen reader. Fetching JSON and
+templating every row in the browser fails all four. So the rows are baked in
+once, here, and on a category page `help.js` only ever *hides* them — the
+worst case when the script fails to load is that somebody sees the whole list,
+which is what they came for.
+
+The front page is the one exception, and a deliberate one: it carries clusters
+of three, not the whole directory, so its search runs off a compact index in
+the document (`<script type="application/json" id="ix">`) and builds results
+from it — using the same `.r` markup a real row uses, so there is one resource
+card design on this site and not two. `check.py` holds the line: the index
+must cover every resource, every result must link to an anchor that exists,
+and `help.js` may write markup in at most two places.
+
+### Search
+
+The search box, the result count, the print button and the filters are **one
+card, three zones divided by hairlines**: what you type, what that got you, and
+how to narrow it further. They were four separate objects — a labelled box, an
+orphaned grey line under it, a bordered card of chips, and, below the lot and
+outside everything, the count on the left with the print button on the right.
+All four did the same job and none looked related to any other.
+
+The count sits directly under the box that changes it. The scope note beside it
+no longer repeats the number standing next to it, which is one fewer place for
+a count to go stale.
+
+#### Which pages a row appears on
+
+A row's category always counts. `also` keywords in `NEEDS` add the needs it
+answers from somewhere else, matched against what the row **is** — its name and
+subcategory — and never its description, because nearly every description
+mentions cost and immigration status.
+
+That rule has one hole: a multi-service organisation's subcategory is "One
+place that does many things", true of all of them and so useless as a trigger.
+So a row can also name its other pages explicitly with an `also:<need>` tag.
+Per row, so it never fires by accident; `check_also_tags_are_real_needs` fails
+on a name that is not one of the seventeen. Eight rows use it — the Staten
+Island and Brooklyn multi-service organisations whose pantries are the biggest
+in their boroughs and which appeared only under "I'm not sure where to start".
+
+A cluster card shows `preview_line(description)`: the first sentence, cut at
+the colon or em dash that introduced a list when that sentence runs past 150
+characters. Twenty-eight descriptions open that way, and the whole list on a
+card stops the card being a preview — but rewriting twenty-eight good
+descriptions to fit a card would be the wrong way round.
+
+#### How a row is scored
+
+Six fields, weighted, best match per word:
+
+| field | weight | what it is |
+|---|---|---|
+| name | 6 | the organisation's name |
+| kind | 4 | the subcategory line under it |
+| tags | 3 | including whole sentences somebody would type |
+| alias | 2 | synonyms the row's own words fired, plus its needs' ten-language vocabulary |
+| body | 1 | the description |
+| **cat** | **0.6** | synonyms its *category* fired — below the description on purpose |
+
+Then three multipliers:
+
+- **Exact ×1.5, prefix ×1, stem ×0.7.** A whole word beats a word start beats a
+  match that needed the stemmer. "free counseling" used to open with Right to
+  Counsel — the eviction lawyers — because stripping `-ing` leaves `counsel`,
+  and English does not distinguish the legal root from the therapeutic one.
+- **Inverse document frequency**, floored at 0.15. A word in half the rows is
+  worth almost nothing; a word in one row is worth its full weight. Without it
+  "free eyeglasses" opened with *Free* Naloxone and *Free* Eviction Defense,
+  because "free" sat in their names and "eyeglasses" sat in somebody's alias.
+- **Whole-phrase bonus +14**, if the query appears verbatim in the name, the
+  alias **or the tags**. Tags are where this directory puts the exact sentence
+  a reader types.
+
+**One typo does not empty the page.** A query that matched nothing is retried
+against the words the page actually contains, allowing one insertion,
+deletion, substitution or **transposition** — swapping two letters is the
+commonest typing mistake and costs two edits without that last one, so
+"hosuing" and "shleter" came back blank until it was there. Among the
+candidates one edit away it takes the one this page uses most: "lawer" is one
+edit from "later", "lower" and "lawyer", and alphabetical order answered a
+question about lawyers with NeedyMeds. Four characters minimum, ASCII only,
+and the correction is announced — "Showing results for “housing”" — because a
+list that changes under you unexplained is a list you cannot trust.
+
+`check_critical_queries` models all of this in Python and asserts that 77
+named searches come back **first**, not merely somewhere. Every constant is
+read out of `help.js` by `_js_constants`, so the model cannot drift from the
+code without changing with it or failing for a missing name. It is still a
+model of another language's behaviour: it was checked against the live page on
+twenty-two queries and agrees with the browser on all of them.
+
+The `cat` field exists because a category is coarse. "Housing & Shelter"
+contains the word *shelter*, so every row filed under it fired the shelter
+synonyms, and Ronald McDonald House — which is for the family of a child in
+cancer treatment — came back first for "somewhere to sleep tonight". Dropping
+the category outright costs nineteen rows every synonym they have, including
+the childcare ones whose names never say "childcare".
+
+
+The people this is for do not type "domestic violence" or "substance use
+disorder" — those are the words the agencies use about them afterwards. They
+type "my husband hits me" and "heroin". So:
+
+- **Every word must match, until that returns nothing.** Then the cut relaxes
+  a word at a time until there is something worth showing, and stops relaxing
+  the moment a row matches the whole query. The count says plainly when it was
+  not matched in full.
+- **Where a word matched decides the order**: a resource's name beats its
+  subcategory beats the tags we filed it under beats the plain-English phrases
+  we attached beats a paragraph about it. And a whole word beats a word start,
+  which is why "who do i call" no longer opens with Callen-Lorde.
+- **A phrase written into `SYNONYMS` is the strongest signal there is**,
+  because those phrases were written down for exactly this.
+- **A crude four-suffix stemmer**, because prefix matching only works one way:
+  "dent" finds "dentist", and "abused" found nothing, because the page says
+  "abuse".
+- **Words that matched nothing are named**, not silently dropped.
+- `check.py` carries the forty-six searches that must not stop working, each
+  with the resource it has to reach. It checks the data, not the ranking: if
+  the words are there `help.js` can find them.
+
+### Register — one palette, two keys
+
+`tokens.css` holds every brand hue, both typefaces, the easings and the radii,
+and both stylesheets map onto it. Neither may restate a brand hue; `check.py`
+fails if either does, because two copies of a colour are two colours as soon
+as one is edited.
+
+What each side chooses is only the key. The narrative site is a dark green
+room you walk through — pinned scenes, a WebGL door, inertial scroll. The
+directory is what is on the other side of that door, in daylight: cream
+ground, near-black green ink, an 18px floor, 44px targets, nothing moving that
+you did not touch.
+
+Carried across on purpose, and each one guarded:
+
+- the masthead is the same painted valley the door opens onto (`band.webp`,
+  22 KB, budgeted at 40);
+- headings turn gold and italic the same way;
+- the brand lockup is the same 20px-over-9.5px lockup;
+- the nav pill is the same pill, and gold means "the resident side" in both
+  places;
+- the footer is the same deep green.
+
+What is **not** carried across is the machinery. No WebGL, no inertial scroll,
+no pinned scenes, no scroll-driven anything.
+
+### Things that are safety decisions, not content decisions
+
+- **The emergency strip** (`SOS` in `build_help.py`) is hand-picked. A
+  heuristic over tags and hours previously put a hospital switchboard and two
+  copies of 988 in front of somebody in danger.
+- **Phone numbers stay in Western digits in every language.** Bengali prose
+  would normally write 311 as ৩১১ and Urdu as ۳۱۱; both are correct and both
+  are useless against the keypad in somebody's hand.
+- **The ten languages are Local Law 30's ten**, not a shortlist: Spanish,
+  Chinese, Russian, Bengali, Haitian Creole, Korean, Arabic, Urdu, French,
+  Polish. Each panel names every kind of help in that language, each opening
+  its own page, and leads with 911 and 988 before the interpreter line.
+- **The in-language panels have not been reviewed by native speakers.** They
+  are short and carry nothing a reader must act on precisely, and the only
+  instructions any of them give are "call 911 if you are in danger", "call 988
+  to talk to somebody" and "call 311 and ask for an interpreter". Get them
+  read before launch — the multilingual students are the obvious reviewers.
+- **The honesty statement appears on every resident page and every printed
+  sheet**, because a leave-behind is exactly where somebody mistakes a student
+  for a professional.
+- **A website that redirects off its own domain is treated as a takeover until
+  a human says otherwise.** `check_links_live.py` found `ppgny.org` — Planned
+  Parenthood of Greater New York — lapsed and redirecting to an unrelated
+  commercial site, with the directory quietly sending people looking for
+  reproductive health care there.
+- **A resource whose HTTPS chain is broken is dropped.** A current desktop
+  browser papers over a missing intermediate certificate; a six-year-old
+  Android shows a full-screen security warning instead of the page.
+
+### Print
+
+The printed sheet is a real output — students hand people paper.
+
+- **A category page prints what the filter is showing**, so narrowing to "I
+  need food" in Brooklyn and printing gives exactly that sheet.
+- **The front page prints its clusters**: every kind of help, three real
+  places with numbers under each, in three columns. One or two sheets, not the
+  forty the old single-page directory produced.
+- `help.js` opens every disclosure on `beforeprint` and closes them after,
+  because on paper the hours, address and languages are the useful lines and
+  there is nothing to tap.
+- The attribution and the "Checked <month>" line are on both, and the date is
+  derived from the newest verification in the data. It used to be typed in
+  three places, two of which said June while the third said August.
+
 
 ## Asset Libraries & References
 
@@ -486,12 +1010,43 @@ All form inputs:
 ### External Resources
 
 - **Google Fonts**: Fraunces + Inter (preconnected via `<link rel="preconnect">`). The only third-party origin the site touches, and it is disclosed in `privacy.html`.
-- **Vendored, not CDN**: `assets/vendor/three.module.min.js` + `three.core.min.js` (three.js splits its build — both are required) and `lenis.min.js`, with versions recorded in `assets/vendor/VERSIONS.txt`. No build step; `python3 -m http.server` still serves the site. Vendoring keeps the privacy disclosure honest and means no CDN outage can break the page.
+- **Vendored, not CDN**: `assets/vendor/three.module.min.js` + `three.core.min.js` (three.js splits its build — both are required) and `lenis.min.js`, with versions recorded in `assets/vendor/VERSIONS.txt`. `python3 -m http.server` still serves the site directly — the generated files are the eighteen resident pages, and they are committed, so a clone with no Python run still serves the whole site (see **The resident side** above). Vendoring keeps the privacy disclosure honest and means no CDN outage can break the page.
 - **Icons**: Inline SVG for logo (pin marker) and form controls (select dropdown arrow)
 
 ## Verification
 
-`python3 check.py` prints the pass/fail total; add `-v` to list every passing check. It covers dead links and anchors (including fragments into any local page, not just the homepage), missing assets, the honesty statement present verbatim on two surfaces, no surviving references to the removed Schools chapter or the unlaunched Companionship track, no numeric track-record claims, form completeness and labelling, the door's fallback paths and transition invariants, the reel's roll geometry and released states, the line's paired sentences and its undrawn rule, the doors' disclosure wiring and equal-height contract, vendored dependency integrity, the asset-size budget, and that `script.js`'s tracked nav sections match the markup. A missing file is reported as a failed check rather than raised, so one absent page never costs you the rest of the report.
+`python3 check.py` prints the pass/fail total; add `-v` to list every passing
+check. It covers dead links and anchors (including fragments into any local
+page, not just the homepage), missing assets, the honesty statement present
+verbatim on every surface that offers help, no surviving references to the
+removed Schools chapter or the unlaunched Companionship track, no numeric
+track-record claims, form completeness and labelling, the door's fallback
+paths and transition invariants, the reel's roll geometry and released states,
+the line's paired sentences and its undrawn rule, the doors' disclosure wiring
+and equal-height contract, vendored dependency integrity, the asset-size
+budget, and that `script.js`'s tracked nav sections match the markup.
+
+On the resident side it covers: that every generated page still equals
+`build_help.py`'s output and that no orphaned one survives a renamed need;
+that every resource is reachable and every `tel:` will actually dial; that the
+emergency strip leads with 911 and never repeats a number; the no-JavaScript
+contract; that the front page's search index covers every resource and every
+result links to an anchor that exists; that each cluster promises the number
+its page holds and previews only resources that are really on it; that each
+rail matches its page in order; that only the lead block says "Start here";
+that all ten Local Law 30 languages are present in the bar, the panel and the
+filter on every resident page, with real BCP-47 subtags, every kind of help
+named in each, every panel carrying 911, 988 and 311, and no number left in
+non-Western digits; that the forty-six searches which must not stop working
+still reach what they are supposed to reach; that no prose counts something
+the build already counts; that every "checked" date is the derived one; that
+the palette lives only in `tokens.css` and the devices that make the two
+halves one brand are all still there; that no grid can push the page sideways
+at 320px; that print keeps the hours and the honesty statement; and that the
+home page names the same kinds of help, in the same words, and still leads
+with help rather than with a partner pitch.
+
+A missing file is reported as a failed check rather than raised, so one absent page never costs you the rest of the report.
 
 ## Notes
 

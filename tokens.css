@@ -1,0 +1,305 @@
+/* ============================================================
+   tokens.css — the one place Waypoint is defined.
+
+   The site is two rooms. `index.html` is the dark one you walk
+   through: a painted valley, a lit door, gold on near-black green.
+   `help.html` and the category pages are what is on the other side
+   of that door: the same valley in daylight, read rather than
+   travelled.
+
+   They used to be two palettes that happened to agree. They now
+   share one, and each stylesheet only chooses which *key* of it to
+   play in. If a hue changes here, it changes on both sides, which
+   is the entire point — nothing below this line may redefine a
+   brand hue, only map it.
+   ============================================================ */
+
+/* The `hidden` attribute has to actually hide.
+
+   The browser's own rule is `[hidden]{display:none}`, which any author rule
+   naming a display loses to — an author stylesheet beats the user agent's at
+   equal specificity. `.r` sets `display:flex`, so setting `hidden` on a
+   resource card did nothing at all: searching "kosher" on the food page said
+   "Showing 3 of 30" and left sixteen cards on the screen, because the ones
+   that did not match were hidden in the only way that could not work.
+
+   One rule, once, for every element the scripts hide this way. */
+[hidden]{ display:none !important; }
+
+:root{
+  /* ---- the greens: one ramp, dark to light ---------------- */
+  --green-deep:#13231A;   /* the room, and every dark ground   */
+  --green:#1E3528;        /* panels, solid buttons, the footer */
+  --green-2:#2C4A38;      /* hover, secondary strokes          */
+  --green-3:#3D5145;      /* secondary ink on light — 8.4:1    */
+  --green-4:#5A6E61;      /* tertiary ink on light — 5.3:1     */
+
+  /* ---- the lights ----------------------------------------- */
+  --cream:#FCFEF7;
+  --mint:#FBFFF4;
+  --mint-2:#E7EFE3;
+  --line:#DCE6D8;
+  --line-2:#EDF2EA;
+  --surface:#FFFFFF;
+
+  /* ---- the gold ------------------------------------------- */
+  /* --gold is the light through the door. It is a *light* on dark
+     ground and fails contrast as text on cream, so anything that
+     has to be read on a light ground uses --gold-deep (5.4:1). */
+  --gold:#E7C57E;
+  --gold-lit:#F0D69A;
+  --gold-deep:#8A6A22;
+  --sage:#A6C39A;
+
+  /* ---- ink on a dark ground ------------------------------- */
+  /* Both halves put cream type on deep green: the narrative site everywhere,
+     the daylight page in its masthead, its language panels, its promise and
+     its footer. One set of levels, so "secondary text on green" is the same
+     grey-green in both. */
+  --ink-soft:rgba(252,254,247,.78);
+  --ink-faint:rgba(252,254,247,.55);
+  --ink-strong:rgba(252,254,247,.94);
+  --hair:rgba(252,254,247,.12);
+
+  /* ---- the one warm alarm --------------------------------- */
+  /* A clay, never a fire engine: it has to read as "this one is for
+     right now" without making a frightened person more frightened. */
+  --clay:#8C3A2B;
+  --clay-bg:#FBF0EC;
+  --clay-ink:#FDF6F3;
+
+  /* ---- type ------------------------------------------------ */
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --sans:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --track-eyebrow:.22em;
+
+  /* ---- motion ---------------------------------------------- */
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+
+  /* ---- shape ----------------------------------------------- */
+  --focus:var(--green);
+
+  /* The header is one component on both halves of the site (see .sitehead
+     below). Everything about it is shared except six colours, and each half
+     sets those six once. Nothing else about the bar differs — not the
+     lockup, not the tabs, not the geometry. */
+  /* The bar's height, derived from the pieces it is built out of rather
+     than measured and typed. Anything that has to clear a fixed header —
+     the hero's first line, a scroll-margin — reads --head-h, so the two
+     cannot drift apart. */
+  --head-pad:14px;
+  --head-row:44px;
+  --head-gap:8px;
+
+  /* The bar's own column. It used to inherit each page's — 1280px with an
+     80px gutter on the narrative side, 1160px with 44px on the directory —
+     so the wordmark landed 32 to 40px apart depending on the width, and you
+     could see it move when you switched pages. The header keeps one column
+     of its own now, on both halves. The directory's page column is derived
+     from it below, so the wordmark still lines up with what is under it. */
+  --head-wrap:1160px;
+  --head-gutter:clamp(18px,4vw,44px);
+  --head-h:calc(var(--head-pad) * 2 + var(--head-row));
+
+  --head-bg:transparent;
+  --head-line:transparent;
+  --head-ink:var(--ink);
+  --head-ink-2:var(--ink-2);
+  --head-ink-3:var(--ink-3);
+  --head-hover:var(--line-2);
+  --head-dot:transparent;
+  --head-shadow:none;
+
+  --r:16px;
+  --r-s:10px;
+  --r-pill:999px;
+}
+
+/* ============================================================
+   The three devices that must never drift apart, because they are
+   how somebody recognises the two halves as one organisation.
+   Each sets geometry only; colour belongs to the page's key.
+   ============================================================ */
+
+/* 1. The eyebrow — the small tracked line that opens a chapter. */
+.eyebrow,.ey,.phero__crumb{
+  font-family:var(--sans); font-weight:600;
+  letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+}
+
+/* 2. The two-tone display heading. Roman, then the same sentence
+      turning italic and gold. Used on the hero, every chapter
+      opener, and every resident page title. */
+:where(h1,h2,h3,.phrase,.phero__title) em{ font-style:italic; }
+
+/* 3. The arrow that leans forward on hover. */
+.arr{ display:inline-block; transition:transform .3s var(--ease); }
+:where(a,button):hover > .arr,
+:where(a,button):hover .arr{ transform:translateX(4px); }
+@media (prefers-reduced-motion:reduce){
+  .arr{ transition:none; }
+  :where(a,button):hover .arr{ transform:none; }
+}
+
+/* Focus is a real object, not a hairline. Keyboard and switch users are a
+   large slice of this audience and the ring has to survive whatever is behind
+   it — which, because the ring is offset outward, is the *surface the control
+   sits on*, not the control. So the colour is a property of the surface: one
+   token, set once per dark room, inherited by everything inside it.
+
+   It was a fixed green, and on the deep-green footer that is 1.24:1 against
+   its own ground. The ring was there; nobody could see it. */
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{
+  outline:3px solid var(--focus);
+  outline-offset:3px;
+  border-radius:6px;
+}
+
+/* ============================================================
+   THE HEADER
+
+   One bar, one lockup, one set of tabs, on all twenty pages. It
+   used to be two components that had drifted apart — different
+   padding, different pin, five tabs on one side and three on the
+   other, a drawer on one and a wrap on the other — which is how
+   a single organisation ends up looking like two.
+
+   The ground is the page's own, at rest transparent and painted
+   only once you have scrolled past the top. That is the same
+   rule on both halves: on the narrative side it lets the door
+   run edge to edge, and on the directory, cream over cream, it
+   simply looks like the page.
+   ============================================================ */
+.sitehead{
+  z-index:100;
+  background:var(--head-bg);
+  border-bottom:1px solid var(--head-line);
+  transition:background .4s var(--ease), border-color .4s var(--ease),
+             backdrop-filter .4s var(--ease);
+}
+.sitehead.stuck{
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  /* Quick in, slow out. The ground fades in over the same 400ms it fades out
+     over, and for those 400ms the bar's own text sits half-transparent over
+     whatever is passing under it — which on the directory is the clay
+     emergency panel, light text on red, under dark green type. Appearing is
+     the safe direction to hurry. */
+  transition-duration:.12s;
+}
+.sitehead__in{
+  max-width:var(--head-wrap); margin-inline:auto;
+  padding:var(--head-pad) var(--head-gutter);
+  display:flex; align-items:center; gap:20px; justify-content:space-between;
+}
+
+/* the lockup: a solid pin and the wordmark over a 9.5px tracked line. The pin
+   takes the header's ink, so it is cream on the dark half and deep green on
+   the light one and it is the same mark either way. Its centre is the one
+   piece that adapts — nothing on the dark ground, where the filled pin reads
+   on its own, and gold on cream, where the mark wants a counter. */
+.brand{ display:inline-flex; align-items:center; gap:11px; text-decoration:none;
+  color:var(--head-ink); }
+.brand svg{ width:26px; height:26px; flex:none; }
+.brand .pin{ fill:currentColor; stroke:none; }
+.brand .pin-dot{ fill:var(--head-dot); }
+.brand__txt{ font-family:var(--display); font-weight:600; font-size:20px;
+  line-height:1; letter-spacing:-.01em; display:flex; flex-direction:column;
+  gap:4px; color:var(--head-ink); text-shadow:var(--head-shadow); }
+.brand__txt small{ font-family:var(--sans); font-weight:500; font-size:9.5px;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--head-ink-3);
+  text-shadow:none; }
+
+/* five tabs, same five, same order, both halves. On the directory the four
+   section links point back into the narrative page; the lamp below is the one
+   thing that has nothing to slide between there, so it simply never lights. */
+.sitehead__links{ display:flex; gap:6px; align-items:center; position:relative;
+  flex-wrap:wrap; justify-content:flex-end; }
+.sitehead__links a{ position:relative; z-index:1; text-decoration:none;
+  display:inline-flex; align-items:center; min-height:44px;
+  font-weight:600; font-size:.9rem; letter-spacing:.005em;
+  padding:10px 16px; border-radius:var(--r-pill);
+  color:var(--head-ink-2); text-shadow:var(--head-shadow);
+  transition:background .18s var(--ease), color .18s var(--ease); }
+.sitehead__links a:hover{ background:var(--head-hover); color:var(--head-ink); }
+/* Gold means "the resident side" in both places: on the narrative page it is
+   the one link out of the story, on the directory it is the page you are
+   standing on. */
+.sitehead__links a.is-find{ background:var(--gold); color:var(--green-deep);
+  text-shadow:none; }
+/* the section you are reading, on a page long enough to have sections. The
+   directory has none, so nothing ever sets it there — but the rule is shared,
+   because a second stylesheet reaching into this component is exactly how the
+   two headers drifted apart the first time. */
+.sitehead__links a.current{ color:var(--gold); }
+.sitehead__links a.is-find:hover{ background:var(--gold-lit); color:var(--green-deep); }
+
+/* a phone on its side has about 560px of height and the bar should not eat it */
+@media (max-height:560px) and (max-width:900px){
+  :root{ --head-pad:12px; }
+}
+
+/* Five tabs and the lockup need about 1050px to sit on one line. Below that
+   the tabs take a row of their own, which reads as a deliberate second line
+   rather than the ragged two-then-three a plain wrap gives between 700 and
+   1000px. Wrapping rather than scrolling sideways or hiding behind a drawer:
+   at 200% text the tabs are wider than a 320px screen, a scroll strip puts
+   the last one behind a gesture, and a drawer puts all five behind a tap.
+   Stacking just makes the header a line taller — and script.js and help.js
+   publish what it actually came to, so everything below it clears it. */
+/* The tubelight that slides under the section you are reading.
+
+   It lived in styles.css, which only the narrative half loads — so on the
+   eighteen directory pages the span shipped with no rules at all and sat in
+   the flow as an ordinary inline element. It is invisible either way, and it
+   was pushing every tab four pixels to the right: the two headers measured
+   identical above 1080px, where the row is right-aligned and the phantom
+   fell off the end, and four pixels apart below it, where they wrap. At
+   375px it changed where the row broke. Shared component, shared sheet. */
+/* tubelight active indicator (slides between sections) */
+.nav-lamp{ position:absolute; top:50%; left:0; width:0; height:36px; transform:translateY(-50%); border-radius:100px;
+  background:rgba(231,197,126,.12); opacity:0; pointer-events:none; z-index:0;
+  transition:left .45s var(--ease), width .45s var(--ease), opacity .35s var(--ease); }
+.nav-lamp.on{ opacity:1; }
+.nav-lamp__bar{ position:absolute; top:-2px; left:50%; transform:translateX(-50%); width:26px; height:3px; border-radius:0 0 6px 6px; background:var(--gold); }
+.nav-lamp__bar::before{ content:""; position:absolute; left:50%; top:-10px; transform:translateX(-50%); width:46px; height:20px; border-radius:50%; background:rgba(231,197,126,.55); filter:blur(11px); }
+.nav-lamp__bar::after{ content:""; position:absolute; left:50%; top:-5px; transform:translateX(-50%); width:24px; height:12px; border-radius:50%; background:rgba(231,197,126,.55); filter:blur(6px); }
+@media (max-width:640px){ .nav-lamp{ display:none; } }
+
+/* On a phone the wordmark is a link like any other and has to be a thumb
+   target. A pseudo-element widens the hit area without touching the glyph or
+   the layout — real padding here would push the tabs down a row. */
+@media (max-width:640px){
+  .brand{ position:relative; }
+  .brand::after{ content:""; position:absolute; inset:-13px -10px; }
+}
+
+/* --head-h before the script runs, and for anyone whose script never does.
+
+   The calc() below assumes the tab row wraps to exactly two rows. It does not:
+   how many rows the five tabs take depends on how wide the labels are at the
+   width you are reading at. Measured on the English pages —
+
+     up to 359px   203    two rows of tabs and the lockup
+     360 to 767    155
+     768 to 1080   107
+     above 1080     73    one row
+
+   — against a calc that said 116 at every one of them. On help.html and
+   index.html a ResizeObserver replaces it within a frame, so nothing looked
+   wrong. With JavaScript off it stands, and at 320px it put privacy.html's
+   breadcrumb 58px behind the fixed bar and the page title 16px behind it.
+
+   So the fallback is measured now, rounded up a little because a reader with
+   a larger default font size has a taller bar than any of these. The observer
+   still publishes the exact height wherever a script runs; this is only what
+   the page looks like before it does. */
+@media (max-width:1080px){
+  :root{ --head-pad:10px; --head-h:112px; }
+  .sitehead__in{ flex-wrap:wrap; gap:var(--head-gap); }
+  .sitehead__links{ width:100%; flex-wrap:wrap; gap:4px; justify-content:flex-start;
+    margin-inline-start:-13px; }   /* the pill's padding, so labels line up with the wordmark */
+  .sitehead__links a{ padding:10px 13px; }
+}
+@media (max-width:767px){ :root{ --head-h:160px; } }
+@media (max-width:359px){ :root{ --head-h:210px; } }

@@ -8,27 +8,30 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="tokens.css" />
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="subpage">
+<a class="skip" href="#main">Skip to the privacy notice</a>
 
-<header class="nav">
-  <div class="nav__in">
+<header class="sitehead">
+  <div class="sitehead__in">
     <a class="brand" href="index.html" aria-label="Waypoint home">
-      <svg viewBox="0 0 32 32"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>
       <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>
     </a>
-    <nav class="nav__links" aria-label="Primary">
+    <nav class="sitehead__links" aria-label="Primary">
+      <span class="nav-lamp" id="navLamp" aria-hidden="true"><i class="nav-lamp__bar"></i></span>
+      <a href="help.html" class="is-find">Find help</a>
       <a href="index.html#bills">Bills &amp; denials</a>
       <a href="index.html#work">How it works</a>
       <a href="index.html#students">Students</a>
       <a href="index.html#partners">Partners</a>
     </nav>
-    <button class="nav__tog" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </header>
 
-<main>
+<main id="main">
 <section class="phero" style="min-height:46vh">
   <div class="phero__bg" style="background-image:url('assets/land2.webp')"></div>
   <div class="phero__in">
@@ -99,9 +102,9 @@
         <a class="brand" href="index.html"><svg viewBox="0 0 32 32"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg><span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>
         <p class="footer__note">Trained student volunteers who connect New Yorkers to free and low-cost health resources that already exist. We share information, not medical or legal advice, and we never charge.</p>
       </div>
-      <div class="footer__col"><h4>The journey</h4><a href="index.html#top">Real, free, invisible</a><a href="index.html#bills">Bills &amp; denials</a><a href="index.html#work">How a referral works</a><a href="index.html#students">For students</a><a href="index.html#partners">For partners</a></div>
-      <div class="footer__col"><h4>Get involved</h4><a href="index.html#students">Join the corps</a><a href="index.html#partners">Partner with us</a><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a></div>
-      <div class="footer__col"><h4>More</h4><a href="privacy.html">Privacy &amp; Legal</a><a href="terms.html">Terms of Use</a><a href="index.html">Home</a></div>
+      <div class="footer__col"><h2 class="footer__h">The journey</h2><a href="index.html#top">Real, free, invisible</a><a href="index.html#bills">Bills &amp; denials</a><a href="index.html#work">How a referral works</a><a href="index.html#students">For students</a><a href="index.html#partners">For partners</a></div>
+      <div class="footer__col"><h2 class="footer__h">Get involved</h2><a href="index.html#students">Join the corps</a><a href="index.html#partners">Partner with us</a><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a></div>
+      <div class="footer__col"><h2 class="footer__h">More</h2><a href="privacy.html">Privacy &amp; Legal</a><a href="terms.html">Terms of Use</a><a href="index.html">Home</a></div>
     </div>
     <div class="footer__base"><p>© <span data-year>2026</span> Waypoint. A student-led volunteer initiative in New York City.</p><p></p></div>
   </div>
