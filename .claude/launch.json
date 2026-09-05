@@ -4,7 +4,7 @@
     {
       "name": "waypoint",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "exec python3 -m http.server \"${PORT:-8753}\""],
+      "runtimeArgs": ["-c", "exec python3 serve.py \"${PORT:-8753}\""],
       "port": 8753,
       "autoPort": true
     }
