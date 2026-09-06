@@ -1,7 +1,7 @@
 /* help.js — narrows a directory that is already fully rendered.
 
    Everything on these pages works before this file loads: every resource on a
-   category page, in labelled groups, every phone number a real tel: link, the
+   category page, in labeled groups, every phone number a real tel: link, the
    cluster index a set of plain anchors. That is the contract. On a category
    page this script only ever *hides* things, so the worst case when it fails
    to load, fails to parse, or is blocked outright is that somebody sees the
@@ -239,7 +239,7 @@
   /* A match through the stemmer is a weaker match than a match on the word
      somebody actually typed. "free counseling" opened with Right to Counsel —
      the eviction lawyers — because stripping -ing leaves "counsel", and legal
-     counsel and therapeutic counselling share a root that English does not
+     counsel and therapeutic counseling share a root that English does not
      distinguish. The rows that say "counseling" now outrank the row that only
      says "counsel", without either being thrown away. */
   var STEMMED = 0.7;
@@ -480,7 +480,7 @@
 
   /* How much a word is worth depends on how rare it is.
 
-     "free eyeglasses" opened with naloxone and eviction defence. Both of
+     "free eyeglasses" opened with naloxone and eviction defense. Both of
      those have "free" in their NAME, which is the heaviest field, and the
      one row that knows about eyeglasses has it only in its body. So a word
      in three hundred rows outscored the word that meant something.
@@ -540,7 +540,7 @@
          row.tags.indexOf(phrase) !== -1)) {
       points += W_PHRASE;
     }
-    /* Typing an organisation's name should reach that organisation, not the
+    /* Typing an organization's name should reach that organization, not the
        one whose longer name contains it. "Safe Horizon" opened with Safe
        Horizon Streetwork Project, and "Met Council" with Met Council on
        Housing Tenant Hotline: both are the phrase bonus landing on two rows

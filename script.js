@@ -41,8 +41,19 @@
     lenis = new window.Lenis({ lerp: 0.085, smoothWheel: true, touchMultiplier: 1.7 });
     (function raf(time) { lenis.raf(time); requestAnimationFrame(raf); })(0);
   }
+  /* Lenis does its own scrolling and never reads scroll-margin-top, so the
+     offset the stylesheet puts on every section has to be handed to it by
+     hand. Without this the nav and the rail both park the heading you asked
+     for behind the fixed bar — at 320px that bar is 203px of a 720px screen.
+     --head-h is the observed height where a script runs and the measured
+     fallback in tokens.css where one does not. */
+  function headClearance() {
+    var h = parseFloat(getComputedStyle(document.documentElement)
+      .getPropertyValue("--head-h"));
+    return (h || 0) + 14;
+  }
   function goTo(target) {
-    if (lenis) lenis.scrollTo(target, { offset: 0, duration: 1.25 });
+    if (lenis) lenis.scrollTo(target, { offset: -headClearance(), duration: 1.25 });
     else if (typeof target === "number") window.scrollTo(0, target);
     else target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
   }

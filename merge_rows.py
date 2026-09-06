@@ -6,7 +6,7 @@ three things are true of every row in the directory:
 
   * it has every column the build expects, spelled the way the build spells it;
   * it is not a duplicate of something already there (matched on name and on
-    website, because the same programme gets typed two ways);
+    website, because the same program gets typed two ways);
   * it carries the date it was verified.
 
 Usage:  python3 merge_rows.py /tmp/add_foo.json [...]
@@ -39,7 +39,7 @@ def main(paths):
     rows = load()
     have_name = {norm(r["Resource Name"]) for r in rows}
     # A host alone is too coarse — nyc.gov hosts forty of these — so the guard
-    # is the full path, which is what actually identifies a programme page.
+    # is the full path, which is what actually identifies a program page.
     have_url = {(r["Website"] or "").rstrip("/").lower() for r in rows if r["Website"]}
 
     added, skipped = [], []

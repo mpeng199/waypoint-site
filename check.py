@@ -5,7 +5,7 @@ Waypoint site checks.
 Guards the things that rot silently: dead links and anchors, missing assets,
 the honesty statement drifting out of any surface that must carry it verbatim,
 overclaims about what a volunteer may do with a bill or a denial,
-stale references to programmes we do not run, and the asset-size budget that
+stale references to programs we do not run, and the asset-size budget that
 keeps the site fast on a library's wifi.
 
     python3 check.py            # run everything
@@ -395,7 +395,7 @@ def check_labels():
             named = ("aria-label=" in tag or "aria-labelledby=" in tag
                      or (fid and fid.group(1) in fors))
             if named:
-                ok(f"{f}: labelled field {fid.group(1) if fid else tag[:30]}")
+                ok(f"{f}: labeled field {fid.group(1) if fid else tag[:30]}")
             else:
                 bad(f"{f}: {tag[:60]} has nothing that names it — no <label "
                     f"for>, no aria-label. A screen reader announces it as "
@@ -494,15 +494,27 @@ def check_transition_invariants():
         bad("door: no guard around the render loop")
 
 
-def check_one_block_at_a_time():
-    """Never two dense, unrelated blocks of text on the screen at once.
+def check_one_phase_at_a_time():
+    """One phase on screen at a time — not one block.
 
-    A block leaves the screen once the next section's top edge is `space below`
-    from the viewport top, and the next block arrives once that edge is one
-    screen minus `space above` from it. So the two never share the screen only
-    while space-below + space-above >= 100vh at every boundary, which is what
-    the matching 50vh paddings below buy. They are the whole mechanism: drop
-    any one of them and that pair starts double-booking the screen again.
+    The old rule here was that no two blocks of text may ever share the screen,
+    bought with 50vh either side of every one of them: space-below +
+    space-above >= 100vh at every boundary, so you finished one block and
+    scrolled a clear screen before the next arrived. It made the page 25
+    screens long to carry 950 words, and it meant a chapter and its own sign-up
+    form were a blank screen apart.
+
+    A phase replaces a block as the unit. Several blocks that belong together —
+    a claim and the letter that proves it, a chapter and the form it asks you to
+    fill in — are meant to be seen at once, and the blocks that make one carry
+    `.scene--tight`, which joins them with --gap-in instead of --gap. --gap
+    still separates phases and is still the only thing that does.
+
+    So the measurement changes from "is every side at least 50vh" to "does every
+    side still resolve through --gap", plus a band on the two tokens. The two
+    failure modes are unchanged and both are still caught: the gap creeping back
+    up until the reader crosses blank screens, and the gap collapsing until the
+    beats run together.
 
     Every one of them now reads --gap rather than a literal, so this resolves
     the variable before measuring. That indirection exists for the phone, which
@@ -513,15 +525,29 @@ def check_one_block_at_a_time():
     enough to still read as a pause.
     """
     css = read("styles.css")
-    GAP = 50.0
+    # The band --gap has to stay inside. Below ~26vh a phase boundary stops
+    # reading as one and the page becomes a single undifferentiated scroll;
+    # above ~40vh the blank-screen scroll starts coming back (at 50 it was
+    # a guaranteed clear screen at every boundary, which is what this replaced).
+    GAP_MIN, GAP_MAX = 26.0, 40.0
+    # And the band for the join inside a phase. It must be small enough that
+    # the two blocks visibly belong together, and not nothing, or the beats
+    # collide.
+    GAP_IN_MIN, GAP_IN_MAX = 8.0, 20.0
 
-    def gap_value(scope):
-        """The --gap declaration in effect: 'desktop' from :root, 'mobile' from
-        the max-width:900px block. Returned in vh-equivalent units."""
+    def gap_value(scope, token="--gap"):
+        """The declaration in effect for `token`: 'desktop' from :root, 'mobile'
+        from the max-width:900px block. Returned in vh-equivalent units.
+
+        The token is matched with a negative lookahead on `-`, or reading
+        --gap would happily return --gap-in's value and every band below would
+        be measuring the wrong number.
+        """
+        decl = token + r"(?!-):\s*([^;]+);"
         if scope == "desktop":
             m = re.search(r":root\{(.*?)\n\}", css, re.S)
             if m:
-                d = re.search(r"--gap:\s*([^;]+);", m.group(1))
+                d = re.search(decl, m.group(1))
                 if d:
                     v = re.search(r"([\d.]+)vh", d.group(1))
                     if v:
@@ -530,7 +556,7 @@ def check_one_block_at_a_time():
         m = re.search(r"@media \(max-width:900px\)\{(.*?)\n\}\n@media", css, re.S)
         if not m:
             return None
-        d = re.search(r":root\{\s*--gap:\s*([^;]+);", m.group(1))
+        d = re.search(r":root\{[^}]*?" + decl, m.group(1))
         if not d:
             return None
         v = re.search(r"clamp\([^,]+,\s*([\d.]+)svh", d.group(1))
@@ -538,13 +564,15 @@ def check_one_block_at_a_time():
 
     DESKTOP_GAP = gap_value("desktop")
     MOBILE_GAP = gap_value("mobile")
+    DESKTOP_GAP_IN = gap_value("desktop", "--gap-in")
+    MOBILE_GAP_IN = gap_value("mobile", "--gap-in")
 
     def vhs(pattern, label, scope):
         """Resolve a padding value to vh numbers, following var(--gap) and the
         calc() multipliers written on top of it."""
         m = re.search(pattern, css)
         if not m:
-            bad(f"one-block-at-a-time: cannot find {label}")
+            bad(f"one-phase-at-a-time: cannot find {label}")
             return []
         raw = m.group(1)
         gap = DESKTOP_GAP if scope == "desktop" else MOBILE_GAP
@@ -557,7 +585,7 @@ def check_one_block_at_a_time():
         if bare > 0 and gap is not None:
             found.extend([gap] * bare)
         if not found:
-            bad(f"one-block-at-a-time: {label} no longer carries a vh value "
+            bad(f"one-phase-at-a-time: {label} no longer carries a vh value "
                 f"or a resolvable var(--gap)")
         return found
 
@@ -570,27 +598,67 @@ def check_one_block_at_a_time():
         (r"\.scene--hold\{\s*padding:([^;]+);", "mobile hold", "mobile"),
         (r"\.scene--hold\{\s*padding-block:([^;]+);", "reduced-motion hold", "desktop"),
     ]
+    # Each of these is a phase boundary, and the property that matters is no
+    # longer a floor in vh — it is that all of them still move together. One
+    # hard-coded number here is how the boundary silently stops matching the
+    # rest of the page, and it is exactly what the band on --gap below cannot
+    # catch on its own.
     for pattern, label, scope in rules:
-        floor = GAP if scope == "desktop" else 0.0
+        m = re.search(pattern, css)
+        if not m:
+            bad(f"one-phase-at-a-time: cannot find {label}")
+            continue
         vals = vhs(pattern, label, scope)
         if not vals:
             continue
-        if min(vals) >= floor:
-            ok(f"{label}: keeps >= {floor:g}vh of clear space either side"
-               if floor else f"{label}: resolves through --gap ({min(vals):g}svh)")
+        if "var(--gap)" not in m.group(1):
+            bad(f"{label}: {m.group(1).strip()!r} does not read var(--gap). "
+                f"Every phase boundary is the same boundary; a literal here "
+                f"drifts out of step with the rest the first time --gap moves.")
+        elif "var(--gap-in)" in m.group(1):
+            bad(f"{label}: a phase boundary is using --gap-in, the token for "
+                f"the join INSIDE a phase. The boundary would stop reading as "
+                f"one.")
         else:
-            bad(f"{label}: only {min(vals):g}vh of clear space, under the "
-                f"{floor:g}vh that keeps it off the next section's screen")
+            ok(f"{label}: tracks --gap ({min(vals):g}vh)")
 
-    # ---- the phone's own rule ----
-    # 50vh either side on a phone was 9,894px of blank screen, 48% of the page,
-    # and it turned a 13-screen read into a 25-screen scroll. The gap has to
-    # come down; it must not come down to nothing, and it must not creep back.
-    if DESKTOP_GAP != GAP:
-        bad(f"--gap on the desktop is {DESKTOP_GAP}vh, not the {GAP:g}vh the "
-            f"one-block-at-a-time contract needs")
+    # ---- the two tokens, and the distance between them ----
+    # 50vh was a guaranteed clear screen at every boundary: 950 words over 25
+    # screens, and a chapter a blank screen away from its own form. The band
+    # replaces the fixed number, and it is a band because both directions are
+    # a real failure — too small and the page is one undifferentiated scroll,
+    # too large and the blank screens come back.
+    if DESKTOP_GAP is None:
+        bad("no desktop --gap at all; the phase boundary has nothing to read")
+    elif not GAP_MIN <= DESKTOP_GAP <= GAP_MAX:
+        bad(f"--gap on the desktop is {DESKTOP_GAP:g}vh, outside the "
+            f"{GAP_MIN:g}-{GAP_MAX:g}vh band. Under {GAP_MIN:g} a phase "
+            f"boundary stops reading as one; over {GAP_MAX:g} the reader is "
+            f"crossing blank screens again.")
     else:
-        ok(f"--gap resolves to {GAP:g}vh on the desktop")
+        ok(f"--gap is {DESKTOP_GAP:g}vh, inside the phase-boundary band")
+
+    if DESKTOP_GAP_IN is None:
+        bad("no --gap-in: the blocks inside a phase have no join of their own, "
+            "so every boundary on the page is a phase boundary again")
+    elif not GAP_IN_MIN <= DESKTOP_GAP_IN <= GAP_IN_MAX:
+        bad(f"--gap-in is {DESKTOP_GAP_IN:g}vh, outside the "
+            f"{GAP_IN_MIN:g}-{GAP_IN_MAX:g}vh band. Under {GAP_IN_MIN:g} the "
+            f"blocks in a phase collide; over {GAP_IN_MAX:g} they stop looking "
+            f"like one argument.")
+    else:
+        ok(f"--gap-in is {DESKTOP_GAP_IN:g}vh, inside the join band")
+
+    # The whole structure is the difference between the two. If a join is as
+    # wide as a boundary there are no phases, only sections again.
+    if DESKTOP_GAP and DESKTOP_GAP_IN:
+        if DESKTOP_GAP_IN * 1.5 <= DESKTOP_GAP:
+            ok(f"a join ({DESKTOP_GAP_IN:g}vh) reads as clearly tighter than a "
+               f"boundary ({DESKTOP_GAP:g}vh)")
+        else:
+            bad(f"--gap-in {DESKTOP_GAP_IN:g}vh is not meaningfully tighter "
+                f"than --gap {DESKTOP_GAP:g}vh, so a reader cannot tell which "
+                f"blocks belong together and the phases are decorative")
     if MOBILE_GAP is None:
         bad("no mobile --gap: the phone is back on the desktop's 50vh, which "
             "is half a page of blank screen")
@@ -605,8 +673,25 @@ def check_one_block_at_a_time():
     else:
         bad("mobile --gap must use svh: vh changes as the address bar slides")
 
+    # The phone needs its own join for the same reason it needs its own gap:
+    # a block there is a paragraph, so a desktop 13vh join is a different
+    # amount of nothing on a 700px screen than on a 900px one.
+    if MOBILE_GAP_IN is None:
+        bad("no mobile --gap-in: the phone is using the desktop join, which is "
+            "measured against a viewport it does not have")
+    elif MOBILE_GAP and not MOBILE_GAP_IN < MOBILE_GAP:
+        bad(f"mobile --gap-in ({MOBILE_GAP_IN:g}svh) is not tighter than the "
+            f"mobile --gap ({MOBILE_GAP:g}svh); the phases vanish on a phone")
+    else:
+        ok(f"mobile --gap-in is {MOBILE_GAP_IN:g}svh, tighter than its boundary")
+    mobile_in = re.search(r"@media \(max-width:900px\)\{(.*?)--gap-in:\s*([^;]+);", css, re.S)
+    if mobile_in and "svh" in mobile_in.group(2):
+        ok("mobile --gap-in is in svh too")
+    else:
+        bad("mobile --gap-in must use svh, for the same reason --gap does")
+
     # the stream has to clear the screen before its own sticky phrase does,
-    # or the phrase is left labelling a beat the reader can no longer see
+    # or the phrase is left labeling a beat the reader can no longer see
     anchor = vhs(r"\.hold__anchor\{[^}]*?padding-block:([^;]+);", "hold anchor", "desktop")
     stream = vhs(r"\.hold__stream\{[^}]*?padding-block:([^;]+);", "hold stream", "desktop")
     if anchor and stream:
@@ -615,6 +700,296 @@ def check_one_block_at_a_time():
         else:
             bad(f"hold stream's {stream[-1]:g}vh must exceed the anchor's "
                 f"{anchor[-1]:g}vh, or the beats outlast their own phrase")
+
+
+def check_phases_and_their_detail_pages():
+    """The page is phases, and the deep material is one click away, not inline.
+
+    Two things were wrong and this guards both fixes. The page spent a screen
+    per idea, so 950 words took 25 screens and finding a section meant scrolling
+    past every other one. And everything a partner or a volunteer could possibly
+    want to know was on that scroll, inline, whether or not they wanted it yet.
+
+    Now: blocks that belong together carry `.scene--tight` and read as one
+    phase, and each of the two audience chapters is a summary with a door to a
+    page that holds the rest. A summary with no door behind it is just less
+    information, which is worse than what it replaced.
+    """
+    src = read("about.html")
+    secs = re.findall(r'<section class="([^"]*)"(?:[^>]*?id="([^"]+)")?', src)
+
+    tight = [c for c, _ in secs if "scene--tight" in c]
+    if len(tight) >= 3:
+        ok(f"phases: {len(tight)} blocks continue the one above them")
+    else:
+        bad(f"phases: only {len(tight)} .scene--tight blocks. The mechanism is "
+            f"unused, so every boundary on the page is a full phase boundary "
+            f"again and the page is back to one idea per screen.")
+
+    # A phase cannot begin with a continuation. The first scene after the hero
+    # has nothing above it to continue.
+    scenes = [c for c, _ in secs if c.startswith("scene")]
+    if scenes and "scene--tight" in scenes[0]:
+        bad("phases: the first scene is .scene--tight, so it joins a phase that "
+            "does not exist. Its top gap collapses against the hero.")
+    else:
+        ok("phases: the first scene opens a phase rather than continuing one")
+
+    # Both registers have to be present, or there is only one register.
+    plain = [c for c in scenes if "scene--tight" not in c]
+    if plain and tight:
+        ok(f"phases: {len(plain)} boundaries, {len(tight)} joins")
+    else:
+        bad("phases: the page uses only one of the two spacings, so nothing "
+            "distinguishes a new part of the argument from a continuation")
+
+    # The pin is the one block whose padding is load-bearing. Its sticky child
+    # fills the content box while --t is measured off the section's border box,
+    # so any padding on it desynchronises the two: 13vh of join meant the first
+    # 8% of the reel played before the child was pinned. Measured after the
+    # exemption, the scrub distance and the sticky travel are both 1485px.
+    css = read("styles.css")
+    if re.search(r"\.scene--pin\.scene--tight\{[^}]*padding-top:\s*0", css):
+        ok("phases: the pin is exempt from the join's padding")
+    elif "scene--tight" in read("about.html").split('id="bills"')[0][-200:]:
+        bad("phases: #bills carries .scene--tight with no exemption, so the "
+            "join's padding is shrinking the content box the reel's sticky "
+            "child travels in while --t still measures the border box. The "
+            "animation and the pin come apart.")
+    else:
+        ok("phases: the pin does not carry a join")
+
+    # ---- the summaries, and the doors behind them ----
+    for anchor_id, page, what in [("students", "students.html", "the volunteer role"),
+                                  ("partners", "partners.html", "the ask")]:
+        block = src.split(f'id="{anchor_id}"', 1)[-1].split("</section>", 1)[0]
+        if f'href="{page}"' in block:
+            ok(f"phases: the {anchor_id} chapter opens {page}")
+        else:
+            bad(f"phases: the {anchor_id} chapter does not link to {page}. It "
+                f"is a summary of {what} with nowhere to read the rest, which "
+                f"is strictly less than the page carried before it was cut.")
+
+        if not (ROOT / page).is_file():
+            bad(f"phases: {page} does not exist, so the summary leads nowhere")
+            continue
+        detail = read(page)
+        # the detail page has to be a detail page, not another summary
+        words = len(strip_tags(detail).split())
+        if words >= 500:
+            ok(f"phases: {page} carries {words} words of detail")
+        else:
+            bad(f"phases: {page} is only {words} words. The material cut from "
+                f"the front page has to actually be somewhere.")
+        # and it has to lead back to the form it is arguing for
+        if f'about.html#{anchor_id}' in detail:
+            ok(f"phases: {page} returns to the {anchor_id} form")
+        else:
+            bad(f"phases: {page} never sends the reader back to the form. "
+                f"Somebody who read the whole case has no way to act on it.")
+
+
+def check_a_jump_lands_below_the_bar():
+    """A nav jump must not park the heading it was aimed at behind the header.
+
+    Both halves of a jump have to agree, and they are in different files.
+    `goTo` scrolls the section's top edge to the top of the window, and the top
+    73-203px of that window is a fixed bar, so a section was only readable on
+    arrival while its own top padding happened to be taller than the bar. That
+    held at --gap 50vh and stopped the moment a phase join was allowed to be
+    13vh: #work landed its heading 55px into a 203px bar at 320px. The same
+    measurement showed #students, #partners, #start and #close had been landing
+    behind it at that width all along.
+
+    The directory solved this with scroll-margin-top reading --head-h. The
+    narrative half now does too, and Lenis needs telling separately because it
+    does its own scrolling and never reads scroll-margin.
+    """
+    css, js = read("styles.css"), read("script.js")
+
+    m = re.search(r"main > section\{[^}]*?scroll-margin-top:([^;]+);", css)
+    if not m:
+        bad("jump: no scroll-margin-top on the narrative sections, so a jump "
+            "lands the heading under the fixed bar at any width where the bar "
+            "is taller than the section's own top padding")
+    elif "--head-h" not in m.group(1):
+        bad(f"jump: scroll-margin-top is {m.group(1).strip()!r}, a fixed number. "
+            f"The bar is 73px at a desk and 203px at 320px; only --head-h "
+            f"knows which.")
+    else:
+        ok("jump: sections clear the bar by --head-h")
+
+    call = re.search(r"lenis\.scrollTo\(target,\s*\{([^}]*)\}", js)
+    if not call:
+        bad("jump: cannot find the Lenis scrollTo, so its offset is unchecked")
+    elif re.search(r"offset:\s*0\b", call.group(1)):
+        bad("jump: Lenis is called with offset 0. It never reads "
+            "scroll-margin-top, so the stylesheet's clearance does nothing on "
+            "the one code path almost every visitor actually takes.")
+    elif "head" not in call.group(1).lower():
+        bad(f"jump: Lenis offset {call.group(1).strip()!r} is not derived from "
+            f"the header height, so it is right at exactly one viewport width")
+    else:
+        ok("jump: Lenis is given the same clearance the stylesheet uses")
+
+
+def check_the_page_reads_without_script():
+    """With scripts off, the narrative page still has to say something.
+
+    Every block of prose on about.html is revealed by script: .focus-in ships
+    at opacity 0 and an IntersectionObserver adds .in. Nothing adds it when
+    there is no script, and measuring it in a sandboxed frame with scripting
+    blocked found 38 of the page's 44 blocks of text invisible — a header, a
+    hero, a footer and nothing in between.
+
+    The resident directory is deliberately the surface that owes nobody a
+    script, and that is not changing. But a page that renders blank is not a
+    trade-off, it is a blank page, and the fix is three declarations the
+    reduced-motion rule already spells out.
+    """
+    src = read("about.html")
+    css = read("styles.css")
+
+    if ".focus-in{ filter:blur" not in css.replace("\n", " ") and "opacity:0" not in css:
+        ok("no-script: the reveals no longer start hidden, so nothing to undo")
+        return
+
+    ns = re.search(r"<noscript>(.*?)</noscript>", src, flags=re.S)
+    if not ns:
+        bad("no-script: about.html has no <noscript>. Every .focus-in block on "
+            "it starts at opacity 0 and only a script ever reveals one, so with "
+            "scripts off the page is a header and a footer.")
+        return
+    body = ns.group(1)
+    if ".focus-in" not in body:
+        bad(f"no-script: the <noscript> does not mention .focus-in, which is the "
+            f"only thing hiding the page's prose")
+    elif not re.search(r"opacity:\s*1", body):
+        bad("no-script: the <noscript> does not restore opacity, which is what "
+            "actually hides the text")
+    else:
+        ok("no-script: the reveals are undone when there is no script to run them")
+
+
+# The site prints American spelling. Somebody typing the British one is looking
+# for the same place, and a directory that answers "program" with a blank
+# page is broken for them. Two mechanisms keep that from happening and this
+# checks both: build_help.py keeps some British forms in the search vocabulary
+# on purpose, and help.js repairs anything one edit away from a word the page
+# actually contains.
+SPELLING_PAIRS = [
+    # DO NOT "CORRECT" THE LEFT COLUMN. These are the British spellings on
+    # purpose: they are the input this guard exists to test. A spelling pass
+    # over the repo flattened every pair to (american, american) once, and the
+    # guard went on reporting a pass while comparing each word to itself.
+    ("counselling", "counseling"), ("organisation", "organization"),
+    ("centre", "center"), ("centres", "centers"), ("colour", "color"),
+    ("neighbourhood", "neighborhood"), ("programme", "program"),
+    ("programmes", "programs"), ("enrolment", "enrollment"),
+    ("defence", "defense"), ("behavioural", "behavioral"),
+    ("judgement", "judgment"), ("licence", "license"),
+    ("labourer", "laborer"), ("paediatrician", "pediatrician"),
+    ("travelling", "traveling"),
+]
+
+
+def _one_edit_apart(a, b):
+    """help.js's oneEditApart, in Python.
+
+    Insertion, deletion, substitution or TRANSPOSITION. The transposition case
+    is why "centre" reaches "center" at all: under plain Levenshtein a swap is
+    two edits and the correction would refuse it.
+    """
+    if len(a) == len(b):
+        for t in range(len(a) - 1):
+            if a[t] != b[t]:
+                if (a[t] == b[t + 1] and a[t + 1] == b[t]
+                        and a[t + 2:] == b[t + 2:]):
+                    return True
+                break
+    la, lb = len(a), len(b)
+    if abs(la - lb) > 1:
+        return False
+    i = j = edits = 0
+    while i < la and j < lb:
+        if a[i] == b[j]:
+            i += 1; j += 1; continue
+        edits += 1
+        if edits > 1:
+            return False
+        if la > lb: i += 1
+        elif lb > la: j += 1
+        else: i += 1; j += 1
+    return edits + (la - i) + (lb - j) <= 1
+
+
+def check_both_spellings_find_the_same_place():
+    """British spelling in, American spelling out.
+
+    Converting the site moved 382 words, and every one of them is a word
+    somebody might type into the search box. Two things stop that costing
+    anybody a result, and a reader only ever needs one of them to fire:
+
+      * the word is still in the search vocabulary, so it matches outright
+      * or it is a single edit from a word the page contains, and help.js
+        repairs it and says that it did
+
+    "programme" is why this is not theoretical. It is TWO edits from
+    "program", which is one more than the correction allows, so converting the
+    prose took "free programme" from a page of results to "Nothing matched
+    that" until build_help.py put the British form back in the vocabulary.
+    """
+    import build_help
+    K = _js_constants()
+    if not K:
+        return
+    rows = build_help.load()
+    model = _search_model(rows, K)
+
+    # The vocabulary has to come from the BUILT index, not from the CSV. help.js
+    # corrects against the words it actually holds, and those are stemmed: the
+    # index carries "licensed", never "license", and "travel", never
+    # "traveling". Reconstructing this from the spreadsheet passed 'licence' —
+    # "license" is one edit away and looks fine on paper — while the real page
+    # answered it with "Nothing matched that", because "licence" is two edits
+    # from "licensed". A guard that models the implementation loosely is worse
+    # than no guard: it reports the failure as a pass.
+    ix = re.search(r'<script[^>]*\bid="ix"[^>]*>(.*?)</script>', read("index.html"), re.S)
+    if not ix:
+        bad("spelling: index.html has no search index, so the vocabulary the "
+            "correction works against cannot be read")
+        return
+    vocab = set(re.findall(r"[a-z]{4,}", ix.group(1).lower()))
+
+    # A spelling pass over this repo once rewrote the left column of
+    # SPELLING_PAIRS into the right one, and every comparison below became a
+    # word against itself: sixteen passes, nothing tested. Check the data
+    # before trusting the result it produces.
+    flat = [(b, a) for b, a in SPELLING_PAIRS if b == a]
+    if flat:
+        bad(f"spelling: {len(flat)} pair(s) in SPELLING_PAIRS have the same "
+            f"word on both sides ({flat[0][0]!r}), so they compare a spelling "
+            f"to itself and can only pass. The left column is British on "
+            f"purpose and must not be corrected.")
+        return
+    ok(f"spelling: all {len(SPELLING_PAIRS)} pairs still name two spellings")
+
+    for brit, amer in SPELLING_PAIRS:
+        direct = model(brit)
+        if direct:
+            ok(f"spelling: {brit!r} matches outright ({direct[0]!r})")
+            continue
+        near = [v for v in vocab if _one_edit_apart(brit, v)]
+        if amer in near:
+            ok(f"spelling: {brit!r} is one edit from {amer!r}, which the page has")
+        elif near:
+            bad(f"spelling: {brit!r} matches nothing and the correction would "
+                f"send it to {sorted(near)[:3]} rather than {amer!r}")
+        else:
+            bad(f"spelling: {brit!r} matches nothing and is more than one edit "
+                f"from {amer!r}, so help.js cannot repair it either. Somebody "
+                f"who spells it the British way gets a blank page. Put the "
+                f"form back in SYNONYMS in build_help.py.")
 
 
 def check_vendored():
@@ -1010,7 +1385,7 @@ def check_reel():
 
 
 def check_audience_order():
-    """Two audiences, two labelled chapters, and the nav walks them in order.
+    """Two audiences, two labeled chapters, and the nav walks them in order.
 
     Students come first because a student has to be convinced and a partner
     arrives already knowing what they want. The nav, the footer's journey
@@ -1039,14 +1414,14 @@ def check_audience_order():
         ok("audience: the student chapter precedes the partner chapter")
     else:
         bad("audience: the partner chapter is no longer last. Everything "
-            "addressed to organisations sits after everything addressed to "
+            "addressed to organizations sits after everything addressed to "
             "volunteers, so a student never has to scroll past a partner pitch.")
 
     # each chapter announces itself
     for anchor_id, label in [("students", "For students"), ("partners", "For partners")]:
         block = src.split(f'id="{anchor_id}"', 1)[-1].split("</section>", 1)[0]
         if f'<span class="eyebrow">{label}</span>' in block:
-            ok(f"audience: the {anchor_id} chapter is labelled {label!r}")
+            ok(f"audience: the {anchor_id} chapter is labeled {label!r}")
         else:
             bad(f"audience: the {anchor_id} chapter lost its {label!r} label. The "
                 f"two audiences are only distinguishable if each one says who it "
@@ -1233,7 +1608,7 @@ def check_mobile_reads():
     if re.search(r"\.ways__foot\{[^}]*justify-content:flex-start", narrow):
         ok("ways: its button sits on the same axis as the rest of the section")
     else:
-        bad("ways: the section's button is centred while .scene forces "
+        bad("ways: the section's button is centered while .scene forces "
             "text-align:left around it")
     if re.search(r"\.footer__grid\{[^}]*repeat\(2,minmax\(0,1fr\)\)", narrow):
         ok("footer: two even columns")
@@ -1330,12 +1705,12 @@ def check_lane():
     else:
         ok("lane: no ticks, no numbering, no bespoke styling")
 
-    # organisation: the phrase holds while the beats move past it. This is also
+    # organization: the phrase holds while the beats move past it. This is also
     # what keeps the page's own thread out of the type, since spiralTarget puts
     # a hold scene's thread down the gutter between its two columns.
     head = src.split('where the line is', 1)[0][-300:]
     if "scene--hold" in head and "scene--hold-r" in head:
-        ok("lane: organised as a hold scene, phrase right and beats left")
+        ok("lane: organized as a hold scene, phrase right and beats left")
     else:
         bad("lane: the section is no longer a scene--hold; the phrase scrolls "
             "away from the statements it introduces, and its thread falls back "
@@ -1361,7 +1736,7 @@ def check_theme_is_shared():
     This is not a tidiness check. The directory and the narrative page share
     an audience — a partner reads the story then sends somebody to the
     directory — and the moment the greens diverge the second page reads as a
-    different organisation, which for a page about medical bills is a page
+    different organization, which for a page about medical bills is a page
     somebody does not trust.
     """
     if not (ROOT / "tokens.css").is_file():
@@ -1385,7 +1760,7 @@ def check_theme_is_shared():
         restated = sorted({h.upper() for h in re.findall(r"#[0-9A-Fa-f]{6}", body)} & hues)
         if restated:
             bad(f"{sheet} restates brand hue(s) {restated} instead of using the "
-                "token. Two copies of a colour is two colours as soon as one "
+                "token. Two copies of a color is two colors as soon as one "
                 "is edited.")
         else:
             ok(f"{sheet} restates no brand hue")
@@ -1399,7 +1774,7 @@ def check_theme_is_shared():
 
     # Loaded first, and by every page that loads either stylesheet — a page
     # that loads help.css without tokens.css renders with every custom
-    # property undefined, which is a page with no colours at all.
+    # property undefined, which is a page with no colors at all.
     for page in PAGES:
         if not (ROOT / page).is_file():
             continue
@@ -1408,7 +1783,7 @@ def check_theme_is_shared():
         if not uses:
             continue
         if 'href="tokens.css"' not in src:
-            bad(f"{page} loads {uses[0]} without tokens.css, so every colour on "
+            bad(f"{page} loads {uses[0]} without tokens.css, so every color on "
                 "it is an undefined custom property")
             continue
         if src.index('href="tokens.css"') > min(src.index(f'href="{n}"') for n in uses):
@@ -1416,7 +1791,7 @@ def check_theme_is_shared():
                 "defined before the rules that read them")
     ok("every page that loads a stylesheet loads tokens.css first")
 
-    # The devices that make the two halves recognisable as one place. Each of
+    # The devices that make the two halves recognizable as one place. Each of
     # these was carried across deliberately; losing one is how the directory
     # quietly becomes a different website.
     front, story = read("index.html"), read("about.html")
@@ -1442,7 +1817,7 @@ def check_theme_is_shared():
             ok(f"carried across: {what}")
         else:
             bad(f"the directory has lost {what}, which is one of the things that "
-                "makes it read as the same organisation as the narrative page")
+                "makes it read as the same organization as the narrative page")
 
     if (ROOT / "assets" / "band.webp").is_file():
         kb = (ROOT / "assets" / "band.webp").stat().st_size / 1024
@@ -1759,7 +2134,7 @@ def check_no_stale_counts():
 # Every entry here was a real failure at some point. "my husband hits me",
 # "i want to die" and "heroin" all returned a blank page once. "my daughter is
 # being abused" returned a housing lottery. "unpaid wages" returned a
-# job-training centre, because the directory had nothing about wage theft at
+# job-training center, because the directory had nothing about wage theft at
 # all. A query in this table is a promise that the words a frightened person
 # actually types reach the thing that helps them.
 CRITICAL_QUERIES = [
@@ -1984,7 +2359,7 @@ def check_reading_level():
 
     JARGON = {
         "sliding scale": "a price based on what you earn",
-        "federally qualified": "community health centre",
+        "federally qualified": "community health center",
         "case manage": "a caseworker",
         "arrears": "rent you have fallen behind on",
         "warm handoff": "hand the person over",
@@ -2004,7 +2379,7 @@ def check_reading_level():
     # nevers, and "for eligible low-income individuals" tells somebody they
     # may not be before anybody has looked at their situation. The Who Can
     # Access column carries that, one tap down, phrased as a description of
-    # who the programme is for rather than a judgement about the reader.
+    # who the program is for rather than a judgment about the reader.
     WHO = re.compile(r"\b(eligible|eligibility|qualifying)\b", re.I)
     for r in rows:
         m = WHO.search(r["Description"] or "")
@@ -2163,22 +2538,22 @@ def check_checked_date_is_derived():
 
 
 def check_focus_ring():
-    """The focus ring is one object, and its colour belongs to the surface.
+    """The focus ring is one object, and its color belongs to the surface.
 
     Found by tabbing through the built pages with a script that measured each
-    ring against the colour actually behind it: in the deep-green footer, on
+    ring against the color actually behind it: in the deep-green footer, on
     both halves of the site, the ring was --green on --green-deep. 1.24:1. It
     was being drawn and it could not be seen, which for a keyboard or switch
     user is the same as not being drawn.
 
-    The cause was that each component named its own ring colour, so the ring
+    The cause was that each component named its own ring color, so the ring
     knew about the button and nothing about the room. It is now a token —
     --focus — set once per dark room and inherited. This guards the three ways
     that arrangement gets undone:
 
       1. a --focus that does not contrast with the ground declared beside it;
-      2. a component going back to naming its own outline colour;
-      3. `outline:none` with nothing restoring a ring under forced colours,
+      2. a component going back to naming its own outline color;
+      3. `outline:none` with nothing restoring a ring under forced colors,
          where the border and box-shadow substitutes are thrown away.
     """
     tok = read("tokens.css")
@@ -2272,7 +2647,7 @@ def check_focus_ring():
     # everything focusable inside it inherits one. A dark *control* must not:
     # its ring is offset outward and lands on the light page behind it, and
     # naming one there would paint gold on cream. The difference is not a
-    # judgement call — a control is an element you can focus, so ask the built
+    # judgment call — a control is an element you can focus, so ask the built
     # HTML whether the class ever appears on one.
     focusable_classes = set()
     for page in RESIDENT_PAGES:
@@ -2309,14 +2684,14 @@ def check_focus_ring():
     else:
         ok("the narrative side sets --focus once, on body, for the whole dark room")
 
-    # 2. nobody may go back to a hand-coloured ring
+    # 2. nobody may go back to a hand-colored ring
     rogue = []
     for sheet in ("help.css", "styles.css"):
         src = read(sheet)
         for m in re.finditer(r"([^{}]*:focus(?:-visible|-within)?[^{}]*)\{([^{}]*)\}", src):
             body = m.group(2)
             if "forced-colors" in src[max(0, m.start() - 260):m.start()]:
-                continue          # Highlight is a system colour, and correct there
+                continue          # Highlight is a system color, and correct there
             col = re.search(r"outline(?:-color)?:\s*(?:[\d.]+px\s+\w+\s+)?"
                             r"(#[0-9A-Fa-f]{3,8}|var\(--(?!focus)[a-z0-9-]+\))", body)
             if col:
@@ -2327,7 +2702,7 @@ def check_focus_ring():
     if not rogue:
         ok("no component paints its own focus ring; they all inherit --focus")
 
-    # 3. outline:none needs a forced-colours understudy
+    # 3. outline:none needs a forced-colors understudy
     for sheet in ("help.css", "styles.css"):
         src = read(sheet)
         strips = re.findall(r"([^{}]+)\{[^{}]*outline:\s*(?:none|0)\s*[;}]", src)
@@ -2340,7 +2715,7 @@ def check_focus_ring():
                 f"forced-colors rule putting a ring back; in High Contrast the "
                 f"border and shadow standing in for it are discarded")
         else:
-            ok(f"{sheet} removes an outline and restores one under forced colours")
+            ok(f"{sheet} removes an outline and restores one under forced colors")
 
 
 def check_heading_order():
@@ -2434,9 +2809,9 @@ def check_one_header():
     and three on the directory, a solid pin against an outlined one, 22px of
     padding against 12px, a slide-out drawer on one half and a wrapped second
     row on the other. Each difference was defensible on its own and together
-    they made one organisation look like two.
+    they made one organization look like two.
 
-    The look is in tokens.css. What varies per half is six colour tokens and
+    The look is in tokens.css. What varies per half is six color tokens and
     one line of positioning — and this fails if anything else does.
     """
     PAGES = [p for p in RESIDENT_PAGES + ["about.html", "privacy.html", "terms.html"]
@@ -2453,7 +2828,7 @@ def check_one_header():
         block = m.group(1)
         # the lockup, to the pixel: one pin path, one wordmark, one strapline
         for want, what in [('class="pin"', "the pin"),
-                           ('class="pin-dot"', "the pin's centre"),
+                           ('class="pin-dot"', "the pin's center"),
                            ('<span class="brand__txt">Waypoint', "the wordmark"),
                            ("<small>Student Health Corps</small>", "the strapline")]:
             if want not in block:
@@ -2520,7 +2895,7 @@ def check_one_header():
                     f"setting a token; that is how the two halves drifted")
         if "--head-bg" not in src:
             bad(f"{sheet} never sets --head-bg, so its header has no ground")
-    ok("each half sets only colours and position; the bar itself is shared")
+    ok("each half sets only colors and position; the bar itself is shared")
     # Nothing may sit between the skip link and the header. about.html had its
     # journey rail — eleven fixed scroll-position dots — earlier in the DOM,
     # so a keyboard user tabbed through all of them before reaching the site's
@@ -2582,7 +2957,7 @@ def check_language_header():
     but the labels are that language's, and "Find help" goes to that
     language's own front page rather than the English one, because that is
     where a reader of this page finds help. The other four go to the narrative
-    site, which is written for students and organisations and is in English.
+    site, which is written for students and organizations and is in English.
     """
     import build_help, i18n
     grab = re.compile(r'<header class="sitehead">(.*?)</header>', re.S)
@@ -2919,7 +3294,7 @@ def check_language_pages_need_no_script():
     That is not an accident of what got built. The reader these pages exist for
     is disproportionately on an old phone on a bad connection, and the search
     they would get is a box that returns English descriptions. Seventeen
-    labelled cards in their own language, with places named and dialable under
+    labeled cards in their own language, with places named and dialable under
     each, is both lighter and better — so the property is worth holding on to
     rather than something to fill in later.
     """
@@ -3206,7 +3581,7 @@ def check_high_contrast_covers_the_cards():
 def check_every_row_has_someone_to_verify_it():
     """Two tools stamp dates, and between them they must cover every row.
 
-    verify_phones.py asks each organisation's own site whether the number we
+    verify_phones.py asks each organization's own site whether the number we
     print is its number, and skips a row with no ten-digit number in it.
     check_links_live.py --stamp handles exactly those: for a row whose "phone"
     is 311, or a text shortcode, or nothing, verifying can only mean the site
@@ -3252,7 +3627,7 @@ def check_every_resource_is_findable_by_name():
     """Somebody told you to call Safe Horizon. Typing that has to reach it.
 
     Most people arrive at this directory with a name in their head, given to
-    them by a caseworker, a neighbour or a flyer. A row that its own name
+    them by a caseworker, a neighbor or a flyer. A row that its own name
     cannot find is a row that person will conclude does not exist.
 
     Uses the same scoring model as check_critical_queries, so it tests the
@@ -3411,10 +3786,10 @@ def check_every_category_page_answers_its_own_questions():
 def check_also_tags_are_real_needs():
     """`also:<need>` puts a row on a second page. It has to name a real one.
 
-    A multi-service organisation's subcategory is "One place that does many
+    A multi-service organization's subcategory is "One place that does many
     things", which is true of all of them and so useless as a cross-filing
     trigger — but the biggest food pantry on Staten Island is a multi-service
-    organisation, and somebody on "I need food" has to be able to see it. So a
+    organization, and somebody on "I need food" has to be able to see it. So a
     row can name the other pages it belongs on. A typo in one of those names
     would silently put it nowhere.
     """
@@ -3446,7 +3821,7 @@ def check_the_data_itself():
 
     Found by mutation testing: twelve plausible regressions were introduced one
     at a time and the suite caught five. These are three of the seven it missed
-    — a phone number with nine digits, a category nobody recognises, and a
+    — a phone number with nine digits, a category nobody recognizes, and a
     language whose short label is still the English one.
     """
     import csv as _csv
@@ -3491,7 +3866,7 @@ def check_the_data_itself():
     if not broken:
         ok(f"every phone number in the directory is a dialable shape")
 
-    # 2. a category nobody recognises files the row under "not sure where to
+    # 2. a category nobody recognizes files the row under "not sure where to
     #    start" and nothing says so
     known = set()
     for need in build_help.NEEDS:
@@ -3721,7 +4096,7 @@ def check_critical_queries():
     in the tier that matched the most words, which is a reachability test. But
     every failure the fifty-phrasing probe turned up was an *ordering* failure.
     "free eyeglasses" did reach the optometry clinic; it put naloxone and
-    eviction defence above it, and this check was happy.
+    eviction defense above it, and this check was happy.
 
     It uses _search_model now — the same scoring help.js computes, with every
     constant read out of help.js — and asserts the target comes FIRST.
@@ -3884,7 +4259,7 @@ def check_directory_clusters():
         'doctor/women ("Pregnancy and new parents")':
             "the maternal rows are filed under mental health and under family",
         'legal/money ("Benefits, debt, and consumer problems")':
-            "the organisations that do this are filed under their main practice",
+            "the organizations that do this are filed under their main practice",
         'veterans/crisis ("If you are in crisis")':
             "the Veterans Crisis Line is filed under mental health",
         'disability/health ("Health care")':
@@ -4033,7 +4408,7 @@ def check_directory_languages():
             if blurb not in plain:
                 bad(f"{page} names {key!r} but does not say what is behind it")
 
-        # 7. the promise, whole. It is a promise, so it is not summarised.
+        # 7. the promise, whole. It is a promise, so it is not summarized.
         if U["vow"] not in plain:
             bad(f"{page} does not carry the honesty statement in {L['name_en']}")
 
@@ -4070,7 +4445,7 @@ def check_directory_languages():
                 bad(f"{page}: tel:{m.group(1)} is not a dialable number")
 
         # 9. Nothing is left in English except what is declared as English.
-        #    An organisation's name is a proper noun and stays — "Access-A-Ride"
+        #    An organization's name is a proper noun and stays — "Access-A-Ride"
         #    is what you say on the phone — so build_help marks those lang="en"
         #    and this drops them before looking. Anything English that is NOT
         #    marked is prose that was never translated.
@@ -4134,7 +4509,7 @@ def check_directory_needs():
         # If anything on the page is marked start-here, it leads the page in
         # its own block. Rows otherwise fall in CSV order, which makes the
         # first thing somebody reads an accident of when it was typed — that is
-        # how "I got a medical bill" came to open with a membership programme
+        # how "I got a medical bill" came to open with a membership program
         # and bury Community Health Advocates eighth. And bucketing them by
         # subject reintroduced the same problem a different way: the best first
         # call was three headings down because of what it was filed under.
@@ -4369,7 +4744,7 @@ DOORS = {
     "Hospital financial assistance": ["financial assistance"],
     "The state's independent appeal": ["external appeal"],
     "Free coverage counselors":       ["community health advocates", "health insurance"],
-    "Prescription cost programmes":   ["medication", "prescription"],
+    "Prescription cost programs":     ["medication", "prescription"],
 }
 
 
@@ -4592,7 +4967,7 @@ def check_the_skip_link_works():
             if 'class="sitehead"' not in src:
                 continue
             rule = re.search(rf"\.{re.escape(cls)}\b[^{{}}]*\{{([^}}]*)\}}", css, re.S)
-            # A section that fills the viewport and centres its own content
+            # A section that fills the viewport and centers its own content
             # does not need one: about.html skips to .scene, and measured at
             # 320px the first line of it lands at 227px against a header that
             # ends at 203.
@@ -4653,7 +5028,7 @@ def check_category_pages_keep_their_jump_nav():
 
 
 def check_header_spacing_lives_in_one_place():
-    """The two halves may choose the header's colours. They may not choose its
+    """The two halves may choose the header's colors. They may not choose its
     spacing.
 
     That is the whole reason the header tokens are split the way they are:
@@ -4673,7 +5048,7 @@ def check_header_spacing_lives_in_one_place():
                 bad(f"{f} sets {tok}. The header's measurements live in "
                     f"tokens.css so that both halves get the same ones; a "
                     f"stylesheet that redefines one moves the bar on its half "
-                    f"only. Set colours here, measurements there.")
+                    f"only. Set colors here, measurements there.")
             else:
                 ok(f"{f} leaves {tok} to tokens.css")
     if not re.search(r"--head-pad\s*:", read("tokens.css")):
@@ -4785,10 +5160,10 @@ def check_the_printed_page_keeps_its_numbers():
                 f"leave-behind is answers and phone numbers; a search box on "
                 f"paper is a control nobody can use.")
 
-    # And the numbers have to be black on white, not a grey nobody can read
+    # And the numbers have to be black on white, not a gray nobody can read
     # through a photocopier.
     if "color:#000" not in body:
-        bad("the print stylesheet never sets a black ink colour")
+        bad("the print stylesheet never sets a black ink color")
     else:
         ok("print sets black ink")
 
@@ -5335,7 +5710,10 @@ def main():
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
                check_billing_boundaries, check_forms, check_labels, check_door,
                check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
-               check_one_block_at_a_time, check_vendored,
+               check_one_phase_at_a_time, check_phases_and_their_detail_pages,
+               check_a_jump_lands_below_the_bar, check_the_page_reads_without_script,
+               check_both_spellings_find_the_same_place,
+               check_vendored,
                check_asset_budget, check_a11y_basics, check_nav_matches_sections,
                check_theme_is_shared, check_one_header, check_language_header, check_language_round_trip, check_language_print, check_language_voice, check_nothing_parks_offscreen, check_script_typography, check_language_pages_need_no_script, check_language_sentence_length, check_hreflang_is_reciprocal, check_language_spacing_is_shared, check_page_cannot_be_dragged_sideways, check_tap_targets, check_high_contrast_covers_the_cards, check_every_row_has_someone_to_verify_it, check_every_resource_is_findable_by_name, check_one_typo_does_not_empty_the_page, check_every_category_page_answers_its_own_questions, check_also_tags_are_real_needs, check_the_data_itself, check_focus_ring, check_heading_order, check_language_numbers_dial,
                check_the_promises_are_still_there,

@@ -7,7 +7,7 @@ keep it modern.
 
 **Extended (user, 2026-08-24):** make the two halves of the site read as one
 theme; review the translations properly and make them consistent throughout;
-expand the directory by deep research, verifying that every programme is real;
+expand the directory by deep research, verifying that every program is real;
 cluster "find help" into manageable chunks with an expand-to-a-page option;
 and make the resident side consistent with the narrative side.
 
@@ -15,7 +15,7 @@ and make the resident side consistent with the narrative side.
 
 We held a verified directory of NYC resources and **published none of it**.
 The headline spoke to somebody with a bill they could not pay and every button
-under it asked that person for their organisation's letterhead. So: give
+under it asked that person for their organization's letterhead. So: give
 residents their own front door and put the directory behind it, and keep the
 narrative for the audiences it was written for.
 
@@ -25,7 +25,7 @@ narrative for the audiences it was written for.
   help, three real places with real numbers under each, and a link to that
   kind of help's own page.
 - **Seventeen category pages**, each built to be skimmed: a rail of what is on
-  it, resources in named buckets, a Start here block, and every neighbouring
+  it, resources in named buckets, a Start here block, and every neighboring
   kind of help one tap away.
 - **351 verified resources** across 17 categories, 339 of them checked
   against a first-party source in August 2026. The rest are dated June and
@@ -64,7 +64,7 @@ narrative for the audiences it was written for.
       index in the document; category pages still hide rows that are already
       there.
 - [x] **S22** **Deep research.** 118 → 311 resources. Sources: nyc.gov's own
-      programme API, then organisation-by-organisation verification.
+      program API, then organization-by-organization verification.
 - [x] **S23** **Translations.** Seven languages → the ten Local Law 30 names.
       Panels now navigate the whole directory rather than describing it.
 - [x] **S24** **Second query sweep.** Loose fallback restored, relevance
@@ -72,7 +72,7 @@ narrative for the audiences it was written for.
 - [x] **S25** **A11y and print.** 320px at 200% text no longer scrolls
       sideways; contrast audited across every new component; the printed sheet
       had a blank where its count should be.
-- [x] **S26** **Third research push.** Community organisations by borough and
+- [x] **S26** **Third research push.** Community organizations by borough and
       by language.
 - [x] **S27** **Search in ten languages.** The tokenizer was deleting every
       non-ASCII character, so the page could be read in ten and searched in
@@ -82,7 +82,7 @@ narrative for the audiences it was written for.
       between two words, no claim with a clock on it, no statement of who
       qualifies. Guarded, all of it.
 - [x] **S28** **Phone verification.** `verify_phones.py` asks each
-      organisation's own site whether the number we print is its number.
+      organization's own site whether the number we print is its number.
       Eleven had drifted, one by a single digit.
 - [ ] **S15** Push + PR — still not done. Outward-facing; waiting on a
       go-ahead.
@@ -107,7 +107,7 @@ narrative for the audiences it was written for.
 ## Known data weaknesses (source, not code)
 
 - **Languages is still vague on most rows.** Named-language coverage improved
-  a lot with the community organisations — Chinese, Bengali, Korean, Urdu and
+  a lot with the community organizations — Chinese, Bengali, Korean, Urdu and
   Polish now have real numbers behind them — but most rows still say
   "Multiple", which records nothing useful. The filter treats a vague answer
   as "reachable through an interpreter" so it hides nothing, and floats the
@@ -141,9 +141,9 @@ symptom, each left with a break-tested guard:
 
 1. **A focus ring nobody could see.** In the deep green footer of all twenty
    pages the ring was `--green` on `--green-deep`: 1.24:1. Every component had
-   been naming its own ring colour, so the ring knew about the button and
+   been naming its own ring color, so the ring knew about the button and
    nothing about the room. It is one token now, set per surface. Worst ring on
-   any page is 7.6:1. Also restored a ring under forced colours, where the two
+   any page is 7.6:1. Also restored a ring under forced colors, where the two
    controls that hand theirs to a wrapper had nothing left.
 2. **"Checked August 2026" over a list a fifth of which said June.** The date
    was derived — from `max()`, the most flattering true number in the file. It
@@ -154,7 +154,7 @@ symptom, each left with a break-tested guard:
    three digits. `dial()` links them at build time; thirty links per page.
 4. **Footer column labels read h2 → h4** to anything navigating by heading,
    because h4 was the size wanted.
-5. **Ten more descriptions that described the organisation rather than the
+5. **Ten more descriptions that described the organization rather than the
    help** — "the nation's largest youth employment program" says nothing to
    somebody who needs a summer job.
 
@@ -207,8 +207,8 @@ and clicking it rather than reading it. In the order they were found:
    most likely to reach for.
 3. `.inl` kept its 17-22px box in a paragraph, because the rule widening it
    said `li > .inl`.
-4. Three text colours under AA, measured against the ground actually behind
-   them: `.reel__k` at 3.94:1 and two greys on the internal pages.
+4. Three text colors under AA, measured against the ground actually behind
+   them: `.reel__k` at 3.94:1 and two grays on the internal pages.
 5. The search box had no focus ring at all — it sets `outline:none` and the box
    around it gave back a 1.5px border change and a halo at 1.03:1.
 6. A trailing comma in the print stylesheet joined the hide-list to the next
@@ -252,7 +252,7 @@ cannot read:
   render "you have reached an outdated or non-existing page" from JavaScript.
   Every link check this project has run called them reachable.
 
-Nine resources added, all nine numbers confirmed on the organisations' own
+Nine resources added, all nine numbers confirmed on the organizations' own
 sites: CHASI and the Pride Center and the JCC pantry on Staten Island (which
 had ten rows in a directory of 351, three of them actually based there); the
 River Fund, Commonpoint, Urban Upbound and NICE in Queens; CaringKind's
@@ -322,5 +322,5 @@ otherwise is how the ActionNYC and SNAP links stayed dead:
   over an empty list passes, and so does one whose pattern stopped matching
   the markup it was written for. Three guards had gone quiet that way before
   it existed: one read `langnote` panels that no longer exist, one checked a
-  hand-written page list that had drifted, one resolved a `--focus` colour to
+  hand-written page list that had drifted, one resolved a `--focus` color to
   no hex and skipped the case it was written to catch.

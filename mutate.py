@@ -19,7 +19,7 @@ import re
 import shutil, subprocess, sys, os, tempfile
 ROOT = os.getcwd()
 FILES = ["data/resources.csv","help.css","styles.css","tokens.css","help.js",
-         "build_help.py","about.html","i18n.py"]
+         "build_help.py","about.html","i18n.py","script.js","check.py"]
 # A fresh directory per run. A reused one can hold a snapshot from a run
 # that died half way, and restoring from it puts the damage back.
 BAK = tempfile.mkdtemp(prefix="mutate-")
@@ -31,7 +31,7 @@ MUTATIONS = [
   "build_help.py", "never charge for anything.", "do not charge for most things."),
  ("a language page drops a heading translation",
   "i18n.py", '"food": "Comida",', '"food": "Food",'),
- ("a dark surface loses its focus ring colour",
+ ("a dark surface loses its focus ring color",
   "help.css", ".hfoot{ --focus:var(--gold-lit);", ".hfoot{ --focus:var(--green);"),
  ("the shared header is restyled on one half",
   "styles.css", ".sitehead{\n  position:fixed;", ".sitehead{\n  padding:40px;\n  position:fixed;"),
@@ -157,6 +157,36 @@ MUTATIONS = [
   'A(\'  <nav class="jump" aria-label="Jump to a kind of help" style="display:none"><ul>\')'),
  ("a resource's description is cut off mid-clause",
   "data/resources.csv", "A free pantry on Staten Island where you pick", "where you pick"),
+ # ---- round three: the phases, the doors out of them, and the spelling
+ ("a blank screen comes back at every boundary",
+  "styles.css", "  --gap:32vh;", "  --gap:50vh;"),
+ ("a phase join stops being tighter than a phase boundary",
+  "styles.css", "  --gap-in:13vh;", "  --gap-in:30vh;"),
+ ("a phase boundary hard-codes its gap instead of tracking the token",
+  "styles.css", ".scene{ position:relative; min-height:100svh; display:flex; align-items:center; padding:var(--gap) var(--pad); }",
+  ".scene{ position:relative; min-height:100svh; display:flex; align-items:center; padding:32vh var(--pad); }"),
+ ("the blocks inside a phase lose their own join",
+  "styles.css", "  --gap-in:13vh;", "  --gap-inx:13vh;"),
+ ("a jump goes back to landing the heading behind the bar",
+  "styles.css", "main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }",
+  "main > section{ scroll-margin-top:120px; }"),
+ ("Lenis stops being told about the header",
+  "script.js", "lenis.scrollTo(target, { offset: -headClearance(), duration: 1.25 });",
+  "lenis.scrollTo(target, { offset: 0, duration: 1.25 });"),
+ ("a British spelling stops reaching the American page",
+  "build_help.py", '    ("program",         "programme programmes"),\n', ""),
+ # the guard's own data is the thing most likely to be "tidied" by a spelling
+ # pass, and flattening it makes sixteen checks compare a word to itself
+ ("the spelling guard starts comparing words to themselves",
+  "check.py", '("counselling", "counseling"), ("organisation", "organization"),',
+  '("counseling", "counseling"), ("organization", "organization"),'),
+ ("the pinned reel comes apart from its own scroll",
+  "styles.css", ".scene--pin.scene--tight{ padding-top:0; }", ""),
+ ("the page stops reading with scripts off",
+  "about.html", "<noscript><style>.focus-in{ filter:none; opacity:1; transform:none; }</style></noscript>", ""),
+ ("a chapter summary loses the page behind it",
+  "about.html", '<a href="students.html" class="btn btn--solid">What the job actually is',
+  '<a href="about.html#top" class="btn btn--solid">What the job actually is'),
 ]
 
 
