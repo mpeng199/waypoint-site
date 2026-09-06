@@ -17,6 +17,16 @@
 <link rel="preload" as="image" href="assets/land1.webp" />
 <link rel="modulepreload" href="assets/door.js" />
 <link rel="modulepreload" href="assets/vendor/three.module.min.js" />
+
+<!-- Every block of prose on this page is revealed by script: .focus-in ships
+     at opacity 0 and an IntersectionObserver adds .in once it scrolls in. With
+     scripts off nothing ever adds it, and 38 of this page's 44 blocks of text
+     never appear at all — the header, the hero and the footer, and nothing in
+     between. The reduced-motion rule further down styles.css already describes
+     the finished state; these are the same three declarations, applied when
+     there is no script to reach it. Scoped to <noscript>, so it cannot affect
+     the animated path. -->
+<noscript><style>.focus-in{ filter:none; opacity:1; transform:none; }</style></noscript>
 </head>
 <body>
 
@@ -120,7 +130,7 @@
        else, so the artwork is the act of translation rather than a picture of
        a bill. Every reel's position is a pure function of --t, so parking the
        scroll anywhere leaves a composed frame. -->
-  <section class="scene scene--pin" id="bills" data-pin>
+  <section class="scene scene--pin scene--tight" id="bills" data-pin>
     <div class="pin__sticky">
       <div class="pin__art">
         <!-- aria-hidden, like the artwork it replaced: this is an illustration
@@ -215,16 +225,19 @@
     </div>
   </section>
 
-  <!-- what we are -->
+  <!-- What we are. The second paragraph used to be its own scene, a screen
+       further down, under the heading "It was never only about the bill" — a
+       whole viewport spent on one sentence that belongs in this one. -->
   <section class="scene scene--left">
     <div class="scene__inner focus-in">
       <h2 class="phrase">So we carry it <em>to people.</em></h2>
       <p class="say">We find New Yorkers stuck with a medical bill or a denied claim, and we walk them to the free experts who already handle exactly that.</p>
+      <p class="say">Bills are only half of it. Waypoint started by walking people to the free health resources they are missing: food, transit, senior services, benefits. We still do that.</p>
     </div>
   </section>
 
   <!-- ===== the doors: four names, one open at a time ===== -->
-  <section class="scene scene--ways" id="work">
+  <section class="scene scene--ways scene--tight" id="work">
     <div class="ways__wrap">
 
       <div class="focus-in">
@@ -269,11 +282,11 @@
 
         <div class="ways__item">
           <button class="ways__row" type="button" aria-controls="way-rx">
-            <span class="ways__name">Prescription cost programmes</span>
+            <span class="ways__name">Prescription cost programs</span>
             <span class="ways__sign" aria-hidden="true"></span>
           </button>
           <div class="ways__body" id="way-rx"><div>
-            <p class="ways__blurb">State programmes for older New Yorkers, and the drug makers' own schemes, sit behind the counter unmentioned. A pharmacist is the one who checks.</p>
+            <p class="ways__blurb">State programs for older New Yorkers, and the drug makers' own schemes, sit behind the counter unmentioned. A pharmacist is the one who checks.</p>
           </div></div>
         </div>
       </div>
@@ -286,7 +299,7 @@
   </section>
 
   <!-- the honesty statement -->
-  <section class="scene scene--center scene--vow">
+  <section class="scene scene--center scene--vow scene--tight">
     <div class="scene__inner focus-in">
       <h2 class="phrase">We find you the expert. We never <em>play one.</em></h2>
 
@@ -294,7 +307,7 @@
            are, what we are not, and that nobody ever pays us. Seventy-five words
            of it went unread; this is the version somebody frightened can take in
            standing at a table. -->
-      <p class="vow">We are trained student volunteers &mdash; not doctors, not lawyers, not benefits counselors. We walk you to the free professionals who are, and we never charge for anything.</p>
+      <p class="vow">We are trained student volunteers: not doctors, not lawyers, not benefits counselors. We walk you to the free professionals who are, and we never charge for anything.</p>
 
       <!-- The full statement, verbatim and never reworded, one tap away.
            <details> and not the disclosure JS this page uses elsewhere: this is
@@ -312,13 +325,13 @@
   </section>
 
   <!-- ===== the line =====
-       Organised as a hold scene: the phrase keeps its place on the right while
+       Organized as a hold scene: the phrase keeps its place on the right while
        the four crossings move past it on the left. It was a pinned scene
        scrubbing --t, which meant the heading scrolled away from the very
        statements it was introducing. Holding it is both the page's existing
        pattern for this and the reason the section now reads as one argument
        rather than a heading followed by a list. -->
-  <section class="scene scene--hold scene--hold-r">
+  <section class="scene scene--hold scene--hold-r scene--tight">
     <div class="hold">
       <div class="hold__anchor">
         <div class="hold__anchor-in focus-in" data-once>
@@ -340,33 +353,29 @@
     </div>
   </section>
 
-  <!-- the other half of what Waypoint is. It states what the work is and stops:
-       the sequencing, the phasing and the reasons behind them are ours to
-       manage, not a visitor's to read. Whoever is here is deciding whether to
-       volunteer or to work with us, and neither decision is helped by a
-       roadmap. -->
-  <section class="scene scene--left">
-    <div class="scene__inner focus-in">
-      <h2 class="phrase">It was never only <em>about the bill.</em></h2>
-      <p class="say">Walking people to the free health resources they are missing &mdash; food, transit, senior services, benefits &mdash; is where Waypoint started, and it is still half of why we exist.</p>
-    </div>
-  </section>
-
   <!-- ============================================================
        FOR STUDENTS — the volunteer chapter, moved up to sit directly
        after "It was never only about the bill". A student reading
        that has just been told what the whole job is; the ask belongs
        there, not four partner-facing scenes later.
        ============================================================ -->
-  <section class="scene scene--right" id="students">
+  <section class="scene scene--right scene--wide" id="students">
     <div class="scene__inner focus-in">
       <span class="eyebrow">For students</span>
       <h2 class="phrase">For the students who <em>show up.</em></h2>
-      <p class="chapter-lede">You put materials where people actually are. You listen, you translate, you name the right organization, and you dial the number and stay in the chair while it rings. You never read anyone's paperwork and never say who qualifies. <b>Multilingual students especially.</b></p>
+      <p class="chapter-lede">You put materials where people actually are, you listen, you name the right organization, and you dial the number and stay in the chair while it rings. <b>Multilingual students especially.</b></p>
+      <div class="sum">
+        <p class="beat"><b>Most of the job is distribution.</b> Getting accurate materials into libraries, senior centers, faith spaces and clinics. It is the part that reaches the most people, and it asks you to interpret nobody's situation.</p>
+        <p class="beat"><b>You name the door, not the answer.</b> Someone describes a problem in their own words and you say which organization handles that kind of problem. You never read their paperwork and never say who qualifies.</p>
+        <p class="beat"><b>Training comes first, and nobody works alone.</b> A session on the routing and the boundaries before you speak to anyone, then pairs or groups with an adult there.</p>
+      </div>
+      <div class="scene__cta">
+        <a href="students.html" class="btn btn--solid">What the job actually is <span class="arr">&rarr;</span></a>
+      </div>
     </div>
   </section>
 
-  <section class="scene scene--left scene--wide">
+  <section class="scene scene--left scene--wide scene--tight">
     <div class="scene__inner focus-in" data-once>
       <div class="panel">
         <span class="ey">Sign up</span>
@@ -389,9 +398,9 @@
   </section>
 
   <!-- ============================================================
-       FOR PARTNERS — everything below is addressed to organisations,
+       FOR PARTNERS — everything below is addressed to organizations,
        not to visitors or volunteers, and it sits last on purpose. A
-       library or a senior centre arrives knowing what it wants; a
+       library or a senior center arrives knowing what it wants; a
        student has to be convinced, so students come first.
        ============================================================ -->
   <section class="scene scene--hold scene--reach" id="partners">
@@ -406,29 +415,17 @@
         <p class="beat focus-in"><b>Our students speak the languages your block speaks.</b> A conversation about a frightening bill rarely survives a stranger translating it, and almost never survives a leaflet.</p>
         <p class="beat focus-in"><b>Nobody is asked for a status.</b> A hospital cannot weigh immigration status when it looks at financial assistance, and anything touching immigration law goes to a professional rather than a student's best guess.</p>
         <p class="beat focus-in"><b>And you get counts you can use.</b> Every quarter: how many we sent you and what they asked about. Categories, never names.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== HOLD: the ask ===== -->
-  <section class="scene scene--hold scene--hold-r">
-    <div class="hold">
-      <div class="hold__anchor">
-        <div class="hold__anchor-in focus-in" data-once>
-          <h2 class="phrase">Not money. Not an endorsement. <em>Your materials.</em></h2>
+        <p class="beat focus-in"><b>What we want is not money.</b> Materials we can put in front of people, a name we can route a referral to, and twenty minutes reading our routing sheet so we know we are not overstating anything. We cover the printing and we do the distribution.</p>
+        <!-- SWAP POINT: when a venue or professional partner is secured, rewrite this beat. -->
+        <p class="beat focus-in"><b>And we have not held our first event.</b> Whoever says yes first shapes how the whole thing runs, and is named in the first semester report.</p>
+        <div class="hold__cta focus-in">
+          <a href="partners.html" class="btn btn--solid">The whole ask, in detail <span class="arr">&rarr;</span></a>
         </div>
       </div>
-      <div class="hold__stream">
-        <p class="beat focus-in"><b>If you already do this work, we would like to carry it.</b> Flyers, referral cards, or a QR code we can put in front of people. We cover the printing and we do the distribution.</p>
-        <p class="beat focus-in"><b>And a name we can route to</b>, so a referral is a handoff instead of a hope. In return: distribution you don't have to staff, and a quarterly count.</p>
-        <p class="beat focus-in"><b>Twenty minutes of reading, if you can spare it.</b> A look over our routing sheet, so we know we are not overstating anything. We would far rather be corrected by you now than be wrong in front of somebody who needed us to be right.</p>
-        <!-- SWAP POINT: when a venue or professional partner is secured, rewrite this beat. -->
-        <p class="beat focus-in"><b>And we have not done this yet.</b> Waypoint has not held its first event. Whoever says yes first shapes how the whole thing runs, and is named in the first semester report.</p>
-      </div>
     </div>
   </section>
 
-  <section class="scene scene--left scene--wide">
+  <section class="scene scene--left scene--wide scene--tight">
     <div class="scene__inner focus-in" data-once>
       <div class="panel">
         <span class="ey">Start a partnership</span>
@@ -436,16 +433,16 @@
         <p>Materials we can distribute, a person we can route people to, a space, or twenty minutes to read our routing sheet. We will come back with something specific.</p>
         <form class="form" data-form="partners">
           <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <div class="field"><label for="p-org">Organization</label><input id="p-org" name="org" required placeholder="Organisation name" /></div>
+          <div class="field"><label for="p-org">Organization</label><input id="p-org" name="org" required placeholder="Organization name" /></div>
           <div class="field"><label for="p-name">Your name</label><input id="p-name" name="name" required placeholder="Contact name" /></div>
           <div class="field"><label for="p-email">Email</label><input id="p-email" type="email" name="email" required placeholder="you@org.org" /></div>
           <div class="field"><label for="p-type">What you can offer</label>
             <select id="p-type" name="type">
               <optgroup label="Help we can distribute">
-                <option>Consumer assistance or advocacy organisation</option>
+                <option>Consumer assistance or advocacy organization</option>
                 <option>Hospital financial assistance office</option>
-                <option>Legal services organisation</option>
-                <option>Prescription assistance programme</option>
+                <option>Legal services organization</option>
+                <option>Prescription assistance program</option>
                 <option>Government agency or helpline</option>
               </optgroup>
               <optgroup label="A space or an audience">
@@ -453,7 +450,7 @@
                 <option>Senior center / NYC Aging</option>
                 <option>Community or faith space</option>
                 <option>Clinic / FQHC outreach</option>
-                <option>School or community organisation</option>
+                <option>School or community organization</option>
               </optgroup>
               <option>Something else</option>
             </select>

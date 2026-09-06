@@ -5,7 +5,7 @@ renders exactly the same page from it that it renders in English, so a language
 page is not a notice about the English page — it is the page.
 
 What is NOT here, and why. The resources keep their own names, phone
-numbers and addresses: an organisation's name is a proper noun and its number
+numbers and addresses: an organization's name is a proper noun and its number
 is a number, and both are what somebody has to say and dial. Their English
 descriptions are not translated either, and rather than print them under a
 translated heading every language page carries `english`, one plain sentence
@@ -27,7 +27,7 @@ by somebody who speaks the language either.
 #   nav        the five header tabs, in the header's order
 #   eyebrow    the line above the masthead title
 #   title_a    the masthead title, roman half
-#   title_b    ... and the emphasised half (gold; italic only where the script
+#   title_b    ... and the emphasized half (gold; italic only where the script
 #              has a real italic — see build_help.EMPHASIS)
 #   lede1/2    the two masthead paragraphs; {n} is the resource count
 #   sos_h      heading of the emergency panel
@@ -39,7 +39,7 @@ by somebody who speaks the language either.
 #   open_all   the link at the foot of a card; {n} is that need's count
 #   vow_h      heading of the honesty statement
 #   vow        the honesty statement itself — a promise, so it is translated
-#              whole and never summarised
+#              whole and never summarized
 #   vow_src    the line under it
 #   foot_say   what Waypoint is
 #   foot_links five footer links, in the footer's order

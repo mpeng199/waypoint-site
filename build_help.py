@@ -285,7 +285,7 @@ COPY = {
     "senior": dict(
         short="Older adults",
         h1a="I'm an older adult,", h1b="or I care for one.",
-        intro="Meals. Centres where there are people to talk to. Help with "
+        intro="Meals. Centers where there are people to talk to. Help with "
               "Medicare and with the rent. And someone to call if an older person "
               "is being harmed, or taken advantage of.",
         ph="Try: meals, senior center, medicare",
@@ -344,7 +344,7 @@ COPY = {
         short="After jail or prison",
         h1a="I have a criminal record,", h1b="or I'm coming home.",
         intro="A record follows people into every job application and every "
-              "apartment viewing. New York has organisations that exist for "
+              "apartment viewing. New York has organizations that exist for "
               "exactly that. Jobs that start within days. Housing. Health care. "
               "And lawyers who seal records, and who take on the people who turn "
               "you down for one.",
@@ -368,7 +368,7 @@ COPY = {
 # live" with a typographic apostrophe because that is what prose does; the
 # directory was setting the same sentence with a typewriter one, and the two
 # halves of the site were quietly using different punctuation for the same
-# words. Normalised at the source rather than at each call site, so it holds
+# words. Normalized at the source rather than at each call site, so it holds
 # for anything added later — and never applied to a URL, where an apostrophe
 # is a character and not a quotation mark.
 CURLY = str.maketrans({"'": "\u2019"})
@@ -727,7 +727,7 @@ GROUPS = {
         ("start",     "The citywide networks",
          ["a way in without insurance", "public hospitals", "find a clinic",
           "nowhere to live"]),
-        ("clinic",    "Neighbourhood health centres, across the city",
+        ("clinic",    "Neighborhood health centers, across the city",
          ["fqhc", "clinic", "health cent", "primary care", "medical care"]),
         ("rx",        "Help paying for a prescription",
          ["medication", "medicine", "prescription", "pharmac"]),
@@ -787,7 +787,7 @@ GROUPS = {
          ["one call", "aging connect", "navigation"]),
         ("meals",     "Meals",
          ["meals", "homebound", "nutrition", "citymeals"]),
-        ("centers",   "Centres, activities, and company",
+        ("centers",   "Centers, activities, and company",
          ["cent", "company", "at-home", "social", "activities"]),
         ("money",     "Money, rent, and benefits for older adults",
          ["scrie", "rent", "benefit", "medicare", "epic", "money"]),
@@ -858,7 +858,7 @@ GROUPS = {
           "youth", "childcare", "school"]),
         ("health",    "Health care",
          ["clinic", "fqhc", "health center", "dental", "hiv", "mental"]),
-        ("centers",   "A centre run by disabled people, in your borough",
+        ("centers",   "A center run by disabled people, in your borough",
          ["disability benefits help", "independent living"]),
         ("legal",     "When a right is denied",
          ["disability legal", "legal", "discrimination", "rights"]),
@@ -1337,9 +1337,9 @@ LANG_MATCH = {
 
 # ------------------------------------------------------- words people use
 # The directory is written in the vocabulary of the agencies that run these
-# programmes. Nobody searches for "SNAP", "paratransit" or "ESOL"; they search
+# programs. Nobody searches for "SNAP", "paratransit" or "ESOL"; they search
 # for "food stamps", "access-a-ride" and "english classes". Left alone, a
-# search for "food stamps" returned one row out of fourteen food programmes,
+# search for "food stamps" returned one row out of fourteen food programs,
 # and "dentist" returned one of two dental clinics.
 #
 # So each row's hidden search text is expanded at build time: if the row
@@ -1437,7 +1437,7 @@ SYNONYMS = [
     ("abortion",        "abortion pregnancy options terminate"),
     # Words the probe found people typing that the index did not hold. Each
     # of these returned nothing, or returned something from a different part
-    # of life: "free eyeglasses" answered with naloxone and eviction defence,
+    # of life: "free eyeglasses" answered with naloxone and eviction defense,
     # "my pet needs a vet" answered with the Veterans Crisis Line.
     ("glasses",         "eyeglasses spectacles eye exam vision eyesight cant see "
                         "blurry reading glasses optometrist"),
@@ -1492,6 +1492,21 @@ SYNONYMS = [
     ("employment",      "wages unpaid wages wage theft fired discrimination at work"),
     ("clinic",          "free clinic no insurance uninsured cant afford a doctor "
                         "sliding scale"),
+    # "programme" is the one British spelling the site dropped that the
+    # spelling correction cannot reach: it is TWO edits from "program", and
+    # correction allows one. Everything else — centre, colour, organisation,
+    # neighbourhood, enrolment, defence — is a single edit and repairs itself.
+    # Without this, "free programme" returned the blank page help.js exists to
+    # avoid.
+    ("program",         "programme programmes"),
+    # "pediatrician" is the word a parent types and it reached nothing at all:
+    # the rows say "pediatrics", and word-start matching does not get from one
+    # to the other. The British spellings are here for the same reason
+    # "counselling" and "day labourer" are — somebody typing them is looking
+    # for the same clinic, and what the site PRINTS is American either way.
+    ("pediatrics",      "pediatrician pediatricians paediatrics paediatric "
+                        "paediatrician child doctor kids doctor doctor for my kid "
+                        "baby doctor childrens doctor"),
     ("health access",   "no insurance uninsured undocumented no papers see a doctor "
                         "free clinic cheap clinic cant afford a doctor"),
     ("criminal record", "background check turned down for a job sealing my record "
@@ -1595,9 +1610,9 @@ def needs_for(row):
     cat = row["Category"]
     hay = ((row["Subcategory"] or "") + " " + (row["Resource Name"] or "")).lower()
     # An explicit `also:<need>` tag, for the rows a keyword cannot reach. A
-    # multi-service organisation's subcategory is "One place that does many
+    # multi-service organization's subcategory is "One place that does many
     # things" — true of all of them, and so useless as a trigger — but the
-    # biggest food pantry on Staten Island is a multi-service organisation and
+    # biggest food pantry on Staten Island is a multi-service organization and
     # somebody on "I need food" has to be able to see it. Named per row, so it
     # never fires by accident.
     named = {t.strip()[5:] for t in (row.get("Tags") or "").split(";")
@@ -1989,7 +2004,7 @@ def group_for(row, need_key):
     letting prose fire these rules put food pantries under "Immigration".
     """
     # Subcategory and name only. Tags are search vocabulary, deliberately
-    # generous — a community health centre is tagged "dental" so that somebody
+    # generous — a community health center is tagged "dental" so that somebody
     # searching for a dentist finds it — and letting that generosity decide
     # where a row FILES put sixteen general clinics under "Teeth". What a row
     # is called and what it calls itself are the two fields that say what it
@@ -2000,8 +2015,8 @@ def group_for(row, need_key):
         return "more"
     for key, _label, words in buckets:
         # A bucket whose keywords are all boroughs is asking about the borough
-        # field, not about the row's name. It is the one axis a neighbourhood
-        # organisation is genuinely sorted by, and "One place that does
+        # field, not about the row's name. It is the one axis a neighborhood
+        # organization is genuinely sorted by, and "One place that does
         # everything" was eighteen rows deep without it.
         if words and all(w in BORO_WORDS for w in words):
             where = " ".join(row["_boroughs"])
@@ -2103,7 +2118,7 @@ def header_frag():
     """The same bar as the narrative side: same lockup, same five tabs, same
     order, same lamp. It used to be a second header that had drifted — three
     tabs here against five there, a different pin, different padding, a drawer
-    on one half and a wrap on the other — which is how one organisation comes
+    on one half and a wrap on the other — which is how one organization comes
     to look like two.
 
     The four section links point back into the narrative page, because that is
@@ -2295,7 +2310,7 @@ def filters_frag(compact=False):
 def search_frag(placeholder, scope_note):
     """Search, count and filters as one object.
 
-    They were four: a labelled box, an orphaned line of grey text under it, a
+    They were four: a labeled box, an orphaned line of gray text under it, a
     bordered card of chips, and — below all of it, outside everything — the
     result count on the left and the print button on the right. Four slabs
     that all did the same job, narrowing a list, arranged so that none of them
@@ -2304,7 +2319,7 @@ def search_frag(placeholder, scope_note):
     One card now, two rows: how you narrow the list, and what that got you.
 
     It was three stacked zones, each with its own padding — a headed search
-    box on one line, a count and a print button on the next, a labelled row of
+    box on one line, a count and a print button on the next, a labeled row of
     dropdowns on a third — 284px of chrome standing between the reader and the
     first phone number. The box is one control in a row with the three
     dropdowns, sized to its own placeholder instead of the width of the page,
@@ -2627,7 +2642,7 @@ def lang_header_frag(L, U):
 
     Find help goes to this language's own front page, because that is where a
     reader of this page finds help. The other four go to the narrative site,
-    which is written for students and organisations and is in English.
+    which is written for students and organizations and is in English.
     """
     rtl = L["dir"] == "rtl"
     tabs = [(lang_page(L["key"]), U["nav"][0], ' class="is-find" aria-current="page"'),
@@ -2896,7 +2911,7 @@ def carryover_frag():
 
 def render_category(need, rows):
     """One kind of help, on its own page: a rail you can skim, the resources
-    broken into buckets, and every neighbouring kind of help one tap away."""
+    broken into buckets, and every neighboring kind of help one tap away."""
     key = need["key"]
     group = ordered(rows, key)
     n_all = len(rows)
@@ -2909,7 +2924,7 @@ def render_category(need, rows):
     # a need that cuts across everything — a disability page is 5 resources of
     # its own and 21 that answer it from somewhere else — the page became five
     # rows and then a heap. And it was wrong even where it looked fine:
-    # somebody on "I got a medical bill" looking for insurance enrolment wants
+    # somebody on "I got a medical bill" looking for insurance enrollment wants
     # it under "Getting covered in the first place", not in an appendix.
     #
     # What is kept is the ordering. Inside a bucket, the resources whose own
@@ -2977,7 +2992,7 @@ def render_category(need, rows):
 
     A('<noscript><p class="noscript-note">Search and filtering need JavaScript, which '
       'is turned off. Everything is still here: every place on this page is listed '
-      'below, in labelled groups, and every phone number dials.</p></noscript>')
+      'below, in labeled groups, and every phone number dials.</p></noscript>')
 
     A('<div class="cat">')
     A('<div class="cat__main">')
@@ -3025,7 +3040,7 @@ def render_category(need, rows):
         A('</section>')
     A('</div>')
 
-    # ---- neighbours
+    # ---- neighbors
     A('<nav class="sibs" aria-labelledby="sibs-h">')
     A('  <h2 id="sibs-h">Something else?</h2>')
     A('  <ul>')
@@ -3091,7 +3106,7 @@ def build():
     front page is a way in — one cluster per need, three examples each — and each
     kind of help gets a page built to be skimmed: a rail of what is on it,
     resources in named buckets rather than one run of forty, and every
-    neighbouring kind of help one tap away.
+    neighboring kind of help one tap away.
 
     Nothing about the contract changed: every page is static HTML with every
     resource in it, every phone number is a real tel: link, and JavaScript

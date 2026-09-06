@@ -11,10 +11,22 @@
      nowhere else. */
   --container:1280px;
   --pad:clamp(22px,5vw,80px);
-  /* The space either side of every block. On a desktop this is the whole
-     "one block on screen at a time" contract (see .scene) and it has to be
-     50vh. A phone re-derives it: see the RESPONSIVE section. */
-  --gap:50vh;
+  /* The space either side of a phase — the boundary between one part of the
+     argument and the next. It was 50vh, which is exactly one clear screen
+     between any two blocks: you finished one and scrolled through nothing
+     before the next arrived. That bought "one block on screen at a time", and
+     one block at a time is the thing this page was asked to stop doing.
+     32vh keeps the boundary legible — a phase still gets the screen to itself
+     while you read it — and lets the join show, so the end of one part and the
+     start of the next are visible together and you can tell how far you are
+     through. A phone re-derives it: see the RESPONSIVE section. */
+  --gap:32vh;
+  /* And the space inside one. A phase is several blocks that belong together —
+     a chapter and its own sign-up form, a claim and the letter that proves it —
+     and the reader is meant to see them at once. --gap still separates phases;
+     this separates their parts, and it is deliberately far too small to keep
+     them off each other's screen. That is the point of it. */
+  --gap-in:13vh;
 }
 
 
@@ -66,7 +78,7 @@ img,svg{ display:block; max-width:100%; }
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
 /* ============================================================
-   THE DOOR — WebGL centrepiece, with a CSS poster underneath it.
+   THE DOOR — WebGL centerpiece, with a CSS poster underneath it.
    The poster is a finished picture in its own right: if WebGL is
    missing or slow to arrive, this is what the hero looks like.
    ============================================================ */
@@ -158,7 +170,7 @@ img,svg{ display:block; max-width:100%; }
    NAV (minimal, no pill)
    ============================================================ */
 /* The bar itself is .sitehead in tokens.css, shared with the directory. All
-   this half has to say is which six colours it wears and that it floats over
+   this half has to say is which six colors it wears and that it floats over
    the door rather than sticking under it. */
 .sitehead{
   position:fixed; inset:0 0 auto 0;
@@ -211,11 +223,51 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    below (here, on the hold scenes, and above the footer) all say 50vh. Lower
    one and the pair either side of it starts double-booking the screen. */
 .scene{ position:relative; min-height:100svh; display:flex; align-items:center; padding:var(--gap) var(--pad); }
+/* An anchor lands the section's top edge at the top of the window, and the
+   window's top 73-203px is a fixed bar. The directory fixed this a while ago
+   with the same calc on every jump target; the narrative half never had it,
+   so it relied on the section's own top padding being taller than the bar.
+   That held at --gap 50vh and stopped holding the moment a phase join was
+   allowed to be 13vh. Reading --head-h means it holds at any bar height. */
+main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 /* the one boundary that needs none of its own: the hero's text is gone by the
    time the door finishes, leaving ~140vh of clear space below it — already over
    the 100vh, so 50vh here would be surplus you scroll through watching nothing.
    Only the hero earns this; every other section needs its half. */
 .hero + .scene{ padding-top:14vh; }
+
+/* ---------- phases: the blocks that are allowed to share a screen ----------
+   .scene--tight marks a block that CONTINUES the one above it instead of
+   replacing it — the vow after the routes it qualifies, a form after the
+   chapter that asks for it. Between phases the 50vh either side still buys
+   the full boundary; inside one it collapses to --gap-in, so the parts of an
+   argument arrive together rather than a screen apart.
+
+   Written as :has() on the preceding sibling so the class is carried by the
+   block that continues, and one class governs both sides of the join. Where
+   :has() is missing the pair simply keeps the old full gap, which is the
+   layout this replaced — a slower read, never a broken one. */
+/* .scene.scene--tight, not .scene--tight: at equal specificity the join
+   is decided by which rule comes later in the file, and the mobile copy of
+   these two was written above `.scene{padding-block:var(--gap)}` and lost to
+   it silently. One extra class puts every one of them out of reach of that. */
+.scene.scene--tight{ padding-top:var(--gap-in); min-height:auto; }
+/* except the pin, whose padding is its geometry. The sticky child fills the
+   content box while --t is measured off the section's border box, so padding
+   here desynchronises the two: 13vh of it meant the first 8% of the reel
+   played before the child was pinned. Its join is carried entirely by the
+   bottom padding of the block above, which is what a join is made of anyway. */
+.scene--pin.scene--tight{ padding-top:0; }
+.scene:has(+ .scene--tight){ padding-bottom:var(--gap-in); }
+
+/* The hold scenes carry their space on the two columns rather than the
+   section, so the join has to be made there too. Longhands on purpose: the
+   one-block guard reads the `padding-block:` shorthand on the base rules to
+   measure the boundary, and these are not boundaries. */
+.scene--hold.scene--tight .hold__anchor{ padding-block-start:var(--gap-in); }
+.scene--hold.scene--tight .hold__stream{ padding-block-start:calc(var(--gap-in) * 1.04); }
+.scene--hold:has(+ .scene--tight) .hold__anchor{ padding-block-end:var(--gap-in); }
+.scene--hold:has(+ .scene--tight) .hold__stream{ padding-block-end:calc(var(--gap-in) * 1.2); }
 .scene__inner{ max-width:min(560px,90%); position:relative; z-index:3; }
 .scene--left{ justify-content:flex-start; }
 .scene--right{ justify-content:flex-end; }
@@ -254,6 +306,15 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .panel > p{ color:var(--ink-soft); margin-top:12px; max-width:52ch; }
 .chapter-lede{ margin-top:22px; font-size:clamp(1.05rem,1.5vw,1.3rem); color:var(--cream); max-width:50ch; line-height:1.6; text-shadow:0 1px 22px rgba(12,22,16,.7); }
 .chapter-lede b{ font-weight:600; }
+
+/* A chapter's summary: the two or three things its reader needs before
+   deciding whether to read the rest. Same .beat as the hold streams, so this
+   is spacing and nothing else — no card, no rule, no bullet. The detail these
+   compress lives on students.html and partners.html. */
+.sum{ display:grid; gap:clamp(16px,2.2vh,26px); margin-top:clamp(24px,3.4vh,38px); }
+.sum .beat{ max-width:60ch; }
+/* the same door at the foot of a hold stream, which is a grid and spaces it */
+.hold__cta{ margin-top:4px; }
 
 /* join scene — three quiet doorways */
 .doors{ margin-top:36px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
@@ -329,7 +390,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   border:1px solid rgba(252,254,247,.2); border-radius:8px; padding:13px 15px; transition:border-color .25s, background .25s, box-shadow .25s; }
 .field input::placeholder,.field textarea::placeholder{ color:var(--ink-faint); }
 .field input:focus,.field select:focus,.field textarea:focus{ outline:none; border-color:var(--gold); background:rgba(252,254,247,.08); box-shadow:0 0 0 3px rgba(231,197,126,.14); }
-/* Same trap as the search box in help.css: forced colours discard the gold
+/* Same trap as the search box in help.css: forced colors discard the gold
    border and the gold shadow, and keep `outline:none`. */
 @media (forced-colors: active){
   .field :is(input,select,textarea):focus{ outline:3px solid Highlight; outline-offset:2px; }
@@ -479,7 +540,17 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
      enough to read as a deliberate pause between beats (~40% of the screen),
      not large enough to be a screen of its own. svh, not vh, so the number
      does not change when the URL bar slides away mid-scroll. */
-  :root{ --gap:clamp(84px,20svh,168px); }
+  :root{ --gap:clamp(84px,20svh,168px); --gap-in:clamp(30px,7svh,58px); }
+
+  /* The phase join, re-derived the same way. A phone never had the
+     one-block-at-a-time contract to break, so --gap-in here is doing the
+     smaller job it does everywhere: saying "this is the same argument" with
+     space rather than with a rule. */
+  .scene.scene--tight{ padding-block-start:var(--gap-in); }
+  .scene:has(+ .scene--tight){ padding-block-end:var(--gap-in); }
+  /* the mobile hold rule is !important, so the join has to be too */
+  .scene--hold.scene--tight{ padding-block-start:var(--gap-in) !important; }
+  .scene--hold:has(+ .scene--tight){ padding-block-end:var(--gap-in) !important; }
 
   /* The mobile menu used to be a drawer: a fixed panel, a scrim, a body
      scroll-lock, a focus round-trip and a note about backdrop-filter creating
@@ -594,7 +665,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
      lines at 360px. Tightened so it holds two, and dropped entirely when the
      screen is too short to afford them. */
   .hero__eye{ grid-area:1/1/2/2; font-size:11.5px; letter-spacing:.15em; margin-bottom:0; }
-  /* the gap is free: this row is 1fr and its content is centred inside it, so
+  /* the gap is free: this row is 1fr and its content is centered inside it, so
      the space comes out of the row's own slack and never off the page. At the
      13px it started from, the two halves were a line apart in a headline whose
      leading is .95 — four lines of one statement rather than two of each. */
@@ -664,6 +735,10 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   .hold__anchor{ position:static; padding-block:0; }
   .hold__stream{ padding-block:0; }
   .scene--hold{ padding-block:var(--gap); }
+  /* and the join survives here too, or a phase falls apart the moment
+     somebody turns motion off */
+  .scene--hold.scene--tight{ padding-block-start:var(--gap-in); }
+  .scene--hold:has(+ .scene--tight){ padding-block-end:var(--gap-in); }
 }
 
 /* ============================================================
@@ -694,7 +769,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    2. Descenders. Clipping at the content edge shears the tails off g, y and p.
       The fix is bottom padding to give them room, pulled straight back out
       with an equal negative margin so the line box measures the same.
-   3. The parked position has to clear the padding too. Travelling 100% leaves
+   3. The parked position has to clear the padding too. Traveling 100% leaves
       the glyph tops showing through the descender allowance; the hidden state
       is 100% PLUS that allowance, which is exactly the bottom clip edge. */
 .pin__say{ display:grid; gap:clamp(20px,3.4vh,38px); align-content:center; }
@@ -738,7 +813,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
       been dead weight that looked like craft.
    2. THE WINDOW IS FEATHERED WHILE MOVING AND CRISP WHEN STILL. Theirs fades a
       gradient overlay in and out at the window edges. Ours cannot copy that
-      literally — an overlay painted in a flat colour would smear against the
+      literally — an overlay painted in a flat color would smear against the
       landscape — so it feathers the MASK instead, which fades the content to
       transparent whatever is behind it. Same intent, correct mechanism here.
 
@@ -796,7 +871,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    the most generic possible form. A numbered register in two halves was
    handsomer but still a taxonomy — ten items the reader must sort into buckets
    before any of it means anything. Cutting to four paired sentences fixed the
-   content. Making it a hold scene fixed the organisation.
+   content. Making it a hold scene fixed the organization.
 
    This last change removes the section's CSS entirely. Every item is a .beat:
    a bolded run-in lead and a short description, exactly as the reach and
@@ -826,7 +901,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   .scene--pin{ height:250svh; }
   .pin__sticky{ grid-template-columns:minmax(0,1fr); height:100svh;
     align-content:center; gap:clamp(20px,4svh,40px); }
-  /* the art is its own height here: a fixed box would centre a 300px reel in
+  /* the art is its own height here: a fixed box would center a 300px reel in
      500px and push the sentence off the bottom of the sticky */
   .pin__art{ height:auto; }
   .reel{ width:100%; }
@@ -867,7 +942,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 
 /* ============================================================
    THE DOORS (#work) — the four places a problem actually goes,
-   centred and alone on the screen.
+   centered and alone on the screen.
 
    This replaced a scroll-drawn fan diagram. The diagram had two
    problems the scroll could not fix: four labels on stalks say
@@ -886,7 +961,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 
    Nothing is open until asked. Because the section's height is
    its content plus 100vh of padding, the block sits at its
-   padding-top with no free space to centre in — so opening a row
+   padding-top with no free space to center in — so opening a row
    pushes only what is below it and never lifts the row you
    clicked. Between rows it does not move at all: every blurb
    reserves the same three lines, and the closing row shrinks on
@@ -971,7 +1046,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 /* ---------- the doors, narrow ---------- */
 @media (max-width:900px){
   .ways__title{ max-width:100%; }
-  /* .scene forces text-align:left here, so a centred button was the one
+  /* .scene forces text-align:left here, so a centered button was the one
      element in the section still sitting on the old axis */
   .ways__foot{ justify-content:flex-start; }
   /* tap is the only pointer here, so a row opens to whatever it needs and
@@ -999,7 +1074,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 
 /* The gold "Find help" pill is .is-find in tokens.css, the same object on
    both halves: the one nav item addressed to somebody in trouble rather than
-   to an organisation, so it is the one that does not look like the others. */
+   to an organization, so it is the one that does not look like the others. */
 
 
 /* ---------- language, on the home page ----------

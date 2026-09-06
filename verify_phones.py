@@ -16,16 +16,16 @@ dialling has no way to tell.
 
 Three outcomes, and only the first is good news:
 
-  CONFIRMED  the number we print appears on the organisation's own page
+  CONFIRMED  the number we print appears on the organization's own page
   OTHER      the page answers, but with different numbers — listed, for a human
   UNSEEN     the page did not answer, or renders its number in JavaScript
 
 Nothing is edited automatically except the date, and only with `--stamp`, and
 only on a CONFIRMED row. What `Last Verified` then means for that row is
-precise: on that day, the organisation's own website printed the number this
+precise: on that day, the organization's own website printed the number this
 directory prints. It does not mean the hours or the address were re-checked.
 
-OTHER especially needs a person: an organisation legitimately publishes a
+OTHER especially needs a person: an organization legitimately publishes a
 switchboard on its homepage and an intake line on a subpage, and swapping one
 for the other can send somebody in crisis to a receptionist. That is not
 hypothetical — the pass that introduced this tool found six numbers that had
@@ -48,7 +48,7 @@ PHONE = re.compile(r"(?:1[-. ]?)?\(?\b[2-9]\d{2}\)?[-. ]?\d{3}[-. ]\d{4}\b")
 
 
 # Disagreements that a person has already looked at and settled. Each entry
-# is a reason, not a mute: an organisation legitimately publishes a
+# is a reason, not a mute: an organization legitimately publishes a
 # switchboard on the page a link check lands on and the number somebody
 # actually needs somewhere else. Keeping them out of the report is what keeps
 # the report worth reading — but a NEW disagreement always shows up.
@@ -64,7 +64,7 @@ SETTLED = {
     "Good Days":
         "we print the patient assistance line; the site shows its Texas office",
     "Planned Parenthood of Greater New York":
-        "we print PPGNY's main line; the national site lists health centres "
+        "we print PPGNY's main line; the national site lists health centers "
         "across the country",
     "SAMHSA National Helpline":
         "we print 1-800-662-HELP; the site shows the disaster and TTY lines",
@@ -106,7 +106,7 @@ def fetch(url):
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", body)))
 
 
-# Where an organisation keeps its phone number when the front page does not.
+# Where an organization keeps its phone number when the front page does not.
 # Plenty of sites draw the homepage number in JavaScript, or put it only on
 # the page whose whole job is to carry it — and reporting those as "we could
 # not see it" is a report with eighty entries nobody reads.
@@ -132,7 +132,7 @@ def one(row):
         return name, "UNSEEN", "site did not answer"
 
     # 212-639-9675 is 311's direct line and sits in the footer of every
-    # nyc.gov page, so it "disagrees" with every City programme number on the
+    # nyc.gov page, so it "disagrees" with every City program number on the
     # site. Noise, not a finding.
     NOISE = {"2126399675"}
 

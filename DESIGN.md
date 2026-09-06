@@ -4,17 +4,65 @@ A scroll-driven journey through a painterly landscape, with warm green + gold pa
 
 ## The shape of the page
 
-The homepage is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between, fourteen beats cycle between four registers so the page never settles into one rhythm: the phrase-per-screen scenes, a denser **hold scene** (three times, where the phrase needs to keep its place while substance moves past it), a **pinned scene** (once) where the journey parks and hands the screen to something that is not prose, and one **section you operate** rather than scroll.
+`about.html` is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between it cycles between four registers so the page never settles into one rhythm: the phrase-per-screen scenes, a denser **hold scene** (twice, where the phrase needs to keep its place while substance moves past it), a **pinned scene** (once) where the journey parks and hands the screen to something that is not prose, and one **section you operate** rather than scroll.
 
-    door → real, free, invisible → [pin] the reel → what we are
-      → [doors] where the thread leads → the honesty statement → [hold] the line
-      → the other half
-      → FOR STUDENTS: the corps → students form
-      → FOR PARTNERS: [hold] who we reach → [hold] what we ask for → partner form
-      → the door, from the other side
+**The unit is a phase, not a block.** Twelve blocks make six phases. A phase is
+several blocks that belong together and are meant to be read together: they
+carry `.scene--tight` and join with `--gap-in` (13vh) instead of `--gap` (32vh).
+Only `--gap` separates phases.
+
+    ── the door
+    ── real, free, invisible  ↳ [pin] the reel
+    ── what we are  ↳ [doors] where the thread leads  ↳ the honesty statement  ↳ [hold] the line
+    ── FOR STUDENTS: the corps  ↳ students form
+    ── FOR PARTNERS: [hold] who we reach and what we ask  ↳ partner form
+    ── the door, from the other side
+
+`──` opens a phase, `↳` continues one.
+
+**Why this replaced one-block-at-a-time.** The old rule was that no two blocks
+of text may ever share the screen, bought with 50vh either side of every block:
+space-below + space-above >= 100vh at every boundary. It cost 25 screens to
+carry 950 words, 39 words to a screen. jeskojets.com, the craft reference this
+page already builds to, carries 661 words over 12 screens at 55 to a screen —
+its pinned sections are long because they are doing something, and the
+informational ones between them are dense and short. This page had no dense
+register at all, so finding a section meant scrolling past every other one and
+a chapter sat a blank screen away from its own sign-up form. It is now 17.6
+screens at 55 words to a screen, and no boundary crosses more than 0.71 of a
+blank screen.
+
+`check_one_phase_at_a_time` guards it: every boundary must still resolve through
+`--gap` rather than a literal, both tokens have a band, and `--gap-in` has to be
+at least a third tighter than `--gap` or a reader cannot tell a continuation
+from a new part of the argument.
+
+**Two chapters are summaries.** `#students` and `#partners` carry the three or
+four things their reader needs in order to decide, and a door to a page that
+holds the rest — `students.html` (the three activities, the eight nevers, the
+replacement sentences, what an event looks like) and `partners.html` (the gap,
+the three things asked for, what a partner gets, who is accountable). Both were
+written down already, in the onboarding outline and the pitch one-pager, and
+neither had ever reached the site. `check_phases_and_their_detail_pages` fails
+if a summary loses its door, or the page behind it stops being detailed enough
+to be worth the click.
+
+**A jump has to clear the fixed bar.** `goTo` scrolls a section's top edge to
+the top of the window, so a heading is only readable on arrival while the
+section's own top padding is taller than the header — which is 73px at a desk
+and 203px at 320px. That held by accident at 50vh and stopped holding at a 13vh
+join. Sections carry `scroll-margin-top:calc(var(--head-h) + 14px)`, the same
+the directory uses, and Lenis is handed the same clearance by hand because it
+does its own scrolling and never reads scroll-margin.
+
+**With scripts off the page still has to say something.** Every block is a
+`.focus-in`, which ships at opacity 0 and waits for an IntersectionObserver.
+Measured in a frame with scripting blocked, 38 of the page's 44 blocks of prose
+never appeared. A `<noscript>` restores the three declarations the
+reduced-motion rule already spells out; it cannot touch the animated path.
 
 The page addresses two audiences and it now says so. Everything written to
-volunteers is one labelled block, everything written to organisations is
+volunteers is one labeled block, everything written to organizations is
 another, and the partner block sits **last**. A student has to be convinced and
 a partner arrives already knowing what they want, so a student never has to
 scroll past a pitch aimed at somebody else to reach the thing they came for.
@@ -85,7 +133,7 @@ it, and lands the section somewhere useful.
   looked like craft.
 - **Feathered while moving, crisp when still.** Theirs fades a gradient overlay
   in and out at the window edges. That cannot be copied literally here: an
-  overlay painted in a flat colour smears against the landscape. This one
+  overlay painted in a flat color smears against the landscape. This one
   feathers the **mask** instead, which fades content to transparent whatever is
   behind it — same intent, correct mechanism for this background.
 
@@ -108,7 +156,7 @@ against itself. Missed on the narrow breakpoint once; guarded now.
 
 The four narration lines used to arrive blurred, which reads as soft focus
 rather than composition. They now arrive the way editorial sites do it: each
-line clipped to its own box and travelling up into place on a stagger, so the
+line clipped to its own box and traveling up into place on a stagger, so the
 sentence assembles. Lines are **set by hand** rather than split at runtime — the
 copy is fixed, so the ragging is a typographic decision instead of whatever the
 box happens to do, and it costs no script and no library.
@@ -121,7 +169,7 @@ Three details do the work, and they are the three normally got wrong:
 2. **Descenders.** Clipping at the content edge shears the tails off g, y and p.
    Bottom padding gives them room, pulled straight back out with an equal
    negative margin so the line box still measures the same.
-3. **The parked position clears the padding too.** Travelling `100%` leaves the
+3. **The parked position clears the padding too.** Traveling `100%` leaves the
    glyph tops showing through that descender allowance; the hidden state is
    `100%` **plus** the allowance, which is exactly the bottom clip edge.
 
@@ -198,7 +246,7 @@ meant the phrase scrolled away from the very statements it was introducing.
 Measured against the partners ask it now behaves identically — phrase parks at
 477px and holds through a 609px window, versus that section's 566px. This is
 also what keeps the page's own thread out of the type: `spiralTarget()` matched
-`scene--pin` first and ran the thread down the centre, whereas a hold scene's
+`scene--pin` first and ran the thread down the center, whereas a hold scene's
 thread goes in the gutter between the two columns. The explicit `scene--lane`
 override this once needed is gone.
 
@@ -211,7 +259,7 @@ no released state and no guard against its own motion. `check.py` rejects any
 ### The doors (`#work`) — the one section you operate
 
 Everywhere else the scroll is the only input. Here it is not: four hairline rows
-name the four places a problem actually goes, centred and alone on the screen,
+name the four places a problem actually goes, centered and alone on the screen,
 each opening onto a sentence about what is behind that door.
 
 This replaced a scroll-drawn fan diagram — four labels on stalks, wires tweened
@@ -228,7 +276,7 @@ through and vanishes the moment you move toward it, so it can never actually be
 read; that is a hover state pretending to be a disclosure.
 
 **What stays still.** Because the section's height is its content plus 100vh of
-padding, the block sits at its `padding-top` with no free space to centre in — so
+padding, the block sits at its `padding-top` with no free space to center in — so
 opening a row pushes only what is below it and never lifts the row you clicked.
 Switching between rows does not move anything at all, and that takes two things
 together:
@@ -266,6 +314,61 @@ Nothing depends on scroll to become readable.
 
 Rules the page is built to: no card grids, no numbered step lists, no section labels, no visible boundary between beats. Each beat hands off to the next. The doors are the one deliberate exception — a hairline list is a boundary, and it is there because four named things need four rules between them to be four things rather than a paragraph. It stays a list of names, never a grid of cards, and the sequence beside it stays unnumbered.
 
+## Spelling
+
+**The site prints American spelling.** Everything a reader sees: organization,
+program, center, counseling, neighborhood, enrollment, defense, pediatrics,
+license, judgment, color, gray, traveling, practice, labeled. 339 words moved
+in one pass across the CSV, the generator, both stylesheets, the guards and
+every page.
+
+Four kinds of British spelling survive on purpose, and `check.py` fails if any
+of them reaches a reader:
+
+- **`aria-labelledby`**, which is how the attribute is spelled in the HTML
+  specification. It is not prose and it is not ours to correct.
+- **The ten Local Law 30 pages.** "organismes", "programmes" and "centres" on
+  `help-fr.html` are French. Resource descriptions stay English everywhere;
+  only the page furniture is translated.
+- **"Leo Cussen Centre for Law"**, a real institution in Australia, credited in
+  `styles.css` for the odometer reel the letter is built from. A proper noun is
+  not a spelling mistake.
+- **Search vocabulary.** `build_help.py`'s `SYNONYMS`, and a handful of row
+  `Tags`, deliberately hold "counselling", "day labourer", "programme",
+  "paediatrician", "travelling" and "licence". Tags are never rendered, and the
+  synonym lists ship only into the JSON index, so none of this is visible.
+
+That last one is load-bearing and the reason `check_both_spellings_find_the_same_place`
+exists. Two mechanisms keep a British speller off a blank page, and a reader
+only ever needs one of them:
+
+1. the word is still in the search vocabulary, so it matches outright, or
+2. it is a single edit from a word the index holds, and `help.js` repairs it
+   and says so ("Showing results for *center*").
+
+Mechanism 2 covers most of it for free: centre, colour, organisation,
+neighbourhood, enrolment, defence, judgement, behavioural and practise are all
+one edit, transpositions included. **Three words are not**, and each one was a
+blank page until it was put back in the vocabulary:
+
+| word | why the correction cannot reach it |
+|---|---|
+| `programme` | two edits from `program` |
+| `travelling` | the index stems to `travel`; the doubled L never gets there |
+| `licence` | the index stems to `licensed`, two edits away |
+
+The guard reads its vocabulary out of the **built index**, not the spreadsheet.
+An earlier version reconstructed it from the CSV columns and passed `licence` —
+"license" is one edit away and looks fine on paper — while the real page
+answered "Nothing matched that". A guard that models the implementation loosely
+reports the failure as a pass.
+
+**Editing the CSV**: it is CRLF, `QUOTE_ALL`, with a BOM. `read_text` /
+`write_text` silently flattens the line endings and a guard catches it. Round-trip
+with `csv.DictWriter(quoting=QUOTE_ALL, lineterminator="\r\n")` over
+`decode("utf-8-sig")`, re-prepending the BOM, and prove it byte-identical before
+changing a row.
+
 ## The door (`assets/door.js`)
 
 A wall in darkness with a door ajar, warm light knifing through the gap on the latch side, and the sunlit valley (`land1.webp`, the same asset the journey uses) beyond it. Scroll drives `t` from 0 to 1: the door swings wider and the camera dollies from `z 9.6` to `z 0.72`.
@@ -273,7 +376,7 @@ A wall in darkness with a door ajar, warm light knifing through the gap on the l
 **Every parked position has to look intentional**, because scroll can stop anywhere. Three rules make that true, and `check.py` guards all three:
 
 - **The camera stops in front of the wall.** It used to fly through to `z -1.4`, which took the eye through the 54 light-shaft quads and the wall itself; edge-on quads read as hard diagonal bands across the viewport. At `z 0.72` the opening is wider than the frame, so you get the same sensation of passing through with nothing to collide with.
-- **The shaft's near end is proportional to the camera distance** (`camZ * 0.55`), never a fixed offset. An additive quad a few centimetres from the lens covers the whole viewport, and 54 of them stacked is a flat grey wash.
+- **The shaft's near end is proportional to the camera distance** (`camZ * 0.55`), never a fixed offset. An additive quad a few centimetres from the lens covers the whole viewport, and 54 of them stacked is a flat gray wash.
 - **The beam and the slit bloom retire.** Both peak while the door is opening and are gone by `t ≈ 0.82`. Letting them keep growing turns the opening into an additive white slab, because past halfway the opening *is* the light and no longer needs blooming. The valley's brightness is held back to match, then brought to full once the beam is gone.
 
 The handover happens only between `t 0.95` and `1`, the window where the doorway is already wider than the viewport, so the canvas and the painted backdrop are showing the same thing. The `beyond` plane converges on the crop the CSS background will use, and a modest warm swell (`.threshold`, peak 0.45) softens the seam. If the render ever throws, the loop stops and the CSS poster takes over rather than leaving a frozen canvas.
@@ -288,9 +391,9 @@ The handover happens only between `t 0.95` and `1`, the window where the doorway
 | Motes | ~900 additive points, alpha gated by the same mask |
 | Lighting | One warm `PointLight` **behind** the wall (rakes the jamb, leaves the near face dark) plus a short-range spill light so the wall reads as a surface. **No shadow maps** — the geometry does the occlusion |
 
-The gap is computed the way a hinged door actually leaves one: half-width `0.95·(1−cos θ)`, centred at `0.95·cos θ`, so it opens from the latch side.
+The gap is computed the way a hinged door actually leaves one: half-width `0.95·(1−cos θ)`, centered at `0.95·cos θ`, so it opens from the latch side.
 
-**Degradation, in order.** `prefers-reduced-motion` renders one static frame with the door already open and turns the pass-through into a cut. Phones cap pixel ratio at 1.6, drop to 26 shaft layers and 260 motes, and widen the FOV to 52° in portrait. No WebGL at all leaves the **CSS poster** (`.doorstage__poster`) in place — a wall, casing, panel in perspective, slit and soft glare built entirely from gradients. It is a finished picture, not a grey box, and it costs no extra bytes.
+**Degradation, in order.** `prefers-reduced-motion` renders one static frame with the door already open and turns the pass-through into a cut. Phones cap pixel ratio at 1.6, drop to 26 shaft layers and 260 motes, and widen the FOV to 52° in portrait. No WebGL at all leaves the **CSS poster** (`.doorstage__poster`) in place — a wall, casing, panel in perspective, slit and soft glare built entirely from gradients. It is a finished picture, not a gray box, and it costs no extra bytes.
 
 `window.__waypointDoor` exposes `set(t, mode)`, `live(on)`, `still()` and a read-only `probe()`; `window.__waypointTick` recomputes everything scroll-linked, including the thread. These exist because headless tabs report `hidden`, so `requestAnimationFrame` never runs and the only way to verify a scroll-driven state is to drive it: freeze `set`, call `still()`, then read `probe()`. Diagnosing by eye alone led to three wrong hypotheses before `probe()` gave the actual uniform values.
 
@@ -435,7 +538,7 @@ All form inputs:
 ### Parallax & Scroll Interactions
 
 - **Inertial scrolling**: Lenis (vendored) with `lerp: 0.085`. Anchor clicks and the progress rail route through `lenis.scrollTo`. Disabled entirely under reduced motion.
-- **The thread** (`#spiral`) reshapes itself for the scene at the viewport centre and only exists while you are moving. It swings wide *opposite* the text on the alternating scenes (centre 26% against a right-aligned scene, 74% against a left-aligned one), and narrows to a quiet line down the gutter on hold scenes (centre 50%, about 4% of the viewport wide). Parameters lerp toward their target so the reshape is continuous, never a cut. It fades in on scroll and fades out about 700ms after movement stops, so a still page is never cluttered by it. As the closing scene arrives the coil **opens out and unwinds** (amplitude roughly doubles, from about 17% of the viewport to 31%) while its opacity falls to zero, so it reads as making way rather than switching off. It is fully gone before the door appears: the last frame of the page is the door, one line and one button, nothing else. Under reduced motion it is static and follows the same closing fade.
+- **The thread** (`#spiral`) reshapes itself for the scene at the viewport center and only exists while you are moving. It swings wide *opposite* the text on the alternating scenes (center 26% against a right-aligned scene, 74% against a left-aligned one), and narrows to a quiet line down the gutter on hold scenes (center 50%, about 4% of the viewport wide). Parameters lerp toward their target so the reshape is continuous, never a cut. It fades in on scroll and fades out about 700ms after movement stops, so a still page is never cluttered by it. As the closing scene arrives the coil **opens out and unwinds** (amplitude roughly doubles, from about 17% of the viewport to 31%) while its opacity falls to zero, so it reads as making way rather than switching off. It is fully gone before the door appears: the last frame of the page is the door, one line and one button, nothing else. Under reduced motion it is static and follows the same closing fade.
 - **Reading veil** (`.readveil`): one fixed full-viewport layer whose opacity follows how much dense text is on screen. It replaced per-section scrims, which were the cause of the horizontal banding: two adjacent sections each faded their gradient to transparent at the shared edge, leaving a bright stripe at every seam. A single fixed element cannot produce a seam.
 - **Journey progress** is measured from the *end of the hero* to the end of the document, so adding the 240vh door section does not compress the landscape crossfade.
 - **Landscape layers** (`.stage__layer`): Scale (1.05 + parallax) and opacity crossfade based on scroll position. Four-layer progression.
@@ -475,7 +578,7 @@ because that is where those sections are, and the lamp ships with them and
 never lights: there is nothing on a directory page for it to slide between.
 Shipping it anyway is what lets the two headers be one string of markup.
 
-Each half sets **six colour tokens and one line of positioning**, nothing else:
+Each half sets **six color tokens and one line of positioning**, nothing else:
 
 | token | narrative | directory |
 |---|---|---|
@@ -485,7 +588,7 @@ Each half sets **six colour tokens and one line of positioning**, nothing else:
 | `--head-ink-2` | `--ink-soft` | `--ink-2` |
 | `--head-ink-3` | `--ink-faint` | `--ink-3` |
 | `--head-hover` | `rgba(252,254,247,.10)` | `--line-2` |
-| `--head-dot` (the pin's centre) | `transparent` | `--gold` |
+| `--head-dot` (the pin's center) | `transparent` | `--gold` |
 | `--head-shadow` | `0 1px 12px rgba(12,22,16,.6)` | `none` |
 | position | `fixed` (floats over the door) | `sticky` (sits under the top edge) |
 
@@ -497,7 +600,7 @@ hurry, because during the fade the bar's own type sits half-transparent over
 whatever is passing under it.
 
 The pin is **solid, filled with the header's ink** — cream on the dark half,
-deep green on the light one, the same mark either way. Its centre is the one
+deep green on the light one, the same mark either way. Its center is the one
 piece that adapts: nothing on the dark ground, where the filled pin reads on
 its own, and gold on cream, where the mark wants a counter.
 
@@ -547,9 +650,9 @@ One ring, in `tokens.css`, for both halves of the site:
 }
 ```
 
-The colour is a **property of the surface, not of the control**. Because the
+The color is a **property of the surface, not of the control**. Because the
 ring is offset outward it is painted on the ground the control sits on, so a
-button cannot know what colour its own ring should be. `--focus` defaults to
+button cannot know what color its own ring should be. `--focus` defaults to
 `--green` for the light directory; each dark room re-points it once and
 everything inside inherits:
 
@@ -582,11 +685,11 @@ chosen for its size.
 Two tools stamp it, and between them they cover every row —
 `check_every_row_has_someone_to_verify_it` fails if one falls through:
 
-- **`verify_phones.py`** asks each organisation's own site whether the number
+- **`verify_phones.py`** asks each organization's own site whether the number
   we print is its number. It owns every row with a ten-digit number in it.
 - **`check_links_live.py --stamp`** owns the rest: a row whose "phone" is 311,
   or `Text FOOD to 726879`, or nothing at all. For those, verifying can only
-  mean *the site is live and still on the organisation's own domain* — so that
+  mean *the site is live and still on the organization's own domain* — so that
   is what their date means, and this is the paragraph that says so.
 
 A row whose number the sweep could not confirm keeps its older date. It is
@@ -718,7 +821,7 @@ A date is the one thing on that line a reader actually checks.
 
 Right-to-left is nearly free because the whole stylesheet is written in logical
 properties. The four things that must **not** mirror — a phone number, an
-organisation's name, the wordmark, an email — carry `dir="ltr"` in the markup.
+organization's name, the wordmark, an email — carry `dir="ltr"` in the markup.
 
 Guarded by `check_directory_languages`, `check_language_header`,
 `check_language_round_trip`, `check_language_print`, `check_language_voice`
@@ -782,7 +885,7 @@ phone number. Now:
 - **Each category page is built to be skimmed**: a rail of what is on it with
   counts, resources in named buckets ("somewhere to sleep tonight" / "stop an
   eviction" / "money for the rent") rather than one run of forty, a Start here
-  block holding the best first call, and every neighbouring kind of help one
+  block holding the best first call, and every neighboring kind of help one
   tap away.
 - **Everything on a category page is bucketed by subject**, whether it got
   there through its own category or through a cross-reference keyword. These
@@ -798,7 +901,7 @@ Two rules that are not obvious and are load-bearing:
   a-ssi-stance, mi-ssi-on and a-ssi-stors.
 - **A row is filed by what it IS — its name and subcategory — never by its
   tags.** Tags are search vocabulary and are deliberately generous; a health
-  centre is tagged "dental" so a search for a dentist finds it. Letting that
+  center is tagged "dental" so a search for a dentist finds it. Letting that
   decide where rows file put sixteen general clinics under "Teeth".
 
 ### Why generated rather than fetched
@@ -822,8 +925,8 @@ and `help.js` may write markup in at most two places.
 
 The search box, the result count, the print button and the filters are **one
 card, three zones divided by hairlines**: what you type, what that got you, and
-how to narrow it further. They were four separate objects — a labelled box, an
-orphaned grey line under it, a bordered card of chips, and, below the lot and
+how to narrow it further. They were four separate objects — a labeled box, an
+orphaned gray line under it, a bordered card of chips, and, below the lot and
 outside everything, the count on the left with the print button on the right.
 All four did the same job and none looked related to any other.
 
@@ -838,12 +941,12 @@ answers from somewhere else, matched against what the row **is** — its name an
 subcategory — and never its description, because nearly every description
 mentions cost and immigration status.
 
-That rule has one hole: a multi-service organisation's subcategory is "One
+That rule has one hole: a multi-service organization's subcategory is "One
 place that does many things", true of all of them and so useless as a trigger.
 So a row can also name its other pages explicitly with an `also:<need>` tag.
 Per row, so it never fires by accident; `check_also_tags_are_real_needs` fails
 on a name that is not one of the seventeen. Eight rows use it — the Staten
-Island and Brooklyn multi-service organisations whose pantries are the biggest
+Island and Brooklyn multi-service organizations whose pantries are the biggest
 in their boroughs and which appeared only under "I'm not sure where to start".
 
 A cluster card shows `preview_line(description)`: the first sentence, cut at
@@ -858,7 +961,7 @@ Six fields, weighted, best match per word:
 
 | field | weight | what it is |
 |---|---|---|
-| name | 6 | the organisation's name |
+| name | 6 | the organization's name |
 | kind | 4 | the subcategory line under it |
 | tags | 3 | including whole sentences somebody would type |
 | alias | 2 | synonyms the row's own words fired, plus its needs' ten-language vocabulary |
@@ -931,7 +1034,7 @@ type "my husband hits me" and "heroin". So:
 
 `tokens.css` holds every brand hue, both typefaces, the easings and the radii,
 and both stylesheets map onto it. Neither may restate a brand hue; `check.py`
-fails if either does, because two copies of a colour are two colours as soon
+fails if either does, because two copies of a color are two colors as soon
 as one is edited.
 
 What each side chooses is only the key. The narrative site is a dark green
@@ -1020,7 +1123,7 @@ check. It covers dead links and anchors (including fragments into any local
 page, not just the homepage), missing assets, the honesty statement present
 verbatim on every surface that offers help, no surviving references to the
 removed Schools chapter or the unlaunched Companionship track, no numeric
-track-record claims, form completeness and labelling, the door's fallback
+track-record claims, form completeness and labeling, the door's fallback
 paths and transition invariants, the reel's roll geometry and released states,
 the line's paired sentences and its undrawn rule, the doors' disclosure wiring
 and equal-height contract, vendored dependency integrity, the asset-size

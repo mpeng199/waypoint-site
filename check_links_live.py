@@ -36,8 +36,8 @@ the CSV. Two known false alarms:
 
 With --stamp it also re-dates the rows the phone sweep can never confirm: the
 ones with no phone at all, and the ones whose "phone" is a short code like 311
-or 988 that no organisation prints on its own site. For those rows, verifying
-means confirming the site is live and still on the organisation's own domain,
+or 988 that no organization prints on its own site. For those rows, verifying
+means confirming the site is live and still on the organization's own domain,
 which is exactly what this does — so the date they carry means that, and
 DESIGN.md says so. Nothing with a real phone number is stamped here;
 verify_phones.py owns those.
@@ -61,7 +61,7 @@ CSV = Path(__file__).parent / "data" / "resources.csv"
 TIMEOUT = 20
 
 # Identify honestly by default: this is a link check run by the site that
-# lists these organisations, and saying so is the polite thing to do.
+# lists these organizations, and saying so is the polite thing to do.
 UA = ("Mozilla/5.0 (compatible; WaypointLinkCheck/1.0; "
       "+https://github.com/mpeng199/waypoint-site) link-verification")
 
@@ -195,7 +195,7 @@ def _base(url):
     return ".".join(parts[-2:])
 
 
-# Known and legitimate. Each one is a real organisation that publishes under a
+# Known and legitimate. Each one is a real organization that publishes under a
 # second name, checked by hand — not a pattern, a list, so a NEW off-domain
 # redirect is always reported.
 SAME_ORG = {
@@ -247,7 +247,7 @@ def unverifiable_by_phone(row):
     them, none of which is a phone number either tool could check.
 
     For these rows "we checked this" can only mean the site is live and is
-    still on the organisation's own domain, which is what this file does.
+    still on the organization's own domain, which is what this file does.
     """
     for m in TEN_DIGITS.findall(row.get("Phone") or ""):
         if len(re.sub(r"\D", "", m).lstrip("1")) == 10:
@@ -424,7 +424,7 @@ def main():
         print("\n" + "=" * 70)
         print("-- LEFT ITS OWN DOMAIN. TREAT AS UNSAFE UNTIL A HUMAN LOOKS. --")
         print("   A charity's site does not normally redirect to a different")
-        print("   organisation. The usual cause is that the domain lapsed and")
+        print("   organization. The usual cause is that the domain lapsed and")
         print("   somebody else bought it, which turns this directory into a")
         print("   list of somewhere else's traffic. Do not 'fix' these by")
         print("   following the redirect.")
