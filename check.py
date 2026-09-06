@@ -1662,65 +1662,6 @@ def check_vow():
         bad("vow: the verbatim statement is not inside the <details>")
 
 
-def check_lane():
-    """The line: a hold scene of beats, each stating its own boundary."""
-    src = read("index.html")
-    css = read("styles.css")
-    # Find the section by its unique heading phrase
-    if 'where the line is' not in src:
-        bad("lane: cannot find the line section by its heading")
-        return
-    section = strip_comments(src.split('where the line is', 1)[-1].split("</section>", 1)[0])
-
-    beats = re.findall(r'<p class="beat focus-in"><b>([^<]+)</b>\s*([^<]+)</p>', section)
-    if len(beats) == 5:
-        ok("lane: five beats")
-    else:
-        bad(f"lane: expected 5 beats, found {len(beats)}. This section has been a "
-            f"checklist, a ten-row register and a set of indented pairs; each "
-            f"failed by giving the reader a shape to decode instead of prose.")
-
-    for lead, body in beats:
-        if lead.endswith("."):
-            ok(f"lane: run-in lead {lead[:32]!r}")
-        else:
-            bad(f"lane: beat lead {lead!r} is not a sentence; .beat is a run-in "
-                f"lead and prose, never a heading over a list")
-        # the section's entire job: every beat has to carry its own boundary,
-        # because nothing is drawn to mark one any more
-        if re.search(r"\b(?:never|no|cannot|until)\b", body, re.I):
-            ok(f"lane: {lead[:26]!r} states its own boundary")
-        else:
-            bad(f"lane: the beat under {lead!r} states no boundary. With no rule "
-                f"and no columns, the prose is the only place the line exists.")
-
-    # every shape this section was cut down from, kept out
-    for pat, why in [(r"\u2713|\u2714", "a tick"), (r"\u2715|\u2717|\u2718", "a cross"),
-                     (r"counter-increment:\s*lane", "a numbered register"),
-                     (r"\.lane__", "bespoke lane styling")]:
-        if re.search(pat, css) or re.search(pat, section):
-            bad(f"lane: {why} is back. The section is .beat and nothing else — "
-                f"the same component the reach and partners scenes use.")
-            break
-    else:
-        ok("lane: no ticks, no numbering, no bespoke styling")
-
-    # organization: the phrase holds while the beats move past it. This is also
-    # what keeps the page's own thread out of the type, since spiralTarget puts
-    # a hold scene's thread down the gutter between its two columns.
-    head = src.split('where the line is', 1)[0][-300:]
-    if "scene--hold" in head and "scene--hold-r" in head:
-        ok("lane: organized as a hold scene, phrase right and beats left")
-    else:
-        bad("lane: the section is no longer a scene--hold; the phrase scrolls "
-            "away from the statements it introduces, and its thread falls back "
-            "to the pin rule that runs down the middle of the type")
-    if "data-pin" not in head:
-        ok("lane: no longer a pin, so nothing scrubs a heading off its own beats")
-    else:
-        bad("lane: data-pin is back on the line section")
-
-
 # ----------------------------------------------------------- the directory
 # help.html is generated, so the first and most important thing to know is
 # whether the file on disk is still what the generator produces. Everything
@@ -5709,7 +5650,7 @@ def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
                check_billing_boundaries, check_forms, check_labels, check_door,
-               check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
+               check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_doors,
                check_one_phase_at_a_time, check_phases_and_their_detail_pages,
                check_a_jump_lands_below_the_bar, check_the_page_reads_without_script,
                check_both_spellings_find_the_same_place,

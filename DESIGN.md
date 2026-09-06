@@ -4,7 +4,7 @@ A scroll-driven journey through a painterly landscape, with warm green + gold pa
 
 ## The shape of the page
 
-`index.html` is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between it cycles between four registers so the page never settles into one rhythm: the phrase-per-screen scenes, a denser **hold scene** (three times, where the phrase needs to keep its place while substance moves past it), a **pinned scene** (once) where the journey parks and hands the screen to something that is not prose, and one **section you operate** rather than scroll.
+`index.html` is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between it cycles between four registers so the page never settles into one rhythm: the phrase-per-screen scenes, a denser **hold scene** (twice, where the phrase needs to keep its place while substance moves past it), a **pinned scene** (once) where the journey parks and hands the screen to something that is not prose, and one **section you operate** rather than scroll.
 
 **The unit is a phase, not a block.** Twelve blocks make six phases. A phase is
 several blocks that belong together and are meant to be read together: they
@@ -205,56 +205,22 @@ Two rules this is built to, and `check.py` enforces both:
   This is the reason to prefer native markup over the fancier pattern that is
   already in the codebase.
 
-### The line — a hold scene of beats
+### The line — removed
 
-Four shapes, each failing differently, and the last change removed the section's
-CSS altogether.
+*Trained to know exactly where the line is* was a `scene--hold-r` of five
+`.beat` boundary statements, sitting directly under the honesty statement. It
+went through four shapes before that — a tick-and-cross checklist, a numbered
+register, four indented pairs, then plain beats — each earlier one failing by
+handing the reader a taxonomy to decode instead of prose. It was cut on request
+on 2026-09-06, along with `check_lane()`.
 
-A **tick-and-cross checklist** was the most generic possible form. A **numbered
-register** in two halves was handsomer but still a taxonomy — ten items the
-reader must sort into buckets before any of it means anything, in a section that
-follows a scene which has already stated the boundary in prose. **Four indented
-pairs** with a gold dash fixed the content but still handed the reader a shape
-to decode. What it is now is what the reach and partners scenes already were:
-`scene--hold-r` holding a stream of **`.beat`** — a bolded run-in lead and a
-short description, no marks of any kind.
-
-    Listens, in your language.  You describe what you are holding, in your own
-    words. A volunteer never reads it back to you or tells you what it means.
-
-    Names the office that handles it.  They can tell you who takes this kind of
-    problem. They can never tell you whether you qualify for it.
-
-    Dials the number and stays while it rings.  You do the talking. A volunteer
-    sits with you through the wait and never speaks in your place.
-
-    Leaves with nothing.  No photo of your paperwork, no copy of your bill, and
-    no name written down beside any of it.
-
-    And none of it starts until it is checked.  No volunteer speaks to anyone
-    about a bill until someone with real health-insurance-law knowledge has
-    been over our materials.
-
-**The boundary lives in the prose.** Nothing is drawn and nothing is indented:
-each beat states its own limit — *never reads it back to you*, *can never tell
-you whether you qualify* — so the line is made five times over rather than drawn
-once between two columns. `check.py` enforces that every beat carries one,
-because with no rule and no columns the prose is the only place the line exists.
-
-**Why it is a hold and not a pin.** It was a pinned scene scrubbing `--t`, which
-meant the phrase scrolled away from the very statements it was introducing.
-Measured against the partners ask it now behaves identically — phrase parks at
-477px and holds through a 609px window, versus that section's 566px. This is
-also what keeps the page's own thread out of the type: `spiralTarget()` matched
-`scene--pin` first and ran the thread down the center, whereas a hold scene's
-thread goes in the gutter between the two columns. The explicit `scene--lane`
-override this once needed is gone.
-
-**There is no lane CSS.** The indent, the gold dash, the staged crossing, the
-`--t` thresholds and their reduced-motion resets all went with this change. The
-section is `.beat` and nothing else, which is why it needs no responsive case,
-no released state and no guard against its own motion. `check.py` rejects any
-`.lane__` selector reappearing.
+Where its content still lives, if it is ever wanted back: the honesty statement
+above it carries the core promise (*not doctors, not lawyers, we never charge*);
+`privacy.html` carries the data one (*we never take custody of your bills or
+paperwork*); and the student chapter and `students.html` carry the volunteer's
+own limits (*you never read their paperwork and never say who qualifies*). What
+no longer appears anywhere on the front page is the visitor-facing version of
+the data promise — *no photo of your paperwork, no copy of your bill*.
 
 ### The doors (`#work`) — the one section you operate
 
