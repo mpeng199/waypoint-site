@@ -27,6 +27,11 @@
    that cannot work. check.py enforces both halves. */
 (function () {
   "use strict";
+  /* The header is opaque in the stylesheet and this class is what lets it
+     be transparent at the top of the page — because `.stuck`, the other
+     half of that, can only ever be added from here. A page without this
+     script keeps a solid bar. */
+  document.documentElement.classList.add("hasjs");
 
   /* The header is the same object as the narrative side's, and it follows the
      same rule: transparent at the top of the page, the page's own ground once

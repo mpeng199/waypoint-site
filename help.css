@@ -136,10 +136,24 @@ b,strong{ font-weight:600; }
   body[data-lang] :is(.clusters,.cl,.grp,.results){ scroll-margin-top:14px; }
 }
 
-/* transparent until you have scrolled: over cream, indistinguishable from the
+/* Transparent until you have scrolled: over cream, indistinguishable from the
    page, which is the point — the bar appears when there is something behind
-   it to separate from. */
-.sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent; }
+   it to separate from.
+
+   Gated on `html.hasjs`, which help.js sets, because `.stuck` is the other
+   half of the same mechanism and only a script can add it. The ten language
+   pages ship no JavaScript on purpose, so on those the class never arrived,
+   the bar was transparent for the whole scroll, and the tabs floated over the
+   directory with the page running underneath them. Any future page that
+   forgets the script now gets a solid bar instead of a broken one. */
+html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent; }
+/* Except where the bar cannot cover anything. Below 1080px the ten language
+   pages set it `position:static` — it scrolls away with the rest of the page —
+   so there the at-rest ground is safe without a script to take it away again,
+   and a phone gets the same header on all eleven front pages. */
+@media (max-width:1080px){
+  body[data-lang] .sitehead{ --head-bg:transparent; --head-line:transparent; }
+}
 
 /* ------------------------------------------------------------- language */
 /* First thing under the header, because somebody who cannot read the page
@@ -224,10 +238,10 @@ b,strong{ font-weight:600; }
   border-bottom:1px solid rgba(231,197,126,.42); padding-bottom:2px; }
 .mast__to::after{ content:""; position:absolute; inset:0; z-index:1; }
 .mast:has(.mast__to){ cursor:pointer; }
-.mast__to .arr{ transition:transform .16s var(--ease); }
 .mast:hover .mast__to{ color:var(--gold-lit,#F2D9A0); border-bottom-color:currentColor; }
-.mast:hover .mast__to .arr{ transform:translateX(3px); }
-@media (prefers-reduced-motion:reduce){ .mast__to .arr{ transition:none; } }
+/* The arrow's nudge and its RTL flip are the shared rules in tokens.css and
+   further down this file. A .mast-scoped copy of them outranked the flip and
+   sent the Arabic and Urdu arrows the wrong way on hover. */
 /* A device the narrative site uses at every chapter edge. Here it separates
    the masthead from the emergency numbers without drawing a hard line. */
 .rule{ height:1px; border:0; margin:clamp(26px,4vw,44px) 0;

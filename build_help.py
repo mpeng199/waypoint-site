@@ -2112,6 +2112,9 @@ def header_frag():
     it anyway is what lets the two headers be one string of markup.
     """
     return [
+        # No .nav-lamp here: only script.js moves that, and script.js is the
+        # narrative page's. On the directory it was an empty span whose blurred
+        # ::before hung 23px outside the nav — in RTL, outside the page.
         '<header class="sitehead">',
         '  <div class="sitehead__in">',
         '    <a class="brand" href="about.html" aria-label="Waypoint home">',
@@ -2119,8 +2122,6 @@ def header_frag():
         '      <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>',
         '    </a>',
         '    <nav class="sitehead__links" aria-label="Primary">',
-        '      <span class="nav-lamp" id="navLamp" aria-hidden="true">'
-        '<i class="nav-lamp__bar"></i></span>',
         '      <a href="index.html" class="is-find" aria-current="page">Find help</a>',
         '      <a href="about.html#bills">Bills &amp; denials</a>',
         '      <a href="about.html#work">How it works</a>',
@@ -2637,9 +2638,7 @@ def lang_header_frag(L, U):
            '      <span class="brand__txt" dir="ltr">Waypoint'
            '<small>Student Health Corps</small></span>',
            '    </a>',
-           f'    <nav class="sitehead__links" aria-label="{esc(U["nav_label"])}">',
-           '      <span class="nav-lamp" id="navLamp" aria-hidden="true">'
-           '<i class="nav-lamp__bar"></i></span>']
+           f'    <nav class="sitehead__links" aria-label="{esc(U["nav_label"])}">']
     for href, label, extra in tabs:
         out.append(f'      <a href="{href}"{extra}>{esc(label)}</a>')
     out += ['    </nav>', '  </div>', '</header>']
@@ -2740,16 +2739,27 @@ def render_language(L, rows, by_need):
     p += lang_switch_frag(L, U)
 
     # ---- masthead: the same painted valley, the same two paragraphs ----
-    A('<div class="mast">')
+    A('<section class="mast">')
     A('  <div class="mast__bg" aria-hidden="true"></div>')
     A(f'  <p class="eyebrow mast__eye">{esc(U["eyebrow"])}</p>')
     em = "b" if L["key"] in NO_ITALIC else "em"
     join = i18n.TITLE_JOIN.get(L["key"], " ")
     A(f'  <h1 class="mast__title">{esc(U["title_a"])}{join}'
       f'<{em}>{esc(U["title_b"])}</{em}></h1>')
-    A(f'  <p class="mast__say"><b>{esc(U["lede1"].format(n=n))}</b></p>')
-    A(f'  <p class="mast__say">{esc(U["lede2"])}</p>')
-    A('</div>')
+    # The same two paragraphs the English masthead sets, set the same way:
+    # the count in bold inside an otherwise ordinary sentence, and the second
+    # paragraph tucked under the first. These used to be a wholly bold
+    # paragraph followed by a full-size gap — one language's masthead reading
+    # louder than another's is the page having two designs.
+    A('  <p class="mast__say">'
+      + esc(U["lede1"]).replace("{n}", f"<b>{n}</b>") + '</p>')
+    A(f'  <p class="mast__say mast__say--2">{esc(U["lede2"])}</p>')
+    # The English masthead is a link to the narrative page and so is this one,
+    # in this language's own words — the label the footer already uses for it,
+    # so nothing here is a string that was never translated.
+    A(f'  <a class="mast__to" href="about.html">{esc(U["foot_links"][1])} '
+      '<span class="arr">&rarr;</span></a>')
+    A('</section>')
 
     # Paper only. A printed sheet with no source on it is a photocopy of
     # nothing, and this one gets handed across a table in ten languages.
@@ -2767,6 +2777,10 @@ def render_language(L, rows, by_need):
     A(f'  <h2 id="enote-h" class="enote__h">{esc(U["english_h"])}</h2>')
     A(f'  <p class="enote__p">{dial(esc(U["english"]))}</p>')
     A('</aside>')
+
+    # The same rule the English page draws between the urgent block and the
+    # directory. It was the one chapter edge the ten pages did not have.
+    A('<hr class="rule" />')
 
     # ---- the seventeen, each naming places you can dial from here ----
     A('<div class="clusters" id="needs" aria-labelledby="needs-h">')

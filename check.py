@@ -2613,10 +2613,14 @@ def check_language_header():
                     f"{want_label[i]!r}")
         if 'class="is-find"' not in got[0][1]:
             bad(f"{page}: the first tab is not the gold pill")
+        # The lamp used to be on this list. It is gone from the directory
+        # entirely now — only script.js ever lit it, and script.js belongs to
+        # the narrative half, so on these pages it was an empty span whose
+        # blurred ::before hung 23px past the end of the nav. What the parity
+        # check is for is that the two bars carry the same *visible* things.
         for want, what in [('class="pin"', "the pin"),
                            ('<span class="brand__txt"', "the wordmark"),
-                           ("Student Health Corps", "the strapline"),
-                           ('class="nav-lamp"', "the lamp")]:
+                           ("Student Health Corps", "the strapline")]:
             if want not in block:
                 bad(f"{page}: the header is missing {what}")
     ok("all ten language pages: the same bar, the same five tabs, in their "
