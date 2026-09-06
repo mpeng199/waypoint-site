@@ -304,15 +304,10 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .panel h3{ font-family:var(--display); font-weight:400; font-size:clamp(1.7rem,3.4vw,2.5rem); letter-spacing:-.02em; margin-top:10px; }
 .panel h3 em{ font-style:italic; color:var(--gold); }
 .panel > p{ color:var(--ink-soft); margin-top:12px; max-width:52ch; }
-.chapter-lede{ margin-top:22px; font-size:clamp(1.05rem,1.5vw,1.3rem); color:var(--cream); max-width:50ch; line-height:1.6; text-shadow:0 1px 22px rgba(12,22,16,.7); }
-.chapter-lede b{ font-weight:600; }
 
-/* A chapter's summary: the two or three things its reader needs before
-   deciding whether to read the rest. Same .beat as the hold streams, so this
-   is spacing and nothing else — no card, no rule, no bullet. The detail these
-   compress lives on students.html and partners.html. */
-.sum{ display:grid; gap:clamp(16px,2.2vh,26px); margin-top:clamp(24px,3.4vh,38px); }
-.sum .beat{ max-width:60ch; }
+/* (.chapter-lede and .sum removed — the student chapter is a hold scene now,
+   the same as the partner one, so its lede and summary are .beat like every
+   other stream on the page.) */
 /* the same door at the foot of a hold stream, which is a grid and spaces it */
 .hold__cta{ margin-top:4px; }
 
@@ -1082,7 +1077,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
    Local Law 30 names. Somebody who cannot read the
    English headline above this should not have to scroll past the rest of the
    page, or reach the directory first, to find a way in. Each one lands on the
-   matching in-language panel of index.html, which opens on :target and needs
+   matching in-language panel of help.html, which opens on :target and needs
    no JavaScript to do it. */
 .langcue-h{ margin-top:30px; font-size:12.5px; letter-spacing:.2em;
   text-transform:uppercase; color:var(--ink-faint); }

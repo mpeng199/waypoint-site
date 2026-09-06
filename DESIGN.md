@@ -4,7 +4,7 @@ A scroll-driven journey through a painterly landscape, with warm green + gold pa
 
 ## The shape of the page
 
-`about.html` is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between it cycles between four registers so the page never settles into one rhythm: the phrase-per-screen scenes, a denser **hold scene** (twice, where the phrase needs to keep its place while substance moves past it), a **pinned scene** (once) where the journey parks and hands the screen to something that is not prose, and one **section you operate** rather than scroll.
+`index.html` is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between it cycles between four registers so the page never settles into one rhythm: the phrase-per-screen scenes, a denser **hold scene** (three times, where the phrase needs to keep its place while substance moves past it), a **pinned scene** (once) where the journey parks and hands the screen to something that is not prose, and one **section you operate** rather than scroll.
 
 **The unit is a phase, not a block.** Twelve blocks make six phases. A phase is
 several blocks that belong together and are meant to be read together: they
@@ -190,7 +190,7 @@ that a vulnerable reader take the statement in under ten seconds.
 
 **The full wording sits behind a disclosure**, verbatim and never reworded, with
 the "printed on everything we hand out" attribution under it. `check.py` still
-counts the verbatim fragments twice across `about.html` — the disclosure and the
+counts the verbatim fragments twice across `index.html` — the disclosure and the
 page footer — so nothing about that contract changed.
 
 Two rules this is built to, and `check.py` enforces both:
@@ -750,7 +750,7 @@ computes the bar from the assumption that the tab row wraps to two rows. How
 many rows it takes depends on how long the tab labels are, which is a different
 answer in every language. Measured at 320px, the bar is 251px in Spanish and
 French, 203 in English and Russian, 155 in Arabic and Chinese — against a
-declared 116 in all six. On `index.html` and `about.html` a `ResizeObserver`
+declared 116 in all six. On `help.html` and `index.html` a `ResizeObserver`
 publishes the measured height and the guess never survives first paint. The ten
 language pages ship no script on purpose, so there it stood: a tap on any
 section link put the heading up to 121px under a bar that was still covering
@@ -846,7 +846,7 @@ part of the site that is generated, and `python3 build_help.py` writes all of
 it in one go.
 
 ```
-index.html            the way in: one cluster per kind of help, three examples each
+help.html            the way in: one cluster per kind of help, three examples each
 help-<need>.html     one page per kind of help, with everything in it
 ```
 
@@ -867,7 +867,7 @@ python3 build_help.py
 - **Never hand-edit a generated page.** A fix typed into one survives until
   the next build and then disappears. `check.py` compares every one of them
   against the generator's output and fails if any differs.
-- The build also rewrites one block of `about.html`: the list of what the
+- The build also rewrites one block of `index.html`: the list of what the
   directory holds. That list is the directory's table of contents rendered on
   the other side of the site, and hand-maintaining it is how it came to offer
   eight of sixteen kinds of help.
