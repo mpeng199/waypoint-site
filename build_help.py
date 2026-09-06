@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render help.html from data/resources.csv.
+"""Render index.html from data/resources.csv.
 
 Why a build step on a site with no build step: the audience for this page is
 somebody on an old phone, on transit data, possibly with a screen reader, and
@@ -21,7 +21,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 CSV = ROOT / "data" / "resources.csv"
-OUT = ROOT / "help.html"
+OUT = ROOT / "index.html"
 
 
 # --------------------------------------------------------------- the needs
@@ -2066,8 +2066,8 @@ def alternates(self_href):
     which for this site means the English one. x-default names where somebody
     lands when none of the eleven matches their browser.
     """
-    out = [f'<link rel="alternate" hreflang="x-default" href="help.html" />',
-           f'<link rel="alternate" hreflang="en" href="help.html" />']
+    out = [f'<link rel="alternate" hreflang="x-default" href="index.html" />',
+           f'<link rel="alternate" hreflang="en" href="index.html" />']
     for L in LANGUAGES:
         out.append(f'<link rel="alternate" hreflang="{L["tag"]}" '
                    f'href="{lang_page(L["key"])}" />')
@@ -2112,20 +2112,21 @@ def header_frag():
     it anyway is what lets the two headers be one string of markup.
     """
     return [
+        # No .nav-lamp here: only script.js moves that, and script.js is the
+        # narrative page's. On the directory it was an empty span whose blurred
+        # ::before hung 23px outside the nav — in RTL, outside the page.
         '<header class="sitehead">',
         '  <div class="sitehead__in">',
-        '    <a class="brand" href="index.html" aria-label="Waypoint home">',
+        '    <a class="brand" href="about.html" aria-label="Waypoint home">',
         f'      {PIN}',
         '      <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>',
         '    </a>',
         '    <nav class="sitehead__links" aria-label="Primary">',
-        '      <span class="nav-lamp" id="navLamp" aria-hidden="true">'
-        '<i class="nav-lamp__bar"></i></span>',
-        '      <a href="help.html" class="is-find" aria-current="page">Find help</a>',
-        '      <a href="index.html#bills">Bills &amp; denials</a>',
-        '      <a href="index.html#work">How it works</a>',
-        '      <a href="index.html#students">Students</a>',
-        '      <a href="index.html#partners">Partners</a>',
+        '      <a href="index.html" class="is-find" aria-current="page">Find help</a>',
+        '      <a href="about.html#bills">Bills &amp; denials</a>',
+        '      <a href="about.html#work">How it works</a>',
+        '      <a href="about.html#students">Students</a>',
+        '      <a href="about.html#partners">Partners</a>',
         '    </nav>',
         '  </div>',
         '</header>',
@@ -2210,16 +2211,16 @@ def footer_frag(n, when="recently"):
     return [
         '<footer class="hfoot">',
         '  <div class="hfoot__in">',
-        f'    <a class="brand" href="index.html">{PIN}'
+        f'    <a class="brand" href="about.html">{PIN}'
         '<span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>',
         '    <p class="hfoot__say">Waypoint is a student volunteer corps in New York '
         'City. We do not run any of the programs on this page. We help people find '
         'them.</p>',
         '    <ul class="hfoot__links">',
-        '      <li><a href="help.html">Find help</a></li>',
-        '      <li><a href="index.html">About Waypoint</a></li>',
-        '      <li><a href="index.html#students">Volunteer with us</a></li>',
-        '      <li><a href="index.html#partners">For organizations</a></li>',
+        '      <li><a href="index.html">Find help</a></li>',
+        '      <li><a href="about.html">About Waypoint</a></li>',
+        '      <li><a href="about.html#students">Volunteer with us</a></li>',
+        '      <li><a href="about.html#partners">For organizations</a></li>',
         '      <li><a href="privacy.html">Privacy &amp; legal</a></li>',
         '      <li><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@<wbr />gmail.com</a></li>',
         '    </ul>',
@@ -2281,8 +2282,7 @@ def filters_frag(compact=False):
                                ("no-status", "Does not ask immigration status"),
                                ("phone", "You can call")]]
 
-    return (['  <div class="find__filters">',
-             '    <span class="find__filters-h">Narrow this list</span>']
+    return (['  <div class="find__filters">']
             + facet("boro", "Where you are", boro)
             + facet("lang", "Language you speak", lang,
                     hint="Shows places that name your language, and places that "
@@ -2301,16 +2301,24 @@ def search_frag(placeholder, scope_note):
     that all did the same job, narrowing a list, arranged so that none of them
     looked related to any other.
 
-    One card now, three zones divided by hairlines: what you type, what that
-    got you, and how to narrow it further. The count sits directly under the
-    box that changes it, and the scope note no longer repeats the number
-    standing next to it.
+    One card now, two rows: how you narrow the list, and what that got you.
+
+    It was three stacked zones, each with its own padding — a headed search
+    box on one line, a count and a print button on the next, a labelled row of
+    dropdowns on a third — 284px of chrome standing between the reader and the
+    first phone number. The box is one control in a row with the three
+    dropdowns, sized to its own placeholder instead of the width of the page,
+    and the count sits under them with the button that prints what it counts.
+
+    The visible "Search for what you need" is gone and the label is still
+    there: a magnifier and "Try: shelter, hotline, lawyer" say what the box is
+    for, and the <label> keeps saying it to a screen reader.
     """
     return [
         '<section class="find" aria-labelledby="find-h" hidden>',
         '  <h2 id="find-h" class="sr-only">Search and narrow the list</h2>',
         '  <div class="find__top">',
-        '    <label for="q">Search for what you need</label>',
+        '    <label for="q" class="sr-only">Search for what you need</label>',
         '    <div class="find__box">',
         '      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
         'stroke="currentColor" stroke-width="1.8" stroke-linecap="round">'
@@ -2318,12 +2326,11 @@ def search_frag(placeholder, scope_note):
         f'      <input id="q" type="search" autocomplete="off" placeholder="{esc(placeholder)}" />',
         '      <button type="button" class="find__clear" hidden>Clear</button>',
         '    </div>',
+    ] + filters_frag() + [
         '  </div>',
         '  <div class="find__bar">',
-        '    <div class="find__said">',
-        '      <p class="find__count" role="status" aria-live="polite"></p>',
-        f'      <p class="find__scope">{scope_note}</p>',
-        '    </div>',
+        '    <p class="find__count" role="status" aria-live="polite"></p>',
+        f'    <p class="find__scope">{scope_note}</p>',
         '    <button type="button" class="printbtn" hidden>'
         '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
         'stroke="currentColor" stroke-width="1.7" stroke-linecap="round" '
@@ -2331,7 +2338,6 @@ def search_frag(placeholder, scope_note):
         '0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>'
         'Print this list</button>',
         '  </div>',
-    ] + filters_frag() + [
         '</section>',
     ]
 
@@ -2459,7 +2465,7 @@ def render_overview(rows):
               "A plain-language directory of free and low-cost help in New York City: "
               "food, medical bills, housing, health care, legal help, and more. Most of "
               "these do not ask about immigration status.",
-              "#needs", "Skip to what you need help with", alternates("help.html"))
+              "#needs", "Skip to what you need help with", alternates("index.html"))
     p += header_frag()
     A('<main class="wrap">')
     p += langbar_frag()
@@ -2474,6 +2480,13 @@ def render_overview(rows):
       'more. Nearly all of them are free. Most do not ask about immigration status.</p>')
     A('  <p class="mast__say mast__say--2">You do not need an account. You do not '
       'need to tell us anything. Pick what you need below, and call them yourself.</p>')
+    # The whole masthead is one link to the narrative page. The anchor is a real
+    # visible line rather than a bare overlay, so it has an accessible name, a
+    # tab stop and something to read; ::after in help.css stretches its hit area
+    # over the panel. English only — the language pages reach the same page
+    # through their translated footer.
+    A('  <a class="mast__to" href="about.html">Who made this list, and who we are '
+      '<span class="arr">&rarr;</span></a>')
     A('</section>')
 
     # Attribution, for paper only. A printed sheet with no source on it is a
@@ -2618,10 +2631,10 @@ def lang_header_frag(L, U):
     """
     rtl = L["dir"] == "rtl"
     tabs = [(lang_page(L["key"]), U["nav"][0], ' class="is-find" aria-current="page"'),
-            ("index.html#bills", U["nav"][1], ""),
-            ("index.html#work", U["nav"][2], ""),
-            ("index.html#students", U["nav"][3], ""),
-            ("index.html#partners", U["nav"][4], "")]
+            ("about.html#bills", U["nav"][1], ""),
+            ("about.html#work", U["nav"][2], ""),
+            ("about.html#students", U["nav"][3], ""),
+            ("about.html#partners", U["nav"][4], "")]
     out = ['<header class="sitehead">',
            '  <div class="sitehead__in">',
            f'    <a class="brand" href="{lang_page(L["key"])}" '
@@ -2630,9 +2643,7 @@ def lang_header_frag(L, U):
            '      <span class="brand__txt" dir="ltr">Waypoint'
            '<small>Student Health Corps</small></span>',
            '    </a>',
-           f'    <nav class="sitehead__links" aria-label="{esc(U["nav_label"])}">',
-           '      <span class="nav-lamp" id="navLamp" aria-hidden="true">'
-           '<i class="nav-lamp__bar"></i></span>']
+           f'    <nav class="sitehead__links" aria-label="{esc(U["nav_label"])}">']
     for href, label, extra in tabs:
         out.append(f'      <a href="{href}"{extra}>{esc(label)}</a>')
     out += ['    </nav>', '  </div>', '</header>']
@@ -2647,7 +2658,7 @@ def lang_switch_frag(L, U):
     out = [f'<nav class="langbar" aria-label="{esc(U["langbar_h"])}">',
            f'  <span class="langbar__h">{esc(U["langbar_h"])}</span>',
            '  <ul class="langbar__list">',
-           '    <li><a href="help.html" lang="en">English</a></li>']
+           '    <li><a href="index.html" lang="en">English</a></li>']
     for O in LANGUAGES:
         d = ' dir="rtl"' if O["dir"] == "rtl" else ''
         if O["key"] == L["key"]:
@@ -2733,16 +2744,27 @@ def render_language(L, rows, by_need):
     p += lang_switch_frag(L, U)
 
     # ---- masthead: the same painted valley, the same two paragraphs ----
-    A('<div class="mast">')
+    A('<section class="mast">')
     A('  <div class="mast__bg" aria-hidden="true"></div>')
     A(f'  <p class="eyebrow mast__eye">{esc(U["eyebrow"])}</p>')
     em = "b" if L["key"] in NO_ITALIC else "em"
     join = i18n.TITLE_JOIN.get(L["key"], " ")
     A(f'  <h1 class="mast__title">{esc(U["title_a"])}{join}'
       f'<{em}>{esc(U["title_b"])}</{em}></h1>')
-    A(f'  <p class="mast__say"><b>{esc(U["lede1"].format(n=n))}</b></p>')
-    A(f'  <p class="mast__say">{esc(U["lede2"])}</p>')
-    A('</div>')
+    # The same two paragraphs the English masthead sets, set the same way:
+    # the count in bold inside an otherwise ordinary sentence, and the second
+    # paragraph tucked under the first. These used to be a wholly bold
+    # paragraph followed by a full-size gap — one language's masthead reading
+    # louder than another's is the page having two designs.
+    A('  <p class="mast__say">'
+      + esc(U["lede1"]).replace("{n}", f"<b>{n}</b>") + '</p>')
+    A(f'  <p class="mast__say mast__say--2">{esc(U["lede2"])}</p>')
+    # The English masthead is a link to the narrative page and so is this one,
+    # in this language's own words — the label the footer already uses for it,
+    # so nothing here is a string that was never translated.
+    A(f'  <a class="mast__to" href="about.html">{esc(U["foot_links"][1])} '
+      '<span class="arr">&rarr;</span></a>')
+    A('</section>')
 
     # Paper only. A printed sheet with no source on it is a photocopy of
     # nothing, and this one gets handed across a table in ten languages.
@@ -2760,6 +2782,10 @@ def render_language(L, rows, by_need):
     A(f'  <h2 id="enote-h" class="enote__h">{esc(U["english_h"])}</h2>')
     A(f'  <p class="enote__p">{dial(esc(U["english"]))}</p>')
     A('</aside>')
+
+    # The same rule the English page draws between the urgent block and the
+    # directory. It was the one chapter edge the ten pages did not have.
+    A('<hr class="rule" />')
 
     # ---- the seventeen, each naming places you can dial from here ----
     A('<div class="clusters" id="needs" aria-labelledby="needs-h">')
@@ -2829,8 +2855,8 @@ def render_language(L, rows, by_need):
       '<small>Student Health Corps</small></span></a>')
     A(f'    <p class="hfoot__say">{esc(U["foot_say"])}</p>')
     A('    <ul class="hfoot__links">')
-    for href, label in zip([lang_page(L["key"]), "index.html",
-                            "index.html#students", "index.html#partners",
+    for href, label in zip([lang_page(L["key"]), "about.html",
+                            "about.html#students", "about.html#partners",
                             "privacy.html"], U["foot_links"]):
         A(f'      <li><a href="{href}">{esc(label)}</a></li>')
     A('      <li><a href="mailto:waypointoutreach@gmail.com" dir="ltr">'
@@ -2930,7 +2956,7 @@ def render_category(need, rows):
               "#dir", "Skip to the list")
     p += header_frag()
     A('<main class="wrap">')
-    A('<nav class="crumb" aria-label="Breadcrumb"><a href="help.html">'
+    A('<nav class="crumb" aria-label="Breadcrumb"><a href="index.html">'
       '<span class="arr crumb__back" aria-hidden="true">&larr;</span> All free help</a>'
       f'<span class="crumb__sep" aria-hidden="true">/</span><span aria-current="page">'
       f'{esc(need["short"])}</span></nav>')
@@ -2954,7 +2980,17 @@ def render_category(need, rows):
       'below, in labelled groups, and every phone number dials.</p></noscript>')
 
     A('<div class="cat">')
-    # ---- the rail
+    A('<div class="cat__main">')
+    p += carryover_frag()
+    p += search_frag(esc(need["ph"]),
+                     "Searches every place on this page.")
+
+    # ---- what is on the page, in the same place the front page puts it:
+    # under the search panel, above the list, as a row of chips. It used to be
+    # a 236px column down the left, which took a quarter of the page off the
+    # search box and every card for a table of contents six lines long, and
+    # left the groups with one place in them sitting alone in a two-column
+    # grid with a hole beside them.
     A('<aside class="cat__rail" aria-labelledby="rail-h">')
     A('  <h2 id="rail-h" class="rail__h">On this page</h2>')
     A('  <nav class="rail__nav" aria-label="Sections of this page"><ul>')
@@ -2963,11 +2999,6 @@ def render_category(need, rows):
           f'</span><span class="rail__n">{len(filed[bk])}</span></a></li>')
     A('  </ul></nav>')
     A('</aside>')
-
-    A('<div class="cat__main">')
-    p += carryover_frag()
-    p += search_frag(esc(need["ph"]),
-                     "Searches every place on this page.")
     A('<div class="printhead" aria-hidden="true">')
     A(f'  <p class="printhead__t">{esc(need["label"])}</p>')
     A('  <p class="printhead__s">Collected by Waypoint, a student volunteer '
@@ -3006,7 +3037,7 @@ def render_category(need, rows):
           f'<span class="sibs__t">{esc(other["label"])}</span>'
           f'<span class="sibs__n">{c}</span></a></li>')
     A('  </ul>')
-    A(f'  <p class="sibs__all"><a href="help.html">Back to all {n_all} places '
+    A(f'  <p class="sibs__all"><a href="index.html">Back to all {n_all} places '
       '<span class="arr">&rarr;</span></a></p>')
     A('</nav>')
     A('</div>')   # cat__main
@@ -3069,7 +3100,7 @@ def build():
     rows = load()
     written = []
 
-    overview = ROOT / "help.html"
+    overview = ROOT / "index.html"
     overview.write_text(render_overview(rows), encoding="utf-8")
     written.append(overview)
 

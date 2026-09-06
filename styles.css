@@ -171,8 +171,10 @@ img,svg{ display:block; max-width:100%; }
   --head-dot:transparent;      /* a filled pin reads on its own here */
   --head-shadow:0 1px 12px rgba(12,22,16,.6);
 }
-/* transparent until you have scrolled, so the door runs edge to edge */
-.sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent; }
+/* Transparent until you have scrolled, so the door runs edge to edge. Gated
+   on `html.hasjs` for the same reason as the directory half: only script.js
+   can add `.stuck`, so without it the bar would stay transparent forever. */
+html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent; }
 
 
 /* ---------- buttons (slim, not pills) ---------- */
@@ -1005,7 +1007,7 @@ img,svg{ display:block; max-width:100%; }
    Local Law 30 names. Somebody who cannot read the
    English headline above this should not have to scroll past the rest of the
    page, or reach the directory first, to find a way in. Each one lands on the
-   matching in-language panel of help.html, which opens on :target and needs
+   matching in-language panel of index.html, which opens on :target and needs
    no JavaScript to do it. */
 .langcue-h{ margin-top:30px; font-size:12.5px; letter-spacing:.2em;
   text-transform:uppercase; color:var(--ink-faint); }

@@ -19,7 +19,7 @@
    It reports; it does not fix. Everything it has found so far is in the git
    log with the measurement that found it. */
 window.waypointAudit = async function (pages, width) {
-  pages = pages || ['index.html', 'help.html', 'help-food.html', 'help-crisis.html',
+  pages = pages || ['about.html', 'index.html', 'help-food.html', 'help-crisis.html',
     'help-legal.html', 'help-money.html', 'help-senior.html', 'help-es.html',
     'help-ar.html', 'help-ru.html', 'help-zh.html', 'help-bn.html', 'help-ko.html',
     'help-ht.html', 'help-fr.html', 'help-pl.html', 'help-ur.html', 'privacy.html',

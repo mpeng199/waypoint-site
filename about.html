@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Waypoint — Medical bills and coverage denials, NYC</title>
+<meta name="description" content="Waypoint is a trained student volunteer corps in New York City. We help people buried in medical bills or fighting a denied insurance claim reach the free experts who can actually help. We have not held our first event yet." />
+<meta name="theme-color" content="#13231A" />
+<meta property="og:title" content="Waypoint — Medical bills and coverage denials, NYC" />
+<meta property="og:description" content="A bill you cannot pay. A claim they denied. The help is free, and almost nobody knows it exists. A trained student volunteer corps that carries it to people and walks them to the professionals who handle it." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="preload" as="image" href="assets/land1.webp" />
+<link rel="modulepreload" href="assets/door.js" />
+<link rel="modulepreload" href="assets/vendor/three.module.min.js" />
+</head>
+<body>
+
+<a class="skip" href="#start">Skip to the page</a>
+
+<!-- the door: CSS poster underneath, WebGL over it once it is ready -->
+<div class="doorstage" aria-hidden="true">
+  <div class="doorstage__poster">
+    <div class="poster__wall"></div>
+    <div class="poster__case"></div>
+    <div class="poster__panel"></div>
+    <div class="poster__beam"></div>
+    <div class="poster__glow"></div>
+    <div class="poster__pool"></div>
+  </div>
+  <canvas id="doorCanvas"></canvas>
+</div>
+
+<!-- journey backdrop -->
+<div class="stage" aria-hidden="true">
+  <div class="stage__layer" id="layA" style="background-image:url('assets/land1.webp')"></div>
+  <div class="stage__layer" id="layB" data-src="assets/land2.webp"></div>
+  <div class="stage__layer" id="layC" data-src="assets/land3.webp"></div>
+  <div class="stage__layer" id="layD" data-src="assets/land4.webp"></div>
+</div>
+<div class="stage__veil" aria-hidden="true"></div>
+<div class="stage__grain" aria-hidden="true"></div>
+<div class="readveil" aria-hidden="true"></div>
+<div class="threshold" aria-hidden="true"></div>
+
+<!-- spiral you wind down through the scenery -->
+<canvas class="spiral" id="spiral" aria-hidden="true"></canvas>
+
+<!-- NAV -->
+<header class="sitehead">
+  <div class="sitehead__in">
+    <a class="brand" href="about.html" aria-label="Waypoint home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>
+      <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>
+    </a>
+    <nav class="sitehead__links" aria-label="Primary">
+      <span class="nav-lamp" id="navLamp" aria-hidden="true"><i class="nav-lamp__bar"></i></span>
+      <a href="index.html" class="is-find">Find help</a>
+      <a href="#bills">Bills &amp; denials</a>
+      <a href="#work">How it works</a>
+      <a href="#students">Students</a>
+      <a href="#partners">Partners</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Fixed decoration, so the DOM only decides its place in the tab
+     order — and it was before the header, which put eleven scroll-position
+     dots between the skip link and the site's primary navigation. -->
+<nav class="rail" aria-label="Journey progress"></nav>
+
+<main>
+  <!-- ===== the door ===== -->
+  <section class="hero" id="top">
+    <div class="hero__sticky">
+      <div class="hero__ui">
+        <span class="eyebrow hero__eye">Waypoint · Medical bills and coverage denials, New York City</span>
+        <h1 class="hero__head">
+          <span class="hero__l">A bill you can't pay. <em>A claim they denied.</em></span>
+          <span class="hero__r">The help is free. <em>No one told you it's there.</em></span>
+        </h1>
+        <div class="hero__foot">
+          <p class="hero__lede">New York already built the help. Almost nobody who qualifies ever finds out it exists.</p>
+          <div class="hero__cta">
+            <a href="index.html" class="btn btn--solid">Find free help <span class="arr">→</span></a>
+            <a href="#partners" class="tlink">I work at an organization <span class="arr">→</span></a>
+          </div>
+        </div>
+        <div class="hero__cue"><span>Scroll to step through</span><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- the gap -->
+  <section class="scene scene--right" id="start">
+    <div class="scene__inner focus-in">
+      <h2 class="phrase">Real. Free. <em>And invisible.</em></h2>
+      <p class="say">Hospitals here must offer financial assistance. The state hears appeals when an insurer says no. Counselors take coverage disputes in dozens of languages, for free.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOR ANYONE WHO NEEDS HELP — the directory, three screens in.
+       The scene before this one says the help is real, free and invisible.
+       Leaving that unanswered for another eight scenes, while we explain
+       ourselves to partners and students, is the whole problem this page had:
+       everything after here is addressed to somebody who is not in trouble.
+       The list itself is a separate page on purpose — no door, no pinned
+       scenes, no inertial scroll, nothing that costs a slow phone anything.
+       ============================================================ -->
+
+  <!-- ===== PIN 1: the letter translates itself as you scroll =====
+       Four lines off a real denial notice, each on a reel that rolls through
+       the officialese and lands on what it actually means. The section's whole
+       claim is that the letter is written in a language built for somebody
+       else, so the artwork is the act of translation rather than a picture of
+       a bill. Every reel's position is a pure function of --t, so parking the
+       scroll anywhere leaves a composed frame. -->
+  <section class="scene scene--pin" id="bills" data-pin>
+    <div class="pin__sticky">
+      <div class="pin__art">
+        <!-- aria-hidden, like the artwork it replaced: this is an illustration
+             of a letter translating, not a letter. A screen reader announcing
+             every officialese line the reel passes through would read out four
+             phrases nobody is meant to be able to parse — the four lines beside
+             it carry the whole point in plain language already.
+
+             The reference reel carries a hidden sizer copy to hold its window
+             open, because theirs is inline and its width follows its content.
+             This one does not: the window is a block in a fixed grid column and
+             the strip is absolutely positioned, so nothing inside can change
+             the width. Measured both ways — 520px either way. Carrying the
+             sizer anyway would be dead markup dressed up as craft. -->
+        <div class="reel" aria-hidden="true">
+          <div class="reel__row" style="--at:.06">
+            <span class="reel__k">Determination</span>
+            <span class="reel__win">
+              <span class="reel__strip" style="--n:4">
+                <span>Adverse determination</span>
+                <span>Not medically necessary</span>
+                <span>Benefit exclusion applies</span>
+                <span class="reel__plain">They said no.</span>
+              </span>
+            </span>
+          </div>
+
+          <div class="reel__row" style="--at:.24">
+            <span class="reel__k">Patient responsibility</span>
+            <span class="reel__win">
+              <span class="reel__strip" style="--n:4">
+                <span>Patient responsibility</span>
+                <span>Balance as billed</span>
+                <span>Amount now due</span>
+                <span class="reel__plain">This is yours to pay.</span>
+              </span>
+            </span>
+          </div>
+
+          <div class="reel__row" style="--at:.42">
+            <span class="reel__k">Reason code</span>
+            <span class="reel__win">
+              <span class="reel__strip" style="--n:4">
+                <span>Reason code N130</span>
+                <span>Consult plan documents</span>
+                <span>See evidence of coverage</span>
+                <span class="reel__plain">No reason you can read.</span>
+              </span>
+            </span>
+          </div>
+
+          <!-- the turn. On a real denial this is the only line that points
+               anywhere useful, and it is the smallest type on the page. -->
+          <div class="reel__row reel__row--turn" style="--at:.62">
+            <span class="reel__k">Appeal rights</span>
+            <span class="reel__win">
+              <span class="reel__strip" style="--n:4">
+                <span>Appeal rights &middot; see reverse</span>
+                <span>External review available</span>
+                <span>Time limits apply</span>
+                <span class="reel__plain">You are allowed to argue.</span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lines are set by hand rather than split at runtime: the copy is
+           fixed, so the ragging is a typographic decision instead of whatever
+           the box happens to do, and it costs no script. Each <span> is the
+           clip, each inner <span> is what travels. -->
+      <div class="pin__say">
+        <p class="pin__line" data-at="0.02">
+          <span><span>It starts with a letter</span></span>
+          <span><span>nobody wants to open.</span></span>
+        </p>
+        <p class="pin__line" data-at="0.26">
+          <span><span>Written in a language</span></span>
+          <span><span>built for somebody else.</span></span>
+        </p>
+        <p class="pin__line" data-at="0.52">
+          <span><span>Stripped down it says:</span></span>
+          <span><span><b>they said no, and this</b></span></span>
+          <span><span><b>is yours to pay.</b></span></span>
+        </p>
+        <p class="pin__line" data-at="0.78">
+          <span><span>Every line of it has</span></span>
+          <span><span>a plain meaning.</span></span>
+          <span><span><b>The last one is a door.</b></span></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- what we are -->
+  <section class="scene scene--left">
+    <div class="scene__inner focus-in">
+      <h2 class="phrase">So we carry it <em>to people.</em></h2>
+      <p class="say">We find New Yorkers stuck with a medical bill or a denied claim, and we walk them to the free experts who already handle exactly that.</p>
+    </div>
+  </section>
+
+  <!-- ===== the doors: four names, one open at a time ===== -->
+  <section class="scene scene--ways" id="work">
+    <div class="ways__wrap">
+
+      <div class="focus-in">
+        <span class="eyebrow">Where the thread leads</span>
+        <h2 class="phrase ways__title">There is a solution for this. <em>It already has a name.</em></h2>
+      </div>
+
+      <!-- no aria-expanded in the markup: with the script gone these are four
+           plain headings over four visible descriptions, and claiming a
+           collapsed state that nothing can open would be a lie. script.js
+           writes the attribute when it takes the list over. -->
+      <div class="ways focus-in">
+        <div class="ways__item">
+          <button class="ways__row" type="button" aria-controls="way-aid">
+            <span class="ways__name">Hospital financial assistance</span>
+            <span class="ways__sign" aria-hidden="true"></span>
+          </button>
+          <div class="ways__body" id="way-aid"><div>
+            <p class="ways__blurb">Every hospital in New York keeps a financial assistance policy, and its own financial counselor is the one who applies it. We hand over that number.</p>
+          </div></div>
+        </div>
+
+        <div class="ways__item">
+          <button class="ways__row" type="button" aria-controls="way-appeal">
+            <span class="ways__name">The state's independent appeal</span>
+            <span class="ways__sign" aria-hidden="true"></span>
+          </button>
+          <div class="ways__body" id="way-appeal"><div>
+            <p class="ways__blurb">When an insurer denies a claim twice, the state can send the file to a reviewer who does not work for them. That decision binds the insurer.</p>
+          </div></div>
+        </div>
+
+        <div class="ways__item">
+          <button class="ways__row" type="button" aria-controls="way-counselors">
+            <span class="ways__name">Free coverage counselors</span>
+            <span class="ways__sign" aria-hidden="true"></span>
+          </button>
+          <div class="ways__body" id="way-counselors"><div>
+            <p class="ways__blurb">New York funds counselors who take coverage problems by phone, in dozens of languages, free to whoever calls. They argue with insurers for a living.</p>
+          </div></div>
+        </div>
+
+        <div class="ways__item">
+          <button class="ways__row" type="button" aria-controls="way-rx">
+            <span class="ways__name">Prescription cost programmes</span>
+            <span class="ways__sign" aria-hidden="true"></span>
+          </button>
+          <div class="ways__body" id="way-rx"><div>
+            <p class="ways__blurb">State programmes for older New Yorkers, and the drug makers' own schemes, sit behind the counter unmentioned. A pharmacist is the one who checks.</p>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="ways__foot focus-in">
+        <a href="#students" class="btn btn--solid">Join the corps <span class="arr">→</span></a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- the honesty statement -->
+  <section class="scene scene--center scene--vow">
+    <div class="scene__inner focus-in">
+      <h2 class="phrase">We find you the expert. We never <em>play one.</em></h2>
+
+      <!-- The short version carries the whole safety point on its own: who we
+           are, what we are not, and that nobody ever pays us. Seventy-five words
+           of it went unread; this is the version somebody frightened can take in
+           standing at a table. -->
+      <p class="vow">We are trained student volunteers &mdash; not doctors, not lawyers, not benefits counselors. We walk you to the free professionals who are, and we never charge for anything.</p>
+
+      <!-- The full statement, verbatim and never reworded, one tap away.
+           <details> and not the disclosure JS this page uses elsewhere: this is
+           the one piece of copy that exists to stop somebody mistaking a student
+           for a professional, so it has to open even if no script on the page
+           ever runs. Native markup is the only version of that guarantee. -->
+      <details class="vow__more">
+        <summary><span>The statement in full</span></summary>
+        <div class="vow__body">
+          <p class="vow__full">We are trained student volunteers. We help you find the free programs and professionals in New York that handle medical bills and insurance denials. We are not doctors, lawyers, benefits counselors, or insurance experts. We do not read your bills, fill out your forms, or tell you what you qualify for. We connect you to people who do that, and they do it for free. We never charge for anything.</p>
+          <p class="vow__src">Printed on everything we hand out, and said out loud at every table.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ===== the line =====
+       Organised as a hold scene: the phrase keeps its place on the right while
+       the four crossings move past it on the left. It was a pinned scene
+       scrubbing --t, which meant the heading scrolled away from the very
+       statements it was introducing. Holding it is both the page's existing
+       pattern for this and the reason the section now reads as one argument
+       rather than a heading followed by a list. -->
+  <section class="scene scene--hold scene--hold-r">
+    <div class="hold">
+      <div class="hold__anchor">
+        <div class="hold__anchor-in focus-in" data-once>
+          <h2 class="phrase">Trained to know exactly <em>where the line is.</em></h2>
+        </div>
+      </div>
+
+      <!-- Beats, exactly as the reach and partners scenes use them: a bolded
+           run-in lead and a short description, no marks of any kind. Each one
+           carries its own boundary in the prose, so the line is stated four
+           times over rather than drawn once between two columns. -->
+      <div class="hold__stream">
+        <p class="beat focus-in"><b>Listens, in your language.</b> You describe what you are holding, in your own words. A volunteer never reads it back to you or tells you what it means.</p>
+        <p class="beat focus-in"><b>Names the office that handles it.</b> They can tell you who takes this kind of problem. They can never tell you whether you qualify for it.</p>
+        <p class="beat focus-in"><b>Dials the number and stays while it rings.</b> You do the talking. A volunteer sits with you through the wait and never speaks in your place.</p>
+        <p class="beat focus-in"><b>Leaves with only your contact information.</b> No photo of your paperwork, no copy of your bill, and no collection of sensitive information of any kind.</p>
+        <p class="beat focus-in"><b>And none of it starts until it is checked.</b> No volunteer speaks to anyone about a bill until someone with real health-insurance-law knowledge has been over our materials.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- the other half of what Waypoint is. It states what the work is and stops:
+       the sequencing, the phasing and the reasons behind them are ours to
+       manage, not a visitor's to read. Whoever is here is deciding whether to
+       volunteer or to work with us, and neither decision is helped by a
+       roadmap. -->
+  <section class="scene scene--left">
+    <div class="scene__inner focus-in">
+      <h2 class="phrase">It was never only <em>about the bill.</em></h2>
+      <p class="say">Walking people to the free health resources they are missing &mdash; food, transit, senior services, benefits &mdash; is where Waypoint started, and it is still half of why we exist.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOR STUDENTS — the volunteer chapter, moved up to sit directly
+       after "It was never only about the bill". A student reading
+       that has just been told what the whole job is; the ask belongs
+       there, not four partner-facing scenes later.
+       ============================================================ -->
+  <section class="scene scene--right" id="students">
+    <div class="scene__inner focus-in">
+      <span class="eyebrow">For students</span>
+      <h2 class="phrase">For the students who <em>show up.</em></h2>
+      <p class="chapter-lede">You put materials where people actually are. You listen, you translate, you name the right organization, and you dial the number and stay in the chair while it rings. You never read anyone's paperwork and never say who qualifies. <b>Multilingual students especially.</b></p>
+    </div>
+  </section>
+
+  <section class="scene scene--left scene--wide">
+    <div class="scene__inner focus-in" data-once>
+      <div class="panel">
+        <span class="ey">Sign up</span>
+        <h3>Walk the first block <em>with us.</em></h3>
+        <p>We will follow up with the next cohort dates. Nothing here is shared or sold, and there is no commitment yet.</p>
+        <form class="form" data-form="students">
+          <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div class="field"><label for="s-name">Name</label><input id="s-name" name="name" required placeholder="Your name" /></div>
+          <div class="field"><label for="s-email">Email</label><input id="s-email" type="email" name="email" required placeholder="you@email.com" /></div>
+          <div class="field"><label for="s-school">School &amp; grade</label><input id="s-school" name="school" placeholder="e.g. Stuyvesant, 11th" /></div>
+          <div class="field"><label for="s-lang">Languages you speak</label><input id="s-lang" name="languages" placeholder="e.g. English, Mandarin" /></div>
+          <div class="field full"><label for="s-msg">Anything you want us to know</label><textarea id="s-msg" name="message" rows="3" placeholder="Optional"></textarea></div>
+          <div class="form__submit"><button type="submit" class="btn btn--solid">Send <span class="arr">→</span></button></div>
+          <p class="form__legal">By sending this, you agree to our <a href="privacy.html">Privacy &amp; Legal</a> notice. We use your details only to reply.</p>
+          <div class="form__ok">Thanks. You're on the list, and we'll reach out with the next cohort dates.</div>
+          <div class="form__err">Sorry, something went wrong sending that. Please try again, or email waypointoutreach@gmail.com.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOR PARTNERS — everything below is addressed to organisations,
+       not to visitors or volunteers, and it sits last on purpose. A
+       library or a senior centre arrives knowing what it wants; a
+       student has to be convinced, so students come first.
+       ============================================================ -->
+  <section class="scene scene--hold scene--reach" id="partners">
+    <div class="hold">
+      <div class="hold__anchor">
+        <div class="hold__anchor-in focus-in" data-once>
+          <span class="eyebrow">For partners</span>
+          <h2 class="phrase">The people you have been trying <em>to reach all year.</em></h2>
+        </div>
+      </div>
+      <div class="hold__stream">
+        <p class="beat focus-in"><b>Our students speak the languages your block speaks.</b> A conversation about a frightening bill rarely survives a stranger translating it, and almost never survives a leaflet.</p>
+        <p class="beat focus-in"><b>Nobody is asked for a status.</b> A hospital cannot weigh immigration status when it looks at financial assistance, and anything touching immigration law goes to a professional rather than a student's best guess.</p>
+        <p class="beat focus-in"><b>And you get counts you can use.</b> Every quarter: how many we sent you and what they asked about. Categories, never names.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOLD: the ask ===== -->
+  <section class="scene scene--hold scene--hold-r">
+    <div class="hold">
+      <div class="hold__anchor">
+        <div class="hold__anchor-in focus-in" data-once>
+          <h2 class="phrase">Not money. Not an endorsement. <em>Your materials.</em></h2>
+        </div>
+      </div>
+      <div class="hold__stream">
+        <p class="beat focus-in"><b>If you already do this work, we would like to carry it.</b> Flyers, referral cards, or a QR code we can put in front of people. We cover the printing and we do the distribution.</p>
+        <p class="beat focus-in"><b>And a name we can route to</b>, so a referral is a handoff instead of a hope. In return: distribution you don't have to staff, and a quarterly count.</p>
+        <p class="beat focus-in"><b>Twenty minutes of reading, if you can spare it.</b> A look over our routing sheet, so we know we are not overstating anything. We would far rather be corrected by you now than be wrong in front of somebody who needed us to be right.</p>
+        <!-- SWAP POINT: when a venue or professional partner is secured, rewrite this beat. -->
+        <p class="beat focus-in"><b>And we have not done this yet.</b> Waypoint has not held its first event. Whoever says yes first shapes how the whole thing runs, and is named in the first semester report.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene scene--left scene--wide">
+    <div class="scene__inner focus-in" data-once>
+      <div class="panel">
+        <span class="ey">Start a partnership</span>
+        <h3>Send us <em>a note.</em></h3>
+        <p>Materials we can distribute, a person we can route people to, a space, or twenty minutes to read our routing sheet. We will come back with something specific.</p>
+        <form class="form" data-form="partners">
+          <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div class="field"><label for="p-org">Organization</label><input id="p-org" name="org" required placeholder="Organisation name" /></div>
+          <div class="field"><label for="p-name">Your name</label><input id="p-name" name="name" required placeholder="Contact name" /></div>
+          <div class="field"><label for="p-email">Email</label><input id="p-email" type="email" name="email" required placeholder="you@org.org" /></div>
+          <div class="field"><label for="p-type">What you can offer</label>
+            <select id="p-type" name="type">
+              <optgroup label="Help we can distribute">
+                <option>Consumer assistance or advocacy organisation</option>
+                <option>Hospital financial assistance office</option>
+                <option>Legal services organisation</option>
+                <option>Prescription assistance programme</option>
+                <option>Government agency or helpline</option>
+              </optgroup>
+              <optgroup label="A space or an audience">
+                <option>Library branch</option>
+                <option>Senior center / NYC Aging</option>
+                <option>Community or faith space</option>
+                <option>Clinic / FQHC outreach</option>
+                <option>School or community organisation</option>
+              </optgroup>
+              <option>Something else</option>
+            </select>
+          </div>
+          <div class="field full"><label for="p-msg">What you have in mind</label><textarea id="p-msg" name="message" rows="3" placeholder="Who you serve, and what would be genuinely useful to you"></textarea></div>
+          <div class="form__submit"><button type="submit" class="btn btn--solid">Send <span class="arr">→</span></button></div>
+          <p class="form__legal">By sending this, you agree to our <a href="privacy.html">Privacy &amp; Legal</a> notice. We use your details only to reply.</p>
+          <div class="form__ok">Thanks. We'll be in touch with something specific.</div>
+          <div class="form__err">Sorry, something went wrong sending that. Please try again, or email waypointoutreach@gmail.com.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- close: the door, from the other side -->
+  <section class="scene scene--center scene--close" id="close">
+    <div class="scene__inner focus-in">
+      <h2 class="phrase">The help was always there. <em>Now someone walks you to it.</em></h2>
+      <div class="scene__cta">
+        <a href="index.html" class="btn btn--solid">Find free help <span class="arr">→</span></a>
+        <a href="#partners" class="tlink">Work with us <span class="arr">→</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer__wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="about.html"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg><span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>
+        <p class="footer__note">We are trained student volunteers. We help you find the free programs and professionals in New York that handle medical bills and insurance denials. We are not doctors, lawyers, benefits counselors, or insurance experts. We do not read your bills, fill out your forms, or tell you what you qualify for. We connect you to people who do that, and they do it for free. We never charge for anything.</p>
+      </div>
+      <div class="footer__col"><h2 class="footer__h">The journey</h2><a href="index.html">Find free help</a><a href="#top">Real, free, invisible</a><a href="#bills">Bills &amp; denials</a><a href="#work">How a referral works</a><a href="#students">For students</a><a href="#partners">For partners</a></div>
+      <div class="footer__col"><h2 class="footer__h">Get involved</h2><a href="index.html">Find free help</a><a href="#students">Join the corps</a><a href="#partners">Partner with us</a><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@<wbr />gmail.com</a></div>
+      <div class="footer__col"><h2 class="footer__h">More</h2><a href="privacy.html">Privacy &amp; Legal</a><a href="terms.html">Terms of Use</a></div>
+    </div>
+    <div class="footer__base">
+      <p>© <span data-year>2026</span> Waypoint. A student-led volunteer initiative in New York City. Michael, founder.</p>
+      <p><a href="privacy.html" class="footer__ul">Privacy</a> · <a href="terms.html" class="footer__ul">Terms</a></p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/vendor/lenis.min.js"></script>
+<script src="script.js"></script>
+<script type="module" src="assets/door.js"></script>
+</body>
+</html>

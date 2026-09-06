@@ -12,7 +12,7 @@
    - CATEGORY (help-food.html and friends). Every resource for that need is in
      the markup. Filtering hides rows. Nothing is ever built here.
 
-   - FRONT (help.html). The front page carries fifteen clusters of three
+   - FRONT (index.html). The front page carries fifteen clusters of three
      examples, not the whole directory — that split is the entire reason the
      page is 117 KB instead of a quarter of a megabyte. So search there needs
      its own copy of the facts, which ships as <script type="application/json"
@@ -27,6 +27,11 @@
    that cannot work. check.py enforces both halves. */
 (function () {
   "use strict";
+  /* The header is opaque in the stylesheet and this class is what lets it
+     be transparent at the top of the page — because `.stuck`, the other
+     half of that, can only ever be added from here. A page without this
+     script keeps a solid bar. */
+  document.documentElement.classList.add("hasjs");
 
   /* The header is the same object as the narrative side's, and it follows the
      same rule: transparent at the top of the page, the page's own ground once

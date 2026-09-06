@@ -7,6 +7,11 @@
    ============================================================ */
 (function () {
   "use strict";
+  /* The header is opaque in the stylesheet and this class is what lets it
+     be transparent at the top of the page — because `.stuck`, the other
+     half of that, can only ever be added from here. A page without this
+     script keeps a solid bar. */
+  document.documentElement.classList.add("hasjs");
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   /* Phones pay for this page in compositing, not in script: the tick itself
