@@ -568,11 +568,14 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    the combination this page exists to survive. */
 .cat{ display:grid; grid-template-columns:minmax(0,1fr);
   gap:clamp(20px,3vw,40px); align-items:start; }
-@media (min-width:940px){
-  .cat{ grid-template-columns:236px minmax(0,1fr); }
-  .cat__rail{ position:sticky; top:calc(var(--head-h) + 8px); }
-}
 .cat__rail,.cat__main{ min-width:0; }
+/* The table of contents is a row of chips under the search panel, which is
+   where the front page puts the same thing. It was a 236px sticky column down
+   the left: six lines of link took a quarter of the page away from the search
+   box, the filters and every card at every width above 940px, and the groups
+   that hold one place sat alone in a two-column grid with a hole beside them.
+   A page whose whole job is a list of places should give the list the page. */
+.cat__rail{ margin:clamp(20px,2.6vw,30px) 0 clamp(8px,1.2vw,14px); }
 .rail__h{ font-family:var(--sans); font-size:.8rem; font-weight:600;
   letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3);
   margin-bottom:10px; }
@@ -591,12 +594,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .rail__t{ flex:1; min-width:0; }
 .rail__n{ flex:none; font-size:.78rem; font-weight:700; color:var(--gold-deep);
   font-variant-numeric:tabular-nums; }
-@media (min-width:940px){
-  .rail__nav ul{ display:grid; gap:4px; }
-  .rail__nav a{ border-color:transparent; background:none; border-radius:var(--r-s);
-    padding:9px 12px; }
-  .rail__nav a:hover{ border-color:transparent; background:var(--line-2); }
-}
+
 
 /* Neighbouring kinds of help. Somebody who came here for food and turns out
    to need a lawyer should not have to go back to the front page to find out
@@ -658,8 +656,13 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 
 /* grid, and order-aware: help.js floats the places that name the reader's
    language to the front of their group when a language chip is on. */
+/* auto-fit, not auto-fill: a group with one place in it — "Start here" is
+   often exactly one — collapses the empty track and the card takes the row,
+   instead of sitting in the left half of a hole. And a 400px floor rather
+   than 330: two roomy cards across the full page beat three narrow ones
+   against a rail. */
 .rows{ display:grid; gap:14px;
-  grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr)); }
+  grid-template-columns:repeat(auto-fit,minmax(min(400px,100%),1fr)); }
 
 /* ------------------------------------------------------------- one row */
 /* min-width:0 on every grid child, here and below.
@@ -675,7 +678,10 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .r__name{ font-size:1.22rem; line-height:1.2; }
 .r__kind{ font-size:.8rem; font-weight:600; letter-spacing:.05em;
   text-transform:uppercase; color:var(--ink-3); margin-top:5px; }
-.r__what{ color:var(--ink-2); font-size:.97rem; line-height:1.5; }
+/* A measure, because a card is no longer always a column of a grid: the
+   group that holds one place now takes the whole page, and its description
+   was setting 140 characters to the line. */
+.r__what{ color:var(--ink-2); font-size:.97rem; line-height:1.5; max-width:72ch; }
 .r__badges{ display:flex; flex-wrap:wrap; gap:6px; }
 .bdg{ font-size:.78rem; font-weight:600; padding:5px 10px; border-radius:999px;
   letter-spacing:.01em; }

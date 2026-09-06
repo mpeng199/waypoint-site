@@ -2975,7 +2975,17 @@ def render_category(need, rows):
       'below, in labelled groups, and every phone number dials.</p></noscript>')
 
     A('<div class="cat">')
-    # ---- the rail
+    A('<div class="cat__main">')
+    p += carryover_frag()
+    p += search_frag(esc(need["ph"]),
+                     "Searches every place on this page.")
+
+    # ---- what is on the page, in the same place the front page puts it:
+    # under the search panel, above the list, as a row of chips. It used to be
+    # a 236px column down the left, which took a quarter of the page off the
+    # search box and every card for a table of contents six lines long, and
+    # left the groups with one place in them sitting alone in a two-column
+    # grid with a hole beside them.
     A('<aside class="cat__rail" aria-labelledby="rail-h">')
     A('  <h2 id="rail-h" class="rail__h">On this page</h2>')
     A('  <nav class="rail__nav" aria-label="Sections of this page"><ul>')
@@ -2984,11 +2994,6 @@ def render_category(need, rows):
           f'</span><span class="rail__n">{len(filed[bk])}</span></a></li>')
     A('  </ul></nav>')
     A('</aside>')
-
-    A('<div class="cat__main">')
-    p += carryover_frag()
-    p += search_frag(esc(need["ph"]),
-                     "Searches every place on this page.")
     A('<div class="printhead" aria-hidden="true">')
     A(f'  <p class="printhead__t">{esc(need["label"])}</p>')
     A('  <p class="printhead__s">Collected by Waypoint, a student volunteer '
