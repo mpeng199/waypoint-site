@@ -299,10 +299,17 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    enough, and the menus can leave the box. */
 .find > :first-child{ border-start-start-radius:inherit; border-start-end-radius:inherit; }
 .find > :last-child{ border-end-start-radius:inherit; border-end-end-radius:inherit; }
-.find__top{ padding:clamp(15px,2.2vw,20px); }
-.find__top label{ display:block; font-weight:600; margin-bottom:9px; font-size:.98rem; }
-.find__box{ display:flex; align-items:center; gap:12px; background:var(--mint);
-  border:1.5px solid var(--line); border-radius:var(--r-s); padding:0 14px;
+/* Row one: type, or narrow. The box takes the width its placeholder needs and
+   no more — full-bleed, it was a 1000px input for a word like "rent", and it
+   pushed the three dropdowns onto a band of their own. */
+.find__top{ display:flex; flex-wrap:wrap; align-items:center;
+  gap:8px 12px; padding:10px clamp(12px,1.6vw,16px); }
+/* min(400px,100%), never a bare 400px: at 320px with text at 200% the box
+   held its own width and hung 112px off the side of the page — the same
+   failure the grid tracks on this page already guard against. */
+.find__box{ flex:1 1 260px; max-width:min(400px,100%);
+  display:flex; align-items:center; gap:10px; background:var(--mint);
+  border:1.5px solid var(--line); border-radius:var(--r-s); padding:0 12px;
   transition:border-color .18s var(--ease), box-shadow .18s var(--ease); }
 .find__box:focus-within{ border-color:var(--green); background:var(--surface);
   box-shadow:0 0 0 3px rgba(30,53,40,.10); }
@@ -310,7 +317,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 /* min-width:0, or the flex item refuses to shrink below its placeholder's
    intrinsic width and takes the search box off the side of the screen. */
 .find__box input{ flex:1; min-width:0; border:0; background:none; font:inherit; color:inherit;
-  padding:14px 0; min-height:52px; outline:none; }
+  padding:10px 0; min-height:44px; outline:none; }
 /* The input hands its focus ring to the box around it, which is the right
    look and a trap: in Windows High Contrast the browser throws away our
    border colour and our shadow, and `outline:none` is the one thing it keeps.
@@ -341,11 +348,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    word. Each facet is a button now, and its choices open over the page
    instead of pushing it down, so the resting state is one row whatever the
    width. */
-.find__filters{ border-top:1px solid var(--line-2);
-  display:flex; align-items:center; flex-wrap:wrap; gap:8px;
-  padding:12px clamp(15px,2.2vw,20px); }
-.find__filters-h{ font-weight:600; font-size:.88rem; color:var(--ink-3);
-  text-transform:uppercase; letter-spacing:.06em; margin-inline-end:4px; }
+.find__filters{ display:flex; align-items:center; flex-wrap:wrap; gap:8px;
+  min-width:0; }
 
 .facet{ position:relative; }
 .facet__btn{ cursor:pointer; list-style:none; display:inline-flex;
@@ -407,14 +411,12 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   text-underline-offset:3px; padding:8px 0; justify-self:start; }
 /* what the box got you, immediately under the box, with the one action that
    applies to it */
-.find__bar{ display:flex; flex-wrap:wrap; gap:10px 18px;
-  align-items:center; justify-content:space-between;
-  padding:12px clamp(15px,2.2vw,20px);
+/* Row two: the count, its footnote beside it rather than under it, and the
+   button that prints what the count counts, at the end of the same line. */
+.find__bar{ display:flex; flex-wrap:wrap; gap:4px 12px;
+  align-items:baseline; padding:9px clamp(12px,1.6vw,16px);
   border-top:1px solid var(--line-2); background:var(--mint); }
-/* The count and its footnote stack; the button keeps the right-hand end of
-   the row. Side by side they were wide enough to push the button onto a line
-   of its own, which put a lone pill in the middle of the card. */
-.find__said{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+.printbtn{ margin-inline-start:auto; }
 .find__count{ font-weight:600; color:var(--ink); font-size:.98rem; }
 .find__count:empty{ display:none; }
 .printbtn{ display:inline-flex; align-items:center; gap:9px; font:inherit;
@@ -575,24 +577,31 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    box, the filters and every card at every width above 940px, and the groups
    that hold one place sat alone in a two-column grid with a hole beside them.
    A page whose whole job is a list of places should give the list the page. */
-.cat__rail{ margin:clamp(20px,2.6vw,30px) 0 clamp(8px,1.2vw,14px); }
+.cat__rail{ display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px;
+  margin:clamp(16px,2.2vw,24px) 0 clamp(12px,1.6vw,18px); }
 .rail__h{ font-family:var(--sans); font-size:.8rem; font-weight:600;
-  letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3);
-  margin-bottom:10px; }
+  letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); }
+.rail__nav{ flex:1 1 min(100%,460px); min-width:0; }
 .rail__nav ul{ display:flex; flex-wrap:wrap; gap:6px; }
 .rail__nav li{ display:flex; min-width:0; }
+/* Quiet: a hairline on the page's own ground, not a filled button. Nine of
+   these in a row, several of them a sentence long, read as the loudest thing
+   on a page whose subject is the places underneath them. The 44px stays —
+   a thumb needs it whatever the chip weighs. */
 .rail__nav a{ flex:1; min-width:0; display:flex;
   align-items:center; justify-content:space-between;
-  gap:10px; min-height:44px; padding:8px 14px; border-radius:var(--r-pill);
-  border:1.5px solid var(--line); background:var(--surface);
-  font-size:.9rem; font-weight:500; color:var(--ink-2); text-decoration:none;
+  gap:8px; min-height:44px; padding:6px 13px; border-radius:var(--r-pill);
+  border:1px solid var(--line-2); background:none;
+  font-size:.86rem; font-weight:500; color:var(--ink-2); text-decoration:none;
   transition:border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease); }
 .rail__nav a:hover{ border-color:var(--green-2); background:var(--line-2); color:var(--ink); }
 /* The label wraps inside its own box; the count never leaves the first line.
    Letting the anchor itself wrap put the number underneath a three-line
    label and made every rail entry on a phone twice as tall as it needed. */
 .rail__t{ flex:1; min-width:0; }
-.rail__n{ flex:none; font-size:.78rem; font-weight:700; color:var(--gold-deep);
+/* The count is metadata, not an accent: in gold at 700 it was the brightest
+   thing in the row and it reads as a step number rather than a total. */
+.rail__n{ flex:none; font-size:.76rem; font-weight:600; color:var(--ink-3);
   font-variant-numeric:tabular-nums; }
 
 

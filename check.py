@@ -381,7 +381,9 @@ def check_labels():
     """
     for f in sorted(str(q) for q in Path(".").glob("*.html")):
         page = read(f)
-        fors = set(re.findall(r'<label for="([^"]+)"', page))
+        # Any attribute order: a <label class="sr-only" for="q"> is a label,
+        # and a guard that only sees `for` first fails a page that is correct.
+        fors = set(re.findall(r'<label\b[^>]*\sfor="([^"]+)"', page))
         for tag in re.findall(r"<(?:input|select|textarea)\b[^>]*>", page):
             if re.search(r'type="(?:hidden|submit|button|reset)"', tag):
                 continue

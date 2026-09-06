@@ -83,22 +83,13 @@
 <section class="find" aria-labelledby="find-h" hidden>
   <h2 id="find-h" class="sr-only">Search and narrow the list</h2>
   <div class="find__top">
-    <label for="q">Search for what you need</label>
+    <label for="q" class="sr-only">Search for what you need</label>
     <div class="find__box">
       <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="q" type="search" autocomplete="off" placeholder="Try: eviction, immigration, wages" />
       <button type="button" class="find__clear" hidden>Clear</button>
     </div>
-  </div>
-  <div class="find__bar">
-    <div class="find__said">
-      <p class="find__count" role="status" aria-live="polite"></p>
-      <p class="find__scope">Searches every place on this page.</p>
-    </div>
-    <button type="button" class="printbtn" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6M7 19H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>Print this list</button>
-  </div>
   <div class="find__filters">
-    <span class="find__filters-h">Narrow this list</span>
     <details class="facet" data-facet="boro">
       <summary class="facet__btn">
         <span class="facet__label">Where you are</span>
@@ -153,6 +144,12 @@
       </div>
     </details>
     <button type="button" class="reset" hidden>Start over</button>
+  </div>
+  </div>
+  <div class="find__bar">
+    <p class="find__count" role="status" aria-live="polite"></p>
+    <p class="find__scope">Searches every place on this page.</p>
+    <button type="button" class="printbtn" hidden><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6M7 19H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>Print this list</button>
   </div>
 </section>
 <aside class="cat__rail" aria-labelledby="rail-h">

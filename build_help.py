@@ -2282,8 +2282,7 @@ def filters_frag(compact=False):
                                ("no-status", "Does not ask immigration status"),
                                ("phone", "You can call")]]
 
-    return (['  <div class="find__filters">',
-             '    <span class="find__filters-h">Narrow this list</span>']
+    return (['  <div class="find__filters">']
             + facet("boro", "Where you are", boro)
             + facet("lang", "Language you speak", lang,
                     hint="Shows places that name your language, and places that "
@@ -2302,16 +2301,24 @@ def search_frag(placeholder, scope_note):
     that all did the same job, narrowing a list, arranged so that none of them
     looked related to any other.
 
-    One card now, three zones divided by hairlines: what you type, what that
-    got you, and how to narrow it further. The count sits directly under the
-    box that changes it, and the scope note no longer repeats the number
-    standing next to it.
+    One card now, two rows: how you narrow the list, and what that got you.
+
+    It was three stacked zones, each with its own padding — a headed search
+    box on one line, a count and a print button on the next, a labelled row of
+    dropdowns on a third — 284px of chrome standing between the reader and the
+    first phone number. The box is one control in a row with the three
+    dropdowns, sized to its own placeholder instead of the width of the page,
+    and the count sits under them with the button that prints what it counts.
+
+    The visible "Search for what you need" is gone and the label is still
+    there: a magnifier and "Try: shelter, hotline, lawyer" say what the box is
+    for, and the <label> keeps saying it to a screen reader.
     """
     return [
         '<section class="find" aria-labelledby="find-h" hidden>',
         '  <h2 id="find-h" class="sr-only">Search and narrow the list</h2>',
         '  <div class="find__top">',
-        '    <label for="q">Search for what you need</label>',
+        '    <label for="q" class="sr-only">Search for what you need</label>',
         '    <div class="find__box">',
         '      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
         'stroke="currentColor" stroke-width="1.8" stroke-linecap="round">'
@@ -2319,12 +2326,11 @@ def search_frag(placeholder, scope_note):
         f'      <input id="q" type="search" autocomplete="off" placeholder="{esc(placeholder)}" />',
         '      <button type="button" class="find__clear" hidden>Clear</button>',
         '    </div>',
+    ] + filters_frag() + [
         '  </div>',
         '  <div class="find__bar">',
-        '    <div class="find__said">',
-        '      <p class="find__count" role="status" aria-live="polite"></p>',
-        f'      <p class="find__scope">{scope_note}</p>',
-        '    </div>',
+        '    <p class="find__count" role="status" aria-live="polite"></p>',
+        f'    <p class="find__scope">{scope_note}</p>',
         '    <button type="button" class="printbtn" hidden>'
         '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
         'stroke="currentColor" stroke-width="1.7" stroke-linecap="round" '
@@ -2332,7 +2338,6 @@ def search_frag(placeholder, scope_note):
         '0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 15h10v6H7v-6Z"/></svg>'
         'Print this list</button>',
         '  </div>',
-    ] + filters_frag() + [
         '</section>',
     ]
 
