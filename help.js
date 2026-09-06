@@ -12,7 +12,7 @@
    - CATEGORY (help-food.html and friends). Every resource for that need is in
      the markup. Filtering hides rows. Nothing is ever built here.
 
-   - FRONT (help.html). The front page carries fifteen clusters of three
+   - FRONT (index.html). The front page carries fifteen clusters of three
      examples, not the whole directory — that split is the entire reason the
      page is 117 KB instead of a quarter of a megabyte. So search there needs
      its own copy of the facts, which ships as <script type="application/json"

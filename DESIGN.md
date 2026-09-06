@@ -142,7 +142,7 @@ that a vulnerable reader take the statement in under ten seconds.
 
 **The full wording sits behind a disclosure**, verbatim and never reworded, with
 the "printed on everything we hand out" attribution under it. `check.py` still
-counts the verbatim fragments twice across `index.html` — the disclosure and the
+counts the verbatim fragments twice across `about.html` — the disclosure and the
 page footer — so nothing about that contract changed.
 
 Two rules this is built to, and `check.py` enforces both:
@@ -647,7 +647,7 @@ computes the bar from the assumption that the tab row wraps to two rows. How
 many rows it takes depends on how long the tab labels are, which is a different
 answer in every language. Measured at 320px, the bar is 251px in Spanish and
 French, 203 in English and Russian, 155 in Arabic and Chinese — against a
-declared 116 in all six. On `help.html` and `index.html` a `ResizeObserver`
+declared 116 in all six. On `index.html` and `about.html` a `ResizeObserver`
 publishes the measured height and the guess never survives first paint. The ten
 language pages ship no script on purpose, so there it stood: a tap on any
 section link put the heading up to 121px under a bar that was still covering
@@ -743,7 +743,7 @@ part of the site that is generated, and `python3 build_help.py` writes all of
 it in one go.
 
 ```
-help.html            the way in: one cluster per kind of help, three examples each
+index.html            the way in: one cluster per kind of help, three examples each
 help-<need>.html     one page per kind of help, with everything in it
 ```
 
@@ -764,7 +764,7 @@ python3 build_help.py
 - **Never hand-edit a generated page.** A fix typed into one survives until
   the next build and then disappears. `check.py` compares every one of them
   against the generator's output and fails if any differs.
-- The build also rewrites one block of `index.html`: the list of what the
+- The build also rewrites one block of `about.html`: the list of what the
   directory holds. That list is the directory's table of contents rendered on
   the other side of the site, and hand-maintaining it is how it came to offer
   eight of sixteen kinds of help.

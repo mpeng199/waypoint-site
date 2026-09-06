@@ -1,7 +1,7 @@
 """A preview server that does not let the browser cache anything.
 
 `python3 -m http.server` sends no Cache-Control at all, so the browser decides
-for itself — and for a navigation to `index.html#bills` it will happily serve
+for itself — and for a navigation to `about.html#bills` it will happily serve
 the copy in memory without asking whether the file changed. That is invisible
 and maddening: you edit a page, reload the page you are on and see the change,
 click a nav tab, and land on a version from before the edit.

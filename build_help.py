@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render help.html from data/resources.csv.
+"""Render index.html from data/resources.csv.
 
 Why a build step on a site with no build step: the audience for this page is
 somebody on an old phone, on transit data, possibly with a screen reader, and
@@ -21,7 +21,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 CSV = ROOT / "data" / "resources.csv"
-OUT = ROOT / "help.html"
+OUT = ROOT / "index.html"
 
 
 # --------------------------------------------------------------- the needs
@@ -2066,8 +2066,8 @@ def alternates(self_href):
     which for this site means the English one. x-default names where somebody
     lands when none of the eleven matches their browser.
     """
-    out = [f'<link rel="alternate" hreflang="x-default" href="help.html" />',
-           f'<link rel="alternate" hreflang="en" href="help.html" />']
+    out = [f'<link rel="alternate" hreflang="x-default" href="index.html" />',
+           f'<link rel="alternate" hreflang="en" href="index.html" />']
     for L in LANGUAGES:
         out.append(f'<link rel="alternate" hreflang="{L["tag"]}" '
                    f'href="{lang_page(L["key"])}" />')
@@ -2114,18 +2114,18 @@ def header_frag():
     return [
         '<header class="sitehead">',
         '  <div class="sitehead__in">',
-        '    <a class="brand" href="index.html" aria-label="Waypoint home">',
+        '    <a class="brand" href="about.html" aria-label="Waypoint home">',
         f'      {PIN}',
         '      <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>',
         '    </a>',
         '    <nav class="sitehead__links" aria-label="Primary">',
         '      <span class="nav-lamp" id="navLamp" aria-hidden="true">'
         '<i class="nav-lamp__bar"></i></span>',
-        '      <a href="help.html" class="is-find" aria-current="page">Find help</a>',
-        '      <a href="index.html#bills">Bills &amp; denials</a>',
-        '      <a href="index.html#work">How it works</a>',
-        '      <a href="index.html#students">Students</a>',
-        '      <a href="index.html#partners">Partners</a>',
+        '      <a href="index.html" class="is-find" aria-current="page">Find help</a>',
+        '      <a href="about.html#bills">Bills &amp; denials</a>',
+        '      <a href="about.html#work">How it works</a>',
+        '      <a href="about.html#students">Students</a>',
+        '      <a href="about.html#partners">Partners</a>',
         '    </nav>',
         '  </div>',
         '</header>',
@@ -2210,16 +2210,16 @@ def footer_frag(n, when="recently"):
     return [
         '<footer class="hfoot">',
         '  <div class="hfoot__in">',
-        f'    <a class="brand" href="index.html">{PIN}'
+        f'    <a class="brand" href="about.html">{PIN}'
         '<span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>',
         '    <p class="hfoot__say">Waypoint is a student volunteer corps in New York '
         'City. We do not run any of the programs on this page. We help people find '
         'them.</p>',
         '    <ul class="hfoot__links">',
-        '      <li><a href="help.html">Find help</a></li>',
-        '      <li><a href="index.html">About Waypoint</a></li>',
-        '      <li><a href="index.html#students">Volunteer with us</a></li>',
-        '      <li><a href="index.html#partners">For organizations</a></li>',
+        '      <li><a href="index.html">Find help</a></li>',
+        '      <li><a href="about.html">About Waypoint</a></li>',
+        '      <li><a href="about.html#students">Volunteer with us</a></li>',
+        '      <li><a href="about.html#partners">For organizations</a></li>',
         '      <li><a href="privacy.html">Privacy &amp; legal</a></li>',
         '      <li><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@<wbr />gmail.com</a></li>',
         '    </ul>',
@@ -2459,7 +2459,7 @@ def render_overview(rows):
               "A plain-language directory of free and low-cost help in New York City: "
               "food, medical bills, housing, health care, legal help, and more. Most of "
               "these do not ask about immigration status.",
-              "#needs", "Skip to what you need help with", alternates("help.html"))
+              "#needs", "Skip to what you need help with", alternates("index.html"))
     p += header_frag()
     A('<main class="wrap">')
     p += langbar_frag()
@@ -2474,6 +2474,13 @@ def render_overview(rows):
       'more. Nearly all of them are free. Most do not ask about immigration status.</p>')
     A('  <p class="mast__say mast__say--2">You do not need an account. You do not '
       'need to tell us anything. Pick what you need below, and call them yourself.</p>')
+    # The whole masthead is one link to the narrative page. The anchor is a real
+    # visible line rather than a bare overlay, so it has an accessible name, a
+    # tab stop and something to read; ::after in help.css stretches its hit area
+    # over the panel. English only — the language pages reach the same page
+    # through their translated footer.
+    A('  <a class="mast__to" href="about.html">Who made this list, and who we are '
+      '<span class="arr">&rarr;</span></a>')
     A('</section>')
 
     # Attribution, for paper only. A printed sheet with no source on it is a
@@ -2618,10 +2625,10 @@ def lang_header_frag(L, U):
     """
     rtl = L["dir"] == "rtl"
     tabs = [(lang_page(L["key"]), U["nav"][0], ' class="is-find" aria-current="page"'),
-            ("index.html#bills", U["nav"][1], ""),
-            ("index.html#work", U["nav"][2], ""),
-            ("index.html#students", U["nav"][3], ""),
-            ("index.html#partners", U["nav"][4], "")]
+            ("about.html#bills", U["nav"][1], ""),
+            ("about.html#work", U["nav"][2], ""),
+            ("about.html#students", U["nav"][3], ""),
+            ("about.html#partners", U["nav"][4], "")]
     out = ['<header class="sitehead">',
            '  <div class="sitehead__in">',
            f'    <a class="brand" href="{lang_page(L["key"])}" '
@@ -2647,7 +2654,7 @@ def lang_switch_frag(L, U):
     out = [f'<nav class="langbar" aria-label="{esc(U["langbar_h"])}">',
            f'  <span class="langbar__h">{esc(U["langbar_h"])}</span>',
            '  <ul class="langbar__list">',
-           '    <li><a href="help.html" lang="en">English</a></li>']
+           '    <li><a href="index.html" lang="en">English</a></li>']
     for O in LANGUAGES:
         d = ' dir="rtl"' if O["dir"] == "rtl" else ''
         if O["key"] == L["key"]:
@@ -2829,8 +2836,8 @@ def render_language(L, rows, by_need):
       '<small>Student Health Corps</small></span></a>')
     A(f'    <p class="hfoot__say">{esc(U["foot_say"])}</p>')
     A('    <ul class="hfoot__links">')
-    for href, label in zip([lang_page(L["key"]), "index.html",
-                            "index.html#students", "index.html#partners",
+    for href, label in zip([lang_page(L["key"]), "about.html",
+                            "about.html#students", "about.html#partners",
                             "privacy.html"], U["foot_links"]):
         A(f'      <li><a href="{href}">{esc(label)}</a></li>')
     A('      <li><a href="mailto:waypointoutreach@gmail.com" dir="ltr">'
@@ -2930,7 +2937,7 @@ def render_category(need, rows):
               "#dir", "Skip to the list")
     p += header_frag()
     A('<main class="wrap">')
-    A('<nav class="crumb" aria-label="Breadcrumb"><a href="help.html">'
+    A('<nav class="crumb" aria-label="Breadcrumb"><a href="index.html">'
       '<span class="arr crumb__back" aria-hidden="true">&larr;</span> All free help</a>'
       f'<span class="crumb__sep" aria-hidden="true">/</span><span aria-current="page">'
       f'{esc(need["short"])}</span></nav>')
@@ -3006,7 +3013,7 @@ def render_category(need, rows):
           f'<span class="sibs__t">{esc(other["label"])}</span>'
           f'<span class="sibs__n">{c}</span></a></li>')
     A('  </ul>')
-    A(f'  <p class="sibs__all"><a href="help.html">Back to all {n_all} places '
+    A(f'  <p class="sibs__all"><a href="index.html">Back to all {n_all} places '
       '<span class="arr">&rarr;</span></a></p>')
     A('</nav>')
     A('</div>')   # cat__main
@@ -3069,7 +3076,7 @@ def build():
     rows = load()
     written = []
 
-    overview = ROOT / "help.html"
+    overview = ROOT / "index.html"
     overview.write_text(render_overview(rows), encoding="utf-8")
     written.append(overview)
 

@@ -24,7 +24,7 @@
 
 :root{
   /* The hues, the typefaces, the easings and the radii come from tokens.css,
-     which index.html loads too. What is chosen here is only the *key*: which
+     which about.html loads too. What is chosen here is only the *key*: which
      of the shared greens is ground, which is ink. The dark room and this lit
      page are the same palette played an octave apart. */
   --ground:var(--cream);
@@ -119,7 +119,7 @@ b,strong{ font-weight:600; }
    the English one 203, the Arabic and Chinese ones 155 — against a declared
    116 in every case.
 
-   On help.html and index.html a ResizeObserver publishes the measured height
+   On index.html and about.html a ResizeObserver publishes the measured height
    and the guess never survives first paint. The ten language pages ship no
    JavaScript on purpose — a page somebody opens frightened, in a language
    they read, should not depend on a script loading — so there the guess
@@ -180,7 +180,7 @@ b,strong{ font-weight:600; }
 
 /* ------------------------------------------------------------------ mast */
 /* The masthead is the one place this page goes dark, and it is deliberate:
-   it is the same painted valley the door on index.html opens onto, so
+   it is the same painted valley the door on about.html opens onto, so
    somebody who arrived from the story lands somewhere they recognise, and
    somebody who arrived here first meets the brand before they meet the list.
 
@@ -215,6 +215,19 @@ b,strong{ font-weight:600; }
   line-height:1.6; color:var(--ink-soft); }
 .mast__say b{ color:var(--cream); font-weight:600; }
 .mast__say--2{ margin-top:.75em; }
+/* The masthead is a link to the narrative page. The visible line is the
+   accessible name and the tab stop; ::after stretches the hit area over the
+   whole panel, above the background but below nothing else in here. */
+.mast__to{ display:inline-flex; align-items:center; gap:.4em;
+  margin-top:clamp(18px,2.4vw,28px); font-weight:600; font-size:1rem;
+  color:var(--gold); text-decoration:none;
+  border-bottom:1px solid rgba(231,197,126,.42); padding-bottom:2px; }
+.mast__to::after{ content:""; position:absolute; inset:0; z-index:1; }
+.mast:has(.mast__to){ cursor:pointer; }
+.mast__to .arr{ transition:transform .16s var(--ease); }
+.mast:hover .mast__to{ color:var(--gold-lit,#F2D9A0); border-bottom-color:currentColor; }
+.mast:hover .mast__to .arr{ transform:translateX(3px); }
+@media (prefers-reduced-motion:reduce){ .mast__to .arr{ transition:none; } }
 /* A device the narrative site uses at every chapter edge. Here it separates
    the masthead from the emergency numbers without drawing a hard line. */
 .rule{ height:1px; border:0; margin:clamp(26px,4vw,44px) 0;
@@ -232,12 +245,16 @@ b,strong{ font-weight:600; }
    auto-fit gave three columns plus an orphan at most desktop widths, which
    reads as though the fourth were an afterthought. It is 311 — the one that
    answers in any language. */
-.sos__list{ display:grid; gap:10px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+/* Every one of the four the same size: grid-auto-rows equalises the rows,
+   height:100% makes each card fill the cell its text did not. Four numbers
+   in a panic should not look ranked by how long their description is. */
+.sos__list{ display:grid; gap:10px; grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-auto-rows:1fr; }
 @media (min-width:1080px){ .sos__list{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
 @media (max-width:560px){ .sos__list{ grid-template-columns:1fr; } }
 .sos__list a{ display:flex; flex-direction:column; gap:2px; text-decoration:none; min-width:0;
   background:var(--surface); border-radius:var(--r-s);
-  padding:14px 16px; min-height:60px; justify-content:center;
+  padding:14px 16px; min-height:60px; height:100%; justify-content:center;
   transition:transform .16s var(--ease), box-shadow .16s var(--ease); }
 .sos__list a:hover{ transform:translateY(-2px); box-shadow:var(--shadow-up); }
 .sos__num{ font-family:var(--display); font-size:1.55rem; color:var(--urgent); line-height:1.1; }
@@ -849,6 +866,7 @@ b,strong{ font-weight:600; }
   .mast{ background:none !important; color:#000 !important; border-radius:0;
     padding:0 0 6pt; margin:0; }
   .mast__eye{ display:none; }
+  .mast__to{ display:none; }
   .mast h1{ font-size:19pt; margin-bottom:4pt; max-width:none; }
   .mast h1 em{ color:#000 !important; }
   .mast__say{ font-size:8.5pt; color:#000 !important; max-width:none; margin-top:3pt; }
