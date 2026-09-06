@@ -45,10 +45,10 @@ LANGUAGE_PAGES = _lang_pages()
 # Everything the directory serves. RESIDENT_PAGES is what a resident reads;
 # the English ones are checked for English prose, the ten language ones are
 # not, so most guards want ENGLISH_PAGES instead.
-ENGLISH_PAGES = ["index.html"] + CATEGORY_PAGES
+ENGLISH_PAGES = ["help.html"] + CATEGORY_PAGES
 RESIDENT_PAGES = ENGLISH_PAGES
 
-PAGES = (["about.html", "index.html"] + CATEGORY_PAGES + LANGUAGE_PAGES +
+PAGES = (["index.html", "help.html"] + CATEGORY_PAGES + LANGUAGE_PAGES +
          ["privacy.html", "terms.html", "partner-pitch.html",
           "cohort-onboarding.html", "students.html", "partners.html", "admin.html"])
 
@@ -65,8 +65,8 @@ HONESTY = ("We are trained student volunteers.",
            "do not read your bills, fill out your forms, or tell you what you qualify for")
 
 # The statement is duplicated by hand with no shared source, so the linter is
-# the shared source. about.html carries it twice: the vow scene and the footer.
-HONESTY_SURFACES = dict({"about.html": 2, "partner-pitch.html": 1,
+# the shared source. index.html carries it twice: the vow scene and the footer.
+HONESTY_SURFACES = dict({"index.html": 2, "partner-pitch.html": 1,
                          "cohort-onboarding.html": 1},
                         **{p: 1 for p in RESIDENT_PAGES})
 
@@ -172,8 +172,8 @@ def check_links():
             else:
                 bad(f"{page}: dead reference {ref!r}")
 
-        # Every page, not just about.html. The condition here used to be
-        # `if page == "about.html" or a in ids`, which means that on any other
+        # Every page, not just index.html. The condition here used to be
+        # `if page == "index.html" or a in ids`, which means that on any other
         # page a MISSING anchor fell through both branches and was never
         # reported — so the check quietly only ran on one file. It let the
         # language panels link to #dir on the front page, where there is no
@@ -191,7 +191,7 @@ CROSS_REF = re.compile(r'href="([A-Za-z0-9._-]+\.html)#([^"]+)"')
 
 def check_cross_page_anchors():
     """Any local page.html#fragment link must land on a real id, whichever page
-    it points at. Checking only about.html let broken secondary anchors pass."""
+    it points at. Checking only index.html let broken secondary anchors pass."""
     ids_by_page = {}
 
     def ids_for(target):
@@ -217,7 +217,7 @@ def check_cross_page_anchors():
 
 def check_stage_layers():
     """Lazily-loaded landscape layers carry data-src instead of an inline url."""
-    src = read("about.html")
+    src = read("index.html")
     lazy = re.findall(r'class="stage__layer"[^>]*data-src="([^"]+)"', src)
     eager = re.findall(r'class="stage__layer"[^>]*background-image:url\(\'([^\']+)\'\)', src)
     for ref in lazy + eager:
@@ -235,7 +235,7 @@ def check_stage_layers():
 def check_honesty_statement():
     """Every surface that must carry the statement, carries all of it.
 
-    Checking only about.html let the pitch and onboarding copies drift, which is
+    Checking only index.html let the pitch and onboarding copies drift, which is
     exactly the failure this statement exists to prevent: the printed leave-behind
     saying something the site does not."""
     for page, times in HONESTY_SURFACES.items():
@@ -267,16 +267,16 @@ def check_forbidden():
 
 def check_no_invented_numbers():
     """We have run no events. Nothing on the site may imply a track record."""
-    text = re.sub(r"\s+", " ", strip_tags(read("about.html")))
+    text = re.sub(r"\s+", " ", strip_tags(read("index.html")))
     claims = re.findall(r"\b\d[\d,]*\+?\s+(?:people|events|partners|volunteers|residents|New Yorkers|students)\b", text, re.I)
     if claims:
-        bad(f"about.html: numeric track-record claim found: {claims}")
+        bad(f"index.html: numeric track-record claim found: {claims}")
     else:
-        ok("about.html: no numeric track-record claims")
+        ok("index.html: no numeric track-record claims")
     if "have not held" in text or "not held its first event" in text:
-        ok("about.html: pre-launch status stated plainly")
+        ok("index.html: pre-launch status stated plainly")
     else:
-        bad("about.html: the page should say the first event has not happened yet")
+        bad("index.html: the page should say the first event has not happened yet")
 
 
 # ------------------------------------------------------- billing boundaries
@@ -338,26 +338,26 @@ def check_billing_boundaries():
             ok(f"{page}: no billing overclaim")
 
     # the positive half: the primary chapter has to actually be on the page
-    idx = read("about.html")
+    idx = read("index.html")
     text = re.sub(r"\s+", " ", strip_tags(idx))
     if 'id="bills"' in idx:
-        ok("about.html: the billing chapter has an anchor")
+        ok("index.html: the billing chapter has an anchor")
     else:
-        bad('about.html: no id="bills"; bills and denials are the primary identity')
+        bad('index.html: no id="bills"; bills and denials are the primary identity')
     for phrase in ["financial assistance", "denial"]:
         if phrase in text:
-            ok(f"about.html: names {phrase!r}")
+            ok(f"index.html: names {phrase!r}")
         else:
-            bad(f"about.html: must name {phrase!r}")
+            bad(f"index.html: must name {phrase!r}")
     money = re.findall(r"\$\s?\d[\d,]*", text)
     if money:
-        bad(f"about.html: dollar figures imply an outcome we cannot promise: {money[:3]}")
+        bad(f"index.html: dollar figures imply an outcome we cannot promise: {money[:3]}")
     else:
-        ok("about.html: no dollar figures")
+        ok("index.html: no dollar figures")
 
 
 def check_forms():
-    src = read("about.html")
+    src = read("index.html")
     kinds = re.findall(r'data-form="([^"]+)"', src)
     if sorted(kinds) == ["partners", "students"]:
         ok("forms: partners + students only")
@@ -375,8 +375,8 @@ def check_forms():
 def check_labels():
     """Every input/select/textarea needs a label bound to it.
 
-    Every page, not just about.html — admin.html has a password field and
-    index.html has the search box, and a guard that reads one file cannot say
+    Every page, not just index.html — admin.html has a password field and
+    help.html has the search box, and a guard that reads one file cannot say
     anything about either.
     """
     for f in sorted(str(q) for q in Path(".").glob("*.html")):
@@ -401,7 +401,7 @@ def check_labels():
                     f"for>, no aria-label. A screen reader announces it as "
                     f"'edit text' and nothing else.")
 
-    src = read("about.html")
+    src = read("index.html")
     traps = re.findall(r'class="trap"[^>]*', src)
     for t in traps:
         if 'aria-hidden="true"' in t and 'tabindex="-1"' in t:
@@ -427,7 +427,7 @@ def check_door():
         ok("reduced-motion block present")
     else:
         bad("reduced-motion block missing from styles.css")
-    idx = read("about.html")
+    idx = read("index.html")
     if 'type="module" src="assets/door.js"' in idx:
         ok("door.js loaded as a module")
     else:
@@ -438,7 +438,7 @@ def check_transition_invariants():
     """The three things that made the transition look broken, guarded."""
     door = read("assets/door.js")
     css = read("styles.css")
-    idx = read("about.html")
+    idx = read("index.html")
     js = read("script.js")
 
     # 1. the camera must stop in front of the wall. Crossing it puts the eye
@@ -715,7 +715,7 @@ def check_phases_and_their_detail_pages():
     page that holds the rest. A summary with no door behind it is just less
     information, which is worse than what it replaced.
     """
-    src = read("about.html")
+    src = read("index.html")
     secs = re.findall(r'<section class="([^"]*)"(?:[^>]*?id="([^"]+)")?', src)
 
     tight = [c for c, _ in secs if "scene--tight" in c]
@@ -751,7 +751,7 @@ def check_phases_and_their_detail_pages():
     css = read("styles.css")
     if re.search(r"\.scene--pin\.scene--tight\{[^}]*padding-top:\s*0", css):
         ok("phases: the pin is exempt from the join's padding")
-    elif "scene--tight" in read("about.html").split('id="bills"')[0][-200:]:
+    elif "scene--tight" in read("index.html").split('id="bills"')[0][-200:]:
         bad("phases: #bills carries .scene--tight with no exemption, so the "
             "join's padding is shrinking the content box the reel's sticky "
             "child travels in while --t still measures the border box. The "
@@ -782,7 +782,7 @@ def check_phases_and_their_detail_pages():
             bad(f"phases: {page} is only {words} words. The material cut from "
                 f"the front page has to actually be somewhere.")
         # and it has to lead back to the form it is arguing for
-        if f'about.html#{anchor_id}' in detail:
+        if f'index.html#{anchor_id}' in detail:
             ok(f"phases: {page} returns to the {anchor_id} form")
         else:
             bad(f"phases: {page} never sends the reader back to the form. "
@@ -836,7 +836,7 @@ def check_a_jump_lands_below_the_bar():
 def check_the_page_reads_without_script():
     """With scripts off, the narrative page still has to say something.
 
-    Every block of prose on about.html is revealed by script: .focus-in ships
+    Every block of prose on index.html is revealed by script: .focus-in ships
     at opacity 0 and an IntersectionObserver adds .in. Nothing adds it when
     there is no script, and measuring it in a sandboxed frame with scripting
     blocked found 38 of the page's 44 blocks of text invisible — a header, a
@@ -847,7 +847,7 @@ def check_the_page_reads_without_script():
     trade-off, it is a blank page, and the fix is three declarations the
     reduced-motion rule already spells out.
     """
-    src = read("about.html")
+    src = read("index.html")
     css = read("styles.css")
 
     if ".focus-in{ filter:blur" not in css.replace("\n", " ") and "opacity:0" not in css:
@@ -856,7 +856,7 @@ def check_the_page_reads_without_script():
 
     ns = re.search(r"<noscript>(.*?)</noscript>", src, flags=re.S)
     if not ns:
-        bad("no-script: about.html has no <noscript>. Every .focus-in block on "
+        bad("no-script: index.html has no <noscript>. Every .focus-in block on "
             "it starts at opacity 0 and only a script ever reveals one, so with "
             "scripts off the page is a header and a footer.")
         return
@@ -954,9 +954,9 @@ def check_both_spellings_find_the_same_place():
     # answered it with "Nothing matched that", because "licence" is two edits
     # from "licensed". A guard that models the implementation loosely is worse
     # than no guard: it reports the failure as a pass.
-    ix = re.search(r'<script[^>]*\bid="ix"[^>]*>(.*?)</script>', read("index.html"), re.S)
+    ix = re.search(r'<script[^>]*\bid="ix"[^>]*>(.*?)</script>', read("help.html"), re.S)
     if not ix:
-        bad("spelling: index.html has no search index, so the vocabulary the "
+        bad("spelling: help.html has no search index, so the vocabulary the "
             "correction works against cannot be read")
         return
     vocab = set(re.findall(r"[a-z]{4,}", ix.group(1).lower()))
@@ -1054,7 +1054,7 @@ def check_asset_budget():
 
 # --------------------------------------------------------------------- a11y
 def check_a11y_basics():
-    src = read("about.html")
+    src = read("index.html")
     if 'class="skip"' in src:
         ok("skip link present")
     else:
@@ -1079,10 +1079,10 @@ def check_a11y_basics():
 
 
 def check_nav_matches_sections():
-    src = read("about.html")
+    src = read("index.html")
     nav = re.findall(r'<nav class="sitehead__links".*?</nav>', src, flags=re.S)
     if not nav:
-        bad("about.html: no primary nav block, so nav wiring cannot be checked")
+        bad("index.html: no primary nav block, so nav wiring cannot be checked")
         return
     targets = re.findall(r'href="#([^"]+)"', nav[0])
     ids = set(ID.findall(src))
@@ -1110,7 +1110,7 @@ def check_nav_matches_sections():
         if not block:
             bad(f"{page}: no primary nav")
             continue
-        order = [a.split("#")[-1] for a in re.findall(r'href="about\.html#([^"]+)"', block[0])]
+        order = [a.split("#")[-1] for a in re.findall(r'href="index\.html#([^"]+)"', block[0])]
         if order == targets:
             ok(f"{page}: nav order matches the homepage")
         else:
@@ -1129,7 +1129,7 @@ BLURB_MAX = 156
 
 def check_doors():
     """#work: four doors that open on click without moving what is above them."""
-    src = read("about.html")
+    src = read("index.html")
     css = read("styles.css")
     js = read("script.js")
 
@@ -1216,7 +1216,7 @@ def check_doors():
 
 def check_reel():
     """#bills: four lines of officialese that roll into what they mean."""
-    src = read("about.html")
+    src = read("index.html")
     css = read("styles.css")
 
     section = strip_comments(src.split('id="bills"', 1)[-1].split("</section>", 1)[0])
@@ -1393,7 +1393,7 @@ def check_audience_order():
     order — four places, edited by hand, and nothing visibly breaks when one of
     them drifts.
     """
-    src = read("about.html")
+    src = read("index.html")
 
     # nav targets must appear in the page in the same order they appear in the nav
     nav = re.search(r'<nav class="sitehead__links".*?</nav>', src, flags=re.S)
@@ -1509,7 +1509,7 @@ def check_mobile_reads():
     """
     css = read("styles.css")
     js = read("script.js")
-    idx = read("about.html")
+    idx = read("index.html")
     blocks = re.findall(r"@media \(max-width:900px\)\{(.*?)\n\}", css, flags=re.S)
     narrow = "\n".join(blocks)
 
@@ -1524,7 +1524,7 @@ def check_mobile_reads():
                        (r"menu-open", "the drawer's body class"),
                        (r"\.nav__links", "the drawer's own nav class")]:
         left = [f for f, src in (("styles.css", css), ("script.js", js),
-                                 ("about.html", idx)) if re.search(dead, src)]
+                                 ("index.html", idx)) if re.search(dead, src)]
         if left:
             bad(f"{what} still appears in {', '.join(left)} — a half-removed "
                 f"drawer leaves dead CSS that can still match, or JS that "
@@ -1534,7 +1534,7 @@ def check_mobile_reads():
 
     head = re.search(r'<header class="sitehead">.*?</header>', idx, flags=re.S)
     if not head:
-        bad("about.html: no .sitehead, so the shared header is not on this half")
+        bad("index.html: no .sitehead, so the shared header is not on this half")
     else:
         block = head.group(0)
         if re.search(r"position:fixed|display:none", narrow):
@@ -1624,7 +1624,7 @@ def check_mobile_reads():
 
 def check_vow():
     """The statement: short version visible, full version one tap away."""
-    src = read("about.html")
+    src = read("index.html")
     section = strip_comments(src.split("scene--vow", 1)[-1].split("</section>", 1)[0])
 
     # The full wording now sits inside a disclosure. That is only acceptable
@@ -1662,67 +1662,8 @@ def check_vow():
         bad("vow: the verbatim statement is not inside the <details>")
 
 
-def check_lane():
-    """The line: a hold scene of beats, each stating its own boundary."""
-    src = read("about.html")
-    css = read("styles.css")
-    # Find the section by its unique heading phrase
-    if 'where the line is' not in src:
-        bad("lane: cannot find the line section by its heading")
-        return
-    section = strip_comments(src.split('where the line is', 1)[-1].split("</section>", 1)[0])
-
-    beats = re.findall(r'<p class="beat focus-in"><b>([^<]+)</b>\s*([^<]+)</p>', section)
-    if len(beats) == 5:
-        ok("lane: five beats")
-    else:
-        bad(f"lane: expected 5 beats, found {len(beats)}. This section has been a "
-            f"checklist, a ten-row register and a set of indented pairs; each "
-            f"failed by giving the reader a shape to decode instead of prose.")
-
-    for lead, body in beats:
-        if lead.endswith("."):
-            ok(f"lane: run-in lead {lead[:32]!r}")
-        else:
-            bad(f"lane: beat lead {lead!r} is not a sentence; .beat is a run-in "
-                f"lead and prose, never a heading over a list")
-        # the section's entire job: every beat has to carry its own boundary,
-        # because nothing is drawn to mark one any more
-        if re.search(r"\b(?:never|no|cannot|until)\b", body, re.I):
-            ok(f"lane: {lead[:26]!r} states its own boundary")
-        else:
-            bad(f"lane: the beat under {lead!r} states no boundary. With no rule "
-                f"and no columns, the prose is the only place the line exists.")
-
-    # every shape this section was cut down from, kept out
-    for pat, why in [(r"\u2713|\u2714", "a tick"), (r"\u2715|\u2717|\u2718", "a cross"),
-                     (r"counter-increment:\s*lane", "a numbered register"),
-                     (r"\.lane__", "bespoke lane styling")]:
-        if re.search(pat, css) or re.search(pat, section):
-            bad(f"lane: {why} is back. The section is .beat and nothing else — "
-                f"the same component the reach and partners scenes use.")
-            break
-    else:
-        ok("lane: no ticks, no numbering, no bespoke styling")
-
-    # organization: the phrase holds while the beats move past it. This is also
-    # what keeps the page's own thread out of the type, since spiralTarget puts
-    # a hold scene's thread down the gutter between its two columns.
-    head = src.split('where the line is', 1)[0][-300:]
-    if "scene--hold" in head and "scene--hold-r" in head:
-        ok("lane: organized as a hold scene, phrase right and beats left")
-    else:
-        bad("lane: the section is no longer a scene--hold; the phrase scrolls "
-            "away from the statements it introduces, and its thread falls back "
-            "to the pin rule that runs down the middle of the type")
-    if "data-pin" not in head:
-        ok("lane: no longer a pin, so nothing scrubs a heading off its own beats")
-    else:
-        bad("lane: data-pin is back on the line section")
-
-
 # ----------------------------------------------------------- the directory
-# index.html is generated, so the first and most important thing to know is
+# help.html is generated, so the first and most important thing to know is
 # whether the file on disk is still what the generator produces. Everything
 # below it is only meaningful if that holds.
 def check_theme_is_shared():
@@ -1794,7 +1735,7 @@ def check_theme_is_shared():
     # The devices that make the two halves recognizable as one place. Each of
     # these was carried across deliberately; losing one is how the directory
     # quietly becomes a different website.
-    front, story = read("index.html"), read("about.html")
+    front, story = read("help.html"), read("index.html")
     helpcss = read("help.css")
     for what, test in [
         ("the brand lockup, identical on both",
@@ -1832,7 +1773,7 @@ def check_theme_is_shared():
 
 
 def check_directory_is_generated():
-    """index.html must equal what build_help.py produces, byte for byte.
+    """help.html must equal what build_help.py produces, byte for byte.
 
     Compared, never rewritten. An earlier version of this check just ran the
     generator, which "passed" by overwriting whatever it found — so a
@@ -1844,7 +1785,7 @@ def check_directory_is_generated():
     followed by `python3 build_help.py`.
     """
     if not (ROOT / "build_help.py").is_file():
-        bad("build_help.py is missing; index.html can no longer be regenerated")
+        bad("build_help.py is missing; help.html can no longer be regenerated")
         return
     sys.path.insert(0, str(ROOT))
     try:
@@ -1882,7 +1823,7 @@ def check_directory_is_generated():
         bad(f"check_links_live.py soft-404 self-check failed: {e}")
 
     rows = build_help.load()
-    want = {"index.html": build_help.render_overview(rows)}
+    want = {"help.html": build_help.render_overview(rows)}
     for need in build_help.NEEDS:
         want[build_help.page_for(need["key"])] = build_help.render_category(need, rows)
     by_need = {n["key"]: build_help.ordered(rows, n["key"]) for n in build_help.NEEDS}
@@ -1956,28 +1897,28 @@ def check_directory_emergency():
     must be one of them and must be first: somebody scanning this page in a
     panic reads the first thing in the block.
     """
-    src = read("index.html")
+    src = read("help.html")
     block = re.search(r'<section class="sos".*?</section>', src, flags=re.S)
     if not block:
-        bad("index.html: the emergency strip is gone")
+        bad("help.html: the emergency strip is gone")
         return
     nums = re.findall(r'href="tel:([^"]+)"', block.group(0))
     if not nums:
-        bad("index.html: the emergency strip has no phone numbers in it")
+        bad("help.html: the emergency strip has no phone numbers in it")
         return
     if nums[0] == "911":
-        ok("index.html: the emergency strip leads with 911")
+        ok("help.html: the emergency strip leads with 911")
     else:
-        bad(f"index.html: the emergency strip leads with {nums[0]}, not 911")
+        bad(f"help.html: the emergency strip leads with {nums[0]}, not 911")
     if len(nums) >= 4:
-        ok(f"index.html: {len(nums)} emergency numbers offered")
+        ok(f"help.html: {len(nums)} emergency numbers offered")
     else:
-        bad(f"index.html: only {len(nums)} emergency numbers; danger, self-harm, "
+        bad(f"help.html: only {len(nums)} emergency numbers; danger, self-harm, "
             f"domestic violence and 'anything else' each need their own")
     if len(set(nums)) == len(nums):
-        ok("index.html: no emergency number is listed twice")
+        ok("help.html: no emergency number is listed twice")
     else:
-        bad(f"index.html: an emergency number is duplicated: {nums}. A heuristic "
+        bad(f"help.html: an emergency number is duplicated: {nums}. A heuristic "
             f"once put two copies of 988 and a hospital switchboard here.")
 
 
@@ -2032,26 +1973,26 @@ def check_directory_no_js_contract():
     else:
         ok("help.js builds markup only for front-page search results")
 
-    src = read("index.html")
+    src = read("help.html")
     m = re.search(r'<script type="application/json" id="ix">(.*?)</script>', src, re.S)
     if not m:
-        bad("index.html: the search index is gone, so the front page's search "
+        bad("help.html: the search index is gone, so the front page's search "
             "box can no longer reach anything that is not one of the previews")
         return
     try:
         ix = json.loads(m.group(1).replace("<\\/", "</"))
     except Exception as e:
-        bad(f"index.html: the search index is not valid JSON ({e}); the front "
+        bad(f"help.html: the search index is not valid JSON ({e}); the front "
             "page's search silently does nothing")
         return
 
     import build_help
     rows = build_help.load()
     if len(ix["rows"]) == len(rows):
-        ok(f"index.html: the search index covers all {len(rows)} resources, not "
+        ok(f"help.html: the search index covers all {len(rows)} resources, not "
            "only the ones previewed")
     else:
-        bad(f"index.html: the search index has {len(ix['rows'])} entries for "
+        bad(f"help.html: the search index has {len(ix['rows'])} entries for "
             f"{len(rows)} resources. Searching the front page cannot find the "
             "difference.")
 
@@ -2098,7 +2039,7 @@ def check_no_stale_counts():
         r"pages?|categor(?:y|ies))", re.I)
 
     found = []
-    for page in RESIDENT_PAGES + ["about.html"]:
+    for page in RESIDENT_PAGES + ["index.html"]:
         text = strip_tags(strip_comments(read(page)))
         for m in countish.finditer(text):
             said, what = SPELLED[m.group(1).lower()], m.group(2).lower()
@@ -2116,7 +2057,7 @@ def check_no_stale_counts():
 
     # The two counts that ARE allowed have to be the generated ones.
     rows = build_help.load()
-    if re.search(r"list of <b>%d places</b>" % len(rows), read("index.html")):
+    if re.search(r"list of <b>%d places</b>" % len(rows), read("help.html")):
         ok(f"the one count in the front page's prose is the generated {len(rows)}")
     else:
         bad("the front page's total is not the generated count")
@@ -2442,7 +2383,7 @@ def check_page_weight():
     # and no search index, and the reader they exist for is on the worst
     # connection here — so a step change on those is the one most worth
     # catching.
-    budgets = [("index.html", 90), *[(p, 40) for p in CATEGORY_PAGES],
+    budgets = [("help.html", 90), *[(p, 40) for p in CATEGORY_PAGES],
                *[(p, 14) for p in LANGUAGE_PAGES]]
     worst = 0
     for page, kb in budgets:
@@ -2814,7 +2755,7 @@ def check_one_header():
     The look is in tokens.css. What varies per half is six color tokens and
     one line of positioning — and this fails if anything else does.
     """
-    PAGES = [p for p in RESIDENT_PAGES + ["about.html", "privacy.html", "terms.html"]
+    PAGES = [p for p in RESIDENT_PAGES + ["index.html", "privacy.html", "terms.html"]
              if (ROOT / p).is_file()]
     grab = re.compile(r'<header class="sitehead">(.*?)</header>', re.S)
     tabs = re.compile(r'<a href="([^"]+)"[^>]*>([^<]+)</a>')
@@ -2896,7 +2837,7 @@ def check_one_header():
         if "--head-bg" not in src:
             bad(f"{sheet} never sets --head-bg, so its header has no ground")
     ok("each half sets only colors and position; the bar itself is shared")
-    # Nothing may sit between the skip link and the header. about.html had its
+    # Nothing may sit between the skip link and the header. index.html had its
     # journey rail — eleven fixed scroll-position dots — earlier in the DOM,
     # so a keyboard user tabbed through all of them before reaching the site's
     # primary navigation. The rail is position:fixed, so its place in the
@@ -2977,8 +2918,8 @@ def check_language_header():
             bad(f"{page}: {len(got)} tabs, not five — the bar has drifted "
                 f"from the English one")
             continue
-        want_href = [build_help.lang_page(L["key"]), "about.html#bills",
-                     "about.html#work", "about.html#students", "about.html#partners"]
+        want_href = [build_help.lang_page(L["key"]), "index.html#bills",
+                     "index.html#work", "index.html#students", "index.html#partners"]
         want_label = i18n.UI[L["key"]]["nav"]
         for i, role in enumerate(ROLES):
             href, attrs, label = got[i]
@@ -3377,9 +3318,9 @@ def check_hreflang_is_reciprocal():
     which for this site is the English one — the page they cannot read.
     """
     import build_help
-    group = ["index.html"] + [build_help.lang_page(L["key"])
+    group = ["help.html"] + [build_help.lang_page(L["key"])
                              for L in build_help.LANGUAGES]
-    want = {"x-default": "index.html", "en": "index.html"}
+    want = {"x-default": "help.html", "en": "help.html"}
     for L in build_help.LANGUAGES:
         want[L["tag"]] = build_help.lang_page(L["key"])
 
@@ -3443,7 +3384,7 @@ def check_language_spacing_is_shared():
 def check_page_cannot_be_dragged_sideways():
     """At 320px with text at 200%, no page may pan.
 
-    about.html could be dragged 78 pixels into nothing. No text was lost — the
+    index.html could be dragged 78 pixels into nothing. No text was lost — the
     overflow is a sticky column in one of the hold scenes — but a page sliding
     under your thumb while you are trying to scroll down is its own kind of
     broken, and WCAG 1.4.10 does not care that what slid off was empty.
@@ -4182,15 +4123,15 @@ def check_directory_clusters():
     taps and lands nowhere.
     """
     import build_help
-    src = read("index.html")
+    src = read("help.html")
     rows = build_help.load()
 
     clusters = re.findall(r'<section class="cl" id="n-([a-z\-]+)"', src)
     keys = [n["key"] for n in build_help.NEEDS]
     if clusters == keys:
-        ok(f"index.html: all {len(keys)} clusters present, in the order NEEDS defines")
+        ok(f"help.html: all {len(keys)} clusters present, in the order NEEDS defines")
     else:
-        bad(f"index.html: the clusters {clusters} do not match NEEDS {keys}")
+        bad(f"help.html: the clusters {clusters} do not match NEEDS {keys}")
 
     # Every cluster hands off to its own page, and the count it promises is
     # the count that page delivers. A "See all 19 places" over a page holding
@@ -4201,17 +4142,17 @@ def check_directory_clusters():
         block = re.search(
             r'<section class="cl" id="n-%s".*?</section>' % re.escape(key), src, re.S)
         if not block:
-            bad(f"index.html: no cluster for {key}")
+            bad(f"help.html: no cluster for {key}")
             continue
         block = block.group(0)
         if f'href="{page}"' not in block:
-            bad(f"index.html: the {key} cluster does not link to {page}")
+            bad(f"help.html: the {key} cluster does not link to {page}")
             continue
         promised = re.search(r'class="cl__all"[^>]*>See (?:all )?(\d+)? ?', block)
         want = len(build_help.ordered(rows, key))
         actual = len(re.findall(r'<li class="r"', read(page)))
         if promised and promised.group(1) and int(promised.group(1)) != want:
-            bad(f"index.html: the {key} cluster promises {promised.group(1)} "
+            bad(f"help.html: the {key} cluster promises {promised.group(1)} "
                 f"places; there are {want}")
         elif actual != want:
             bad(f"{page} renders {actual} rows for {want} resources")
@@ -4234,10 +4175,10 @@ def check_directory_clusters():
     expect = sum(min(per, len(build_help.ordered(rows, n["key"])))
                  for n in build_help.NEEDS)
     if len(previews) == expect:
-        ok(f"index.html: {len(previews)} previews, {per} per cluster — the front "
+        ok(f"help.html: {len(previews)} previews, {per} per cluster — the front "
            "page shows a way in, not the whole directory")
     else:
-        bad(f"index.html: {len(previews)} previews where {expect} were expected. "
+        bad(f"help.html: {len(previews)} previews where {expect} were expected. "
             "The front page's job is to not be the whole directory.")
 
     # A bucket rule that matches nothing has usually rotted — a label got
@@ -4546,7 +4487,7 @@ def check_directory_needs():
     # A cluster preview must be a real resource on the page it links to, with
     # the same name. A preview quoting a name the page does not carry is the
     # front page advertising something that is not there.
-    front = read("index.html")
+    front = read("help.html")
     for need in build_help.NEEDS:
         block = re.search(r'<section class="cl" id="n-%s".*?</section>'
                           % re.escape(need["key"]), front, re.S)
@@ -4556,7 +4497,7 @@ def check_directory_needs():
         page = read(build_help.page_for(need["key"]))
         for nm in names:
             if f">{nm}</h3>" not in page:
-                bad(f'index.html: the {need["key"]} cluster previews {nm!r}, which '
+                bad(f'help.html: the {need["key"]} cluster previews {nm!r}, which '
                     f'is not on {build_help.page_for(need["key"])}')
     ok("every preview on the front page is a resource that is really on the "
        "page it links to")
@@ -4564,44 +4505,44 @@ def check_directory_needs():
 
 def check_directory_a11y():
     """The basics, on the page most likely to be read by somebody who needs them."""
-    src = read("index.html")
+    src = read("help.html")
     if src.count("<h1") == 1:
-        ok("index.html: exactly one h1")
+        ok("help.html: exactly one h1")
     else:
-        bad(f"index.html: expected 1 h1, found {src.count('<h1')}")
+        bad(f"help.html: expected 1 h1, found {src.count('<h1')}")
     if 'class="skip"' in src:
-        ok("index.html: skip link present")
+        ok("help.html: skip link present")
     else:
-        bad("index.html: no skip link")
+        bad("help.html: no skip link")
     if 'aria-live="polite"' in src:
-        ok("index.html: the result count is announced when the list changes")
+        ok("help.html: the result count is announced when the list changes")
     else:
-        bad("index.html: filtering changes the list with no live region, so a "
+        bad("help.html: filtering changes the list with no live region, so a "
             "screen reader user gets no feedback that anything happened")
 
     ids = re.findall(r'\sid="([^"]+)"', src)
     dupes = {i for i in ids if ids.count(i) > 1}
     if dupes:
-        bad(f"index.html: duplicate id(s) {sorted(dupes)[:5]}; every anchor to "
+        bad(f"help.html: duplicate id(s) {sorted(dupes)[:5]}; every anchor to "
             f"one of these lands on whichever came first")
     else:
-        ok(f"index.html: all {len(ids)} ids are unique")
+        ok(f"help.html: all {len(ids)} ids are unique")
 
     # Seven resources are filed under two needs and so are rendered twice. The
     # count the page prints must be resources, not rows, or it overstates the
     # directory by exactly the number of things we cross-filed.
     keys = re.findall(r'data-key="([^"]+)"', src)
-    front = read("index.html")
+    front = read("help.html")
     keys = re.findall(r'<li class="r"[^>]*data-key="([^"]+)"',
                       "\n".join(read(p) for p in CATEGORY_PAGES))
     lede = re.search(r"list of <b>(\d+) places</b>", front)
     if not lede:
-        bad("index.html: the masthead no longer states how many places are listed")
+        bad("help.html: the masthead no longer states how many places are listed")
     elif int(lede.group(1)) == len(set(keys)):
-        ok(f"index.html: the masthead's count ({lede.group(1)}) is unique "
+        ok(f"help.html: the masthead's count ({lede.group(1)}) is unique "
            f"resources, not the {len(keys)} rows rendered across the pages")
     else:
-        bad(f"index.html: the masthead claims {lede.group(1)} places but the "
+        bad(f"help.html: the masthead claims {lede.group(1)} places but the "
             f"category pages carry {len(set(keys))} distinct resources")
 
     # Every category page states its own count too, and that one has to be the
@@ -4667,18 +4608,18 @@ def check_home_offers_help():
     "the help is real, free and invisible" with a partner pitch, and every
     call to action on it was addressed to somebody who was not frightened.
     """
-    src = read("about.html")
+    src = read("index.html")
     hero = re.search(r'<div class="hero__cta">(.*?)</div>', src, flags=re.S)
-    if hero and 'href="index.html"' in hero.group(1):
+    if hero and 'href="help.html"' in hero.group(1):
         first = re.search(r'href="([^"]+)"', hero.group(1)).group(1)
-        if first == "index.html":
-            ok("about.html: the hero's first call to action is finding help")
+        if first == "help.html":
+            ok("index.html: the hero's first call to action is finding help")
         else:
-            bad(f"about.html: the hero leads with {first}, not the directory. "
+            bad(f"index.html: the hero leads with {first}, not the directory. "
                 f"The headline is addressed to somebody with a bill they "
                 f"cannot pay; the first button under it should be too.")
     else:
-        bad("about.html: the hero does not offer the directory at all")
+        bad("index.html: the hero does not offer the directory at all")
 
     # The #help chapter — a heading, seventeen need links and the ten language
     # links — was removed deliberately. That makes the hero's button the only
@@ -4687,19 +4628,19 @@ def check_home_offers_help():
     # somebody in trouble anywhere.
     routes = set(re.findall(r'href="((?:index|help-[a-z-]+)\.html)"', src))
     if not routes:
-        bad("about.html no longer links to the directory at all. Somebody who "
+        bad("index.html no longer links to the directory at all. Somebody who "
             "lands here with a bill they cannot pay has nowhere to go.")
     else:
-        ok(f"about.html reaches the directory ({', '.join(sorted(routes))})")
+        ok(f"index.html reaches the directory ({', '.join(sorted(routes))})")
 
     # And the resident story still has to come before the two pitches.
     pos_bills = src.find('id="bills"')
     pos_students = src.find('id="students"')
     pos_partners = src.find('id="partners"')
     if -1 < pos_bills < pos_students < pos_partners:
-        ok("about.html: residents, then students, then partners")
+        ok("index.html: residents, then students, then partners")
     else:
-        bad("about.html: the resident chapter no longer comes first. Somebody "
+        bad("index.html: the resident chapter no longer comes first. Somebody "
             "in trouble should not scroll past a volunteer pitch and a partner "
             "pitch to reach the help.")
 
@@ -4714,26 +4655,26 @@ def check_home_offers_help():
     want = {build_help.lang_page(L["key"]) for L in build_help.LANGUAGES}
     direct = sorted(w for w in want if f'href="{w}"' in src)
     if len(direct) == len(want):
-        ok(f"about.html: all {len(direct)} language pages are linked directly")
-    elif 'href="index.html"' in src:
-        onward = read("index.html")
+        ok(f"index.html: all {len(direct)} language pages are linked directly")
+    elif 'href="help.html"' in src:
+        onward = read("help.html")
         missing = sorted(w for w in want if f'href="{w}' not in onward)
         if missing:
-            bad(f"about.html reaches the directory but the directory does not "
+            bad(f"index.html reaches the directory but the directory does not "
                 f"reach {missing[:3]}. With the #help chapter gone that chain "
                 f"is the only route a reader who cannot read English has.")
         else:
-            ok(f"about.html reaches all {len(want)} language pages through the "
+            ok(f"index.html reaches all {len(want)} language pages through the "
                f"directory (two taps, since the #help chapter was removed)")
     else:
-        bad(f"about.html: only {len(langs)} of {len(want)} language pages linked; somebody who "
+        bad(f"index.html: only {len(langs)} of {len(want)} language pages linked; somebody who "
             f"cannot read the headline needs a way in from here")
 
 
 # The home page names four routes out of a medical bill. Each one is a promise
 # that the directory can be asked about it, and for a while none of them could
-# be: index.html contained no row mentioning charity care, an external appeal, a
-# denial, an appeal, a medical bill or medical debt, while about.html sent
+# be: help.html contained no row mentioning charity care, an external appeal, a
+# denial, an appeal, a medical bill or medical debt, while index.html sent
 # people to the directory for exactly those things. Nothing broke, nothing
 # looked wrong, and the page was simply not true.
 #
@@ -4750,10 +4691,10 @@ DOORS = {
 
 def check_doors_have_resources():
     """Every route the home page names must be answerable from the directory."""
-    idx = read("about.html")
+    idx = read("index.html")
     named = re.findall(r'<span class="ways__name">([^<]+)</span>', idx)
     if not named:
-        bad("about.html: no doors found, so the promises cannot be checked")
+        bad("index.html: no doors found, so the promises cannot be checked")
         return
 
     helptext = strip_tags("\n".join(read(p) for p in RESIDENT_PAGES)).lower()
@@ -4763,7 +4704,7 @@ def check_doors_have_resources():
         door = door.replace("&amp;", "&").strip()
         terms = DOORS.get(door)
         if terms is None:
-            bad(f'about.html names the route "{door}" but check.py has no entry '
+            bad(f'index.html names the route "{door}" but check.py has no entry '
                 f'for it in DOORS. Add one naming the words that prove the '
                 f'directory can answer it, or the page is promising something '
                 f'nothing backs up.')
@@ -4968,7 +4909,7 @@ def check_the_skip_link_works():
                 continue
             rule = re.search(rf"\.{re.escape(cls)}\b[^{{}}]*\{{([^}}]*)\}}", css, re.S)
             # A section that fills the viewport and centers its own content
-            # does not need one: about.html skips to .scene, and measured at
+            # does not need one: index.html skips to .scene, and measured at
             # 320px the first line of it lands at 227px against a header that
             # ends at 203.
             if rule and re.search(r"min-height\s*:\s*100(?:s?v|d)h", rule.group(1)):
@@ -4983,7 +4924,7 @@ def check_category_pages_keep_their_jump_nav():
     """Seventeen kinds of help, and seven groups inside each one, is too much
     to scroll past.
 
-    Two navs do that work and both are the page's table of contents: index.html
+    Two navs do that work and both are the page's table of contents: help.html
     opens with `.jump`, a link per kind of help, and every category page opens
     with `.rail__nav`, a link per group on it. On a phone either one is the
     difference between finding the right block and giving up. Each has to be
@@ -5021,7 +4962,7 @@ def check_category_pages_keep_their_jump_nav():
         else:
             ok(f"{page} jumps to all {len(links)} of its sections")
 
-    one("index.html", "jump", "n-")
+    one("help.html", "jump", "n-")
     for page in sorted(str(q) for q in Path(".").glob("help-*.html")):
         if page not in langs:
             one(page, "rail__nav", "g-")
@@ -5290,7 +5231,7 @@ def check_a_page_without_script_does_not_trust_head_h():
     Measured at 320px: Spanish and French 251px, English and Russian 203,
     Arabic and Chinese 155 — against a declared 116 in every case.
 
-    index.html and about.html publish the measured height with a
+    help.html and index.html publish the measured height with a
     ResizeObserver, so the guess never survives first paint. The ten language
     pages ship no script on purpose, and there the guess stood: a tap on any
     section link landed the heading up to 121px under a bar that was still
@@ -5522,7 +5463,7 @@ def check_the_language_carryover_cannot_be_fed_anything():
 def check_nothing_starts_under_the_bar_without_script():
     """What the narrative pages look like before the script runs.
 
-    about.html, privacy.html and terms.html carry a fixed header, so anything
+    index.html, privacy.html and terms.html carry a fixed header, so anything
     at the top of their first section has to be pushed clear of it. That push
     reads --head-h, and until a ResizeObserver publishes the measured height
     --head-h is whatever tokens.css says — which is what a reader with
@@ -5613,7 +5554,7 @@ def check_english_opens_the_language_row():
     """
     import build_help
 
-    pages = ["index.html"] + [build_help.lang_page(k) for k in build_help.LANG_SLUG]
+    pages = ["help.html"] + [build_help.lang_page(k) for k in build_help.LANG_SLUG]
     orders = {}
     for f in pages:
         if not os.path.exists(f):
@@ -5660,10 +5601,10 @@ def check_the_filters_are_a_row_of_dropdowns():
     """
     import build_help
 
-    src = read("index.html")
+    src = read("help.html")
     facets = re.findall(r'<details class="facet" data-facet="([a-z]+)"', src)
     if sorted(facets) != ["boro", "flags", "lang"]:
-        bad(f"index.html has facets {facets}, expected boro, lang and flags")
+        bad(f"help.html has facets {facets}, expected boro, lang and flags")
     else:
         ok("three facets, one dropdown each")
 
@@ -5709,7 +5650,7 @@ def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
                check_billing_boundaries, check_forms, check_labels, check_door,
-               check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_lane, check_doors,
+               check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_doors,
                check_one_phase_at_a_time, check_phases_and_their_detail_pages,
                check_a_jump_lands_below_the_bar, check_the_page_reads_without_script,
                check_both_spellings_find_the_same_place,
