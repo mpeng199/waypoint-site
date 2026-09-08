@@ -763,22 +763,6 @@ def check_phases_and_their_detail_pages():
         bad("phases: the page uses only one of the two spacings, so nothing "
             "distinguishes a new part of the argument from a continuation")
 
-    # The pin is the one block whose padding is load-bearing. Its sticky child
-    # fills the content box while --t is measured off the section's border box,
-    # so any padding on it desynchronises the two: 13vh of join meant the first
-    # 8% of the reel played before the child was pinned. Measured after the
-    # exemption, the scrub distance and the sticky travel are both 1485px.
-    css = read("styles.css")
-    if re.search(r"\.scene--pin\.scene--tight\{[^}]*padding-top:\s*0", css):
-        ok("phases: the pin is exempt from the join's padding")
-    elif "scene--tight" in read("index.html").split('id="bills"')[0][-200:]:
-        bad("phases: #bills carries .scene--tight with no exemption, so the "
-            "join's padding is shrinking the content box the reel's sticky "
-            "child travels in while --t still measures the border box. The "
-            "animation and the pin come apart.")
-    else:
-        ok("phases: the pin does not carry a join")
-
     # ---- the summaries, and the doors behind them ----
     for anchor_id, page, what in [("students", "students.html", "the volunteer role"),
                                   ("partners", "partners.html", "the ask")]:
@@ -1232,176 +1216,6 @@ def check_doors():
     else:
         bad("doors: .ways__blurb lost its three-line reserve; opening a row now "
             "changes the section's height")
-
-
-def check_reel():
-    """#bills: four lines of officialese that roll into what they mean."""
-    src = read("index.html")
-    css = read("styles.css")
-
-    section = strip_comments(src.split('id="bills"', 1)[-1].split("</section>", 1)[0])
-    # split into row blocks and read each one, rather than one regex spanning
-    # the whole nested shape: a brittle mega-pattern reports "0 rows" for a
-    # markup reflow that broke nothing
-    parts = re.split(r'<div class="reel__row', section)[1:]
-    rows = []
-    for part in parts:
-        at = re.search(r'style="--at:([.\d]+)"', part)
-        n = re.search(r'<span class="reel__strip" style="--n:(\d+)">', part)
-        strip = part.split('class="reel__strip"', 1)[-1].split("</span>\n            </span>", 1)[0]
-        phrases = re.findall(r"<span[^>]*>([^<]+)</span>", strip)
-        rows.append({"at": float(at.group(1)) if at else None,
-                     "n": int(n.group(1)) if n else None,
-                     "phrases": phrases,
-                     "turn": part.startswith(" reel__row--turn")})
-    if len(rows) == 4:
-        ok("reel: four rows")
-    else:
-        bad(f"reel: expected 4 rows, found {len(rows)}")
-
-    # thresholds have to climb, or two reels roll on top of each other
-    ats = [r["at"] for r in rows if r["at"] is not None]
-    if len(ats) == len(rows) and ats == sorted(ats) and len(set(ats)) == len(ats):
-        ok(f"reel: rows land in order {ats}")
-    else:
-        bad(f"reel: --at values {ats} are not strictly increasing; rows will "
-            f"roll over each other instead of in sequence")
-
-    for r in rows:
-        # a strip must declare the number of lines it actually has, or the roll
-        # lands between two of them and the window shows half of each
-        if r["n"] == len(r["phrases"]):
-            ok(f"reel: --n:{r['n']} matches its {len(r['phrases'])} lines")
-        else:
-            bad(f"reel: a strip declares --n:{r['n']} but holds "
-                f"{len(r['phrases'])} lines; the roll will stop between two of "
-                f"them and show half of each")
-
-    # The row must not resize as it rolls. The reference buys that with a hidden
-    # sizer because its reel is inline; this one buys it structurally, and these
-    # two declarations ARE the guarantee — make the window inline-block or the
-    # strip static and the width starts following whichever phrase is showing.
-    win = re.search(r"\.reel__win\{(.*?)\}", css, flags=re.S)
-    strip = re.search(r"\.reel__strip\{(.*?)\}", css, flags=re.S)
-    if win and "display:block" in win.group(1):
-        ok("reel: the window is a block, so its width is the column's")
-    else:
-        bad("reel: .reel__win is no longer display:block; its width will follow "
-            "whichever phrase is showing and the row will resize mid-roll")
-    # --line is shared by the window and by spans set at .62em. A custom
-    # property is re-resolved per element, so an em value means one thing on
-    # the window and a smaller thing on the officialese lines: the steps and
-    # the window height stop agreeing and the roll walks off the strip. This
-    # one shipped broken until the render showed two phrases in the window.
-    if win:
-        m = re.search(r"--line:([^;]+);", win.group(1))
-        if not m:
-            bad("reel: .reel__win no longer declares --line, which is the step "
-                "size for the roll and the height of the window at once")
-        elif "em" in m.group(1).replace("rem", ""):   # rem is fine, em is not
-            bad(f"reel: --line is {m.group(1).strip()!r} — an em basis is "
-                f"re-resolved on every span, so the strip's steps and the "
-                f"window's height stop agreeing and the roll overshoots")
-        else:
-            ok("reel: --line has one basis, so steps and window height agree")
-    if strip and "position:absolute" in strip.group(1):
-        ok("reel: the strip is out of flow, so it cannot size the window")
-    else:
-        bad("reel: .reel__strip left the flow; the longest phrase in it now sets "
-            "the row width")
-
-    # Wherever the pin is released, --t never moves, so a reel left at --k:0
-    # shows four lines of officialese and the section argues against itself.
-    # Derived rather than listed by query: the releasing block is whichever one
-    # makes .pin__sticky static, and that pairing is the invariant. Listing the
-    # queries by hand missed the narrow one once, and then went stale the moment
-    # the release moved to a different query.
-    media = re.findall(r"@media ([^{]+)\{(.*?)\n\}", css, flags=re.S)
-    released = [(q.strip(), b) for q, b in media
-                if re.search(r"\.pin__sticky\{[^}]*position:static", b)]
-    if not released:
-        bad("reel: nothing releases the pin any more — reduced motion and a "
-            "viewport too short to hold a sticky both need a stacked fallback")
-    for q, b in released:
-        if re.search(r"\.reel__row\{[^}]*--k:1", b):
-            ok(f"reel: lands on the plain meaning where the pin is released ({q})")
-        else:
-            bad(f"reel: {q} releases the pin but leaves --k at 0, so the reel "
-                f"shows officialese nobody can scroll past")
-    # and released blocks must give the sentences their own rows back, because
-    # the phone stacks all four into one grid cell
-    for q, b in released:
-        if re.search(r"\.pin__line\{[^}]*grid-area:auto", b):
-            ok(f"lines: released, the sentences get their own rows back ({q})")
-        else:
-            bad(f"lines: {q} releases the pin but leaves .pin__line in the "
-                f"phone's shared cell, so all four sentences render on top of "
-                f"each other")
-
-    # The phone KEEPS the pin, and that is the whole reason the section reads
-    # there. Released, the reel's four translations and the four sentences that
-    # narrate them arrive together, and the narration turns into repetition:
-    # "Stripped down it says: they said no, and this is yours to pay" lands
-    # under a reel that has already said both, in those words.
-    narrow_blocks = [b for q, b in media if q.strip() == "(max-width:900px)"]
-    pinned = any(re.search(r"\.scene--pin\{[^}]*height:[\d.]+svh", b) for b in narrow_blocks)
-    shared_cell = any(re.search(r"\.pin__line\{[^}]*grid-area:1/1", b) for b in narrow_blocks)
-    if pinned and shared_cell:
-        ok("lines: a phone keeps the pin, so one sentence is on screen at a time")
-    else:
-        bad("lines: the phone has released the pin again. That hands a reader "
-            "holding a real denial notice eight blocks at once — four "
-            "translations followed by four sentences restating them — instead "
-            "of one sentence at a time over a reel that is still translating")
-
-    # the payoff: the last row has to turn, and it is the only gold on the artwork
-    if "You are allowed to argue" in section:
-        ok("reel: the last row lands on the door, not on more officialese")
-    else:
-        bad("reel: the turn is gone; the section exists to end somewhere useful")
-    if re.search(r"\.reel__row--turn \.reel__plain\{[^}]*var\(--gold\)", css):
-        ok("reel: gold is spent on the turn")
-    else:
-        bad("reel: the turn is no longer gold, which is the one signal that the "
-            "last line is different from the three above it")
-
-    # illustration, not content
-    if re.search(r'<div class="reel" aria-hidden="true">', src):
-        ok("reel: the artwork is hidden from assistive tech")
-    else:
-        bad('reel: .reel must carry aria-hidden="true"; a screen reader reading '
-            'every officialese phrase the reel passes learns nothing')
-
-    # state is a pure function of --t, so no parked frame is undressed
-    if re.search(r"--k:clamp\(0, calc\(\(var\(--t,0\) - var\(--at\)\)", css):
-        ok("reel: every row's position is a pure function of --t")
-    else:
-        bad("reel: rows no longer derive --k from --t; a parked scroll can land "
-            "on a frame nothing has composed")
-    # feather while moving, crisp when still
-    if re.search(r"--feather:min\(", css) and re.search(r"mask-image:linear-gradient\(180deg, transparent 0,", css):
-        ok("reel: the window feathers while rolling and goes crisp when landed")
-    else:
-        bad("reel: the feather mask is gone; the reel now clips its phrases with "
-            "a hard edge top and bottom while it rolls")
-
-    # the line masks: the three details that make or break the reveal
-    mask = re.search(r"\.pin__line > span\{(.*?)\}", css, flags=re.S)
-    inner = re.search(r"\.pin__line > span > span\{(.*?)\}", css, flags=re.S)
-    if mask and "overflow:clip" in mask.group(1):
-        ok("line masks: overflow:clip, so the mask cannot become a scroll container")
-    else:
-        bad("line masks: .pin__line > span must use overflow:clip, not hidden")
-    if mask and "padding-bottom:var(--desc)" in mask.group(1) \
-            and "margin-bottom:calc(var(--desc) * -1)" in mask.group(1):
-        ok("line masks: descenders have room, and the line box still measures the same")
-    else:
-        bad("line masks: the descender allowance is gone; g, y and p will shear")
-    if inner and "translateY(calc(100% + var(--desc)))" in inner.group(1):
-        ok("line masks: the parked line clears the descender allowance too")
-    else:
-        bad("line masks: parking at plain 100% leaves the glyph tops showing "
-            "through the descender padding")
 
 
 def check_audience_order():
@@ -6040,7 +5854,7 @@ def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
                check_billing_boundaries, check_forms, check_labels, check_door,
-               check_transition_invariants, check_reel, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_doors,
+               check_transition_invariants, check_audience_order, check_mobile_budget, check_mobile_reads, check_vow, check_doors,
                check_one_phase_at_a_time, check_phases_and_their_detail_pages,
                check_a_jump_lands_below_the_bar, check_the_page_reads_without_script,
                check_both_spellings_find_the_same_place,

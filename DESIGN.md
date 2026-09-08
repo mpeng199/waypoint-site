@@ -4,17 +4,16 @@ A scroll-driven journey through a painterly landscape, with warm green + gold pa
 
 ## The shape of the page
 
-`index.html` is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between it cycles between four registers so the page never settles into one rhythm: the phrase-per-screen scenes, a denser **hold scene** (twice, where the phrase needs to keep its place while substance moves past it), a **pinned scene** (once) where the journey parks and hands the screen to something that is not prose, and one **section you operate** rather than scroll.
+`index.html` is one continuous journey. It opens on **the door** (real-time WebGL), carries you through it into the painted world, and closes on the same door seen from the far side. In between it cycles between three registers so the page never settles into one rhythm: the phrase-per-screen scenes, a denser **hold scene** (twice, where the phrase needs to keep its place while substance moves past it), and one **section you operate** rather than scroll.
 
-**The unit is a phase, not a block.** Twelve blocks make six phases. A phase is
+**The unit is a phase, not a block.** Ten blocks make five phases. A phase is
 several blocks that belong together and are meant to be read together: they
 carry `.scene--tight` and join with `--gap-in` (13vh) instead of `--gap` (32vh).
 Only `--gap` separates phases.
 
     ── the door
-    ── real, free, invisible  ↳ [pin] the reel
-    ── what we are  ↳ [doors] where the thread leads  ↳ the honesty statement  ↳ [hold] the line
-    ── FOR STUDENTS: the corps  ↳ students form
+    ── the problem  ↳ what we do  ↳ [doors] where the thread leads  ↳ the honesty statement
+    ── FOR STUDENTS: [hold] the corps  ↳ students form
     ── FOR PARTNERS: [hold] who we reach and what we ask  ↳ partner form
     ── the door, from the other side
 
@@ -28,9 +27,10 @@ page already builds to, carries 661 words over 12 screens at 55 to a screen —
 its pinned sections are long because they are doing something, and the
 informational ones between them are dense and short. This page had no dense
 register at all, so finding a section meant scrolling past every other one and
-a chapter sat a blank screen away from its own sign-up form. It is now 17.6
-screens at 55 words to a screen, and no boundary crosses more than 0.71 of a
-blank screen.
+a chapter sat a blank screen away from its own sign-up form. It is now 14.0
+screens at 59 words to a screen, and no boundary crosses more than 0.65 of a
+blank screen. (Measured at 1440x900: page height over viewport height, and the
+largest blank run between two blocks of type.)
 
 `check_one_phase_at_a_time` guards it: every boundary must still resolve through
 `--gap` rather than a literal, both tokens have a band, and `--gap-in` has to be
@@ -81,97 +81,38 @@ nav walks the page in ascending document order, that `#students` precedes
 the *first* scene of its block rather than the second — otherwise the nav lands
 one scene past the label meant to introduce it.
 
-### Pinned scenes
+### The problem, then what we do
 
-Each is a section taller than the viewport holding a sticky child that fills it;
-scrolling the surplus height scrubs `--t` from 0 to 1. That one variable drives
-everything, and `script.js` sets nothing else:
+The two scenes after the door are the page saying, in order and in plain words,
+what it is against and what it is:
 
-| Pin | What `--t` does | The point it makes |
-|---|---|---|
-| **The reel** (`#bills`) | Rolls four lines of officialese, one at a time, into what they actually mean | The letter is written in a language built for somebody else, and its last line is a door |
+| Scene | Says |
+|---|---|
+| **The problem** (`#bills`) | The help New York already built — financial assistance, the state's appeal, free counselors — and that almost nobody who qualifies is ever told it exists |
+| **What we do** | Waypoint is a trained student volunteer corps; we find people stuck with a bill or a denial, name the free professional who handles it, and stay while they call |
 
-#### The reel (`#bills`)
+They replaced *"Real. Free. And invisible."* and a pinned reel that rolled four
+lines of officialese off a denial notice into what they meant. Both of those
+scenes were about the letter. Neither said who we are or what we do, so a
+reader who did not already know had to infer it from the tone — and the site's
+whole failure mode is a frightened person not being told plainly what is on
+offer.
 
-**Reference: the odometer on [leocussen.edu.au](https://www.leocussen.edu.au),
-an Awwwards nominee** — the Leo Cussen Centre for Law, an institution whose job
-is making dense professional material navigable for people who need it, with
-accessibility built in from the start. Its statistics module rolls each digit on
-a vertical strip that settles on a value. Two details there are what make it read
-as engineering rather than as decoration, and both are carried over — one
-literally, one not.
+The reel was the best-made thing on the page, and it went with them. It was
+tried once more in the student chapter, translating a volunteer posting instead
+of a denial notice, and cut there too: a pinned screen is 2.65 screens of scroll
+spent performing something the prose beside it already says in four lines. The
+mechanism is in the history if a section ever needs it again.
 
-The section's claim is that a denial letter is written in a language built for
-somebody else. So the artwork is four lines lifted off a real notice, each on a
-reel that rolls through the officialese and lands on what it actually means:
+They are one phase: the problem opens it, what we do continues it with
+`.scene--tight`, and `#work` continues it again with the four names of the
+solution. Nothing between them is a full phase boundary, because the argument
+does not pause there.
 
-    Determination           ADVERSE DETERMINATION      → They said no.
-    Patient responsibility  PATIENT RESPONSIBILITY     → This is yours to pay.
-    Reason code             REASON CODE N130           → No reason you can read.
-    Appeal rights           APPEAL RIGHTS · SEE REVERSE → You are allowed to argue.
-
-The two voices are set to look nothing alike — officialese small, tracked and
-uppercase in Inter; what it means in Fraunces, the face the rest of the page
-speaks in. The last row is the turn and the only gold on the artwork: on a real
-denial it is the one line that points anywhere useful, and it is the smallest
-type on the page. It hands straight to `#work` ("There is a solution for this"), and
-to the counselors there who "argue with insurers for a living".
-
-This replaced a static plate of a denial notice — an accurate picture of a bill,
-which is one order of thought short of the point. A picture of that language
-states the problem; a reel that rolls the language into what it means *performs*
-it, and lands the section somewhere useful.
-
-**What was taken from the reference, and what was not.**
-
-- **The window cannot be resized by its contents.** Theirs buys this with a
-  `visibility:hidden` sizer copy behind the window, because their reel is inline
-  and its width follows its content. This one buys it structurally — block
-  window in a fixed grid column, strip absolutely positioned — which is the same
-  guarantee with no hidden markup. Measured both ways before dropping the sizer:
-  520px either way. Copying it regardless would have been dead weight that
-  looked like craft.
-- **Feathered while moving, crisp when still.** Theirs fades a gradient overlay
-  in and out at the window edges. That cannot be copied literally here: an
-  overlay painted in a flat color smears against the landscape. This one
-  feathers the **mask** instead, which fades content to transparent whatever is
-  behind it — same intent, correct mechanism for this background.
-
-**One basis for `--line`, and never `em`.** `--line` is both the height of the
-window and the step size of the roll. A custom property is substituted as tokens
-and re-resolved per element, so `1.42em` means one thing on the window and a
-smaller thing on the `.62em` officialese spans; the steps and the window stop
-agreeing and the roll walks off the end of the strip. It shipped that way until
-a render showed two phrases in one window. It is now a `clamp()` in `rem`/`vw`,
-and every strip line is a flex box of exactly `--line`, so type size and step
-size are independent. `check.py` rejects any `em` in it.
-
-**Released states carry the finished frame.** The pin only exists above 900px
-and outside reduced motion. Everywhere else `--t` never moves, so both released
-states pin `--k:1` and every reel renders landed on its plain meaning — a phone
-showing four lines of untranslated officialese would be the section arguing
-against itself. Missed on the narrow breakpoint once; guarded now.
-
-#### Line-mask reveals
-
-The four narration lines used to arrive blurred, which reads as soft focus
-rather than composition. They now arrive the way editorial sites do it: each
-line clipped to its own box and traveling up into place on a stagger, so the
-sentence assembles. Lines are **set by hand** rather than split at runtime — the
-copy is fixed, so the ragging is a typographic decision instead of whatever the
-box happens to do, and it costs no script and no library.
-
-Three details do the work, and they are the three normally got wrong:
-
-1. **`overflow:clip`, not `hidden`.** `hidden` creates a scroll container, so a
-   focused element inside can be scrolled by the browser and the mask silently
-   gains an offset. `clip` cannot scroll at all.
-2. **Descenders.** Clipping at the content edge shears the tails off g, y and p.
-   Bottom padding gives them room, pulled straight back out with an equal
-   negative margin so the line box still measures the same.
-3. **The parked position clears the padding too.** Traveling `100%` leaves the
-   glyph tops showing through that descender allowance; the hidden state is
-   `100%` **plus** the allowance, which is exactly the bottom clip edge.
+`#bills` keeps its anchor and its "Bills & denials" label. Thirty-odd pages link
+to it from their headers and footers, `build_help.py` generates most of them,
+and the label still describes the section. It is also the skip link's target
+now, being the first block of the page proper.
 
 ### The honesty statement — short on screen, full one tap away
 
@@ -273,10 +214,8 @@ no reduced-motion case: nothing here needs motion to be read, so the global
 that the no-JS fallback is intact, and the 156-character blurb budget that keeps
 three lines true.
 
-**Below 900px and under `prefers-reduced-motion` the pin releases**: height goes
-`auto`, the sticky child goes static, and each mechanism renders its finished
-state — every reel already landed on its plain meaning, every mask already open.
-Nothing depends on scroll to become readable.
+**Under `prefers-reduced-motion` every mechanism renders its finished state.**
+Nothing on the page depends on scroll to become readable.
 
 Rules the page is built to: no card grids, no numbered step lists, no section labels, no visible boundary between beats. Each beat hands off to the next. The doors are the one deliberate exception — a hairline list is a boundary, and it is there because four named things need four rules between them to be four things rather than a paragraph. It stays a list of names, never a grid of cards, and the sequence beside it stays unnumbered.
 
@@ -288,7 +227,7 @@ license, judgment, color, gray, traveling, practice, labeled. 339 words moved
 in one pass across the CSV, the generator, both stylesheets, the guards and
 every page.
 
-Four kinds of British spelling survive on purpose, and `check.py` fails if any
+Three kinds of British spelling survive on purpose, and `check.py` fails if any
 of them reaches a reader:
 
 - **`aria-labelledby`**, which is how the attribute is spelled in the HTML
@@ -296,9 +235,6 @@ of them reaches a reader:
 - **The ten Local Law 30 pages.** "organismes", "programmes" and "centres" on
   `help-fr.html` are French. Resource descriptions stay English everywhere;
   only the page furniture is translated.
-- **"Leo Cussen Centre for Law"**, a real institution in Australia, credited in
-  `styles.css` for the odometer reel the letter is built from. A proper noun is
-  not a spelling mistake.
 - **Search vocabulary.** `build_help.py`'s `SYNONYMS`, and a handful of row
   `Tags`, deliberately hold "counselling", "day labourer", "programme",
   "paediatrician", "travelling" and "licence". Tags are never rendered, and the
@@ -1004,7 +940,7 @@ fails if either does, because two copies of a color are two colors as soon
 as one is edited.
 
 What each side chooses is only the key. The narrative site is a dark green
-room you walk through — pinned scenes, a WebGL door, inertial scroll. The
+room you walk through — a WebGL door, held scenes, inertial scroll. The
 directory is what is on the other side of that door, in daylight: cream
 ground, near-black green ink, an 18px floor, 44px targets, nothing moving that
 you did not touch.
@@ -1020,7 +956,7 @@ Carried across on purpose, and each one guarded:
 - the footer is the same deep green.
 
 What is **not** carried across is the machinery. No WebGL, no inertial scroll,
-no pinned scenes, no scroll-driven anything.
+no scroll-driven anything.
 
 ### Things that are safety decisions, not content decisions
 
@@ -1090,8 +1026,7 @@ page, not just the homepage), missing assets, the honesty statement present
 verbatim on every surface that offers help, no surviving references to the
 removed Schools chapter or the unlaunched Companionship track, no numeric
 track-record claims, form completeness and labeling, the door's fallback
-paths and transition invariants, the reel's roll geometry and released states,
-the line's paired sentences and its undrawn rule, the doors' disclosure wiring
+paths and transition invariants, the line's paired sentences and its undrawn rule, the doors' disclosure wiring
 and equal-height contract, vendored dependency integrity, the asset-size
 budget, and that `script.js`'s tracked nav sections match the markup.
 
