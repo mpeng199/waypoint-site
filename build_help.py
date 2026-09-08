@@ -19,6 +19,26 @@ import re
 import sys
 from pathlib import Path
 
+# ---------------------------------------------------------------------------
+# Read the file, never a cache of it.
+#
+# CPython validates a .pyc against the source's mtime IN WHOLE SECONDS and its
+# size. An edit that lands inside the same second and changes no bytes is
+# therefore invisible to `import`: 残疾 for 残障 is six bytes either way. Every
+# guard here that reaches the translations through `import i18n` would then be
+# reading the file as it was, and reporting on a page that no longer exists.
+#
+# This is not a hypothetical. mutate.py flips exactly that pair, and scored it
+# as undetected — 3800 passed, 0 failed — while the guard that catches it fires
+# the instant the cache is gone. One same-size edit in a fast loop is all it
+# takes, and a rebuild is the fastest loop this repo has.
+#
+# Nothing in this project is hot enough to want bytecode.
+# ---------------------------------------------------------------------------
+import shutil as _shutil
+sys.dont_write_bytecode = True
+_shutil.rmtree(Path(__file__).resolve().parent / "__pycache__", ignore_errors=True)
+
 ROOT = Path(__file__).parent
 CSV = ROOT / "data" / "resources.csv"
 OUT = ROOT / "help.html"
@@ -139,7 +159,7 @@ NEEDS = [
     {
         "key": "getting-there",
         "label": "I need help getting there",
-        "blurb": "Half-price MetroCard, rides to medical appointments, and Access-A-Ride.",
+        "blurb": "Half-price MetroCard (Fair Fares NYC), rides to medical appointments, and Access-A-Ride.",
         "icon": "bus",
         "cats": ["Transportation"],
     },
@@ -965,18 +985,6 @@ LANGUAGES = [
     {
         "key": "spanish", "endonym": "Español", "tag": "es", "dir": "ltr",
         "name_en": "Spanish",
-        "title": "Ayuda gratuita en la ciudad de Nueva York",
-        "body": "Esta página tiene una lista de lugares que dan comida, "
-                "atención médica, ayuda con la vivienda, ayuda legal y ayuda "
-                "económica. Casi todo es gratis. La mayoría de estos lugares "
-                "no preguntan sobre su estatus migratorio.",
-        "sos": "Si está en peligro, llame al 911. Para hablar con alguien a "
-               "cualquier hora, llame al 988. Los dos son gratis.",
-        "interp": "La lista está escrita en inglés. Llame al 311 y pida un "
-                  "intérprete de español. Es gratis, a cualquier hora.",
-        "search": "También puede escribir en español en el buscador. Por ejemplo: comida, abogado, vivienda.",
-        "browse": "¿Qué necesita?",
-        "cta": "Ver los lugares que atienden en español",
         "needs": {
             "safety": "No estoy a salvo en mi casa",
             "crisis": "Estoy en crisis, o necesito hablar con alguien",
@@ -1000,25 +1008,16 @@ LANGUAGES = [
     {
         "key": "chinese", "endonym": "中文", "tag": "zh-Hans", "dir": "ltr",
         "name_en": "Chinese",
-        "title": "纽约市的免费帮助",
-        "body": "本页列出了提供食物、医疗、住房帮助、法律帮助和经济援助的机构。"
-                "几乎全部免费。大多数机构不会询问您的移民身份。",
-        "sos": "如果有危险，请拨打 911。任何时间想找人倾诉，请拨打 988。两者都免费。",
-        "interp": "下面的列表是英文的。请拨打 311 并要求中文口译员，"
-                  "可以说明您需要普通话还是广东话。这项服务免费，任何时间都可以使用。",
-        "search": "您也可以在搜索框中用中文输入。例如：食物、医生、住房。",
-        "browse": "您需要什么帮助？",
-        "cta": "查看提供中文服务的机构",
         "needs": {
             "safety": "我在家里不安全",
-            "crisis": "我正在危机中，或者我需要有人倾诉",
+            "crisis": "我正处于危机，或者需要有人倾诉",
             "food": "我需要食物",
             "housing": "我需要住的地方，或者我可能失去住房",
             "bills": "我收到医疗账单，或者保险公司拒赔",
             "doctor": "我需要看医生或牙医",
             "legal": "我需要律师，或者我有移民问题",
             "money": "我需要帮助支付费用",
-            "family": "我需要孩子方面的帮助，或者我是独自一人的年轻人",
+            "family": "我需要孩子方面的帮助，或者我是无人照顾的青少年",
             "senior": "我是长者，或者我在照顾长者",
             "clothes": "我需要衣服、外套或婴儿用品",
             "work": "我需要工作或课程",
@@ -1032,21 +1031,8 @@ LANGUAGES = [
     {
         "key": "russian", "endonym": "Русский", "tag": "ru", "dir": "ltr",
         "name_en": "Russian",
-        "title": "Бесплатная помощь в Нью-Йорке",
-        "body": "На этой странице собраны места, где можно получить еду, "
-                "медицинскую помощь, помощь с жильём, юридическую и денежную "
-                "помощь. Почти всё бесплатно. Большинство из них не "
-                "спрашивают об иммиграционном статусе.",
-        "sos": "Если вам угрожает опасность, звоните 911. Чтобы поговорить с "
-               "кем-то в любое время, звоните 988. Оба номера бесплатны.",
-        "interp": "Список ниже составлен на английском языке. Позвоните по "
-                  "номеру 311 и попросите переводчика на русский язык. Это "
-                  "бесплатно и круглосуточно.",
-        "search": "В строке поиска можно писать по-русски. Например: еда, врач, жильё.",
-        "browse": "Что вам нужно?",
-        "cta": "Показать места, где помогают на русском языке",
         "needs": {
-            "safety": "Дома мне угрожает опасность",
+            "safety": "Дома мне небезопасно",
             "crisis": "Я в кризисе, или мне нужно с кем-то поговорить",
             "food": "Мне нужна еда",
             "housing": "Мне негде жить, или я могу потерять жильё",
@@ -1068,18 +1054,6 @@ LANGUAGES = [
     {
         "key": "bengali", "endonym": "বাংলা", "tag": "bn", "dir": "ltr",
         "name_en": "Bengali",
-        "title": "নিউ ইয়র্ক সিটিতে বিনামূল্যে সাহায্য",
-        "body": "এই পাতায় এমন জায়গার তালিকা আছে যেখানে খাবার, স্বাস্থ্যসেবা, "
-                "বাসস্থানের সাহায্য, আইনি সাহায্য এবং আর্থিক সাহায্য পাওয়া যায়। "
-                "প্রায় সবই বিনামূল্যে। বেশিরভাগ জায়গা আপনার অভিবাসন অবস্থা "
-                "জিজ্ঞাসা করে না।",
-        "sos": "বিপদে পড়লে 911 নম্বরে ফোন করুন। যেকোনো সময় কারও সঙ্গে কথা বলতে "
-               "988 নম্বরে ফোন করুন। দুটোই বিনামূল্যে।",
-        "interp": "নিচের তালিকাটি ইংরেজিতে লেখা। 311 নম্বরে ফোন করুন এবং বাংলা "
-                  "দোভাষী চান। এটি বিনামূল্যে, যেকোনো সময়।",
-        "search": "আপনি সার্চ বক্সে বাংলায়ও লিখতে পারেন। যেমন: খাবার, ডাক্তার, বাসস্থান।",
-        "browse": "আপনার কী দরকার?",
-        "cta": "বাংলায় সেবা দেয় এমন জায়গা দেখুন",
         "needs": {
             "safety": "আমি বাড়িতে নিরাপদ নই",
             "crisis": "আমি সংকটে আছি, বা আমার কারও সঙ্গে কথা বলা দরকার",
@@ -1089,13 +1063,13 @@ LANGUAGES = [
             "doctor": "আমার ডাক্তার বা দাঁতের ডাক্তার দরকার",
             "legal": "আমার আইনজীবী দরকার, বা অভিবাসন নিয়ে প্রশ্ন আছে",
             "money": "খরচ মেটাতে আমার সাহায্য দরকার",
-            "family": "আমার সন্তানের জন্য সাহায্য দরকার, বা আমি একা একজন তরুণ",
-            "senior": "আমি একজন প্রবীণ, বা আমি একজনের যত্ন নিই",
+            "family": "আমার সন্তানের জন্য সাহায্য দরকার, বা আমি কমবয়সী আর একা",
+            "senior": "আমি একজন প্রবীণ, বা আমি একজন প্রবীণের যত্ন নিই",
             "clothes": "আমার জামাকাপড়, কোট বা শিশুর জিনিস দরকার",
             "work": "আমার কাজ বা ক্লাস দরকার",
             "getting-there": "যাতায়াতে আমার সাহায্য দরকার",
-            "veterans": "আমি সেনাবাহিনীতে কাজ করেছি",
-            "disability": "আমার প্রতিবন্ধকতা আছে, বা আমি এমন কারও যত্ন নিই",
+            "veterans": "আমি সেনাবাহিনীতে ছিলাম",
+            "disability": "আমার প্রতিবন্ধকতা আছে, বা প্রতিবন্ধকতা আছে এমন কারও যত্ন নিই",
             "record": "আমার অপরাধের রেকর্ড আছে, বা আমি জেল থেকে ফিরছি",
             "start": "আমি জানি না কোথা থেকে শুরু করব",
         },
@@ -1103,17 +1077,6 @@ LANGUAGES = [
     {
         "key": "haitian-creole", "endonym": "Kreyòl Ayisyen", "tag": "ht", "dir": "ltr",
         "name_en": "Haitian Creole",
-        "title": "Èd gratis nan vil New York",
-        "body": "Paj sa a gen yon lis kote ki bay manje, swen sante, èd pou "
-                "lojman, èd legal, ak èd lajan. Prèske tout bagay gratis. Pifò "
-                "nan yo pa mande estati imigrasyon ou.",
-        "sos": "Si ou an danje, rele 911. Pou pale ak yon moun nenpòt lè, rele "
-               "988. Toude gratis.",
-        "interp": "Lis ki anba a ekri an anglè. Rele 311 epi mande yon "
-                  "entèprèt kreyòl ayisyen. Li gratis, nenpòt lè.",
-        "search": "Ou ka ekri an kreyòl nan bwat rechèch la tou. Pa egzanp: manje, doktè, lojman.",
-        "browse": "Ki sa ou bezwen?",
-        "cta": "Gade kote ki sèvi moun ki pale kreyòl",
         "needs": {
             "safety": "Mwen pa an sekirite lakay mwen",
             "crisis": "Mwen nan kriz, oswa mwen bezwen pale ak yon moun",
@@ -1137,17 +1100,6 @@ LANGUAGES = [
     {
         "key": "korean", "endonym": "한국어", "tag": "ko", "dir": "ltr",
         "name_en": "Korean",
-        "title": "뉴욕시의 무료 지원",
-        "body": "이 페이지에는 음식, 의료, 주거 지원, 법률 지원, 재정 지원을 "
-                "제공하는 기관이 나와 있습니다. 거의 모두 무료입니다. 대부분의 "
-                "기관은 이민 신분을 묻지 않습니다.",
-        "sos": "위험한 상황이면 911로 전화하세요. 언제든 이야기하고 싶으면 "
-               "988로 전화하세요. 둘 다 무료입니다.",
-        "interp": "아래 목록은 영어로 되어 있습니다. 311로 전화해서 한국어 "
-                  "통역사를 요청하세요. 무료이며 언제든지 이용할 수 있습니다.",
-        "search": "검색창에 한국어로 입력해도 됩니다. 예: 음식, 의사, 주거.",
-        "browse": "무엇이 필요하신가요?",
-        "cta": "한국어로 도와주는 기관 보기",
         "needs": {
             "safety": "집에서 안전하지 않습니다",
             "crisis": "위기 상황이거나 이야기할 사람이 필요합니다",
@@ -1158,7 +1110,7 @@ LANGUAGES = [
             "legal": "변호사가 필요하거나 이민 관련 질문이 있습니다",
             "money": "비용을 내는 데 도움이 필요합니다",
             "family": "아이 문제로 도움이 필요하거나 혼자인 청소년입니다",
-            "senior": "저는 어르신이거나 어르신을 돌봅니다",
+            "senior": "저는 나이가 많거나, 어르신을 돌봅니다",
             "clothes": "옷, 외투 또는 아기 용품이 필요합니다",
             "work": "일자리나 수업이 필요합니다",
             "getting-there": "이동에 도움이 필요합니다",
@@ -1171,17 +1123,6 @@ LANGUAGES = [
     {
         "key": "arabic", "endonym": "العربية", "tag": "ar", "dir": "rtl",
         "name_en": "Arabic",
-        "title": "مساعدة مجانية في مدينة نيويورك",
-        "body": "تضم هذه الصفحة قائمة بأماكن تقدم الطعام والرعاية الصحية "
-                "والمساعدة في السكن والمساعدة القانونية والمساعدة المالية. "
-                "جميعها تقريبًا مجانية. ومعظمها لا يسأل عن وضعك من ناحية الهجرة.",
-        "sos": "إذا كنت في خطر، اتصل بالرقم 911. وللتحدث مع شخص في أي وقت، "
-               "اتصل بالرقم 988. كلاهما مجاني.",
-        "interp": "القائمة أدناه مكتوبة بالإنجليزية. اتصل بالرقم 311 واطلب "
-                  "مترجمًا للغة العربية. هذه الخدمة مجانية ومتاحة في أي وقت.",
-        "search": "يمكنك أيضًا الكتابة بالعربية في مربع البحث. مثلاً: طعام، طبيب، سكن.",
-        "browse": "ما الذي تحتاج إليه؟",
-        "cta": "عرض الأماكن التي تقدم خدمات بالعربية",
         "needs": {
             "safety": "لست بأمان في المكان الذي أسكن فيه",
             "crisis": "أمر بأزمة، أو أحتاج إلى من أتحدث إليه",
@@ -1191,8 +1132,8 @@ LANGUAGES = [
             "doctor": "أحتاج إلى طبيب أو طبيب أسنان",
             "legal": "أحتاج إلى محامٍ، أو لدي سؤال عن الهجرة",
             "money": "أحتاج إلى مساعدة في دفع التكاليف",
-            "family": "أحتاج إلى مساعدة بشأن أطفالي، أو أنا يافع بلا عائل",
-            "senior": "أنا في سن الشيخوخة، أو أرعى شخصًا مسنًا",
+            "family": "أحتاج إلى مساعدة بشأن أطفالي، أو أنا شخص صغير السن بلا معيل",
+            "senior": "أنا من كبار السن، أو أرعى شخصًا مسنًا",
             "clothes": "أحتاج إلى ملابس أو معطف أو مستلزمات أطفال",
             "work": "أحتاج إلى عمل أو دورات دراسية",
             "getting-there": "أحتاج إلى مساعدة في التنقل",
@@ -1205,17 +1146,6 @@ LANGUAGES = [
     {
         "key": "urdu", "endonym": "اردو", "tag": "ur", "dir": "rtl",
         "name_en": "Urdu",
-        "title": "نیویارک شہر میں مفت مدد",
-        "body": "اس صفحے پر ان جگہوں کی فہرست ہے جو کھانا، طبی علاج، رہائش میں "
-                "مدد، قانونی مدد اور مالی مدد فراہم کرتی ہیں۔ تقریباً سب کچھ مفت "
-                "ہے۔ زیادہ تر جگہیں آپ کی امیگریشن حیثیت نہیں پوچھتیں۔",
-        "sos": "خطرے کی صورت میں 911 پر فون کریں۔ کسی سے بات کرنے کے لیے کسی بھی "
-               "وقت 988 پر فون کریں۔ دونوں مفت ہیں۔",
-        "interp": "نیچے دی گئی فہرست انگریزی میں ہے۔ 311 پر فون کریں اور اردو "
-                  "مترجم مانگیں۔ یہ مفت ہے اور ہر وقت دستیاب ہے۔",
-        "search": "آپ سرچ باکس میں اردو میں بھی لکھ سکتے ہیں۔ مثلاً: کھانا، ڈاکٹر، رہائش۔",
-        "browse": "آپ کو کس چیز کی ضرورت ہے؟",
-        "cta": "وہ جگہیں دیکھیں جو اردو میں مدد کرتی ہیں",
         "needs": {
             "safety": "میں اپنے گھر میں محفوظ نہیں ہوں",
             "crisis": "میں بحران میں ہوں، یا مجھے کسی سے بات کرنی ہے",
@@ -1239,18 +1169,6 @@ LANGUAGES = [
     {
         "key": "french", "endonym": "Français", "tag": "fr", "dir": "ltr",
         "name_en": "French",
-        "title": "Aide gratuite à New York",
-        "body": "Cette page contient une liste de lieux qui offrent de la "
-                "nourriture, des soins médicaux, une aide au logement, une aide "
-                "juridique et une aide financière. Presque tout est gratuit. La "
-                "plupart de ces lieux ne demandent pas votre statut d’immigration.",
-        "sos": "En cas de danger, appelez le 911. Pour parler à quelqu’un à "
-               "toute heure, appelez le 988. Les deux sont gratuits.",
-        "interp": "La liste ci-dessous est en anglais. Appelez le 311 et "
-                  "demandez un interprète en français. C’est gratuit, à toute heure.",
-        "search": "Vous pouvez aussi écrire en français dans la barre de recherche. Par exemple : nourriture, avocat, logement.",
-        "browse": "De quoi avez-vous besoin ?",
-        "cta": "Voir les lieux qui aident en français",
         "needs": {
             "safety": "Je ne suis pas en sécurité chez moi",
             "crisis": "Je suis en crise, ou j’ai besoin de parler à quelqu’un",
@@ -1274,18 +1192,6 @@ LANGUAGES = [
     {
         "key": "polish", "endonym": "Polski", "tag": "pl", "dir": "ltr",
         "name_en": "Polish",
-        "title": "Bezpłatna pomoc w Nowym Jorku",
-        "body": "Na tej stronie znajduje się lista miejsc, które oferują "
-                "jedzenie, opiekę zdrowotną, pomoc mieszkaniową, pomoc prawną i "
-                "pomoc finansową. Prawie wszystko jest bezpłatne. Większość tych "
-                "miejsc nie pyta o status imigracyjny.",
-        "sos": "W razie niebezpieczeństwa zadzwoń pod numer 911. Aby z kimś "
-               "porozmawiać o każdej porze, zadzwoń pod numer 988. Oba są bezpłatne.",
-        "interp": "Lista poniżej jest po angielsku. Zadzwoń pod numer 311 i "
-                  "poproś o tłumacza języka polskiego. To bezpłatne, o każdej porze.",
-        "search": "W wyszukiwarce możesz pisać po polsku. Na przykład: jedzenie, prawnik, mieszkanie.",
-        "browse": "Czego potrzebujesz?",
-        "cta": "Zobacz miejsca, które pomagają po polsku",
         "needs": {
             "safety": "Nie czuję się bezpiecznie w swoim domu",
             "crisis": "Jestem w kryzysie albo potrzebuję z kimś porozmawiać",
@@ -1302,7 +1208,7 @@ LANGUAGES = [
             "getting-there": "Potrzebuję pomocy z dojazdem",
             "veterans": "Mam za sobą służbę wojskową",
             "disability": "Mam niepełnosprawność albo opiekuję się osobą z niepełnosprawnością",
-            "record": "Mam wyrok albo wracam z więzienia",
+            "record": "Mam przeszłość kryminalną albo wracam z więzienia",
             "start": "Nie wiem, od czego zacząć",
         },
     },
@@ -1310,10 +1216,19 @@ LANGUAGES = [
 
 # Every language must name every need, or somebody who cannot read English
 # reaches a heading that is not there. Checked at build time, not by eye.
+#
+# This used to guard seven more fields — title, body, sos, interp, search,
+# browse, cta — left from when index.html carried a short in-language panel
+# per language instead of ten whole pages. Nothing has rendered them since,
+# which was demonstrated rather than assumed: a sentinel string put through
+# all seven appeared in none of the twenty-eight generated files. Seventy
+# strings of translated copy that no reader could reach and no build could
+# check, and they had already drifted — the Haitian and Urdu ones spelled the
+# city differently from the live pages beside them. Dead translated copy is
+# worse than none: a native reviewer spends their afternoon on it. They are
+# gone; `git log -S "Ayuda gratuita en la ciudad"` finds them if the panels
+# ever come back.
 for _L in LANGUAGES:
-    for _f in ("title", "body", "sos", "interp", "browse", "cta", "search"):
-        if not _L.get(_f):
-            raise SystemExit(f'{_L["name_en"]} panel has no {_f!r}')
     _missing = [n["key"] for n in NEEDS if n["key"] not in _L["needs"]]
     if _missing:
         raise SystemExit(f'{_L["name_en"]} has no label for: {_missing}')
