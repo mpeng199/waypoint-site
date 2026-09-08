@@ -350,7 +350,12 @@
     </div>
   </section>
 
-  <section class="scene scene--left scene--wide scene--tight">
+  <!-- The sign-up form has an id of its own. "Sign up" on students.html used
+       to point at #students, which is the hold scene ABOVE this one — so a
+       student who read the whole role page and pressed the button landed on
+       the summary they had just finished reading, and had to scroll to find
+       the form. The button that says sign up lands on the form. -->
+  <section class="scene scene--left scene--wide scene--tight" id="students-signup">
     <div class="scene__inner focus-in" data-once>
       <div class="panel">
         <span class="ey">Sign up</span>
