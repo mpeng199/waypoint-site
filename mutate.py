@@ -187,6 +187,35 @@ MUTATIONS = [
  ("a chapter summary loses the page behind it",
   "about.html", '<a href="students.html" class="btn btn--solid">What the job actually is',
   '<a href="about.html#top" class="btn btn--solid">What the job actually is'),
+ # ---- round four: the ten translations. Every one of these is a thing that
+ #      was actually true of the file in September 2026, and that only a
+ #      native speaker would have caught by reading.
+ ("an Arabic sentence takes a Latin comma back",
+  "i18n.py", "المزايا، والتنقل، والسكن الميسَّر", "المزايا, والتنقل, والسكن الميسَّر"),
+ ("French loses the unbreakable space before a question mark",
+  "i18n.py", '"needs_h": "De quoi avez-vous besoin\u202f?",',
+  '"needs_h": "De quoi avez-vous besoin ?",'),
+ ("the crisis line goes back to translating the English euphemism",
+  "i18n.py", "Tiene pensamientos de hacerse daño, o necesita hablar con alguien ahora",
+  "No se siente seguro consigo mismo, o necesita hablar con alguien ahora"),
+ ("a translation stops using the noun the city prints",
+  "i18n.py", '"housing": "Vivienda y refugio",', '"housing": "Vivienda y alojamiento",'),
+ ("a language page stops saying an interpreter can be asked for",
+  "i18n.py",
+  '"প্রশিক্ষিত। নাম না বলেও ফোন করতে পারেন। এই নম্বরগুলোর যেকোনোটিতে দোভাষী "\n'
+  '                "চাওয়া যায়: ফোন ধরার পর ইংরেজিতে আপনার ভাষার নাম বলুন।",',
+  '"প্রশিক্ষিত। নাম না বলেও ফোন করতে পারেন।",'),
+ ("a program stops being named and is only described",
+  "i18n.py", "MetroCard za pół ceny (Fair Fares NYC)", "MetroCard za pół ceny"),
+ ("one page starts using two words for one thing",
+  "i18n.py", '"disability": "残疾", "record": "出狱之后",',
+  '"disability": "残障", "record": "出狱之后",'),
+ ("a translated string picks up a double space",
+  "i18n.py", "Денежное пособие, счёт за отопление",
+  "Денежное пособие,  счёт за отопление"),
+ ("the student word goes back to meaning undergraduate",
+  "i18n.py", '            "Uczniowie", "Organizacje"],',
+  '            "Studenci", "Organizacje"],'),
 ]
 
 
@@ -205,37 +234,51 @@ def run(cmd):
 # A mutation only means something against a green baseline. It also catches
 # leftover damage from a run that was interrupted before it could restore —
 # without this, the next run snapshots the damage and "restores" to it.
-base = run("python3 check.py")
-if not re.search(r"(?<!\d)0 failed", base.stdout):
-    sys.exit("check.py is already failing. Fix that first — or, if a previous "
-             "run was interrupted: git checkout -- . && python3 build_help.py")
+# Everything below runs only when this file is the program.
+#
+# It used to run on import, which is a trap with the blast radius of the
+# whole repo: `import mutate` to read MUTATIONS — to count them, to run a
+# subset, to list them in a report — rewrote all ten files seventy-one times
+# instead. The finally block put them back, so nothing was lost and nothing
+# said anything; it just took eleven minutes and looked like a hang. A module
+# that damages the working tree because somebody imported it is not one
+# anybody can build tooling on, and being built on is the point of this file.
+def main():
+    base = run("python3 check.py")
+    if not re.search(r"(?<!\d)0 failed", base.stdout):
+        sys.exit("check.py is already failing. Fix that first — or, if a previous "
+                 "run was interrupted: git checkout -- . && python3 build_help.py")
 
-snapshot()
-caught, missed = [], []
-try:
-  for name, path, old, new in MUTATIONS:
-    # Bytes, not text. Text mode converted the CSV's CRLF line endings to LF
-    # on write, so a restore from a snapshot taken after that point put a
-    # silently different file back.
-     src = open(path, "rb").read()
-     o, n2 = old.encode(), new.encode()
-     if o not in src:
-         missed.append((name, "MUTATION DID NOT APPLY"))
-         continue
-     open(path, "wb").write(src.replace(o, n2))
-     run("python3 build_help.py")
-     r = run("python3 check.py")
-     # "10 failed" contains "0 failed" — the substring test scored ten
-     # real catches as misses.
-     failed = not re.search(r"(?<!\d)0 failed", r.stdout)
-     (caught if failed else missed).append((name, ""))
-     restore()
-     run("python3 build_help.py")
+    snapshot()
+    caught, missed = [], []
+    try:
+      for name, path, old, new in MUTATIONS:
+        # Bytes, not text. Text mode converted the CSV's CRLF line endings to LF
+        # on write, so a restore from a snapshot taken after that point put a
+        # silently different file back.
+         src = open(path, "rb").read()
+         o, n2 = old.encode(), new.encode()
+         if o not in src:
+             missed.append((name, "MUTATION DID NOT APPLY"))
+             continue
+         open(path, "wb").write(src.replace(o, n2))
+         run("python3 build_help.py")
+         r = run("python3 check.py")
+         # "10 failed" contains "0 failed" — the substring test scored ten
+         # real catches as misses.
+         failed = not re.search(r"(?<!\d)0 failed", r.stdout)
+         (caught if failed else missed).append((name, ""))
+         restore()
+         run("python3 build_help.py")
 
-finally:
-  restore()
-  run("python3 build_help.py")
+    finally:
+      restore()
+      run("python3 build_help.py")
 
-print(f"\ncaught {len(caught)} of {len(MUTATIONS)}")
-for n,_ in caught: print("   caught  ", n)
-for n,why in missed: print("   MISSED  ", n, why)
+    print(f"\ncaught {len(caught)} of {len(MUTATIONS)}")
+    for n,_ in caught: print("   caught  ", n)
+    for n,why in missed: print("   MISSED  ", n, why)
+
+
+if __name__ == "__main__":
+    main()

@@ -20,6 +20,14 @@ English — short sentences, ordinary words, no agency vocabulary.
 STILL NEEDS A HUMAN: a native speaker of each language should read their own
 page end to end. Nothing here is machine output, but nothing here has been read
 by somebody who speaks the language either.
+
+One review pass has been made over all ten (2026-09-07), for calques, wrong
+register and grammar rather than for meaning — the largest thing it found was
+that "feeling unsafe with yourself" had gone into all ten word by word, where
+it reads as low self-confidence, or as worry about physical safety, and not as
+the thing the 988 line is for. Every one of the ten now names the thought. That
+pass does not replace the native reader; it removes the errors a careful
+non-native reader can see.
 """
 
 # Order matches LANGUAGES in build_help.py. Keys:
@@ -62,20 +70,23 @@ UI["spanish"] = {
              "problemas legales y más. Casi todos son gratis. La mayoría no "
              "pregunta por su situación migratoria.",
     "lede2": "No necesita crear una cuenta. No tiene que contarnos nada. "
-             "Elija abajo lo que necesita y llame usted mismo.",
+             "Elija abajo lo que necesita y llame directamente.",
     "sos_h": "Si necesita ayuda ahora mismo",
     "sos": ["Está en peligro, o alguien está gravemente herido",
-            "No se siente seguro consigo mismo, o necesita hablar con alguien ahora",
+            "Tiene pensamientos de hacerse daño, o necesita hablar con alguien ahora",
             "Alguien en su casa o su pareja le hace daño o le da miedo",
             "Cualquier otra cosa. Gratis, a cualquier hora, en su idioma"],
     "sos_note": "Estas líneas son gratuitas y las contestan personas "
-                "preparadas para exactamente esto. Puede llamar sin dar su nombre.",
+                "preparadas para exactamente esto. Puede llamar sin dar su nombre. En "
+                "cualquiera de estos números puede pedir un intérprete: diga en "
+                "inglés el nombre de su idioma. En la línea de crisis, la opción 2 le "
+                "conecta directamente con alguien que habla español.",
     "english": "Las páginas de cada tema están en inglés. Llame al 311 y pida "
                "un intérprete de español: es gratis, a cualquier hora, y se "
                "queda en la llamada con usted.",
     "needs_h": "¿Con qué necesita ayuda?",
-    "needs_sub": "Cada uno muestra algunos lugares y abre una página con todos.",
-    "open_all": "Ver los {n}",
+    "needs_sub": "Cada tarjeta muestra algunos lugares y abre una página con todos.",
+    "open_all": "Ver todos ({n})",
     "vow_h": "Quiénes somos, y lo que nunca haremos",
     "vow": "Somos estudiantes voluntarios con formación. Le ayudamos a "
            "encontrar los programas gratuitos y los profesionales de Nueva "
@@ -91,7 +102,7 @@ UI["spanish"] = {
                 "página. Ayudamos a la gente a encontrarlos.",
     "foot_links": ["Buscar ayuda", "Sobre Waypoint", "Ser voluntario",
                    "Para organizaciones", "Privacidad y aviso legal"],
-    "foot_ver": "{n} recursos. Última comprobación: {when}. Los programas "
+    "foot_ver": "{n} recursos. Última revisión: {when}. Los programas "
                 "cambian: si algo aquí está mal, díganoslo.",
     "langbar_h": "Reciba ayuda en su idioma",
     "english_h": "Sobre el idioma",
@@ -104,7 +115,7 @@ UI["spanish"] = {
 
 UI["french"] = {
     "nav": ["Trouver de l’aide", "Factures et refus", "Comment ça marche",
-            "Étudiants", "Organismes"],
+            "Élèves", "Organismes"],
     "eyebrow": "Waypoint · New York",
     "title_a": "De l’aide gratuite",
     "title_b": "à New York.",
@@ -116,20 +127,22 @@ UI["french"] = {
              "Choisissez ci-dessous ce dont vous avez besoin et appelez vous-même.",
     "sos_h": "Si vous avez besoin d’aide tout de suite",
     "sos": ["Vous êtes en danger, ou quelqu’un est gravement blessé",
-            "Vous ne vous sentez pas en sécurité avec vous-même, ou vous avez "
+            "Vous pensez à vous faire du mal, ou vous avez "
             "besoin de parler à quelqu’un maintenant",
             "Quelqu’un chez vous ou votre partenaire vous fait du mal ou vous fait peur",
             "Tout le reste. Gratuit, à toute heure, dans votre langue"],
-    "sos_note": "Ces lignes sont gratuites et répondues par des personnes "
-                "formées pour exactement cela. Vous pouvez appeler sans donner votre nom.",
+    "sos_note": "Ces lignes sont gratuites, et ce sont des personnes formées "
+                "précisément pour ça qui répondent. Vous pouvez appeler sans donner "
+                "votre nom. Chacun de ces numéros peut mettre un interprète en "
+                "ligne : dites en anglais le nom de votre langue.",
     "english": "Les pages de chaque sujet sont en anglais. Appelez le 311 et "
-               "demandez un interprète en français : c’est gratuit, à toute "
+               "demandez un interprète en français : c’est gratuit, à toute "
                "heure, et l’interprète reste en ligne avec vous.",
-    "needs_h": "De quoi avez-vous besoin ?",
-    "needs_sub": "Chaque carte montre quelques endroits et ouvre une page avec tous.",
-    "open_all": "Voir les {n}",
+    "needs_h": "De quoi avez-vous besoin ?",
+    "needs_sub": "Chaque carte montre quelques endroits et ouvre une page qui les montre tous.",
+    "open_all": "Tout voir ({n})",
     "vow_h": "Qui nous sommes, et ce que nous ne ferons jamais",
-    "vow": "Nous sommes des étudiants bénévoles formés. Nous vous aidons à "
+    "vow": "Nous sommes des élèves bénévoles formés. Nous vous aidons à "
            "trouver les programmes gratuits et les professionnels de New York "
            "qui s’occupent des factures médicales et des refus d’assurance. "
            "Nous ne sommes ni médecins, ni avocats, ni conseillers en "
@@ -140,12 +153,12 @@ UI["french"] = {
            "facturons jamais rien.",
     "vow_src": "C’est imprimé sur tout ce que nous distribuons et dit à voix "
                "haute à chaque table.",
-    "foot_say": "Waypoint est un corps d’étudiants bénévoles de la ville de "
+    "foot_say": "Waypoint est une équipe d’élèves bénévoles de la ville de "
                 "New York. Nous ne gérons aucun des programmes de cette page. "
                 "Nous aidons les gens à les trouver.",
     "foot_links": ["Trouver de l’aide", "À propos de Waypoint", "Devenir bénévole",
                    "Pour les organismes", "Confidentialité et mentions légales"],
-    "foot_ver": "{n} ressources. Dernière vérification : {when}. Les programmes "
+    "foot_ver": "{n} ressources. Dernière vérification : {when}. Les programmes "
                 "changent — si quelque chose ici est faux, dites-le-nous.",
     "langbar_h": "De l’aide dans votre langue",
     "english_h": "À propos de la langue",
@@ -162,7 +175,7 @@ UI["polish"] = {
     # to stay formal and gender-neutral at once, which made every sentence
     # heavier than the English it came from and read like a form.
     "nav": ["Znajdź pomoc", "Rachunki i odmowy", "Jak to działa",
-            "Studenci", "Organizacje"],
+            "Uczniowie", "Organizacje"],
     "eyebrow": "Waypoint · Nowy Jork",
     "title_a": "Bezpłatna pomoc",
     "title_b": "w Nowym Jorku.",
@@ -174,12 +187,14 @@ UI["polish"] = {
              "wybrać poniżej to, czego potrzebujesz, i zadzwonić samemu.",
     "sos_h": "Jeśli potrzebujesz pomocy teraz",
     "sos": ["Jesteś w niebezpieczeństwie albo ktoś jest ciężko ranny",
-            "Nie czujesz się bezpiecznie ze sobą albo musisz z kimś "
+            "Masz myśli o zrobieniu sobie krzywdy albo musisz z kimś "
             "porozmawiać właśnie teraz",
             "Ktoś w domu albo partner rani cię lub straszy",
             "Wszystko inne. Za darmo, o każdej porze, w twoim języku"],
-    "sos_note": "Te linie są bezpłatne, a odbierają je osoby przeszkolone "
-                "dokładnie do tego. Można zadzwonić bez podawania nazwiska.",
+    "sos_note": "Te numery są bezpłatne, a odbierają je osoby przeszkolone "
+                "dokładnie do tego. Można zadzwonić bez podawania nazwiska. Pod każdym "
+                "z tych numerów można poprosić o tłumacza: wystarczy powiedzieć "
+                "po angielsku nazwę swojego języka.",
     "english": "Strony poszczególnych tematów są po angielsku. Zadzwoń pod "
                "311 i poproś o tłumacza języka polskiego — to bezpłatne, o "
                "każdej porze, a tłumacz zostaje na linii przez całą rozmowę.",
@@ -187,7 +202,7 @@ UI["polish"] = {
     "needs_sub": "Każda karta pokazuje kilka miejsc i otwiera stronę ze wszystkimi.",
     "open_all": "Zobacz wszystkie ({n})",
     "vow_h": "Kim jesteśmy i czego nigdy nie zrobimy",
-    "vow": "Jesteśmy przeszkolonymi studentami-wolontariuszami. Pomagamy "
+    "vow": "Jesteśmy przeszkolonymi uczniami-wolontariuszami. Pomagamy "
            "znaleźć bezpłatne programy i specjalistów w Nowym Jorku, którzy "
            "zajmują się rachunkami za leczenie i odmowami ubezpieczenia. Nie "
            "jesteśmy lekarzami, prawnikami, doradcami do spraw świadczeń ani "
@@ -197,7 +212,7 @@ UI["polish"] = {
            "pobieramy opłat.",
     "vow_src": "To jest wydrukowane na wszystkim, co rozdajemy, i mówione na "
                "głos przy każdym stoliku.",
-    "foot_say": "Waypoint to grupa studentów-wolontariuszy z Nowego Jorku. Nie "
+    "foot_say": "Waypoint to grupa uczniów-wolontariuszy z Nowego Jorku. Nie "
                 "prowadzimy żadnego z programów na tej stronie. Pomagamy "
                 "ludziom je znaleźć.",
     "foot_links": ["Znajdź pomoc", "O Waypoint", "Zostań wolontariuszem",
@@ -215,7 +230,7 @@ UI["polish"] = {
 
 UI["haitian-creole"] = {
     "nav": ["Jwenn èd", "Bòdwo ak refi", "Kijan sa mache",
-            "Etidyan", "Òganizasyon"],
+            "Elèv", "Òganizasyon"],
     "eyebrow": "Waypoint · Vil Nouyòk",
     "title_a": "Èd gratis",
     "title_b": "nan Vil Nouyòk.",
@@ -226,27 +241,28 @@ UI["haitian-creole"] = {
              "sa ou bezwen anba a, epi rele yo ou menm.",
     "sos_h": "Si ou bezwen èd kounye a",
     "sos": ["Ou an danje, oswa yon moun blese grav",
-            "Ou pa santi ou an sekirite ak tèt ou, oswa ou bezwen pale ak yon "
+            "Ou gen lide pou fè tèt ou mal, oswa ou bezwen pale ak yon "
             "moun kounye a",
             "Yon moun lakay ou oswa patnè ou ap fè ou mal oswa ap fè ou pè",
             "Nenpòt lòt bagay. Gratis, nenpòt lè, nan lang ou"],
     "sos_note": "Liy sa yo gratis, epi se moun ki fòme espesyalman pou sa ki "
-                "reponn. Ou ka rele san bay non ou.",
+                "reponn. Ou ka rele san bay non ou. Nenpòt nan nimewo sa yo ka mete yon "
+                "entèprèt sou liy nan: di non lang ou an anglè.",
     "english": "Paj chak sijè yo an anglè. Rele 311 epi mande yon entèprèt "
                "kreyòl ayisyen — li gratis, nenpòt lè, epi entèprèt la rete "
                "nan telefòn nan avè ou.",
     "needs_h": "Ki sa ou bezwen èd pou li?",
-    "needs_sub": "Chak kat montre kèk kote epi louvri yon paj ak tout.",
+    "needs_sub": "Chak kat montre kèk kote epi louvri yon paj ki gen tout yo.",
     "open_all": "Gade tout {n} yo",
     "vow_h": "Ki moun nou ye, epi sa nou p ap janm fè",
-    "vow": "Nou se etidyan volontè ki fòme. Nou ede ou jwenn pwogram gratis ak "
+    "vow": "Nou se elèv volontè ki fòme. Nou ede ou jwenn pwogram gratis ak "
            "pwofesyonèl nan Nouyòk ki okipe bòdwo doktè ak refi asirans. Nou "
-           "pa doktè, nou pa avoka, nou pa konseye benefis, epi nou pa ekspè "
+           "pa doktè, nou pa avoka, nou pa konseye avantaj, epi nou pa ekspè "
            "asirans. Nou pa li bòdwo ou, nou pa ranpli fòm ou, epi nou pa di "
            "ou pou ki sa ou kalifye. Nou konekte ou ak moun ki fè sa, epi yo "
            "fè li gratis. Nou pa janm mande lajan pou anyen.",
     "vow_src": "Sa enprime sou tout sa nou bay, epi nou di li byen fò nan chak tab.",
-    "foot_say": "Waypoint se yon gwoup etidyan volontè nan Vil Nouyòk. Nou pa "
+    "foot_say": "Waypoint se yon gwoup elèv volontè nan Vil Nouyòk. Nou pa "
                 "dirije okenn nan pwogram ki sou paj sa a. Nou ede moun jwenn yo.",
     "foot_links": ["Jwenn èd", "Sou Waypoint", "Vin volontè",
                    "Pou òganizasyon", "Konfidansyalite ak legal"],
@@ -263,7 +279,7 @@ UI["haitian-creole"] = {
 
 UI["russian"] = {
     "nav": ["Найти помощь", "Счета и отказы", "Как это работает",
-            "Студентам", "Организациям"],
+            "Школьникам", "Организациям"],
     "eyebrow": "Waypoint · Нью-Йорк",
     "title_a": "Бесплатная помощь",
     "title_b": "в Нью-Йорке.",
@@ -275,11 +291,13 @@ UI["russian"] = {
              "рассказывать. Выберите ниже то, что вам нужно, и позвоните сами.",
     "sos_h": "Если помощь нужна прямо сейчас",
     "sos": ["Вы в опасности или кто-то тяжело пострадал",
-            "Вам небезопасно наедине с собой или нужно с кем-то поговорить прямо сейчас",
+            "Вы думаете о том, чтобы причинить себе вред, или нужно с кем-то поговорить прямо сейчас",
             "Кто-то дома или партнёр причиняет вам боль или пугает вас",
             "Всё остальное. Бесплатно, в любое время, на вашем языке"],
-    "sos_note": "Эти линии бесплатные, и на них отвечают люди, обученные "
-                "именно этому. Звонить можно, не называя своего имени.",
+    "sos_note": "Эти номера бесплатные, и отвечают на них люди, обученные "
+                "именно этому. Звонить можно, не называя своего имени. По любому из этих "
+                "номеров можно попросить переводчика: скажите по-английски "
+                "название своего языка.",
     "english": "Страницы по каждой теме — на английском. Позвоните по номеру "
                "311 и попросите переводчика на русский язык: это бесплатно, в "
                "любое время, и переводчик остаётся на линии вместе с вами.",
@@ -288,7 +306,7 @@ UI["russian"] = {
                  "страница со всеми.",
     "open_all": "Показать все ({n})",
     "vow_h": "Кто мы такие и чего мы никогда не делаем",
-    "vow": "Мы — обученные студенты-волонтёры. Мы помогаем найти бесплатные "
+    "vow": "Мы — обученные школьники-волонтёры. Мы помогаем найти бесплатные "
            "программы и специалистов в Нью-Йорке, которые занимаются счетами "
            "за лечение и отказами страховых компаний. Мы не врачи, не юристы, "
            "не консультанты по пособиям и не специалисты по страхованию. Мы не "
@@ -297,7 +315,7 @@ UI["russian"] = {
            "делают это бесплатно. Мы никогда ни за что не берём денег.",
     "vow_src": "Это напечатано на всём, что мы раздаём, и произносится вслух "
                "за каждым столом.",
-    "foot_say": "Waypoint — это студенческий волонтёрский корпус в Нью-Йорке. "
+    "foot_say": "Waypoint — это волонтёрский корпус школьников в Нью-Йорке. "
                 "Мы не ведём ни одну из программ на этой странице. Мы помогаем "
                 "людям их найти.",
     "foot_links": ["Найти помощь", "О Waypoint", "Стать волонтёром",
@@ -325,10 +343,11 @@ UI["chinese"] = {
              "需要的类别，然后自己打电话联系。",
     "sos_h": "如果您现在就需要帮助",
     "sos": ["您有危险，或者有人受了重伤",
-            "您担心自己的安全，或者现在想找人倾诉",
+            "您有伤害自己的念头，或者现在想找人倾诉",
             "家里的人或伴侣正在伤害您、让您害怕",
             "其他任何情况。免费，任何时间，可用您的语言"],
-    "sos_note": "这些电话免费，接听的人都受过专门训练。您可以不报姓名直接拨打。",
+    "sos_note": "这些电话免费，接听的人都受过专门训练。您可以不报姓名直接拨打。"
+                "这几个号码都能接入口译员：接通后用英语说出您的语言名称即可。",
     "english": "各个主题的详细页面是英文的。请拨打 311 并要求中文口译员——"
                "可以说明您需要普通话还是广东话。这项服务免费、任何时间都有，"
                "口译员会全程留在通话中。",
@@ -341,7 +360,7 @@ UI["chinese"] = {
            "也不是保险专家。我们不看您的账单，不替您填表格，也不告诉您有"
            "资格申请什么。我们把您转介给做这些事的人，而他们免费提供服务。"
            "我们从不收取任何费用。",
-    "vow_src": "这段话印在我们发出的每一份材料上，也在每一张服务台前当面说明。",
+    "vow_src": "这段话印在我们发出的每一份材料上，也在每个服务台当面说明。",
     "foot_say": "Waypoint 是纽约市的一支学生志愿者队伍。本页所列的项目都不"
                 "是我们运营的。我们帮助大家找到它们。",
     "foot_links": ["寻找帮助", "关于 Waypoint", "成为志愿者",
@@ -361,7 +380,7 @@ UI["korean"] = {
     "nav": ["도움 찾기", "의료비와 보험 거절", "이용 방법", "학생", "협력 기관"],
     "eyebrow": "Waypoint · 뉴욕시",
     "title_a": "뉴욕시의",
-    "title_b": "무료 도움.",
+    "title_b": "무료 지원.",
     "lede1": "뉴욕 시민에게 음식, 의료비, 주거, 의료, 법률 문제 등을 도와주는 "
              "{n}곳의 목록입니다. 거의 모두 무료입니다. 대부분은 체류 신분을 "
              "묻지 않습니다.",
@@ -369,11 +388,13 @@ UI["korean"] = {
              "됩니다. 아래에서 필요한 것을 고르고 직접 전화하십시오.",
     "sos_h": "지금 당장 도움이 필요하시면",
     "sos": ["위험한 상황이거나 누군가 크게 다쳤을 때",
-            "스스로가 안전하지 않다고 느끼거나 지금 누군가와 이야기해야 할 때",
+            "스스로를 해치고 싶은 생각이 들거나 지금 누군가와 이야기해야 할 때",
             "집에 있는 사람이나 배우자·연인이 해치거나 겁을 줄 때",
             "그 밖의 모든 것. 무료, 24시간, 한국어로"],
     "sos_note": "이 번호들은 모두 무료이며, 바로 이런 일을 위해 훈련받은 "
-                "사람이 받습니다. 이름을 밝히지 않고 전화하셔도 됩니다.",
+                "사람이 받습니다. 이름을 밝히지 않고 전화하셔도 됩니다. 어느 번호든 통역을 "
+                "연결해 줍니다. 전화가 연결되면 영어로 언어 이름을 말하면 "
+                "됩니다.",
     "english": "각 주제의 상세 페이지는 영어로 되어 있습니다. 311로 전화해 "
                "한국어 통역을 요청하십시오. 무료이고 24시간 이용할 수 있으며, "
                "통역사가 통화 내내 함께합니다.",
@@ -420,11 +441,12 @@ UI["bengali"] = {
              "আপনার যা দরকার তা বেছে নিন, আর নিজেই ফোন করুন।",
     "sos_h": "এখনই সাহায্য দরকার হলে",
     "sos": ["আপনি বিপদে আছেন, বা কেউ গুরুতর আহত হয়েছেন",
-            "নিজেকে নিয়ে নিরাপদ বোধ করছেন না, বা এখনই কারও সঙ্গে কথা বলা দরকার",
+            "নিজের ক্ষতি করার কথা মনে আসছে, বা এখনই কারও সঙ্গে কথা বলা দরকার",
             "বাড়ির কেউ বা আপনার সঙ্গী আপনাকে আঘাত করছে বা ভয় দেখাচ্ছে",
             "আর যা কিছু। বিনামূল্যে, যেকোনও সময়, আপনার ভাষায়"],
     "sos_note": "এই লাইনগুলো বিনামূল্যে, আর যাঁরা ধরেন তাঁরা ঠিক এই কাজের জন্যই "
-                "প্রশিক্ষিত। নাম না বলেও ফোন করতে পারেন।",
+                "প্রশিক্ষিত। নাম না বলেও ফোন করতে পারেন। এই নম্বরগুলোর যেকোনোটিতে দোভাষী "
+                "চাওয়া যায়: ফোন ধরার পর ইংরেজিতে আপনার ভাষার নাম বলুন।",
     "english": "প্রতিটি বিষয়ের পাতা ইংরেজিতে। 311 নম্বরে ফোন করে বাংলা দোভাষী "
                "চান — এটি বিনামূল্যে, যেকোনও সময়, আর দোভাষী পুরো কথোপকথনে "
                "আপনার সঙ্গে থাকেন।",
@@ -446,7 +468,7 @@ UI["bengali"] = {
                 "পেতে সাহায্য করি।",
     "foot_links": ["সাহায্য খুঁজুন", "Waypoint সম্পর্কে", "স্বেচ্ছাসেবক হোন",
                    "সংস্থার জন্য", "গোপনীয়তা ও আইনি তথ্য"],
-    "foot_ver": "{n}টি তথ্যসূত্র। সর্বশেষ যাচাই: {when}। প্রোগ্রাম বদলায় — এখানে "
+    "foot_ver": "{n}টি জায়গা। সর্বশেষ যাচাই: {when}। প্রোগ্রাম বদলায় — এখানে "
                 "কিছু ভুল থাকলে আমাদের জানান।",
     "langbar_h": "আপনার ভাষায় সাহায্য নিন",
     "english_h": "ভাষা সম্পর্কে",
@@ -458,23 +480,24 @@ UI["bengali"] = {
 }
 
 UI["arabic"] = {
-    "nav": ["ابحث عن مساعدة", "الفواتير والرفض", "كيف يعمل الأمر",
+    "nav": ["ابحث عن مساعدة", "الفواتير ورفض التأمين", "كيف يعمل الأمر",
             "الطلاب", "المؤسسات"],
     "eyebrow": "Waypoint · مدينة نيويورك",
     "title_a": "مساعدة مجانية",
     "title_b": "في مدينة نيويورك.",
     "lede1": "هذه قائمة بـ {n} جهة تساعد سكان نيويورك في الطعام وفواتير "
              "العلاج والسكن والرعاية الصحية والمسائل القانونية وغيرها. جميعها "
-             "تقريبًا مجاني، ومعظمها لا يسأل عن وضعك من ناحية الهجرة.",
+             "تقريبًا مجانية، ومعظمها لا يسأل عن وضعك من ناحية الهجرة.",
     "lede2": "لا تحتاج إلى إنشاء حساب، ولا إلى إخبارنا بأي شيء. اختر ما "
              "تحتاجه أدناه واتصل بنفسك.",
     "sos_h": "إذا كنت تحتاج المساعدة الآن",
     "sos": ["أنت في خطر، أو هناك شخص مصاب إصابة بالغة",
-            "لا تشعر بالأمان على نفسك، أو تحتاج إلى التحدث مع شخص الآن",
+            "تراودك أفكار بإيذاء نفسك، أو تحتاج إلى التحدث مع شخص الآن",
             "شخص في المنزل أو شريكك يؤذيك أو يخيفك",
             "أي شيء آخر. مجاني، في أي وقت، وبلغتك"],
-    "sos_note": "هذه الخطوط مجانية، ويرد عليها أشخاص مدرَّبون على هذا تحديدًا. "
-                "يمكنك الاتصال دون ذكر اسمك.",
+    "sos_note": "هذه الأرقام مجانية، ويرد عليها أشخاص مدرَّبون على هذا تحديدًا. "
+                "يمكنك الاتصال دون ذكر اسمك. ويمكن طلب مترجم على أي من هذه الأرقام: قل "
+                "اسم لغتك بالإنجليزية عند الرد.",
     "english": "صفحات كل موضوع مكتوبة بالإنجليزية. اتصل بالرقم 311 واطلب "
                "مترجمًا للغة العربية — الخدمة مجانية ومتاحة في أي وقت، "
                "والمترجم يبقى معك طوال المكالمة.",
@@ -505,7 +528,7 @@ UI["arabic"] = {
 }
 
 UI["urdu"] = {
-    "nav": ["مدد تلاش کریں", "بل اور انکار", "یہ کیسے کام کرتا ہے",
+    "nav": ["مدد تلاش کریں", "بل اور بیمہ کا انکار", "یہ کیسے کام کرتا ہے",
             "طلبہ", "ادارے"],
     "eyebrow": "Waypoint · نیو یارک سٹی",
     "title_a": "نیو یارک سٹی میں",
@@ -518,11 +541,13 @@ UI["urdu"] = {
              "نہیں۔ نیچے سے جو چاہیے وہ منتخب کریں اور خود فون کریں۔",
     "sos_h": "اگر ابھی مدد چاہیے",
     "sos": ["آپ خطرے میں ہیں، یا کوئی شدید زخمی ہے",
-            "آپ خود کو محفوظ محسوس نہیں کر رہے، یا ابھی کسی سے بات کرنی ہے",
+            "آپ کو خود کو نقصان پہنچانے کے خیال آ رہے ہیں، یا ابھی کسی سے بات کرنی ہے",
             "گھر کا کوئی فرد یا آپ کا ساتھی آپ کو تکلیف دے رہا ہے یا ڈرا رہا ہے",
             "اور جو کچھ بھی۔ مفت، کسی بھی وقت، آپ کی زبان میں"],
-    "sos_note": "یہ لائنیں مفت ہیں، اور فون اٹھانے والے اسی کام کے لیے تربیت "
-                "یافتہ ہیں۔ آپ اپنا نام بتائے بغیر بھی فون کر سکتے ہیں۔",
+    "sos_note": "یہ نمبر مفت ہیں، اور فون اٹھانے والے اسی کام کے لیے تربیت "
+                "یافتہ ہیں۔ آپ اپنا نام بتائے بغیر بھی فون کر سکتے ہیں۔ ان میں سے کسی بھی "
+                "نمبر پر مترجم مانگا جا سکتا ہے: کال ملنے پر انگریزی میں اپنی "
+                "زبان کا نام بتائیں۔",
     "english": "ہر موضوع کے صفحات انگریزی میں ہیں۔ 311 پر فون کریں اور اردو "
                "مترجم مانگیں — یہ مفت ہے، کسی بھی وقت، اور مترجم پوری بات چیت "
                "میں آپ کے ساتھ رہتا ہے۔",
@@ -532,7 +557,7 @@ UI["urdu"] = {
     "vow_h": "ہم کون ہیں، اور کیا ہم کبھی نہیں کریں گے",
     "vow": "ہم تربیت یافتہ طالب علم رضاکار ہیں۔ ہم آپ کو نیو یارک کے وہ مفت "
            "پروگرام اور ماہرین تلاش کرنے میں مدد دیتے ہیں جو علاج کے بلوں اور "
-           "بیمہ کے انکار سے نمٹتے ہیں۔ ہم ڈاکٹر، وکیل، فوائد کے مشیر یا بیمہ "
+           "بیمہ کے انکار سے نمٹتے ہیں۔ ہم ڈاکٹر، وکیل، مراعات کے مشیر یا بیمہ "
            "کے ماہر نہیں ہیں۔ ہم آپ کے بل نہیں پڑھتے، آپ کے فارم نہیں بھرتے، "
            "اور یہ نہیں بتاتے کہ آپ کس چیز کے اہل ہیں۔ ہم آپ کو ان لوگوں سے "
            "ملاتے ہیں جو یہ کام کرتے ہیں، اور وہ یہ مفت کرتے ہیں۔ ہم کسی چیز "
@@ -563,18 +588,18 @@ BLURBS = {}
 
 BLURBS["spanish"] = {
     "safety": "Alguien de su casa, o su pareja, le hace daño o le amenaza.",
-    "crisis": "No se siente seguro consigo mismo, está desbordado, o tiene problemas con el alcohol o las drogas.",
-    "food": "Despensas, comidas calientes y ayuda para inscribirse en cupones de alimentos (SNAP).",
+    "crisis": "Tiene pensamientos de hacerse daño, todo le supera, o tiene problemas con el alcohol o las drogas.",
+    "food": "Despensas de alimentos, comidas calientes y ayuda para inscribirse en cupones de alimentos (SNAP).",
     "housing": "Un lugar donde dormir esta noche, ayuda con el desalojo y vivienda asequible.",
     "bills": "Los expertos gratuitos que se ocupan de facturas de hospital, rechazos del seguro y el costo de los medicamentos.",
     "doctor": "Clínicas que le atienden tenga o no seguro o papeles.",
     "legal": "Ayuda legal gratuita: vivienda, inmigración, beneficios y más.",
-    "money": "Ayuda en efectivo, la factura de la calefacción, declaración de impuestos gratis y beneficios.",
-    "family": "Cuidado de niños, centros para jóvenes y alojamiento para jóvenes solos.",
+    "money": "Asistencia en efectivo, la factura de la calefacción, ayuda gratuita para declarar impuestos y beneficios.",
+    "family": "Cuidado infantil, centros para jóvenes y refugio para jóvenes solos.",
     "senior": "Comidas, centros y ayuda para los neoyorquinos mayores.",
     "clothes": "Ropa gratis, abrigos de invierno, pañales y cosas para niños.",
-    "work": "Formación laboral, trabajo pagado para jóvenes y clases de inglés.",
-    "getting-there": "MetroCard a mitad de precio, viajes a citas médicas y Access-A-Ride.",
+    "work": "Capacitación laboral, trabajo pagado para jóvenes y clases de inglés.",
+    "getting-there": "MetroCard a mitad de precio (Fair Fares NYC), viajes a citas médicas y Access-A-Ride.",
     "veterans": "Atención médica y servicios para quienes sirvieron en las fuerzas armadas.",
     "disability": "Beneficios, transporte, vivienda accesible y qué hacer si le dicen que no.",
     "record": "Trabajo, vivienda y ayuda legal después de la cárcel o la prisión.",
@@ -583,18 +608,18 @@ BLURBS["spanish"] = {
 
 BLURBS["french"] = {
     "safety": "Quelqu’un chez vous, ou votre partenaire, vous fait du mal ou vous menace.",
-    "crisis": "Vous ne vous sentez pas en sécurité avec vous-même, vous êtes dépassé, ou vous avez un problème d’alcool ou de drogue.",
+    "crisis": "Vous pensez à vous faire du mal, tout vous dépasse, ou vous avez un problème d’alcool ou de drogue.",
     "food": "Distributions alimentaires, repas chauds et aide pour s’inscrire aux coupons alimentaires (SNAP).",
     "housing": "Un lit ce soir, de l’aide contre l’expulsion et des logements abordables.",
     "bills": "Les spécialistes gratuits qui s’occupent des factures d’hôpital, des refus d’assurance et du prix des médicaments.",
     "doctor": "Des cliniques qui vous reçoivent, que vous ayez ou non une assurance ou des papiers.",
-    "legal": "Aide juridique gratuite : logement, immigration, prestations et plus.",
+    "legal": "Aide juridique gratuite : logement, immigration, prestations et plus.",
     "money": "Aide en espèces, facture de chauffage, déclaration d’impôts gratuite et prestations.",
     "family": "Garde d’enfants, centres d’accueil pour jeunes et hébergement pour jeunes seuls.",
     "senior": "Repas, centres et aide pour les New-Yorkais âgés.",
     "clothes": "Vêtements gratuits, manteaux d’hiver, couches et affaires pour enfants.",
     "work": "Formation professionnelle, emplois rémunérés pour les jeunes et cours d’anglais.",
-    "getting-there": "MetroCard à moitié prix, trajets vers les rendez-vous médicaux et Access-A-Ride.",
+    "getting-there": "MetroCard à moitié prix (Fair Fares NYC), trajets vers les rendez-vous médicaux et Access-A-Ride.",
     "veterans": "Soins et services pour ceux qui ont servi dans l’armée.",
     "disability": "Prestations, déplacements, logement accessible, et que faire en cas de refus.",
     "record": "Emploi, logement et aide juridique après la prison.",
@@ -603,18 +628,18 @@ BLURBS["french"] = {
 
 BLURBS["polish"] = {
     "safety": "Ktoś w domu albo partner rani cię lub ci grozi.",
-    "crisis": "Brak poczucia bezpieczeństwa ze sobą, przytłoczenie albo problem z alkoholem lub narkotykami.",
-    "food": "Punkty z żywnością, ciepłe posiłki i pomoc w zapisaniu się na bony żywnościowe (SNAP).",
+    "crisis": "Myśli o zrobieniu sobie krzywdy, przytłoczenie albo problem z alkoholem lub narkotykami.",
+    "food": "Punkty wydawania żywności, ciepłe posiłki i pomoc w zapisaniu się na bony żywnościowe (SNAP).",
     "housing": "Nocleg na dziś, pomoc przy eksmisji i tanie mieszkania.",
     "bills": "Bezpłatni specjaliści od rachunków szpitalnych, odmów ubezpieczenia i kosztów leków.",
-    "doctor": "Przychodnie, które przyjmą niezależnie od ubezpieczenia i dokumentów.",
+    "doctor": "Przychodnie, które przyjmą cię niezależnie od ubezpieczenia i dokumentów.",
     "legal": "Bezpłatna pomoc prawna: mieszkanie, imigracja, świadczenia i więcej.",
     "money": "Zasiłek pieniężny, rachunek za ogrzewanie, bezpłatne rozliczenie podatku i świadczenia.",
     "family": "Opieka nad dziećmi, świetlice dla młodzieży i schronienie dla samotnych młodych osób.",
     "senior": "Posiłki, ośrodki i pomoc dla starszych mieszkańców Nowego Jorku.",
     "clothes": "Bezpłatne ubrania, zimowe kurtki, pieluchy i rzeczy dla dzieci.",
     "work": "Szkolenia zawodowe, płatna praca dla młodzieży i kursy angielskiego.",
-    "getting-there": "MetroCard za pół ceny, dojazd na wizyty lekarskie i Access-A-Ride.",
+    "getting-there": "MetroCard za pół ceny (Fair Fares NYC), dojazd na wizyty lekarskie i Access-A-Ride.",
     "veterans": "Opieka zdrowotna i usługi dla osób, które służyły w wojsku.",
     "disability": "Świadczenia, poruszanie się, dostępne mieszkania i co zrobić po odmowie.",
     "record": "Praca, mieszkanie i pomoc prawna po wyjściu z więzienia.",
@@ -623,18 +648,18 @@ BLURBS["polish"] = {
 
 BLURBS["haitian-creole"] = {
     "safety": "Yon moun lakay ou, oswa patnè ou, ap fè ou mal oswa ap menase ou.",
-    "crisis": "Ou pa santi ou an sekirite ak tèt ou, ou depase, oswa ou gen pwoblèm ak alkòl oswa dwòg.",
+    "crisis": "Ou gen lide pou fè tèt ou mal, bagay yo twòp pou ou, oswa ou gen pwoblèm ak alkòl oswa dwòg.",
     "food": "Depo manje, manje cho, ak èd pou enskri nan koupon manje (SNAP).",
     "housing": "Kote pou dòmi aswè a, èd kont degèpisman, ak lojman ki pa chè.",
     "bills": "Espesyalis gratis ki okipe bòdwo lopital, refi asirans, ak pri medikaman.",
     "doctor": "Klinik ki resevwa ou kit ou gen asirans oswa papye, kit ou pa genyen.",
-    "legal": "Èd legal gratis: lojman, imigrasyon, benefis, ak plis ankò.",
-    "money": "Èd an lajan kach, bòdwo chofaj, deklarasyon taks gratis, ak benefis.",
+    "legal": "Èd legal gratis: lojman, imigrasyon, avantaj, ak plis ankò.",
+    "money": "Èd an lajan kach, bòdwo chofaj, deklarasyon taks gratis, ak avantaj.",
     "family": "Gadri, sant pou jèn moun, ak kote pou jèn ki poukont yo rete.",
     "senior": "Manje, sant, ak èd pou granmoun aje nan Nouyòk.",
     "clothes": "Rad gratis, manto pou sezon fredi, kouchèt, ak bagay pou timoun.",
     "work": "Fòmasyon travay, travay peye pou jèn moun, ak kou anglè.",
-    "getting-there": "MetroCard a mwatye pri, transpò pou randevou doktè, ak Access-A-Ride.",
+    "getting-there": "MetroCard a mwatye pri (Fair Fares NYC), transpò pou randevou doktè, ak Access-A-Ride.",
     "veterans": "Swen sante ak sèvis pou moun ki te sèvi nan lame.",
     "disability": "Benefis, deplasman, lojman aksesib, ak sa pou fè si yo di ou non.",
     "record": "Travay, lojman, ak èd legal apre prizon.",
@@ -643,18 +668,18 @@ BLURBS["haitian-creole"] = {
 
 BLURBS["russian"] = {
     "safety": "Кто-то дома или партнёр причиняет боль или угрожает.",
-    "crisis": "Небезопасно наедине с собой, всё навалилось, или проблемы с алкоголем либо наркотиками.",
-    "food": "Продуктовые пункты, горячая еда и помощь с оформлением продуктовых талонов (SNAP).",
-    "housing": "Койка на сегодня, помощь при выселении и доступное жильё.",
+    "crisis": "Мысли о том, чтобы причинить себе вред, всё навалилось, или проблемы с алкоголем либо наркотиками.",
+    "food": "Пункты выдачи продуктов, горячая еда и помощь с оформлением продуктовых талонов (SNAP).",
+    "housing": "Ночлег на сегодня, помощь при выселении и доступное жильё.",
     "bills": "Бесплатные специалисты по больничным счетам, отказам страховой и стоимости лекарств.",
     "doctor": "Клиники, которые примут вне зависимости от страховки и документов.",
     "legal": "Бесплатная юридическая помощь: жильё, иммиграция, пособия и не только.",
-    "money": "Денежная помощь, счёт за отопление, бесплатная подача налоговой декларации и пособия.",
-    "family": "Детский сад, центры для подростков и жильё для молодых людей без семьи.",
+    "money": "Денежное пособие, счёт за отопление, бесплатная подача налоговой декларации и пособия.",
+    "family": "Уход за детьми, центры для подростков и жильё для молодых людей без семьи.",
     "senior": "Питание, центры и помощь для пожилых жителей Нью-Йорка.",
     "clothes": "Бесплатная одежда, зимние куртки, подгузники и вещи для детей.",
     "work": "Обучение профессии, оплачиваемая работа для молодёжи и курсы английского.",
-    "getting-there": "MetroCard за полцены, поездки на приём к врачу и Access-A-Ride.",
+    "getting-there": "MetroCard за полцены (Fair Fares NYC), поездки на приём к врачу и Access-A-Ride.",
     "veterans": "Медицинская помощь и услуги для тех, кто служил в армии.",
     "disability": "Пособия, передвижение по городу, доступное жильё и что делать при отказе.",
     "record": "Работа, жильё и юридическая помощь после тюрьмы.",
@@ -663,7 +688,7 @@ BLURBS["russian"] = {
 
 BLURBS["chinese"] = {
     "safety": "家里的人或伴侣正在伤害您、威胁您。",
-    "crisis": "担心自己的安全、感到承受不住，或者有酒精、药物方面的困扰。",
+    "crisis": "有伤害自己的念头、感到承受不住，或者有酒精、药物方面的困扰。",
     "food": "食物发放点、热餐，以及申请食品券（SNAP）的协助。",
     "housing": "今晚的住处、防止被驱逐的帮助，以及可负担住房。",
     "bills": "处理医院账单、保险拒赔和药费的免费专业人士。",
@@ -674,7 +699,7 @@ BLURBS["chinese"] = {
     "senior": "为纽约长者提供的餐食、活动中心和各项帮助。",
     "clothes": "免费衣物、冬季外套、尿布和儿童用品。",
     "work": "职业培训、青少年带薪工作，以及英语课程。",
-    "getting-there": "半价 MetroCard、就医接送，以及 Access-A-Ride。",
+    "getting-there": "半价 MetroCard（Fair Fares NYC）、就医接送，以及 Access-A-Ride。",
     "veterans": "为服过兵役的人提供的医疗和服务。",
     "disability": "福利、出行、无障碍住房，以及被拒绝时该怎么办。",
     "record": "出狱之后的工作、住房和法律帮助。",
@@ -683,7 +708,7 @@ BLURBS["chinese"] = {
 
 BLURBS["korean"] = {
     "safety": "집에 있는 사람이나 배우자·연인이 해치거나 위협하는 경우.",
-    "crisis": "스스로가 안전하지 않다고 느끼거나, 감당하기 어렵거나, 술·약물 문제가 있는 경우.",
+    "crisis": "스스로를 해치고 싶은 생각이 들거나, 감당하기 어렵거나, 술·약물 문제가 있는 경우.",
     "food": "식품 배급소, 따뜻한 식사, 푸드스탬프(SNAP) 신청 도움.",
     "housing": "오늘 밤 묵을 곳, 퇴거를 막는 도움, 그리고 저렴한 주택.",
     "bills": "병원비, 보험 거절, 약값을 다루는 무료 전문가들.",
@@ -694,7 +719,7 @@ BLURBS["korean"] = {
     "senior": "뉴욕의 어르신을 위한 식사, 센터, 각종 지원.",
     "clothes": "무료 의류, 겨울 외투, 기저귀, 아이 용품.",
     "work": "직업 훈련, 청소년 유급 일자리, 영어 수업.",
-    "getting-there": "반값 메트로카드, 병원 진료 교통편, Access-A-Ride.",
+    "getting-there": "반값 MetroCard(Fair Fares NYC), 병원 진료 교통편, Access-A-Ride.",
     "veterans": "군 복무를 한 분들을 위한 의료와 서비스.",
     "disability": "복지 혜택, 이동, 장애인 접근 가능 주택, 그리고 거절당했을 때.",
     "record": "출소 후의 일자리, 주거, 법률 지원.",
@@ -703,18 +728,18 @@ BLURBS["korean"] = {
 
 BLURBS["bengali"] = {
     "safety": "বাড়ির কেউ, বা আপনার সঙ্গী, আঘাত করছে বা ভয় দেখাচ্ছে।",
-    "crisis": "নিজেকে নিয়ে নিরাপদ বোধ করছেন না, সব কিছু অসহ্য লাগছে, বা মদ কিংবা মাদকের সমস্যা আছে।",
+    "crisis": "নিজের ক্ষতি করার কথা মনে আসছে, সব কিছু অসহ্য লাগছে, বা মদ কিংবা মাদকের সমস্যা আছে।",
     "food": "খাবার বিতরণ কেন্দ্র, গরম খাবার, আর ফুড স্ট্যাম্প (SNAP)-এ নাম লেখাতে সাহায্য।",
     "housing": "আজ রাতে থাকার জায়গা, উচ্ছেদ ঠেকাতে সাহায্য, আর সাশ্রয়ী বাসস্থান।",
     "bills": "হাসপাতালের বিল, বিমার প্রত্যাখ্যান আর ওষুধের খরচ নিয়ে কাজ করেন এমন বিনামূল্যের বিশেষজ্ঞরা।",
-    "doctor": "বিমা বা কাগজপত্র থাকুক বা না থাকুক, যেসব ক্লিনিক দেখে।",
+    "doctor": "বিমা বা কাগজপত্র থাকুক বা না থাকুক, যেসব ক্লিনিক আপনাকে দেখবে।",
     "legal": "বিনামূল্যে আইনি সহায়তা — বাসস্থান, অভিবাসন, সরকারি সুবিধা এবং আরও।",
     "money": "নগদ সহায়তা, হিটিং বিল, বিনামূল্যে ট্যাক্স ফাইলিং, আর নানা সুবিধা।",
     "family": "শিশু দেখাশোনা, তরুণদের কেন্দ্র, আর একা থাকা তরুণদের জন্য আশ্রয়।",
     "senior": "নিউ ইয়র্কের প্রবীণদের জন্য খাবার, কেন্দ্র আর সহায়তা।",
     "clothes": "বিনামূল্যে জামাকাপড়, শীতের কোট, ডায়াপার আর শিশুদের জিনিস।",
     "work": "কাজের প্রশিক্ষণ, তরুণদের জন্য বেতনের কাজ, আর ইংরেজি ক্লাস।",
-    "getting-there": "অর্ধেক দামে MetroCard, ডাক্তারের অ্যাপয়েন্টমেন্টে যাতায়াত, আর Access-A-Ride।",
+    "getting-there": "অর্ধেক দামে MetroCard (Fair Fares NYC), ডাক্তারের অ্যাপয়েন্টমেন্টে যাতায়াত, আর Access-A-Ride।",
     "veterans": "যাঁরা সেনাবাহিনীতে ছিলেন তাঁদের জন্য স্বাস্থ্যসেবা ও পরিষেবা।",
     "disability": "সুবিধা, চলাফেরা, প্রবেশযোগ্য বাসস্থান, আর প্রত্যাখ্যাত হলে কী করবেন।",
     "record": "জেল থেকে ফেরার পর কাজ, বাসস্থান আর আইনি সহায়তা।",
@@ -723,40 +748,40 @@ BLURBS["bengali"] = {
 
 BLURBS["arabic"] = {
     "safety": "شخص في المنزل، أو شريكك، يؤذيك أو يهدّدك.",
-    "crisis": "لا تشعر بالأمان على نفسك، أو الأمور فوق طاقتك، أو لديك مشكلة مع الكحول أو المخدرات.",
+    "crisis": "تراودك أفكار بإيذاء نفسك، أو الأمور فوق طاقتك، أو لديك مشكلة مع الكحول أو المخدرات.",
     "food": "بنوك طعام ووجبات ساخنة ومساعدة في التسجيل لكوبونات الطعام (SNAP).",
     "housing": "مكان للمبيت الليلة، ومساعدة ضد الإخلاء، وسكن بأسعار معقولة.",
     "bills": "مختصون مجانًا يتعاملون مع فواتير المستشفى ورفض التأمين وتكاليف الأدوية.",
-    "doctor": "عيادات تستقبلك سواء كان لديك تأمين أو أوراق أو لم يكن.",
-    "legal": "مساعدة قانونية مجانية: السكن والهجرة والمساعدات وغيرها.",
-    "money": "مساعدة نقدية، وفاتورة التدفئة، وتقديم الضرائب مجانًا، والمساعدات.",
+    "doctor": "عيادات تستقبلك سواء كان لديك تأمين أو أوراق أم لا.",
+    "legal": "مساعدة قانونية مجانية: السكن والهجرة والمزايا وغيرها.",
+    "money": "مساعدة نقدية، وفاتورة التدفئة، وتقديم الإقرار الضريبي مجانًا، والمزايا.",
     "family": "رعاية الأطفال، ومراكز للشباب، ومأوى للشباب الذين بلا عائلة.",
     "senior": "وجبات ومراكز ومساعدة لكبار السن في نيويورك.",
     "clothes": "ملابس مجانية ومعاطف شتوية وحفاضات ومستلزمات الأطفال.",
     "work": "تدريب مهني، وعمل مدفوع للشباب، ودروس في الإنجليزية.",
-    "getting-there": "بطاقة MetroCard بنصف السعر، وتوصيل إلى مواعيد العلاج، وAccess-A-Ride.",
+    "getting-there": "بطاقة MetroCard بنصف السعر (Fair Fares NYC)، وتوصيل إلى مواعيد العلاج، وAccess-A-Ride.",
     "veterans": "رعاية صحية وخدمات لمن خدموا في الجيش.",
-    "disability": "المساعدات، والتنقل، والسكن الميسَّر، وماذا تفعل إذا رُفض طلبك.",
+    "disability": "المزايا، والتنقل، والسكن الميسَّر، وماذا تفعل إذا رُفض طلبك.",
     "record": "عمل وسكن ومساعدة قانونية بعد السجن.",
     "start": "رقم هاتف واحد، أو موقع واحد، يدلّك على كل ما عداه.",
 }
 
 BLURBS["urdu"] = {
     "safety": "گھر کا کوئی فرد، یا آپ کا ساتھی، تکلیف دے رہا ہے یا دھمکا رہا ہے۔",
-    "crisis": "خود کو محفوظ محسوس نہ کرنا، سب کچھ بس سے باہر لگنا، یا شراب یا منشیات کا مسئلہ۔",
-    "food": "کھانے کے مراکز، گرم کھانا، اور فوڈ اسٹیمپ (SNAP) میں نام لکھوانے میں مدد۔",
+    "crisis": "خود کو نقصان پہنچانے کے خیال آنا، سب کچھ بس سے باہر لگنا، یا شراب یا منشیات کا مسئلہ۔",
+    "food": "کھانا تقسیم کرنے والے مراکز، گرم کھانا، اور فوڈ اسٹیمپ (SNAP) میں نام لکھوانے میں مدد۔",
     "housing": "آج رات رہنے کی جگہ، بے دخلی کے خلاف مدد، اور سستی رہائش۔",
     "bills": "ہسپتال کے بلوں، بیمہ کے انکار اور دواؤں کے خرچ سے نمٹنے والے مفت ماہرین۔",
-    "doctor": "ایسے کلینک جو بیمہ یا کاغذات ہوں یا نہ ہوں، دیکھتے ہیں۔",
-    "legal": "مفت قانونی مدد — رہائش، امیگریشن، فوائد اور بہت کچھ۔",
-    "money": "نقد امداد، ہیٹنگ کا بل، مفت ٹیکس فائلنگ، اور مختلف فوائد۔",
+    "doctor": "ایسے کلینک جو آپ کو دیکھتے ہیں، چاہے آپ کے پاس بیمہ یا کاغذات ہوں یا نہ ہوں۔",
+    "legal": "مفت قانونی مدد — رہائش، امیگریشن، مراعات اور بہت کچھ۔",
+    "money": "نقد امداد، ہیٹنگ کا بل، مفت ٹیکس فائلنگ، اور مختلف مراعات۔",
     "family": "بچوں کی دیکھ بھال، نوجوانوں کے مراکز، اور اکیلے نوجوانوں کے لیے رہائش۔",
     "senior": "نیو یارک کے بزرگوں کے لیے کھانا، مراکز اور مدد۔",
     "clothes": "مفت کپڑے، سردی کے کوٹ، ڈائپر اور بچوں کا سامان۔",
     "work": "کام کی تربیت، نوجوانوں کے لیے تنخواہ والا کام، اور انگریزی کی کلاسیں۔",
-    "getting-there": "آدھی قیمت پر MetroCard، ڈاکٹر کے اپائنٹمنٹ تک آمد و رفت، اور Access-A-Ride۔",
+    "getting-there": "آدھی قیمت پر MetroCard (Fair Fares NYC)، ڈاکٹر کے اپائنٹمنٹ تک آمد و رفت، اور Access-A-Ride۔",
     "veterans": "فوج میں خدمات انجام دینے والوں کے لیے صحت کی دیکھ بھال اور سہولتیں۔",
-    "disability": "فوائد، آمد و رفت، قابلِ رسائی رہائش، اور انکار کی صورت میں کیا کریں۔",
+    "disability": "مراعات، آمد و رفت، قابلِ رسائی رہائش، اور انکار کی صورت میں کیا کریں۔",
     "record": "جیل کے بعد کام، رہائش اور قانونی مدد۔",
     "start": "ایک فون نمبر، یا ایک ویب سائٹ، جو باقی سب تک پہنچا دے۔",
 }
@@ -805,11 +830,11 @@ SHORT = {}
 
 SHORT["spanish"] = {
     "safety": "En casa no estoy a salvo", "crisis": "Crisis y salud mental",
-    "food": "Comida", "housing": "Vivienda y alojamiento",
+    "food": "Comida", "housing": "Vivienda y refugio",
     "bills": "Facturas médicas", "doctor": "Médico o dentista",
     "legal": "Abogado", "money": "Ayuda para pagar",
     "family": "Niños y jóvenes", "senior": "Personas mayores",
-    "clothes": "Ropa y enseres", "work": "Trabajo o clases",
+    "clothes": "Ropa y cosas básicas", "work": "Trabajo o clases",
     "getting-there": "Transporte", "veterans": "Veteranos",
     "disability": "Discapacidad", "record": "Después de prisión",
     "start": "No sé por dónde empezar",
@@ -823,7 +848,7 @@ SHORT["french"] = {
     "clothes": "Vêtements et articles", "work": "Emploi ou cours",
     "getting-there": "Se déplacer", "veterans": "Anciens combattants",
     "disability": "Handicap", "record": "Après la prison",
-    "start": "Je ne sais pas par où",
+    "start": "Par où commencer",
 }
 SHORT["polish"] = {
     "safety": "Brak bezpieczeństwa w domu", "crisis": "Kryzys i zdrowie psychiczne",
@@ -848,7 +873,7 @@ SHORT["haitian-creole"] = {
     "start": "Mwen pa konnen kote",
 }
 SHORT["russian"] = {
-    "safety": "Дома небезопасно", "crisis": "Кризис и психика",
+    "safety": "Дома небезопасно", "crisis": "Кризис и психическое здоровье",
     "food": "Еда", "housing": "Жильё и ночлег",
     "bills": "Счета за лечение", "doctor": "Врач или стоматолог",
     "legal": "Юрист", "money": "Помощь с оплатой",
@@ -866,7 +891,7 @@ SHORT["chinese"] = {
     "family": "儿童与青少年", "senior": "长者",
     "clothes": "衣物与用品", "work": "工作或课程",
     "getting-there": "出行", "veterans": "退伍军人",
-    "disability": "残障", "record": "出狱之后",
+    "disability": "残疾", "record": "出狱之后",
     "start": "不知从何开始",
 }
 SHORT["korean"] = {

@@ -24,6 +24,26 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+
+# ---------------------------------------------------------------------------
+# Read the file, never a cache of it.
+#
+# CPython validates a .pyc against the source's mtime IN WHOLE SECONDS and its
+# size. An edit that lands inside the same second and changes no bytes is
+# therefore invisible to `import`: 残疾 for 残障 is six bytes either way. Every
+# guard here that reaches the translations through `import i18n` would then be
+# reading the file as it was, and reporting on a page that no longer exists.
+#
+# This is not a hypothetical. mutate.py flips exactly that pair, and scored it
+# as undetected — 3800 passed, 0 failed — while the guard that catches it fires
+# the instant the cache is gone. One same-size edit in a fast loop is all it
+# takes, and a rebuild is the fastest loop this repo has.
+#
+# Nothing in this project is hot enough to want bytecode.
+# ---------------------------------------------------------------------------
+import shutil as _shutil
+sys.dont_write_bytecode = True
+_shutil.rmtree(Path(__file__).resolve().parent / "__pycache__", ignore_errors=True)
 VERBOSE = "-v" in sys.argv or "--verbose" in sys.argv
 
 # The directory used to be one page. It is now a front page and one page per
@@ -5704,6 +5724,376 @@ def check_the_filters_are_a_row_of_dropdowns():
         bad("no Escape handler: a dropdown that will not close covers the list "
             "it is meant to be narrowing")
 
+# ============================================================================
+# THE TEN TRANSLATIONS
+#
+# Everything below guards a class of mistake that a native speaker sees at a
+# glance and a fluent non-native reviewer does not. They exist because a review
+# pass in September 2026 found all of them at once, and because the file they
+# guard (i18n.py) is the one file on this site that nobody on the team can
+# proofread. What cannot be proofread has to be linted.
+# ============================================================================
+
+def _tx_strings(key):
+    """Every user-visible string in one language, as (where, text)."""
+    import build_help, i18n
+    L = {l["key"]: l for l in build_help.LANGUAGES}[key]
+    out = []
+    for k, v in i18n.UI[key].items():
+        if isinstance(v, list):
+            out += [(f"UI.{k}[{i}]", x) for i, x in enumerate(v)]
+        else:
+            out.append((f"UI.{k}", v))
+    for n in build_help.NEEDS:
+        k = n["key"]
+        out.append((f"BLURBS.{k}", i18n.BLURBS[key][k]))
+        out.append((f"SHORT.{k}", i18n.SHORT[key][k]))
+        out.append((f"needs.{k}", L["needs"][k]))
+    return out
+
+
+def check_translated_punctuation_is_the_readers():
+    """A comma has a shape, and it is not the same shape in every script.
+
+    Arabic and Urdu set the comma as ، the semicolon as ؛ and the question
+    mark as ؟ — the Latin ones are mirrored the wrong way round against
+    right-to-left text and read as a typesetting error. Urdu ends a sentence
+    on ۔ and Bengali on ।, not on a full stop. Chinese sets ，。？！ full-width,
+    because a half-width comma between two han characters leaves a hole.
+
+    None of this is pedantry: it is the difference between a page that was
+    typeset in the language and a page that was typed in English and had the
+    words swapped. The reader who most needs to trust this page is the one
+    who can least check it any other way.
+    """
+    import i18n
+    RULES = {
+        "arabic":  (r"[,;?]", "، ؛ ؟"),
+        "urdu":    (r"[,;?]|(?<![0-9A-Za-z])\.(?![0-9A-Za-z])", "، ؛ ؟ ۔"),
+        "bengali": (r"(?<![0-9A-Za-z)])\.(?![0-9A-Za-z])", "। (danda)"),
+        "chinese": (r"[,;?!](?![0-9A-Za-z])|(?<![0-9A-Za-z])\.(?![0-9A-Za-z])",
+                    "，；？！。"),
+    }
+    hits = 0
+    for key, (rx, want) in RULES.items():
+        for where, s in _tx_strings(key):
+            for m in re.finditer(rx, s):
+                hits += 1
+                bad(f"{key}: {where} uses {m.group(0)!r} where the script sets "
+                    f"{want} — …{s[max(0, m.start()-20):m.end()+20]}…")
+    if not hits:
+        ok("the four non-Latin scripts punctuate themselves, not in English")
+
+
+def check_french_sets_the_space_before_its_punctuation():
+    """French puts a space before ? ! ; :, and it is not an ordinary one.
+
+    An ordinary space lets the mark wrap to a line of its own, which is how
+    you get a column of French with a lonely "?" at the top of it. The rule is
+    a narrow no-break space (U+202F) before ? ! ;, and a no-break space
+    (U+00A0) before :. Every French newspaper and the Journal officiel set it
+    that way, and a French reader registers a plain space there the way an
+    English reader registers "the the".
+
+    Six of them shipped. This is why they cannot come back.
+    """
+    for where, s in _tx_strings("french"):
+        for m in re.finditer(r"(.)([;:!?])", s):
+            before, mark = m.group(1), m.group(2)
+            if mark == ":" and before.isdigit():      # 14:30, not punctuation
+                continue
+            want = " " if mark == ":" else " "
+            if before != want:
+                bad(f"french: {where} has {before!r} before {mark!r}; French "
+                    f"wants {'U+00A0' if mark == ':' else 'U+202F'} — "
+                    f"…{s[max(0, m.start()-24):m.end()+8]}…")
+    ok("french: every ? ! ; : keeps its own unbreakable space")
+
+
+def check_the_crisis_line_is_not_a_calque():
+    """The 988 line has to say the thing, in the language, and it did not.
+
+    The English reads "feeling unsafe with yourself", which is a euphemism
+    English crisis services actually use. Word for word it is not one anywhere
+    else: "No se siente seguro consigo mismo" is low self-confidence,
+    "您担心自己的安全" is worry about being physically attacked — which is the
+    911 card, one row up — and "নিজেকে নিয়ে নিরাপদ বোধ করছেন না" is close to
+    nothing at all. All ten shipped that way.
+
+    So each language's crisis label and crisis blurb must name harming
+    oneself, in that language's own words, and must not contain the calque it
+    was rewritten out of. The Spanish is the exact phrase the 988 Lifeline
+    uses in its own Spanish materials — "pensamientos de hacerte daño" — in
+    this site's usted register.
+    """
+    import i18n
+    SAYS_IT = {
+        "spanish": "hacer(se|te) daño",     "french": "vous faire du mal",
+        "polish": "krzywd",                 "haitian-creole": "fè tèt ou mal",
+        "russian": "себе вред|вред себе",   "chinese": "伤害自己",
+        "korean": "해치",                    "bengali": "ক্ষতি",
+        "arabic": "إيذاء نفس",              "urdu": "نقصان پہنچانے",
+    }
+    CALQUE = {
+        "spanish": ["seguro consigo mismo"],
+        "french": ["en sécurité avec vous-même"],
+        "polish": ["bezpiecznie ze sobą", "bezpieczeństwa ze sobą"],
+        "haitian-creole": ["an sekirite ak tèt ou"],
+        "russian": ["наедине с собой"],
+        "chinese": ["担心自己的安全"],
+        "korean": ["안전하지 않다고"],
+        "bengali": ["নিরাপদ বোধ"],
+        "arabic": ["بالأمان على نفسك"],
+        "urdu": ["محفوظ محسوس"],
+    }
+    for key, phrase in SAYS_IT.items():
+        for where, s in (("UI.sos[1]", i18n.UI[key]["sos"][1]),
+                         ("BLURBS.crisis", i18n.BLURBS[key]["crisis"])):
+            if not re.search(phrase, s):
+                bad(f"{key}: {where} no longer says {phrase!r}. That line is "
+                    f"the label on the suicide line; it has to name the thing "
+                    f"in this language, not translate the English euphemism.")
+            for c in CALQUE[key]:
+                if c in s:
+                    bad(f"{key}: {where} is back to {c!r}, which is the "
+                        f"word-for-word English and does not mean this in "
+                        f"{key}")
+    ok("all ten name harming oneself on the crisis line, in their own words")
+
+
+def check_the_words_the_city_prints():
+    """A reader with an HRA letter in their hand should see the same noun here.
+
+    Checked against ACCESS NYC, which publishes the same programs in the same
+    ten languages (access.nyc.gov/es|ru|ko|ht|zh-hant|fr|pl|bn|ar|ur). Where
+    the city's word and ours disagreed, ours was the one nobody would search
+    for: Spanish said "alojamiento", which is lodging you pay for, not the
+    "refugio" on the letter; Urdu said "فوائد", which is benefits in the sense
+    of advantages, where the city writes "مراعات".
+
+    Two divergences are deliberate and are not listed: Korean keeps 쉼터 over
+    the city's 대피소, which is an evacuation shelter, and Russian keeps
+    "ночлег" over "приют", which is also an orphanage. Where the city's own
+    translation is worse, we do not follow it — but we write down that we
+    didn't.
+    """
+    BANNED = {
+        "spanish": [("alojamiento", "refugio")],
+        # Russian declines: "Денежной помощи" is the same words in a
+        # different case, and a literal match would miss the revert.
+        "russian": [(r"Денежн\w* помощ", "Денежное пособие")],
+        "urdu":    [("فوائد", "مراعات")],
+        "haitian-creole": [("benefis", "avantaj")],
+    }
+    for key, pairs in BANNED.items():
+        joined = " ".join(s for _, s in _tx_strings(key))
+        for word, instead in pairs:
+            if re.search(word, joined):
+                where = [w for w, s in _tx_strings(key) if re.search(word, s)]
+                bad(f"{key}: {re.search(word, joined).group(0)!r} is back "
+                    f"({', '.join(where)}). ACCESS NYC "
+                    f"prints {instead!r} for the same thing, and that is the "
+                    f"word on the letter the reader is holding.")
+    ok("all ten use the nouns the city prints for the programs it runs")
+
+
+def check_every_language_says_how_to_be_answered_in_it():
+    """Four numbers, and not one word about being answered in your language.
+
+    988 connects a Spanish speaker directly if they press 2, and puts an
+    interpreter on any of 240-odd other languages if the caller says the name
+    of the language in English. 311, 911 and the domestic-violence line carry
+    interpretation too. None of that was on any of the ten pages, so the page
+    that exists because somebody cannot read English handed them a number that
+    answers in English and said nothing else.
+
+    The note has to be in `sos_note`, and it must not print a diallable number
+    as text — the numbers above it are tap targets, and
+    check_language_numbers_dial fails a page that repeats one in prose.
+    """
+    import build_help, i18n
+    SAYS = {
+        "spanish": "intérprete",  "french": "interprète", "polish": "tłumacz",
+        "haitian-creole": "entèprèt", "russian": "переводчик",
+        "chinese": "口译员", "korean": "통역", "bengali": "দোভাষী",
+        "arabic": "مترجم", "urdu": "مترجم",
+    }
+    loose = re.compile(r"(?<!\d)(?:911|988|311|\d{3}[-.\s]\d{3}[-.\s]\d{4})(?!\d)")
+    for L in build_help.LANGUAGES:
+        key = L["key"]
+        note = i18n.UI[key]["sos_note"]
+        if SAYS[key] not in note:
+            bad(f"{key}: sos_note never says {SAYS[key]!r}. The reader is "
+                f"handed four numbers and not told any of them can answer in "
+                f"their language, or how to ask.")
+        for hit in loose.findall(note):
+            bad(f"{key}: sos_note prints {hit} as text. The numbers above it "
+                f"are tap targets; a number in prose is one nobody can dial.")
+    ok("all ten tell the reader how to be answered in their own language")
+
+
+def check_program_names_survive_translation():
+    """A program's name is what you have to say on the phone.
+
+    SNAP, Medicaid, Access-A-Ride, MetroCard, Homebase and Fair Fares NYC are
+    proper nouns: translating or paraphrasing them leaves a reader who cannot
+    then ask for the thing, or type it into a search box. "MetroCard a mitad
+    de precio" describes Fair Fares NYC accurately and names it not at all —
+    and an English speaker can guess the English name from the description
+    where a Bengali speaker cannot.
+    """
+    import build_help, i18n
+    WANT = {"getting-there": ["Access-A-Ride", "MetroCard", "Fair Fares NYC"],
+            "food": ["SNAP"]}
+    for L in build_help.LANGUAGES:
+        for need, names in WANT.items():
+            s = i18n.BLURBS[L["key"]][need]
+            for n in names:
+                if n not in s:
+                    bad(f'{L["key"]}: the {need!r} blurb never names {n!r}, so '
+                        f"the reader cannot ask for it or search for it")
+    for need, names in WANT.items():
+        s = [n for n in build_help.NEEDS if n["key"] == need][0]["blurb"]
+        for n in names:
+            if n not in s:
+                bad(f"english: the {need!r} blurb never names {n!r}")
+    ok("every language names SNAP, Access-A-Ride and Fair Fares NYC outright")
+
+
+def check_one_word_per_thing_in_each_language():
+    """Two words for one thing, on one page, reads as two authors.
+
+    The Chinese page called disability 残疾 in the heading and 残障 in the chip
+    beside it. The Haitian and Urdu pages spelled the city one way in the
+    carryover data and another on the page itself. Nobody notices this in the
+    language they don't speak, and nobody misses it in the language they do.
+
+    French is the exception written into the rule: the city is "New York" and
+    a person from it is a "New-Yorkais", so the hyphen is correct in exactly
+    one of the two and the demonym is taken out before comparing.
+    """
+    SETS = {
+        "chinese": [("残疾", "残障")],
+        "spanish": [("refugio", "alojamiento", "albergue")],
+        "urdu": [("مراعات", "فوائد"), ("نیو یارک", "نیویارک")],
+        "haitian-creole": [("avantaj", "benefis"), ("Nouyòk", "New York")],
+        "russian": [("Денежное пособие", "Денежная помощь", "Денежной помощи")],
+        "bengali": [("নিউ ইয়র্ক", "নিউইয়র্ক")],
+        "french": [("New York", "New-York")],
+    }
+    for key, sets in SETS.items():
+        joined = " ".join(s for _, s in _tx_strings(key))
+        if key == "french":
+            joined = joined.replace("New-Yorkais", "").replace("New-Yorkaises", "")
+        for group in sets:
+            present = [w for w in group if w in joined]
+            if len(present) > 1:
+                bad(f"{key}: {present} are all on the same page for the same "
+                    f"thing. Pick one — a reader who sees two takes them for "
+                    f"two different things.")
+    ok("no language uses two words for one thing across its own surfaces")
+
+
+def check_translated_copy_typography():
+    """The small things that say a string was pasted rather than written."""
+    import unicodedata, build_help
+    for L in build_help.LANGUAGES:
+        key = L["key"]
+        for where, s in _tx_strings(key):
+            if "  " in s:
+                bad(f"{key}: {where} has a double space")
+            if s != s.strip():
+                bad(f"{key}: {where} has a leading or trailing space")
+            if '"' in s or "'" in s:
+                bad(f"{key}: {where} uses a straight quote; the site sets “ ” ‘ ’")
+            for ch in s:
+                if unicodedata.category(ch) == "Cf" and ch not in "‏‎":
+                    bad(f"{key}: {where} carries an invisible {ch!r}")
+    ok("no double spaces, stray whitespace, straight quotes or invisible "
+       "characters in any of the ten")
+
+def check_the_guards_read_the_file_not_a_cache():
+    """Every language guard here reaches i18n.py through `import`.
+
+    CPython validates a .pyc against the source's mtime in whole seconds and
+    its size, so an edit that lands in the same second and changes no bytes is
+    invisible to it. 残疾 and 残障 are six bytes each. mutate.py flips exactly
+    that pair and the whole suite reported 3800 passed, 0 failed — while the
+    guard written to catch it fires the instant the cache is gone.
+
+    So check.py and build_help.py both refuse the cache, and this is the guard
+    on the refusal. Without it the protection is two lines at the top of two
+    files that nothing would ever notice the loss of.
+    """
+    if not sys.dont_write_bytecode:
+        bad("check.py is writing bytecode again. A same-size edit made inside "
+            "one second then reads back as the old file, and every guard over "
+            "i18n.py silently tests a page that no longer exists.")
+    else:
+        ok("check.py reads the sources, not a cache of them")
+
+    stale = ROOT / "__pycache__"
+    if stale.is_dir():
+        left = sorted(p.name for p in stale.glob("*.pyc"))
+        bad(f"__pycache__ survived the run ({', '.join(left[:4])}). Something "
+            f"imported a project module before the cache was cleared.")
+    else:
+        ok("no bytecode cache is left where a guard could read it")
+
+    for f in ("check.py", "build_help.py"):
+        src = read(f)
+        if "sys.dont_write_bytecode = True" not in src:
+            bad(f"{f} no longer refuses the bytecode cache, so an edit to "
+                f"i18n.py can go unseen by everything downstream of it")
+    ok("both entry points refuse the cache before they import anything")
+
+
+def check_the_student_word_is_the_school_one():
+    """English "student" covers a nine-year-old and a doctoral candidate.
+
+    Polish, French, Russian and Haitian Creole make you choose, and all four
+    translations chose the university word. `uczeń` is six to eighteen and at
+    school; `student` starts at nineteen and is at university. A sixteen-year-
+    old at a lycée is an `élève`, never an `étudiant`. Russian splits
+    школьник from студент the same way, and Kreyòl follows French with elèv
+    against etidyan.
+
+    Waypoint's own copy settles which is meant: students.html says most
+    volunteers are between fourteen and eighteen, and the sign-up form asks
+    for "School & grade" and suggests "e.g. Stuyvesant, 11th" — a New York
+    City public high school, and the eleventh grade. Four pages were telling
+    their readers, in the only word those languages have for it, that this is
+    a corps of undergraduates.
+
+    If the corps ever does take college students, this guard is the place that
+    says so out loud, and the fix is one word per language.
+    """
+    import i18n
+    # Stems, not words, and this is the whole reason. The first version of this
+    # guard tested for the substring "student" and Polish sailed straight past
+    # it: the nominative plural of `student` is `studenci`, the stem's t goes to
+    # c, and "studenci" does not contain "student". mutate.py caught it — the
+    # guard read correctly and matched nothing. Russian declines the same way
+    # (студент, студентам, студенческий) and would have gone next.
+    SCHOOL = {
+        "polish": (r"ucz(eń|ni)", r"studen(t|c)"),
+        "french": (r"élève|lycéen", r"étudiant"),
+        "russian": (r"школьник|ученик", r"студен[тч]"),
+        "haitian-creole": (r"elèv", r"etidyan"),
+    }
+    for key, (want, university) in SCHOOL.items():
+        U = i18n.UI[key]
+        for where, s in (("nav[3]", U["nav"][3]), ("vow", U["vow"]),
+                         ("foot_say", U["foot_say"])):
+            low = s.lower()
+            if re.search(university, low) and not re.search(want, low):
+                bad(f"{key}: {where} says "
+                    f"{re.search(university, low).group(0)!r}, which in this "
+                    f"language means somebody at university. Waypoint's "
+                    f"volunteers are fourteen to eighteen.")
+    ok("the four languages that distinguish a pupil from an undergraduate all "
+       "use the school word")
+
 
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
@@ -5747,7 +6137,17 @@ def main():
                check_checked_date_is_derived, check_page_weight,
                check_reading_level,
                check_directory_a11y, check_directory_print,
-               check_home_offers_help, check_doors_have_resources]:
+               check_home_offers_help, check_doors_have_resources,
+               check_translated_punctuation_is_the_readers,
+               check_french_sets_the_space_before_its_punctuation,
+               check_the_crisis_line_is_not_a_calque,
+               check_the_words_the_city_prints,
+               check_every_language_says_how_to_be_answered_in_it,
+               check_program_names_survive_translation,
+               check_one_word_per_thing_in_each_language,
+               check_translated_copy_typography,
+               check_the_guards_read_the_file_not_a_cache,
+               check_the_student_word_is_the_school_one]:
         before = len(passes) + len(failures)
         try:
             fn()
