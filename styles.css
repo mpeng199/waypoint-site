@@ -424,6 +424,123 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .legal__date{ margin-top:36px; padding-top:20px; border-top:1px solid rgba(252,254,247,.14); font-size:13px; color:var(--ink-faint); }
 
 /* ============================================================
+   THE ROLE PAGE (students.html)
+
+   The volunteer role is a document somebody reads once and then
+   has to quote from memory at a table, so it is set as a ledger
+   rather than an essay. Each section keeps its title in the left
+   margin, where it stays while the section's content runs the
+   full width of the page beside it — the way a rule book is set,
+   not the way a blog post is.
+
+   Nothing on this page is a card. The hairlines between rows are
+   the structure; a card would only draw those same lines four
+   times over and add a corner radius. The one exception used to
+   be .legal__short, and it is now a gold rule and larger type,
+   which says "read this first" without building a box to say it.
+   ============================================================ */
+.role{ max-width:var(--container); margin-inline:auto; padding-inline:var(--pad); }
+
+/* the opening statement: the whole job in one paragraph, at the width
+   of the page rather than in a box in the middle of it */
+.role__open{ padding-block:clamp(34px,5vw,58px) clamp(8px,2vw,20px); }
+.role__open p{ font-family:var(--display); font-weight:400;
+  font-size:clamp(1.2rem,2.4vw,2rem); line-height:1.36; color:var(--cream);
+  border-left:2px solid var(--gold); padding-left:clamp(18px,3vw,36px); }
+.role__open b{ font-style:italic; font-weight:400; color:var(--gold); }
+
+/* a section: sticky title in the margin, content beside it */
+.role__row{ padding-block:clamp(30px,4vw,52px); }
+.role__row > div{ display:grid; gap:clamp(16px,3vw,54px); align-items:start;
+  border-top:1px solid rgba(252,254,247,.16); padding-top:clamp(22px,3vw,38px); }
+@media (min-width:980px){
+  .role__row > div{ grid-template-columns:16rem minmax(0,1fr); }
+  /* the title holds its place while you read past it, so you never lose
+     which of the eight nevers you are in the middle of */
+  .role__head{ position:sticky; top:calc(var(--head-h) + 22px); }
+}
+.role__head h2{ font-family:var(--display); font-weight:500; line-height:1.08;
+  font-size:clamp(1.45rem,2.5vw,2rem); letter-spacing:-.015em; }
+.role__head .k{ display:block; font-family:var(--sans); font-weight:600;
+  font-size:11px; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  color:var(--gold); margin-bottom:11px; }
+.role__body > p{ color:var(--ink-soft); max-width:64ch; margin-bottom:14px; }
+.role__body > p:last-child{ margin-bottom:0; }
+.role__body .role__after{ margin-top:22px; }
+
+/* the three things you do: three columns, divided by rules, no boxes */
+.trio{ display:grid; gap:clamp(20px,3vw,34px); }
+@media (min-width:860px){
+  .trio{ grid-template-columns:repeat(3,1fr); }
+  .trio > div + div{ border-left:1px solid rgba(252,254,247,.16);
+    padding-left:clamp(20px,3vw,34px); }
+}
+.trio .n{ display:block; font-family:var(--display); font-weight:400; line-height:1;
+  font-size:clamp(2rem,3.6vw,3rem); color:var(--gold); margin-bottom:14px; }
+.trio h3{ font-family:var(--display); font-weight:500; letter-spacing:-.01em;
+  font-size:clamp(1.12rem,1.7vw,1.35rem); margin-bottom:9px; }
+.trio p{ color:var(--ink-soft); }
+
+/* the eight nevers: a numbered ledger across the width, two columns of it
+   on a wide screen. Numbered because they get referred to by number in
+   training, and a diamond bullet cannot be referred to. */
+.nevers{ counter-reset:never; list-style:none; margin:0; padding:0;
+  display:grid; column-gap:clamp(26px,4vw,56px); }
+@media (min-width:860px){ .nevers{ grid-template-columns:1fr 1fr; } }
+.nevers li{ display:grid; grid-template-columns:auto minmax(0,1fr); gap:15px;
+  padding:15px 0; border-top:1px solid rgba(252,254,247,.14);
+  color:var(--ink-soft); }
+.nevers li::before{ counter-increment:never;
+  content:counter(never,decimal-leading-zero);
+  font-family:var(--display); font-size:1.05rem; line-height:1.6; color:var(--gold); }
+
+/* what you say instead: the question on the left, the replacement on the
+   right, one rule per pair running the whole width. Reading across a row
+   is the point — the sentence is what replaces the question. */
+.swap{ display:grid; }
+.swap__r{ display:grid; gap:7px clamp(22px,4vw,50px);
+  padding:18px 0; border-top:1px solid rgba(252,254,247,.14); }
+.swap__r:last-child{ border-bottom:1px solid rgba(252,254,247,.14); }
+@media (min-width:860px){
+  .swap__r{ grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); align-items:baseline; }
+}
+.swap__q{ font-family:var(--display); font-style:italic; line-height:1.25;
+  font-size:clamp(1.02rem,1.6vw,1.25rem); color:var(--gold); }
+.swap__a{ color:var(--ink-soft); }
+.swap__a b{ color:var(--cream); font-weight:500; }
+/* The two columns are a question and its replacement, and on a wide screen
+   the layout says so. Read down one column, or listened to, it does not — so
+   the framing stays in the text rather than in the grid. */
+.swap .cue{ display:block; font-family:var(--sans); font-weight:600; font-style:normal;
+  font-size:10.5px; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  color:var(--ink-faint); margin-bottom:7px; }
+
+/* the statement, at full width between two gold rules. It is the one thing
+   on the page that is quoted verbatim, so it is set as a quotation. */
+.creed{ padding-block:clamp(40px,6vw,74px); }
+.creed__in{ border-block:1px solid rgba(231,197,126,.55);
+  padding-block:clamp(26px,4vw,44px); }
+.creed p{ font-family:var(--display); font-weight:400; line-height:1.38;
+  font-size:clamp(1.18rem,2.4vw,2.05rem); color:var(--cream); }
+.creed .k{ display:block; font-family:var(--sans); font-weight:600;
+  font-size:11px; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  color:var(--gold); margin-bottom:16px; }
+/* the note about the statement is not part of the statement, and .creed p
+   would otherwise set it in the same display face at the same size */
+.creed p.creed__why{ font-family:var(--sans); font-size:14px; line-height:1.6;
+  color:var(--ink-faint); max-width:60ch; margin-bottom:22px; }
+
+/* the close: the ask on one side, the door on the other */
+.role__close{ display:grid; gap:clamp(22px,4vw,48px); align-items:end;
+  padding-block:clamp(20px,3vw,34px) clamp(64px,9vw,116px);
+  border-top:1px solid rgba(252,254,247,.16); }
+@media (min-width:860px){ .role__close{ grid-template-columns:minmax(0,1fr) auto; } }
+.role__close h2{ font-family:var(--display); font-weight:400; line-height:1.03;
+  font-size:clamp(2rem,4.4vw,3.3rem); letter-spacing:-.025em; }
+.role__close h2 em{ color:var(--gold); }
+.role__close p{ margin-top:14px; color:var(--ink-soft); max-width:54ch; }
+
+/* ============================================================
    THE HERO — text arranged around the doorway, Jesko-style split.
    Scrolling drives --doorT from 0 to 1; the type falls away as the
    camera moves through the opening.
