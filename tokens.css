@@ -1,9 +1,9 @@
 /* ============================================================
    tokens.css — the one place Waypoint is defined.
 
-   The site is two rooms. `about.html` is the dark one you walk
+   The site is two rooms. `index.html` is the dark one you walk
    through: a painted valley, a lit door, gold on near-black green.
-   `index.html` and the category pages are what is on the other side
+   `help.html` and the category pages are what is on the other side
    of that door: the same valley in daylight, read rather than
    traveled.
 
@@ -285,8 +285,8 @@
      768 to 1080   107
      above 1080     73    one row
 
-   — against a calc that said 116 at every one of them. On index.html and
-   about.html a ResizeObserver replaces it within a frame, so nothing looked
+   — against a calc that said 116 at every one of them. On help.html and
+   index.html a ResizeObserver replaces it within a frame, so nothing looked
    wrong. With JavaScript off it stands, and at 320px it put privacy.html's
    breadcrumb 58px behind the fixed bar and the page title 16px behind it.
 

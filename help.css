@@ -24,7 +24,7 @@
 
 :root{
   /* The hues, the typefaces, the easings and the radii come from tokens.css,
-     which about.html loads too. What is chosen here is only the *key*: which
+     which index.html loads too. What is chosen here is only the *key*: which
      of the shared greens is ground, which is ink. The dark room and this lit
      page are the same palette played an octave apart. */
   --ground:var(--cream);
@@ -119,7 +119,7 @@ b,strong{ font-weight:600; }
    the English one 203, the Arabic and Chinese ones 155 — against a declared
    116 in every case.
 
-   On index.html and about.html a ResizeObserver publishes the measured height
+   On help.html and index.html a ResizeObserver publishes the measured height
    and the guess never survives first paint. The ten language pages ship no
    JavaScript on purpose — a page somebody opens frightened, in a language
    they read, should not depend on a script loading — so there the guess
@@ -194,7 +194,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 
 /* ------------------------------------------------------------------ mast */
 /* The masthead is the one place this page goes dark, and it is deliberate:
-   it is the same painted valley the door on about.html opens onto, so
+   it is the same painted valley the door on index.html opens onto, so
    somebody who arrived from the story lands somewhere they recognize, and
    somebody who arrived here first meets the brand before they meet the list.
 

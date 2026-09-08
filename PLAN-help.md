@@ -21,7 +21,7 @@ narrative for the audiences it was written for.
 
 ## Where it stands, 351 resources and 120+ commits on
 
-- **`index.html` is a way in, not the directory.** One cluster per kind of
+- **`help.html` is a way in, not the directory.** One cluster per kind of
   help, three real places with real numbers under each, and a link to that
   kind of help's own page.
 - **Seventeen category pages**, each built to be skimmed: a rail of what is on
@@ -39,9 +39,9 @@ narrative for the audiences it was written for.
 
 - [x] **S1** Discovery, plan, rebase onto `origin/main`
 - [x] **S2** Data pipeline: CSV → need taxonomy → build-time generator
-- [x] **S3** `index.html` resource finder: search, filters, resource rows
+- [x] **S3** `help.html` resource finder: search, filters, resource rows
 - [x] **S4** Triage front: need index + hand-picked emergency strip
-- [x] **S5** `about.html` reorganised: residents first
+- [x] **S5** `index.html` reorganised: residents first
 - [x] **S6** Accessibility hardening
 - [x] **S7** Language access (7 panels)
 - [x] **S8** Print / leave-behind sheets
@@ -311,7 +311,7 @@ otherwise is how the ActionNYC and SNAP links stayed dead:
   "Page Not Found", so the title is the evidence.
 - `python3 serve.py` to preview, never `python3 -m http.server`. The stdlib
   server sends no Cache-Control at all, so the browser decides for itself — and
-  for a navigation to `about.html#bills` it serves the copy in memory without
+  for a navigation to `index.html#bills` it serves the copy in memory without
   asking whether the file changed. That is invisible and maddening: you edit a
   page, reload the page you are on and see the change, click a nav tab, and
   land on a version from before the edit. `serve.py` is the same server with

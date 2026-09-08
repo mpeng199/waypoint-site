@@ -19,7 +19,7 @@ import re
 import shutil, subprocess, sys, os, tempfile
 ROOT = os.getcwd()
 FILES = ["data/resources.csv","help.css","styles.css","tokens.css","help.js",
-         "build_help.py","about.html","i18n.py","script.js","check.py"]
+         "build_help.py","index.html","i18n.py","script.js","check.py"]
 # A fresh directory per run. A reused one can hold a snapshot from a run
 # that died half way, and restoring from it puts the damage back.
 BAK = tempfile.mkdtemp(prefix="mutate-")
@@ -47,10 +47,10 @@ MUTATIONS = [
   "data/resources.csv", "A paid summer job for young people",
   "Provides comprehensive workforce development services and case management to eligible youth"),
  ("the ten language pages lose a tab",
-  "build_help.py", "'      <a href=\"about.html#work\">How it works</a>',", ""),
+  "build_help.py", "'      <a href=\"index.html#work\">How it works</a>',", ""),
  ("an English month leaks onto a language page",
   "build_help.py", "when=checked_in(rows, L[\"key\"])", "when=checked(rows)"),
- ("about.html can be dragged sideways again",
+ ("index.html can be dragged sideways again",
   "styles.css", "html, body{ overflow-x:clip; }", "body{ overflow-x:hidden; }"),
  # ---- round two: areas the first twelve never touched
  ("the skip link stops being reachable",
@@ -137,9 +137,9 @@ MUTATIONS = [
   "styles.css", "@media (prefers-reduced-motion:reduce){",
   "@media (prefers-reduced-motion:no-preference){"),
  ("a form field loses the label that names it",
-  "about.html", '<label for="s-email">', '<label>'),
+  "index.html", '<label for="s-email">', '<label>'),
  ("an email field stops being an email field",
-  "about.html", '<input id="s-email" type="email" name="email" required',
+  "index.html", '<input id="s-email" type="email" name="email" required',
   '<input id="s-email" type="text" name="email" required'),
  ("the search stops saying it corrected a spelling",
   "help.js", "corrected = fixed.slice();", "corrected = [];"),
@@ -183,10 +183,10 @@ MUTATIONS = [
  ("the pinned reel comes apart from its own scroll",
   "styles.css", ".scene--pin.scene--tight{ padding-top:0; }", ""),
  ("the page stops reading with scripts off",
-  "about.html", "<noscript><style>.focus-in{ filter:none; opacity:1; transform:none; }</style></noscript>", ""),
+  "index.html", "<noscript><style>.focus-in{ filter:none; opacity:1; transform:none; }</style></noscript>", ""),
  ("a chapter summary loses the page behind it",
-  "about.html", '<a href="students.html" class="btn btn--solid">What the job actually is',
-  '<a href="about.html#top" class="btn btn--solid">What the job actually is'),
+  "index.html", '<a href="students.html" class="btn btn--solid">What the job actually is',
+  '<a href="index.html#top" class="btn btn--solid">What the job actually is'),
 ]
 
 
