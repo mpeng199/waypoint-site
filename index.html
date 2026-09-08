@@ -30,7 +30,7 @@
 </head>
 <body>
 
-<a class="skip" href="#start">Skip to the page</a>
+<a class="skip" href="#bills">Skip to the page</a>
 
 <!-- the door: CSS poster underneath, WebGL over it once it is ready -->
 <div class="doorstage" aria-hidden="true">
@@ -105,133 +105,27 @@
     </div>
   </section>
 
-  <!-- the gap -->
-  <section class="scene scene--right" id="start">
+  <!-- ===== the problem, then what we do about it =====
+       These two scenes replaced "Real. Free. And invisible." and a pinned reel
+       that rolled four lines of officialese off a denial notice into what they
+       meant. Both of those were about the letter; neither said who we are or
+       what we do, so a reader who did not already know had to infer it from
+       the tone. The order here is the argument: the thing we fight, then our
+       answer to it, in the first two screens after the door. -->
+  <section class="scene scene--right" id="bills">
     <div class="scene__inner focus-in">
-      <h2 class="phrase">Real. Free. <em>And invisible.</em></h2>
-      <p class="say">Hospitals here must offer financial assistance. The state hears appeals when an insurer says no. Counselors take coverage disputes in dozens of languages, for free.</p>
+      <span class="eyebrow">The problem</span>
+      <h2 class="phrase">The help is real. <em>Nobody is told.</em></h2>
+      <p class="say">A hospital bill you cannot pay. A claim your insurer denied. New York already built the way out of both: hospitals here must offer financial assistance, the state hears an independent appeal when an insurer says no, and free counselors take coverage disputes in dozens of languages.</p>
+      <p class="say">Almost nobody who qualifies ever hears that any of it exists. So people pay bills they were never meant to carry, drop the coverage they have, and go without care.</p>
     </div>
   </section>
 
-  <!-- ============================================================
-       FOR ANYONE WHO NEEDS HELP — the directory, three screens in.
-       The scene before this one says the help is real, free and invisible.
-       Leaving that unanswered for another eight scenes, while we explain
-       ourselves to partners and students, is the whole problem this page had:
-       everything after here is addressed to somebody who is not in trouble.
-       The list itself is a separate page on purpose — no door, no pinned
-       scenes, no inertial scroll, nothing that costs a slow phone anything.
-       ============================================================ -->
-
-  <!-- ===== PIN 1: the letter translates itself as you scroll =====
-       Four lines off a real denial notice, each on a reel that rolls through
-       the officialese and lands on what it actually means. The section's whole
-       claim is that the letter is written in a language built for somebody
-       else, so the artwork is the act of translation rather than a picture of
-       a bill. Every reel's position is a pure function of --t, so parking the
-       scroll anywhere leaves a composed frame. -->
-  <section class="scene scene--pin scene--tight" id="bills" data-pin>
-    <div class="pin__sticky">
-      <div class="pin__art">
-        <!-- aria-hidden, like the artwork it replaced: this is an illustration
-             of a letter translating, not a letter. A screen reader announcing
-             every officialese line the reel passes through would read out four
-             phrases nobody is meant to be able to parse — the four lines beside
-             it carry the whole point in plain language already.
-
-             The reference reel carries a hidden sizer copy to hold its window
-             open, because theirs is inline and its width follows its content.
-             This one does not: the window is a block in a fixed grid column and
-             the strip is absolutely positioned, so nothing inside can change
-             the width. Measured both ways — 520px either way. Carrying the
-             sizer anyway would be dead markup dressed up as craft. -->
-        <div class="reel" aria-hidden="true">
-          <div class="reel__row" style="--at:.06">
-            <span class="reel__k">Determination</span>
-            <span class="reel__win">
-              <span class="reel__strip" style="--n:4">
-                <span>Adverse determination</span>
-                <span>Not medically necessary</span>
-                <span>Benefit exclusion applies</span>
-                <span class="reel__plain">They said no.</span>
-              </span>
-            </span>
-          </div>
-
-          <div class="reel__row" style="--at:.24">
-            <span class="reel__k">Patient responsibility</span>
-            <span class="reel__win">
-              <span class="reel__strip" style="--n:4">
-                <span>Patient responsibility</span>
-                <span>Balance as billed</span>
-                <span>Amount now due</span>
-                <span class="reel__plain">This is yours to pay.</span>
-              </span>
-            </span>
-          </div>
-
-          <div class="reel__row" style="--at:.42">
-            <span class="reel__k">Reason code</span>
-            <span class="reel__win">
-              <span class="reel__strip" style="--n:4">
-                <span>Reason code N130</span>
-                <span>Consult plan documents</span>
-                <span>See evidence of coverage</span>
-                <span class="reel__plain">No reason you can read.</span>
-              </span>
-            </span>
-          </div>
-
-          <!-- the turn. On a real denial this is the only line that points
-               anywhere useful, and it is the smallest type on the page. -->
-          <div class="reel__row reel__row--turn" style="--at:.62">
-            <span class="reel__k">Appeal rights</span>
-            <span class="reel__win">
-              <span class="reel__strip" style="--n:4">
-                <span>Appeal rights &middot; see reverse</span>
-                <span>External review available</span>
-                <span>Time limits apply</span>
-                <span class="reel__plain">You are allowed to argue.</span>
-              </span>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Lines are set by hand rather than split at runtime: the copy is
-           fixed, so the ragging is a typographic decision instead of whatever
-           the box happens to do, and it costs no script. Each <span> is the
-           clip, each inner <span> is what travels. -->
-      <div class="pin__say">
-        <p class="pin__line" data-at="0.02">
-          <span><span>It starts with a letter</span></span>
-          <span><span>nobody wants to open.</span></span>
-        </p>
-        <p class="pin__line" data-at="0.26">
-          <span><span>Written in a language</span></span>
-          <span><span>built for somebody else.</span></span>
-        </p>
-        <p class="pin__line" data-at="0.52">
-          <span><span>Stripped down it says:</span></span>
-          <span><span><b>they said no, and this</b></span></span>
-          <span><span><b>is yours to pay.</b></span></span>
-        </p>
-        <p class="pin__line" data-at="0.78">
-          <span><span>Every line of it has</span></span>
-          <span><span>a plain meaning.</span></span>
-          <span><span><b>The last one is a door.</b></span></span>
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- What we are. The second paragraph used to be its own scene, a screen
-       further down, under the heading "It was never only about the bill" — a
-       whole viewport spent on one sentence that belongs in this one. -->
-  <section class="scene scene--left">
+  <section class="scene scene--left scene--tight">
     <div class="scene__inner focus-in">
-      <h2 class="phrase">So we carry it <em>to people.</em></h2>
-      <p class="say">We find New Yorkers stuck with a medical bill or a denied claim, and we walk them to the free experts who already handle exactly that.</p>
+      <span class="eyebrow">What we do</span>
+      <h2 class="phrase">We are students. We walk you <em>to the people who fix this.</em></h2>
+      <p class="say">Waypoint is a trained student volunteer corps in New York City. We find people stuck with a medical bill or a denied claim, name the free professional who handles that exact problem, and stay in the chair while they make the call. We are not doctors, lawyers, or benefits counselors, and we never charge for anything.</p>
       <p class="say">Bills are only half of it. Waypoint started by walking people to the free health resources they are missing: food, transit, senior services, benefits. We still do that.</p>
     </div>
   </section>
@@ -465,7 +359,7 @@
         <a class="brand" href="index.html"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg><span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>
         <p class="footer__note">We are trained student volunteers. We help you find the free programs and professionals in New York that handle medical bills and insurance denials. We are not doctors, lawyers, benefits counselors, or insurance experts. We do not read your bills, fill out your forms, or tell you what you qualify for. We connect you to people who do that, and they do it for free. We never charge for anything.</p>
       </div>
-      <div class="footer__col"><h2 class="footer__h">The journey</h2><a href="help.html">Find free help</a><a href="#top">Real, free, invisible</a><a href="#bills">Bills &amp; denials</a><a href="#work">How a referral works</a><a href="#students">For students</a><a href="#partners">For partners</a></div>
+      <div class="footer__col"><h2 class="footer__h">The journey</h2><a href="help.html">Find free help</a><a href="#top">Start here</a><a href="#bills">Bills &amp; denials</a><a href="#work">How a referral works</a><a href="#students">For students</a><a href="#partners">For partners</a></div>
       <div class="footer__col"><h2 class="footer__h">Get involved</h2><a href="help.html">Find free help</a><a href="#students">Join the corps</a><a href="#partners">Partner with us</a><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@<wbr />gmail.com</a></div>
       <div class="footer__col"><h2 class="footer__h">More</h2><a href="privacy.html">Privacy &amp; Legal</a><a href="terms.html">Terms of Use</a></div>
     </div>

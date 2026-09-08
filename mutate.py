@@ -180,8 +180,6 @@ MUTATIONS = [
  ("the spelling guard starts comparing words to themselves",
   "check.py", '("counselling", "counseling"), ("organisation", "organization"),',
   '("counseling", "counseling"), ("organization", "organization"),'),
- ("the pinned reel comes apart from its own scroll",
-  "styles.css", ".scene--pin.scene--tight{ padding-top:0; }", ""),
  ("the page stops reading with scripts off",
   "index.html", "<noscript><style>.focus-in{ filter:none; opacity:1; transform:none; }</style></noscript>", ""),
  ("a chapter summary loses the page behind it",
