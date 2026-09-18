@@ -1866,7 +1866,7 @@ def render_row(r, need_key):
                  f'<svg class="ico" aria-hidden="true"><use href="#i-text"/></svg>'
                  f'<span><small>Text</small>{esc(label)}</span></a>')
     if r["Website"]:
-        a.append(f'<a class="visit" href="{esc(r["Website"])}" rel="noopener">'
+        a.append(f'<a class="visit" href="{esc(r["Website"])}" target="_blank" rel="noopener">'
                  f'<span class="visit__t">Open website</span>'
                  f'<span class="arr" aria-hidden="true">&#8599;</span></a>')
     a.append("</div>")

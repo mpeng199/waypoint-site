@@ -689,7 +689,7 @@
           "<span><small>Text</small>" + esc(it.p) + "</span></a>");
       }
       if (it.w) {
-        a.push('<a class="visit" href="' + esc(it.w) + '" rel="noopener">' +
+        a.push('<a class="visit" href="' + esc(it.w) + '" target="_blank" rel="noopener">' +
           '<span class="visit__t">Open website</span>' +
           '<span class="arr" aria-hidden="true">&#8599;</span></a>');
       }
