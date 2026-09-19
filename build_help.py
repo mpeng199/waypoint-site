@@ -2020,8 +2020,9 @@ def head(title, desc, skip_href, skip_label, alts=None):
         '<link rel="preconnect" href="https://fonts.googleapis.com" />',
         '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />',
         FONTS,
-        '<link rel="stylesheet" href="tokens.css" />',
-        '<link rel="stylesheet" href="help.css" />',
+        '<link rel="icon" href="favicon.svg" type="image/svg+xml" />',
+        '<link rel="stylesheet" href="tokens.min.css" />',
+        '<link rel="stylesheet" href="help.min.css" />',
         '</head>',
         '<body class="help" id="top">',
         f'<a class="skip" href="{skip_href}">{esc(skip_label)}</a>',
@@ -2158,7 +2159,7 @@ def footer_frag(n, when="recently"):
         'Programs change &mdash; if something here is wrong, please tell us.</p>',
         '  </div>',
         '</footer>',
-        '<script src="help.js" defer></script>',
+        '<script src="help.min.js" defer></script>',
         '</body>', '</html>',
     ]
 
@@ -2659,8 +2660,9 @@ def render_language(L, rows, by_need):
     p += ['<link rel="preconnect" href="https://fonts.googleapis.com" />',
           '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />',
           FONTS,
-          '<link rel="stylesheet" href="tokens.css" />',
-          '<link rel="stylesheet" href="help.css" />',
+          '<link rel="icon" href="favicon.svg" type="image/svg+xml" />',
+          '<link rel="stylesheet" href="tokens.min.css" />',
+          '<link rel="stylesheet" href="help.min.css" />',
           '</head>',
           f'<body class="help help--{LANG_SLUG[L["key"]]}" id="top" '
           f'data-lang="{L["key"]}">',

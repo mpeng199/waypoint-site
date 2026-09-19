@@ -12,11 +12,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="tokens.css" />
-<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="tokens.min.css" />
+<link rel="stylesheet" href="styles.min.css" />
 <link rel="preload" as="image" href="assets/land1.webp" />
 <link rel="modulepreload" href="assets/door.js" />
-<link rel="modulepreload" href="assets/vendor/three.module.min.js" />
+<!-- three.module.min.js is deliberately NOT preloaded. door.js decides whether
+     the WebGL door is worth 750KB on this device, and a modulepreload here
+     downloaded it before that decision could be made — on exactly the phones
+     that then hide the doorstage outright. door.js imports it dynamically. -->
 
 <!-- Every block of prose on this page is revealed by script: .focus-in ships
      at opacity 0 and an IntersectionObserver adds .in once it scrolls in. With
@@ -63,7 +67,11 @@
 <!-- NAV -->
 <header class="sitehead">
   <div class="sitehead__in">
-    <a class="brand" href="index.html" aria-label="Waypoint home">
+    <!-- No aria-label. WCAG 2.5.3 wants the accessible name to contain the
+         visible text, and the visible text — "Waypoint Student Health Corps" —
+         is already a better name than any label paraphrasing it. The footer's
+         copy of this link has never had one either. -->
+    <a class="brand" href="index.html">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/><circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>
       <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>
     </a>
@@ -370,8 +378,8 @@
   </div>
 </footer>
 
-<script src="assets/vendor/lenis.min.js"></script>
-<script src="script.js"></script>
+<script defer src="assets/vendor/lenis.min.js"></script>
+<script defer src="script.min.js"></script>
 <script type="module" src="assets/door.js"></script>
 </body>
 </html>

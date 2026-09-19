@@ -1056,6 +1056,167 @@ def check_asset_budget():
         bad(f"budget: landscapes total {total_kb:.0f}KB, over 900KB")
 
 
+def check_minified_is_generated():
+    """Every .min file must equal what build_min.py produces, byte for byte.
+
+    This guard exists because of a gap the rest of the suite would otherwise
+    have. Almost every check here reads the readable source — check_mobile_budget
+    asserts on rules in styles.css, check_door on prose in door.js — while the
+    browser is served styles.min.css. Edit styles.css, forget `python3
+    build_min.py`, and all 3800 assertions still pass while the site ships the
+    stylesheet from before the edit. The guards would be describing a file
+    nobody downloads.
+
+    So the minified copies are checked to be exactly the current sources with
+    their comments removed. That is what makes reading the source a valid way
+    to reason about what ships.
+
+    Compared, never rewritten — the same rule as check_directory_is_generated.
+    A guard that regenerates the thing it is measuring passes either way.
+
+    If this fails: `python3 build_min.py`.
+    """
+    if not (ROOT / "build_min.py").is_file():
+        bad("build_min.py is missing; the served CSS and JS can no longer be regenerated")
+        return
+    sys.path.insert(0, str(ROOT))
+    try:
+        import build_min
+        importlib.reload(build_min)
+    except Exception as e:                                   # noqa: BLE001
+        bad(f"build_min.py does not import: {e}")
+        return
+
+    for source, target in build_min.SOURCES:
+        if not (ROOT / source).is_file():
+            bad(f"minify: source {source} is missing")
+            continue
+        path = ROOT / target
+        if not path.is_file():
+            bad(f"minify: {target} has never been built, so every page asking "
+                f"for it is getting a 404 where its {source} should be")
+            continue
+        want = build_min.build(source)
+        if path.read_text(encoding="utf-8") == want:
+            ok(f"minify: {target} is current with {source}")
+        else:
+            bad(f"minify: {target} is stale — {source} has been edited since it "
+                f"was built, so the guards above are reading one file and the "
+                f"reader is downloading another. Run: python3 build_min.py")
+
+    # and the pages must actually ask for the built copy, never the source
+    served = {t for _, t in build_min.SOURCES}
+    raw = {s for s, _ in build_min.SOURCES}
+    for page in PAGES:
+        if not (ROOT / page).is_file():
+            continue
+        src = read(page)
+        used_raw = {r for r in raw
+                    if re.search(r'(?:href|src)="' + re.escape(r) + '"', src)}
+        if used_raw:
+            bad(f"{page}: links {sorted(used_raw)} directly, so the reader "
+                f"downloads the commented source — roughly twice the bytes")
+        else:
+            ok(f"{page}: no un-minified source linked")
+    referenced = set()
+    for page in PAGES:
+        if (ROOT / page).is_file():
+            for t in served:
+                if t in read(page):
+                    referenced.add(t)
+    for t in sorted(served - referenced):
+        bad(f"minify: {t} is built but no page links it, so it is dead weight")
+
+
+def check_cache_headers():
+    """_headers: every asset cached, and no asset cached twice.
+
+    Cloudflare serves static assets as `max-age=0, must-revalidate` unless
+    told otherwise, which had returning readers re-validating all 750KB of
+    Three on every page view. _headers fixes that, and carries one trap worth
+    guarding: a request matching two blocks inherits BOTH, and duplicate
+    headers are joined with a comma. Two overlapping patterns that each set
+    Cache-Control therefore emit `max-age=3600, max-age=86400` — not an
+    override, a malformed header — and nothing anywhere reports it. Adding a
+    `/*` block, or a second splat over a path /assets/* already covers, is the
+    natural edit that causes it.
+    """
+    f = ROOT / "_headers"
+    if not f.is_file():
+        bad("_headers is missing, so every asset is back to Cloudflare's "
+            "max-age=0 default and nothing the reader has is reusable")
+        return
+    text = f.read_text(encoding="utf-8")
+
+    # blocks: a line starting with / opens one, indented lines are its headers
+    blocks, current = {}, None
+    for line in text.splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if line.startswith("/"):
+            current = line.strip()
+            blocks[current] = []
+        elif current:
+            blocks[current].append(line.strip())
+
+    caching = {p: h for p, h in blocks.items()
+               if any(x.lower().startswith("cache-control") for x in h)}
+    if caching:
+        ok(f"_headers: {len(caching)} cache blocks")
+    else:
+        bad("_headers has no Cache-Control block, so it is not doing the one "
+            "thing it exists for")
+
+    for pat in caching:
+        if pat.count("*") > 1:
+            bad(f"_headers: {pat!r} has more than one splat; this syntax allows one")
+
+    def matches(pat, path):
+        if "*" in pat:
+            head, _, tail = pat.partition("*")
+            return path.startswith(head) and path.endswith(tail)
+        return path == pat
+
+    # Every file the site actually serves, checked against every cache block.
+    served = []
+    for p in ROOT.rglob("*"):
+        if not p.is_file():
+            continue
+        rel = p.relative_to(ROOT).as_posix()
+        if rel.startswith((".", "supabase/", "data/", "__pycache__")):
+            continue
+        if p.suffix.lower() in {".css", ".js", ".webp", ".svg", ".png", ".woff2"}:
+            served.append("/" + rel)
+
+    doubled = [s for s in served if sum(matches(p, s) for p in caching) > 1]
+    if doubled:
+        bad(f"_headers: {len(doubled)} file(s) match two cache blocks, so they are "
+            f"served a comma-joined Cache-Control: {sorted(doubled)[:3]}")
+    else:
+        ok("_headers: no asset matches two cache blocks")
+
+    # Nothing here is content-hashed, so nothing may claim to be immutable.
+    # Parsed values only: the comment above explains when `immutable` would
+    # become correct, and must not read as a violation of itself.
+    if any("immutable" in v.lower() for h in caching.values() for v in h):
+        bad("_headers: `immutable` on filenames that carry no content hash — a "
+            "reader who caches a bad styles.css has no way to be told otherwise")
+    else:
+        ok("_headers: no immutable on unhashed filenames")
+
+    # the block that pays for itself
+    vendored = "/assets/vendor/three.module.min.js"
+    if any(matches(p, vendored) for p in caching):
+        ok("_headers: the vendored bundle is covered")
+    else:
+        bad("_headers: nothing covers assets/vendor, which is the 750KB that "
+            "made this file worth having")
+
+    for pat in caching:
+        if "*" not in pat and not (ROOT / pat.lstrip("/")).is_file():
+            bad(f"_headers: {pat} is a rule for a file that does not exist")
+
+
 # --------------------------------------------------------------------- a11y
 def check_a11y_basics():
     src = read("index.html")
@@ -5902,6 +6063,8 @@ def main():
                check_one_word_per_thing_in_each_language,
                check_translated_copy_typography,
                check_the_guards_read_the_file_not_a_cache,
+               check_cache_headers,
+               check_minified_is_generated,
                check_the_student_word_is_the_school_one]:
         before = len(passes) + len(failures)
         try:
