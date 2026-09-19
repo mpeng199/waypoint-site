@@ -1,0 +1,53 @@
+# Cache policy for Cloudflare Workers static assets.
+#
+# Cloudflare's default for every asset it serves is
+#   Cache-Control: public, max-age=0, must-revalidate
+# which is right for HTML and wrong for everything else. Measured on the live
+# site, it meant a returning reader re-validated all 750KB of Three, both
+# stylesheets and every landscape on every single page view. Nothing below
+# changes what is served — only how long a browser may reuse what it already has.
+#
+# Two rules of this file's syntax shape everything here:
+#
+#   1. A pattern may contain only ONE splat, and it matches greedily.
+#   2. A request matching several blocks inherits ALL of their headers, and
+#      duplicates are joined with a comma. Two blocks that both set
+#      Cache-Control therefore produce `max-age=60, max-age=86400` — not an
+#      override but a malformed header. So no two patterns here may overlap,
+#      and there is deliberately no `/*` block: HTML keeps Cloudflare's
+#      default, which is the correct policy for it.
+#
+# Nothing here is content-hashed, so nothing gets `immutable` or a year.
+# Every lifetime below is bounded, and paired with stale-while-revalidate so
+# the reader is never the one who waits for the refresh: past max-age the
+# cached copy is served instantly and revalidated in the background.
+#
+# If assets ever do get hashed filenames, these become
+# `max-age=31536000, immutable` and this comment can go.
+
+# Version-pinned libraries (see assets/vendor/VERSIONS.txt), the landscape
+# webps, and door.js. A day of freshness, a week of instant-but-refreshing.
+# This is the block that matters: it covers the 750KB of Three.
+/assets/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# Page CSS and JS change with ordinary copy and layout edits, so they get an
+# hour rather than a day. Listed one by one because this syntax has no
+# extension globs, and because a splat over the root would overlap /assets/*.
+/styles.css
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/tokens.css
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/help.css
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/script.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/help.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/favicon.svg
+  Cache-Control: public, max-age=604800

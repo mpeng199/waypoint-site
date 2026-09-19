@@ -37,9 +37,45 @@
 
   /* ---------- inertial scrolling (vendored Lenis) ---------- */
   var lenis = null;
+  var lenisLooping = false, lenisIdleAt = 0;
   if (window.Lenis && !reduced) {
     lenis = new window.Lenis({ lerp: 0.085, smoothWheel: true, touchMultiplier: 1.7 });
-    (function raf(time) { lenis.raf(time); requestAnimationFrame(raf); })(0);
+
+    /* Lenis shipped with `(function raf(t){ lenis.raf(t); rAF(raf); })(0)` —
+       the one loop on this page that never stopped. busy() below exists
+       precisely to keep frames off the main thread while the reader is
+       reading, and this ran straight through all of it, for the life of the
+       page, on every device.
+
+       Lenis only has work while it is animating a scroll (isScrolling is
+       false | 'native' | 'smooth'), so the loop now ends when it is not and
+       any input wakes it again. The 300ms of grace after it first reports
+       idle is the safety margin: if isScrolling ever flickers false for a
+       frame mid-momentum, the loop is still running to carry it, and
+       smoothness never depends on the flag being perfect. */
+    var lenisFrame = function (time) {
+      lenis.raf(time);
+      if (lenis.isScrolling) { lenisIdleAt = 0; requestAnimationFrame(lenisFrame); return; }
+      if (!lenisIdleAt) lenisIdleAt = time;
+      if (time - lenisIdleAt < 300) requestAnimationFrame(lenisFrame);
+      else lenisLooping = false;
+    };
+    var lenisWake = function () {
+      lenisIdleAt = 0;
+      if (lenisLooping) return;
+      lenisLooping = true;
+      requestAnimationFrame(lenisFrame);
+    };
+    ["wheel", "touchstart", "touchmove", "pointerdown", "keydown"].forEach(function (ev) {
+      window.addEventListener(ev, lenisWake, { passive: true });
+    });
+    lenis.on("scroll", lenisWake);
+    /* same reasoning as __waypointProbe: a headless tab fires no frames, so
+       whether this loop idles can only be asked, not observed. */
+    window.__waypointLenisProbe = function () {
+      return { looping: lenisLooping, isScrolling: lenis.isScrolling };
+    };
+    lenisWake();
   }
   /* Lenis does its own scrolling and never reads scroll-margin-top, so the
      offset the stylesheet puts on every section has to be handed to it by
@@ -263,6 +299,13 @@
 
   /* the later stages are not needed until the door is behind you */
   function loadStages() {
+    /* 288KB of scenery across the three remaining layers. They are decorative
+       — the whole stage is aria-hidden, and layA alone is a complete backdrop
+       — so a reader who has asked for less, or is on a link that would spend
+       half a minute on them, keeps the first landscape for the whole scroll
+       instead. Same decision door.js makes about Three, for the same reason. */
+    var c = navigator.connection;
+    if (c && (c.saveData || /(^|-)[23]g$/.test(c.effectiveType || ""))) return;
     $$(".stage__layer[data-src]").forEach(function (l) {
       l.style.backgroundImage = "url('" + l.getAttribute("data-src") + "')";
       l.removeAttribute("data-src");

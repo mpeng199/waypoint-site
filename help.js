@@ -880,10 +880,22 @@
   }
 
   if (q) {
-    // Filtering runs straight off the keystroke: a pass over a prebuilt
-    // string, ~1ms on a slow phone. Coalescing that into a frame would be
-    // debouncing something cheaper than the debounce, and rAF does not fire
-    // at all in a background tab, which is what made it untestable.
+    // Filtering runs straight off the keystroke. Measured at 390px with the
+    // CPU throttled 4x, median of seven per term:
+    //
+    //   "f"  19.9ms   "fo" 15.5ms   "foo" 4.2ms   "food" 3.4ms   "zzz" 0.9ms
+    //
+    // so the cost is not the ~1ms this comment used to claim — the first
+    // keystroke is the expensive one, because a single letter matches nearly
+    // every row and the work is proportional to what survives the filter. It
+    // narrows to noise by the third character.
+    //
+    // Still no debounce. 19.9ms is one dropped frame, once, against a 200ms
+    // budget for INP; a debounce long enough to coalesce real typing would
+    // add more latency to every result than it ever removes, and rAF does not
+    // fire at all in a background tab, which is what made the old attempt
+    // untestable. If this ever climbs toward the budget, the fix is to narrow
+    // the candidate set on the first letter, not to delay the response.
     q.addEventListener("input", onType);
     // Enter in a lone search field submits nothing here; stop the page jumping.
     q.addEventListener("keydown", function (e) {

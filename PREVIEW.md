@@ -68,6 +68,16 @@ Narrow the window to 320–390px for the header, tap-target and jump fixes; most
 of this month's work is only visible at phone widths. The print fix needs a
 print preview.
 
+## After editing CSS or JS
+
+The pages link `styles.min.css`, `tokens.min.css`, `help.min.css`,
+`script.min.js` and `help.min.js`, not the sources you edit. Rebuild them:
+
+    python3 build_min.py
+
+Skip it and the preview shows your last build, not your last edit — `check.py`
+fails with `minify: ... is stale` to say so. See PERF.md.
+
 ## Two things that look like bugs and are not
 
 **A blank dark-green frame on `index.html`.** The hero is scroll-driven and the

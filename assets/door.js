@@ -8,7 +8,6 @@
    Loads after first paint. If WebGL is unavailable, the CSS poster
    underneath is the finished picture and nothing here runs.
    ============================================================ */
-import * as THREE from "./vendor/three.module.min.js";
 
 const OPEN_W = 1.9;                 // doorway width
 const OPEN_H = 4.4;                 // doorway height
@@ -37,10 +36,50 @@ function webglOK() {
     return !!(window.WebGLRenderingContext && (c.getContext("webgl2") || c.getContext("webgl")));
   } catch (e) { return false; }
 }
-if (!canvas || !stage || !webglOK()) {
-  document.documentElement.classList.add("no-gl");
-  throw new Error("waypoint/door: no webgl, poster stands in");
+// Three is 750KB across two chunks. The poster underneath is a finished
+// picture, not a placeholder, so anything that will not actually watch the
+// door animate is better served by it than by the download:
+//
+//   narrow      the doorstage is hidden outright once it hands over (see
+//               .door-gone in styles.css) — 750KB to composite a layer the
+//               phone then throws away
+//   reduced     renders exactly one still frame; the poster IS a still frame
+//   saveData    the reader has asked, at the OS level, for less
+//   slow link   2g/3g spends ~30s of the reader's connection on decoration
+//   low memory  <4GB is where the scene's 900 motes start to swap
+//
+// Every branch lands on the same `no-gl` path the missing-WebGL case has
+// always used, which the CSS already styles and check.py already guards.
+function worthTheDownload() {
+  if (reduced || coarse) return false;
+  const c = navigator.connection;
+  if (c) {
+    if (c.saveData) return false;
+    if (/(^|-)[23]g$/.test(c.effectiveType || "")) return false;
+  }
+  if (navigator.deviceMemory && navigator.deviceMemory < 4) return false;
+  return true;
 }
+if (!canvas || !stage || !webglOK() || !worthTheDownload()) {
+  document.documentElement.classList.add("no-gl");
+  // Stop evaluating this module. It used to `throw`, which was reasonable
+  // while the only way here was a browser with no WebGL at all — a genuinely
+  // exceptional thing worth a line in the console. It is now the ordinary
+  // path: every phone, every reduced-motion reader, everyone on Save-Data.
+  // Throwing on the expected path puts an uncaught error in the console of
+  // most of the people this site is for, and would be the first thing any
+  // future error reporting saw.
+  //
+  // A module has no top-level `return`, so evaluation is parked instead.
+  // Nothing below this line runs, window.__waypointDoor is never set — which
+  // is exactly what script.js's doorFrame() already expects, since it
+  // re-reads the handle every frame and has always had to cope with the
+  // no-WebGL case — and the CSS poster underneath is the finished picture.
+  await new Promise(() => {});
+}
+
+// Past the gate, and only past it: this is the 750KB.
+const THREE = await import("./vendor/three.module.min.js");
 
 /* ---------- renderer ---------- */
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: !coarse, powerPreference: "high-performance" });
