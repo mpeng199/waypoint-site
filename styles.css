@@ -317,20 +317,15 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 /* ============================================================
    FOOTER (solid, arrival)
    ============================================================ */
-/* the 50vh is the footer's half of the gap that keeps it off the closing line's
-   screen — solid ground you land on before any of the links show up */
-.footer{ position:relative; z-index:3; background:var(--green-deep); border-top:1px solid var(--hair);
-  padding:var(--gap) 0 36px; }
-.footer__wrap{ max-width:var(--container); margin-inline:auto; padding-inline:var(--pad); }
-.footer__grid{ display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; padding-bottom:44px; border-bottom:1px solid var(--hair); }
-.footer__note{ margin-top:20px; max-width:44ch; font-size:14px; color:var(--ink-soft); line-height:1.65; }
-/* h2, not h4: the page runs h1 then h2 sections, and a footer column
-   label is not a sub-sub-heading of the last one. It looked right and
-   read as h2 -> h4 to anything navigating by heading. */
-.footer__h{ font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:14px; font-weight:600; }
-.footer__col a{ display:block; font-size:14px; color:var(--ink-soft); padding:5px 0; transition:color .2s; }
-.footer__col a:hover{ color:var(--gold); }
-.footer__base{ display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; padding-top:26px; font-size:12.5px; color:var(--ink-faint); }
+/* The footer itself is in tokens.css — it is the same object on every page,
+   and this sheet is not loaded by the directory. What stays here is the one
+   thing that is genuinely local: the gap above it.
+
+   The 50vh is the footer's half of the gap that keeps it off the closing
+   line's screen — solid ground you land on before any of the links show up.
+   It is a phase boundary of the scroll, which is why it moves with --gap and
+   why check.py's one-phase-at-a-time guard reads this rule. */
+.footer{ padding:var(--gap) 0 36px; }
 
 /* ============================================================
    SUBPAGES (consistent: landscape hero + green body)
@@ -623,7 +618,6 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   line-height:1.68; color:var(--ink-soft); text-shadow:0 1px 20px rgba(6,12,9,.8); }
 .vow__src{ margin-top:16px; font-size:12.5px; letter-spacing:.02em; color:var(--ink-faint); }
 
-.footer__ul{ border-bottom:1px solid rgba(231,197,126,.5); }
 
 /* ============================================================
    RESPONSIVE
@@ -667,20 +661,6 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   .scene{ justify-content:flex-start !important; text-align:left !important; min-height:auto; padding-block:var(--gap); }
   .scene__inner{ max-width:100%; }
   .scene--center .scene__cta{ justify-content:flex-start; }
-  /* the statement runs the full width and the three link groups pair off
-     beneath it. Collapsing all four to one column (which is what the old
-     560px rule did) made a 1,096px footer: eleven links, each its own
-     full-width row, over two screens of nothing but a list. */
-  /* minmax(0,1fr), not 1fr: a bare 1fr floors at min-content, and the one
-     unbreakable token down there — the contact address — dragged its column to
-     200px and left the other on 108, where half the link labels wrapped. Equal
-     halves, and the address is allowed to break instead of setting the width. */
-  .footer__grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:26px 22px; }
-  .footer__grid > :first-child{ grid-column:1/-1; }
-  .footer__note{ max-width:100%; }
-  /* <wbr/> in the address gives the wrap a place to happen; break-word is
-     only the backstop, so nothing else splits mid-word */
-  .footer__col a{ overflow-wrap:break-word; }
   .facts{ grid-template-columns:1fr 1fr; }
   .field{ grid-column:span 12; }
 
@@ -715,16 +695,15 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
      because .tlink sits 14px under the hero button and -15px there would put
      an invisible hit area over the button's bottom edge. */
   .form__legal a::after{ inset:-15px -10px; }
-  /* the disclosure and the footer columns are stacked, so they grow instead */
+  /* the disclosure is stacked here, so it grows instead of taking an inset
+     (the footer columns do the same, in tokens.css) */
   .vow__more > summary{ padding-block:12px; }
-  .footer__col a{ padding-block:11px; }   /* 22px line + 22 = the full 44 */
   /* measured, not guessed: this came back at 39px on a first pass, and a 21px
      line box needs 12 either side to clear 44.
      The legal line's inline link is in the pseudo-element group above instead:
      it is the only control in its paragraph, so nothing can overlap, and
      padding there would have meant opening the leading of a three-line
      paragraph to 2.0 — 44px of target bought by wrecking the setting. */
-  .footer__ul{ display:inline-block; padding-block:12px; }
 
   /* ---------- mobile compositing budget ----------
      None of this is about layout; it is about how many full-screen layers a

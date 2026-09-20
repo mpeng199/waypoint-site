@@ -1983,6 +1983,8 @@ SPRITE = ('<svg class="sprite" aria-hidden="true"><symbol id="i-phone" viewBox="
           'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
           '<path d="M21 12a8 8 0 0 1-8 8H4l2.2-2.6A8 8 0 1 1 21 12Z"/></symbol></svg>')
 
+import footer   # the footer every page shares
+
 PIN = ('<svg viewBox="0 0 32 32" aria-hidden="true"><path class="pin" d="M16 2 C9 2 5 7 5 13 '
        'c0 7 8 15 11 17 3-2 11-10 11-17 0-6-4-11-11-11Z"/>'
        '<circle class="pin-dot" cx="16" cy="13" r="4.2"/></svg>')
@@ -2139,26 +2141,18 @@ def vow_frag():
 
 
 def footer_frag(n, when="recently"):
-    return [
-        '<footer class="hfoot">',
-        '  <div class="hfoot__in">',
-        f'    <a class="brand" href="index.html">{PIN}'
-        '<span class="brand__txt">Waypoint<small>Student Health Corps</small></span></a>',
-        '    <p class="hfoot__say">Waypoint is a student volunteer corps in New York '
-        'City. We do not run any of the programs on this page. We help people find '
-        'them.</p>',
-        '    <ul class="hfoot__links">',
-        '      <li><a href="help.html">Find help</a></li>',
-        '      <li><a href="index.html">About Waypoint</a></li>',
-        '      <li><a href="index.html#students">Volunteer with us</a></li>',
-        '      <li><a href="index.html#partners">For organizations</a></li>',
-        '      <li><a href="privacy.html">Privacy &amp; legal</a></li>',
-        '      <li><a href="mailto:waypointoutreach@gmail.com">waypointoutreach@<wbr />gmail.com</a></li>',
-        '    </ul>',
-        f'    <p class="hfoot__ver">{n} resources. Last checked {when}. '
-        'Programs change &mdash; if something here is wrong, please tell us.</p>',
-        '  </div>',
-        '</footer>',
+    """The shared footer, plus the one line that is only true of these pages.
+
+    The markup comes from footer.py so that the directory and the narrative
+    site cannot drift apart. The resource count and the date it was last
+    checked stay here: they are the freshness of this file, and a directory
+    that does not say when it was checked is asking to be trusted on nothing.
+    """
+    return footer.render(
+        anchor="index.html#",
+        extra=f"{n} resources. Last checked {when}. "
+              "Programs change &mdash; if something here is wrong, please tell us.",
+    ).split("\n") + [
         '<script src="help.min.js" defer></script>',
         '</body>', '</html>',
     ]
@@ -2808,25 +2802,17 @@ def render_language(L, rows, by_need):
     A('</div>')
 
     # ---- footer ----
-    A('<footer class="hfoot">')
-    A('  <div class="hfoot__in">')
-    A(f'    <a class="brand" href="{lang_page(L["key"])}" '
-      f'aria-label="{esc(U["home"])}">{PIN}'
-      '<span class="brand__txt" dir="ltr">Waypoint'
-      '<small>Student Health Corps</small></span></a>')
-    A(f'    <p class="hfoot__say">{esc(U["foot_say"])}</p>')
-    A('    <ul class="hfoot__links">')
-    for href, label in zip([lang_page(L["key"]), "index.html",
-                            "index.html#students", "index.html#partners",
-                            "privacy.html"], U["foot_links"]):
-        A(f'      <li><a href="{href}">{esc(label)}</a></li>')
-    A('      <li><a href="mailto:waypointoutreach@gmail.com" dir="ltr">'
-      'waypointoutreach@<wbr />gmail.com</a></li>')
-    A('    </ul>')
-    A(f'    <p class="hfoot__ver">'
-      f'{esc(U["foot_ver"].format(n=n, when=checked_in(rows, L["key"])))}</p>')
-    A('  </div>')
-    A('</footer>')
+    # The same footer as every other page, in this language's words. The
+    # wordmark points at this language's own directory rather than the English
+    # one, which is the only structural difference left between the two.
+    A(footer.render(
+        home=lang_page(L["key"]),
+        help_href=lang_page(L["key"]),
+        anchor="index.html#",
+        words=footer.words_for(U),
+        rtl=rtl,
+        extra=esc(U["foot_ver"].format(n=n, when=checked_in(rows, L["key"]))),
+    ))
     A('</body>')
     A('</html>')
     return "\n".join(p) + "\n"

@@ -1505,7 +1505,10 @@ def check_mobile_reads():
     css = read("styles.css")
     js = read("script.js")
     idx = read("index.html")
-    blocks = re.findall(r"@media \(max-width:900px\)\{(.*?)\n\}", css, flags=re.S)
+    # tokens.css too: the footer is shared chrome and its narrow layout lives
+    # there now, with the rest of the footer, so that the directory gets it.
+    blocks = re.findall(r"@media \(max-width:900px\)\{(.*?)\n\}",
+                        css + "\n" + read("tokens.css"), flags=re.S)
     narrow = "\n".join(blocks)
 
     # ---- the tabs, on a phone, without opening anything ----
@@ -1743,11 +1746,14 @@ def check_theme_is_shared():
          ".mast h1 em{ color:var(--gold); }" in helpcss),
         ("the painted valley behind the masthead", 'class="mast__bg"' in front and
          "assets/band.webp" in helpcss),
-        # Asked as "does .hfoot paint itself green-deep", not as "does this
+        # Asked as "does .footer paint itself green-deep", not as "does this
         # exact byte sequence appear": adding --focus to the same block once
-        # made this fail while the footer was still green.
+        # made this fail while the footer was still green. It is in tokens.css
+        # rather than help.css now, because it is one object on both halves —
+        # which is a stronger version of what this check was asking for.
         ("the deep green footer",
-         bool(re.search(r"\.hfoot\{[^}]*background:var\(--green-deep\)", helpcss))),
+         bool(re.search(r"\.footer\{[^}]*background:var\(--green-deep\)",
+                        read("tokens.css")))),
     ]:
         if test:
             ok(f"carried across: {what}")
@@ -5088,6 +5094,15 @@ def check_the_printed_page_keeps_its_numbers():
         return
     # Comments first: a brace inside one derails any brace-counting after it.
     body = re.sub(r"/\*.*?\*/", "", block.group(1), flags=re.S)
+    # The footer prints from tokens.css now, not from here, so its print rules
+    # have to be read alongside this sheet's or the chrome list below cannot
+    # see them.
+    shared = re.search(r"@media print\{(.*?)\n\}", read("tokens.css"), re.S)
+    if not shared:
+        bad("tokens.css has no @media print block, so the shared footer prints "
+            "its three link columns onto the handout")
+    else:
+        body += "\n" + re.sub(r"/\*.*?\*/", "", shared.group(1), flags=re.S)
     # The selectors that carry a phone number onto paper.
     carriers = [".cl__b", ".cl__pv", ".pv__call", ".pv__n", ".cl h3 a"]
     for sel in carriers:
@@ -5105,8 +5120,10 @@ def check_the_printed_page_keeps_its_numbers():
     # the search box, the jump nav, the breadcrumb and the footer links
     # stopped being hidden and started printing as three-column grids. Six
     # sheets instead of three, and nobody prints the site to check.
+    # .footer__grid, not the old .hfoot__links: the shared footer's three link
+    # columns are the thing that must not print, and tokens.css hides them.
     CHROME = [".sitehead", ".find", ".jump", ".crumb", ".skip",
-              ".hfoot__links", ".cl__all", ".langbar", ".printbtn"]
+              ".footer__grid", ".cl__all", ".langbar", ".printbtn"]
     for sel in CHROME:
         hidden = False
         for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", body):
@@ -6037,6 +6054,74 @@ def check_the_student_word_is_the_school_one():
        "use the school word")
 
 
+def check_the_footer_is_one_object():
+    """Every page ends with the same footer, and it is rendered, not typed.
+
+    There were three. index.html had the full four-column one; privacy, terms,
+    partners and students had a shorter copy of it with a different paragraph,
+    no terms link and no "start here"; the twenty-eight directory pages had
+    .hfoot, a single-column object with its own stylesheet. A link added to any
+    one of them reached a third of the site, which is how the directory ended
+    up with no link to the terms and the subpages with no contact address.
+
+    footer.py renders all thirty-three now. This compares what is on disk
+    against what that module produces for each page, so a footer edited in one
+    page's HTML and nowhere else fails here instead of shipping.
+
+    The directory pages add one line under the bottom bar — the resource count
+    and the date the file was last checked — and that line is theirs. Every
+    line above it has to be identical, which is what shared_part() cuts away.
+    """
+    import footer as F
+
+    FOOT = re.compile(r'<footer class="footer">.*?</footer>', re.S)
+    drifted, missing, checked = [], [], 0
+    for page in PAGES:
+        src = read(page)
+        params = F.params_for(page)
+        if params is None:
+            # a standalone document: no shared CSS, so a shared footer would
+            # render unstyled. Deliberate, and named in footer.STANDALONE.
+            if "<footer" in src:
+                drifted.append(f"{page} is standalone but grew a footer")
+            continue
+        found = FOOT.search(src)
+        if not found:
+            missing.append(page)
+            continue
+        if F.shared_part(found.group(0)) != F.render(**params):
+            drifted.append(page)
+        checked += 1
+
+    if missing:
+        bad(f"no shared footer on {', '.join(missing)} — run "
+            f"`python3 footer.py` and `python3 build_help.py`")
+    if drifted:
+        bad(f"the footer has drifted from footer.py on {', '.join(drifted)}: "
+            f"it was edited in the page instead of in the module, so the other "
+            f"pages did not get it. Re-run footer.py and build_help.py")
+    if not missing and not drifted:
+        ok(f"one footer, rendered from footer.py, on all {checked} pages")
+
+    # the count-and-date line belongs to the directory and nowhere else
+    stray = [p for p in ["index.html", "privacy.html", "terms.html",
+                         "partners.html", "students.html"]
+             if "footer__ver" in read(p)]
+    if stray:
+        bad(f"the directory's freshness line is on {', '.join(stray)}, which "
+            f"do not have a resource count to be fresh about")
+    else:
+        ok("the resource count and its date stay on the directory pages")
+
+    # the old object, in markup or in either stylesheet
+    left = [f for f in ["help.css", "styles.css", "tokens.css"] if "hfoot" in read(f)]
+    left += [p for p in PAGES if "hfoot" in read(p)]
+    if left:
+        bad(f"the replaced footer is still referenced in {', '.join(left)}")
+    else:
+        ok("the second footer object is gone, markup and CSS")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -6091,7 +6176,8 @@ def main():
                check_the_guards_read_the_file_not_a_cache,
                check_cache_headers,
                check_minified_is_generated,
-               check_the_student_word_is_the_school_one]:
+               check_the_student_word_is_the_school_one,
+               check_the_footer_is_one_object]:
         before = len(passes) + len(failures)
         try:
             fn()

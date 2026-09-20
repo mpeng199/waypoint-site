@@ -27,6 +27,12 @@
    that cannot work. check.py enforces both halves. */
 (function () {
   "use strict";
+
+  /* The footer is the same object here as on the narrative side, so the
+     copyright year is refreshed the same way script.js does it. Without
+     this the directory would still say 2026 in January. */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-year]"),
+    function (el) { el.textContent = new Date().getFullYear(); });
   /* The header is opaque in the stylesheet and this class is what lets it
      be transparent at the top of the page — because `.stuck`, the other
      half of that, can only ever be added from here. A page without this

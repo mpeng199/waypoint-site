@@ -102,6 +102,12 @@ UI["spanish"] = {
                 "página. Ayudamos a la gente a encontrarlos.",
     "foot_links": ["Buscar ayuda", "Sobre Waypoint", "Ser voluntario",
                    "Para organizaciones", "Privacidad y aviso legal"],
+    "foot_h": ["El recorrido", "Participar", "Más"],
+    "foot_start": "Empiece aquí",
+    "foot_terms": "Términos de uso",
+    "foot_copy": "Waypoint. Una iniciativa de voluntariado estudiantil en la "
+                 "ciudad de Nueva York. Michael, fundador.",
+    "foot_short": ["Privacidad", "Términos"],
     "foot_ver": "{n} recursos. Última revisión: {when}. Los programas "
                 "cambian: si algo aquí está mal, díganoslo.",
     "langbar_h": "Reciba ayuda en su idioma",
@@ -158,6 +164,12 @@ UI["french"] = {
                 "Nous aidons les gens à les trouver.",
     "foot_links": ["Trouver de l’aide", "À propos de Waypoint", "Devenir bénévole",
                    "Pour les organismes", "Confidentialité et mentions légales"],
+    "foot_h": ["Le parcours", "Participer", "Plus"],
+    "foot_start": "Commencez ici",
+    "foot_terms": "Conditions d’utilisation",
+    "foot_copy": "Waypoint. Une initiative bénévole étudiante à New York. "
+                 "Michael, fondateur.",
+    "foot_short": ["Confidentialité", "Conditions"],
     "foot_ver": "{n} ressources. Dernière vérification : {when}. Les programmes "
                 "changent — si quelque chose ici est faux, dites-le-nous.",
     "langbar_h": "De l’aide dans votre langue",
@@ -217,6 +229,12 @@ UI["polish"] = {
                 "ludziom je znaleźć.",
     "foot_links": ["Znajdź pomoc", "O Waypoint", "Zostań wolontariuszem",
                    "Dla organizacji", "Prywatność i informacje prawne"],
+    "foot_h": ["Ścieżka", "Włącz się", "Więcej"],
+    "foot_start": "Zacznij tutaj",
+    "foot_terms": "Warunki korzystania",
+    "foot_copy": "Waypoint. Studencka inicjatywa wolontariacka w Nowym Jorku. "
+                 "Michael, założyciel.",
+    "foot_short": ["Prywatność", "Warunki"],
     "foot_ver": "{n} zasobów. Ostatnio sprawdzone: {when}. Programy się "
                 "zmieniają — jeśli coś tu jest nieaktualne, daj nam znać.",
     "langbar_h": "Pomoc w twoim języku",
@@ -266,6 +284,12 @@ UI["haitian-creole"] = {
                 "dirije okenn nan pwogram ki sou paj sa a. Nou ede moun jwenn yo.",
     "foot_links": ["Jwenn èd", "Sou Waypoint", "Vin volontè",
                    "Pou òganizasyon", "Konfidansyalite ak legal"],
+    "foot_h": ["Chemen an", "Patisipe", "Plis"],
+    "foot_start": "Kòmanse isit la",
+    "foot_terms": "Kondisyon itilizasyon",
+    "foot_copy": "Waypoint. Yon inisyativ volontè elèv nan Vil Nouyòk. "
+                 "Michael, fondatè.",
+    "foot_short": ["Konfidansyalite", "Kondisyon"],
     "foot_ver": "{n} resous. Dènye verifikasyon: {when}. Pwogram yo chanje — "
                 "si gen yon bagay ki pa kòrèk isit la, tanpri di nou.",
     "langbar_h": "Jwenn èd nan lang ou",
@@ -320,6 +344,12 @@ UI["russian"] = {
                 "людям их найти.",
     "foot_links": ["Найти помощь", "О Waypoint", "Стать волонтёром",
                    "Для организаций", "Конфиденциальность и правовая информация"],
+    "foot_h": ["Путь", "Участвовать", "Ещё"],
+    "foot_start": "Начните здесь",
+    "foot_terms": "Условия использования",
+    "foot_copy": "Waypoint. Студенческая волонтёрская инициатива в Нью-Йорке. "
+                 "Michael, основатель.",
+    "foot_short": ["Конфиденциальность", "Условия"],
     "foot_ver": "{n} ресурсов. Последняя проверка: {when}. Программы меняются "
                 "— если здесь что-то не так, сообщите нам.",
     "langbar_h": "Помощь на вашем языке",
@@ -365,6 +395,11 @@ UI["chinese"] = {
                 "是我们运营的。我们帮助大家找到它们。",
     "foot_links": ["寻找帮助", "关于 Waypoint", "成为志愿者",
                    "面向合作机构", "隐私与法律声明"],
+    "foot_h": ["流程", "参与我们", "更多"],
+    "foot_start": "从这里开始",
+    "foot_terms": "使用条款",
+    "foot_copy": "Waypoint。纽约市的学生志愿服务项目。创始人 Michael。",
+    "foot_short": ["隐私", "条款"],
     "foot_ver": "共 {n} 项资源。最近核对：{when}。项目会有变动——如果这里有"
                 "任何不准确的地方，请告诉我们。",
     "langbar_h": "用您的语言获取帮助",
@@ -416,6 +451,11 @@ UI["korean"] = {
                 "그것을 찾도록 돕습니다.",
     "foot_links": ["도움 찾기", "Waypoint 소개", "자원봉사 신청",
                    "기관을 위한 안내", "개인정보 및 법적 고지"],
+    "foot_h": ["과정", "함께하기", "더 보기"],
+    "foot_start": "여기서 시작",
+    "foot_terms": "이용약관",
+    "foot_copy": "Waypoint. 뉴욕시의 학생 자원봉사 이니셔티브. 설립자 Michael.",
+    "foot_short": ["개인정보", "약관"],
     "foot_ver": "자료 {n}건. 마지막 확인: {when}. 프로그램은 바뀝니다 — 여기 "
                 "잘못된 내용이 있으면 알려 주십시오.",
     "langbar_h": "사용하시는 언어로 도움 받기",
@@ -468,6 +508,12 @@ UI["bengali"] = {
                 "পেতে সাহায্য করি।",
     "foot_links": ["সাহায্য খুঁজুন", "Waypoint সম্পর্কে", "স্বেচ্ছাসেবক হোন",
                    "সংস্থার জন্য", "গোপনীয়তা ও আইনি তথ্য"],
+    "foot_h": ["পথচলা", "যুক্ত হোন", "আরও"],
+    "foot_start": "এখান থেকে শুরু",
+    "foot_terms": "ব্যবহারের শর্তাবলি",
+    "foot_copy": "Waypoint। নিউ ইয়র্ক সিটির একটি শিক্ষার্থী স্বেচ্ছাসেবক উদ্যোগ। "
+                 "প্রতিষ্ঠাতা Michael।",
+    "foot_short": ["গোপনীয়তা", "শর্তাবলি"],
     "foot_ver": "{n}টি জায়গা। সর্বশেষ যাচাই: {when}। প্রোগ্রাম বদলায় — এখানে "
                 "কিছু ভুল থাকলে আমাদের জানান।",
     "langbar_h": "আপনার ভাষায় সাহায্য নিন",
@@ -516,6 +562,12 @@ UI["arabic"] = {
                 "على الوصول إليها.",
     "foot_links": ["ابحث عن مساعدة", "عن Waypoint", "تطوّع معنا",
                    "للمؤسسات", "الخصوصية والإشعارات القانونية"],
+    "foot_h": ["المسار", "شارك معنا", "المزيد"],
+    "foot_start": "ابدأ من هنا",
+    "foot_terms": "شروط الاستخدام",
+    "foot_copy": "Waypoint. مبادرة تطوعية يقودها طلاب في مدينة نيويورك. "
+                 "المؤسس Michael.",
+    "foot_short": ["الخصوصية", "الشروط"],
     "foot_ver": "{n} مورد. آخر تحقق: {when}. البرامج تتغيّر — إذا كان هنا شيء "
                 "غير صحيح فأخبرنا.",
     "langbar_h": "احصل على المساعدة بلغتك",
@@ -569,6 +621,12 @@ UI["urdu"] = {
                 "کرنے میں مدد دیتے ہیں۔",
     "foot_links": ["مدد تلاش کریں", "Waypoint کے بارے میں", "رضاکار بنیں",
                    "اداروں کے لیے", "پرائیویسی اور قانونی معلومات"],
+    "foot_h": ["سفر", "شامل ہوں", "مزید"],
+    "foot_start": "یہاں سے شروع کریں",
+    "foot_terms": "استعمال کی شرائط",
+    "foot_copy": "Waypoint۔ نیو یارک سٹی میں طلبہ کی رضاکارانہ پہل۔ "
+                 "بانی Michael۔",
+    "foot_short": ["پرائیویسی", "شرائط"],
     "foot_ver": "{n} وسائل۔ آخری جانچ: {when}۔ پروگرام بدلتے رہتے ہیں — اگر "
                 "یہاں کچھ غلط ہو تو ہمیں بتائیں۔",
     "langbar_h": "اپنی زبان میں مدد حاصل کریں",
