@@ -2164,7 +2164,21 @@ def footer_frag(n, when="recently"):
     ]
 
 
-def filters_frag(compact=False):
+# A facet button says what it narrows before it says how much. The label alone
+# is three words of gray in a row of three, and a reader scanning for "where"
+# reads all nine. One stroked glyph each, in the same weight as the magnifier
+# beside them, so the row can be recognised by shape rather than read.
+FACET_ICONS = {
+    "boro": '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>'
+            '<circle cx="12" cy="10" r="3"/>',
+    "lang": '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/>'
+            '<path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/>',
+    "flags": '<path d="M4 7h9M19 7h1M4 17h1M11 17h9"/>'
+             '<circle cx="16" cy="7" r="2.6"/><circle cx="8" cy="17" r="2.6"/>',
+}
+
+
+def filters_frag():
     """The three facets, one dropdown each.
 
     Identical on the front page and on every category page, because a chip
@@ -2179,7 +2193,14 @@ def filters_frag(compact=False):
 
     A collapsed dropdown has to say whether it is doing anything, or it hides
     the reason the list got shorter. Each button carries a count of what is
-    selected inside it, and the row carries Start over once anything is on.
+    selected inside it, keeps its underline on while it is filtering, and the
+    row carries Start over once anything is on.
+
+    The three buttons used to be three pills, each with its own border, inside
+    a card that already had one. They are segments of a single bar now,
+    divided from the search box and from each other by a hairline apiece, and
+    each one opens with the shape of what it narrows — a pin, a globe, a pair
+    of sliders — so the row can be recognised rather than read.
 
     The whole block is script-only (a filter that cannot filter is worse than
     no filter), so nothing is lost when there is no script: `.find` ships
@@ -2188,6 +2209,9 @@ def filters_frag(compact=False):
     def facet(key, label, chips, hint=None):
         out = [f'    <details class="facet" data-facet="{key}">',
                f'      <summary class="facet__btn">',
+               '        <svg class="facet__ico" viewBox="0 0 24 24" aria-hidden="true" '
+               'fill="none" stroke="currentColor" stroke-width="1.8" '
+               f'stroke-linecap="round" stroke-linejoin="round">{FACET_ICONS[key]}</svg>',
                f'        <span class="facet__label">{label}</span>',
                f'        <span class="facet__n" hidden></span>',
                '        <svg class="facet__caret" viewBox="0 0 24 24" aria-hidden="true" '
@@ -2244,6 +2268,11 @@ def search_frag(placeholder, scope_note):
     The visible "Search for what you need" is gone and the label is still
     there: a magnifier and "Try: shelter, hotline, lawyer" say what the box is
     for, and the <label> keeps saying it to a screen reader.
+
+    The box and the three dropdowns are one bar rather than four bordered
+    controls sitting next to each other. Nothing in row one carries an outline
+    of its own; a hairline divides each segment from the next and the card
+    draws the single edge around the lot.
     """
     return [
         '<section class="find" aria-labelledby="find-h" hidden>',

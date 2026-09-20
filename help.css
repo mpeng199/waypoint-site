@@ -282,12 +282,15 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   margin-bottom:clamp(28px,5vw,44px); max-width:68ch; color:var(--ink-2); }
 
 /* ---------------------------------------------------------- search/filter */
-/* One card, three zones divided by hairlines: what you type, what that got
-   you, and how to narrow it further. It was four separate objects — a labeled
-   box, an orphaned gray line under it, a bordered card of chips, and the count
-   and the print button floating below everything, outside the lot. All four
-   did the same job, narrowing a list, and none of them looked related to any
-   other. Nothing inside the card carries a border of its own now. */
+/* One card, two rows: the bar you narrow the list with, and what that got
+   you. It was four separate objects — a labeled box, an orphaned gray line
+   under it, a bordered card of chips, and the count and the print button
+   floating below everything, outside the lot. All four did the same job,
+   narrowing a list, and none of them looked related to any other.
+
+   Nothing inside the card carries a border of its own now, including the
+   search box and the three dropdown buttons, which used to. The card draws
+   the only outline and hairlines divide it. */
 .find{ margin-bottom:clamp(28px,5vw,44px);
   background:var(--surface); border:1.5px solid var(--line);
   border-radius:var(--r); }
@@ -299,25 +302,39 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    enough, and the menus can leave the box. */
 .find > :first-child{ border-start-start-radius:inherit; border-start-end-radius:inherit; }
 .find > :last-child{ border-end-start-radius:inherit; border-end-end-radius:inherit; }
-/* Row one: type, or narrow. The box takes the width its placeholder needs and
-   no more — full-bleed, it was a 1000px input for a word like "rent", and it
-   pushed the three dropdowns onto a band of their own. */
-.find__top{ display:flex; flex-wrap:wrap; align-items:center;
-  gap:8px 12px; padding:10px clamp(12px,1.6vw,16px); }
-/* min(400px,100%), never a bare 400px: at 320px with text at 200% the box
-   held its own width and hung 112px off the side of the page — the same
-   failure the grid tracks on this page already guard against. */
-.find__box{ flex:1 1 260px; max-width:min(400px,100%);
-  display:flex; align-items:center; gap:10px; background:var(--mint);
-  border:1.5px solid var(--line); border-radius:var(--r-s); padding:0 12px;
-  transition:border-color .18s var(--ease), box-shadow .18s var(--ease); }
-.find__box:focus-within{ border-color:var(--green); background:var(--surface);
-  box-shadow:0 0 0 3px rgba(30,53,40,.10); }
+/* Row one: type, or narrow — one bar, four segments.
+
+   It was a bordered box sitting beside three bordered pills inside a bordered
+   card: three rings of outline all saying "this is a control", and the eye
+   crossed two of them getting from the cursor to "Where you are". The
+   segments carry no outline of their own now. A hairline divides each from
+   the next, every segment is the full height of the bar, and the row reads as
+   one object with four places to touch.
+
+   align-items:stretch is what makes the dividers run corner to corner rather
+   than only as tall as the words inside them; the padding lives on each
+   segment rather than on this row, for the same reason. */
+.find__top{ display:flex; flex-wrap:wrap; align-items:stretch; }
+
+/* min(440px,100%), never a bare 440px: at 320px with text at 200% the box
+   held its own width and hung off the side of the page — the same failure the
+   grid tracks on this page already guard against.
+
+   The border is transparent rather than absent. It reserves the 3px so that
+   turning it on at higher contrast moves nothing, and at higher contrast it
+   is turned on: the divider beside it is a hairline, and a hairline is the
+   first thing to go for somebody who has told their system they cannot see
+   one. */
+.find__box{ flex:1 1 260px; max-width:min(440px,100%);
+  display:flex; align-items:center; gap:10px; background:none;
+  border:1.5px solid transparent; border-radius:var(--r);
+  padding-inline:clamp(12px,1.6vw,18px);
+  transition:background .18s var(--ease); }
 .find__box .ico{ width:22px; height:22px; color:var(--ink-3); flex:none; }
 /* min-width:0, or the flex item refuses to shrink below its placeholder's
    intrinsic width and takes the search box off the side of the screen. */
 .find__box input{ flex:1; min-width:0; border:0; background:none; font:inherit; color:inherit;
-  padding:10px 0; min-height:44px; outline:none; }
+  padding:10px 0; min-height:52px; outline:none; }
 /* The input hands its focus ring to the box around it, which is the right
    look and a trap: in Windows High Contrast the browser throws away our
    border color and our shadow, and `outline:none` is the one thing it keeps.
@@ -331,9 +348,9 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    :has(:focus-visible) rather than :focus-within, so a mouse click does not
    ring it, which is what :focus-visible does everywhere else. */
 .find__box:has(input:focus-visible){
-  outline:3px solid var(--focus); outline-offset:3px; }
+  outline:3px solid var(--focus); outline-offset:-2px; }
 @media (forced-colors: active){
-  .find__box:focus-within{ outline:3px solid Highlight; outline-offset:2px; }
+  .find__box:focus-within{ outline:3px solid Highlight; outline-offset:-2px; }
 }
 .find__box input::placeholder{ color:var(--ink-3); }
 .find__clear{ border:0; background:var(--line-2); color:var(--ink-2); font:inherit;
@@ -341,33 +358,52 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   min-height:36px; }
 .find__clear:hover{ background:var(--line); }
 
-/* The third zone of the find card: one row, three dropdowns.
+/* The rest of the bar: three dropdowns, each its own segment.
 
    It was nineteen chips laid out flat inside a disclosure — 860px on a phone,
    three screens of chrome in front of somebody who mostly wants to type a
    word. Each facet is a button now, and its choices open over the page
    instead of pushing it down, so the resting state is one row whatever the
    width. */
-.find__filters{ display:flex; align-items:center; flex-wrap:wrap; gap:8px;
-  min-width:0; }
+.find__filters{ display:flex; align-items:stretch; flex-wrap:wrap; gap:0;
+  min-width:0; border-inline-start:1px solid var(--line-2); }
 
-.facet{ position:relative; }
-.facet__btn{ cursor:pointer; list-style:none; display:inline-flex;
-  align-items:center; gap:8px; min-height:44px; padding:9px 14px;
+.facet{ position:relative; display:flex; }
+.facet + .facet{ border-inline-start:1px solid var(--line-2); }
+
+.facet__btn{ position:relative; cursor:pointer; list-style:none;
+  display:inline-flex; align-items:center; gap:9px; min-height:52px;
+  padding:9px clamp(13px,1.5vw,18px);
   font-weight:600; font-size:.94rem; color:var(--ink-2);
-  background:var(--surface); border:1.5px solid var(--line);
-  border-radius:var(--r-pill);
-  transition:border-color .16s var(--ease), color .16s var(--ease),
-             background .16s var(--ease); }
+  background:none; border:0; border-radius:0;
+  transition:color .16s var(--ease), background .16s var(--ease); }
 .facet__btn::-webkit-details-marker{ display:none; }
-.facet__btn:hover{ border-color:var(--green-2); color:var(--ink); }
-.facet[open] > .facet__btn{ border-color:var(--green); color:var(--ink); }
-.facet__caret{ width:16px; height:16px; flex:none; opacity:.6;
+.facet__btn:hover{ background:var(--line-2); color:var(--ink); }
+.facet[open] > .facet__btn{ background:var(--line-2); color:var(--ink); }
+
+/* The segment underlines itself instead of ringing itself. A pill border
+   around each of three buttons was three more outlines in a row that already
+   had one; a rule under the segment says the same thing and says it where the
+   segment meets the list it filters. */
+.facet__btn::after{ content:""; position:absolute; inset-inline:0;
+  inset-block-end:0; height:2px; background:var(--green);
+  transform:scaleX(0); transition:transform .18s var(--ease); }
+.facet__btn:hover::after,
+.facet[open] > .facet__btn::after{ transform:scaleX(1); }
+
+/* A facet icon is read as a shape before the label is read as a word. */
+.facet__ico{ width:19px; height:19px; flex:none; color:var(--ink-3);
+  transition:color .16s var(--ease); }
+.facet__btn:hover .facet__ico,
+.facet[open] > .facet__btn .facet__ico{ color:var(--green); }
+.facet__caret{ width:15px; height:15px; flex:none; opacity:.55;
   transition:transform .2s var(--ease); }
 .facet[open] .facet__caret{ transform:rotate(180deg); }
 
 /* What the button says while it is shut. A dropdown that hides the reason the
-   list got shorter is worse than the flat row it replaced. */
+   list got shorter is worse than the flat row it replaced — so a facet that
+   is filtering keeps its underline on with the dropdown closed, and carries
+   the count beside its label. */
 .facet__n{ display:inline-flex; align-items:center; justify-content:center;
   min-width:20px; height:20px; padding:0 6px; flex:none;
   font-size:.78rem; font-weight:700; font-variant-numeric:tabular-nums;
@@ -376,39 +412,97 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
      here needs a ring that is not also green. Nothing is focusable in a count
      today; the token costs nothing and stops that being a trap later. */
   --focus:var(--gold-lit); }
-.facet:has(.facet__n:not([hidden])) > .facet__btn{ border-color:var(--green); }
+.facet:has(.facet__n:not([hidden])) > .facet__btn{ color:var(--ink); }
+.facet:has(.facet__n:not([hidden])) > .facet__btn::after{ transform:scaleX(1); }
 
-.facet__menu{ position:absolute; z-index:40; inset-block-start:calc(100% + 6px);
-  inset-inline-start:0; min-width:max(316px, 100%); max-width:min(92vw, 460px);
+.facet__menu{ position:absolute; z-index:40; inset-block-start:calc(100% + 8px);
+  inset-inline-start:0; min-width:max(300px, 100%); max-width:min(92vw, 420px);
   background:var(--surface); border:1.5px solid var(--line);
   border-radius:var(--r); box-shadow:var(--shadow-lg, var(--shadow));
-  padding:14px; }
-.facet__hint{ font-size:.88rem; color:var(--ink-3); margin:0 0 10px; }
+  padding:10px; }
+/* The last segment sits at the end of the card; a panel that opens from its
+   start edge hangs off the page. It opens from its end edge instead. */
+.facet:last-of-type .facet__menu{ inset-inline-start:auto; inset-inline-end:0; }
+.facet__hint{ font-size:.88rem; color:var(--ink-3); margin:2px 4px 8px; }
 
 /* Narrow enough that a floating panel would hang off the side: let it sit in
-   the flow instead. Only one facet is open at a time, so the row still costs
-   one panel rather than three. */
+   the flow instead, and turn the bar on its side so the dividers still divide
+   one segment from the next. Only one facet is open at a time, so the column
+   still costs one panel rather than three. */
 @media (max-width:560px){
-  .facet{ position:static; }
-  .facet__menu{ position:static; inset:auto; min-width:0; max-width:none;
-    margin-block-start:8px; width:100%; }
-  .find__filters{ flex-direction:column; align-items:stretch; }
-  .facet__btn{ justify-content:space-between; }
+  /* flex-wrap:nowrap is not tidying: turning a wrapping row into a column
+     without it makes a multi-COLUMN flex container, and a wrapped flex line
+     takes its cross size from the items on it rather than from the box around
+     them. align-items:stretch then stretches each item to that line, not to
+     the card — so the bar sized itself to the longest label instead of the
+     page and hung 144px off the side at 320px with text at 200%. Both
+     containers wrap by default at wider widths, so both have to say it. */
+  .find__top{ flex-direction:column; flex-wrap:nowrap; }
+  .find__box{ max-width:none; }
+  .find__filters{ flex-direction:column; flex-wrap:nowrap; align-items:stretch;
+    border-inline-start:0; border-block-start:1px solid var(--line-2); }
+  .facet{ position:static; display:block; }
+  .facet + .facet{ border-inline-start:0;
+    border-block-start:1px solid var(--line-2); }
+  .facet__btn{ width:100%; }
   .facet__caret{ margin-inline-start:auto; }
+  .facet__menu{ position:static; inset:auto; min-width:0; max-width:none;
+    width:100%; border:0; border-radius:0; box-shadow:none;
+    padding:0 clamp(13px,1.5vw,18px) 10px; }
+  .facet:last-of-type .facet__menu{ inset-inline-end:auto; }
 }
 
-.chips{ display:flex; flex-wrap:wrap; gap:8px; }
-.chip{ font:inherit; font-size:.94rem; font-weight:500; cursor:pointer;
-  background:var(--surface); color:var(--ink-2);
-  border:1.5px solid var(--line); border-radius:999px;
-  padding:10px 16px; min-height:44px;
-  transition:background .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease); }
-.chip:hover{ border-color:var(--green-2); color:var(--ink); }
-.chip[aria-pressed="true"]{ background:var(--green); border-color:var(--green);
-  color:var(--mint); }
+/* The choices, one per row rather than a wrap of pills.
+
+   Nineteen pills in a floating panel is a paragraph of boxes: they rewrap at
+   every width, so the same list is a different shape on every screen, and
+   nothing lines up with anything. A column lines the labels up at one left
+   edge and gives every choice the same 44px to be hit in. */
+.chips{ display:flex; flex-direction:column; gap:2px; }
+.chip{ position:relative; font:inherit; font-size:.95rem; font-weight:500;
+  cursor:pointer; display:flex; align-items:center; gap:12px;
+  width:100%; text-align:start;
+  background:none; color:var(--ink-2); border:0; border-radius:var(--r-s);
+  padding:9px 12px; min-height:44px;
+  transition:background .14s var(--ease), color .14s var(--ease); }
+.chip:hover{ background:var(--line-2); color:var(--ink); }
+.chip[aria-pressed="true"]{ color:var(--ink); font-weight:600; }
+
+/* The box and its tick, drawn rather than fetched. A facet that holds three
+   answers at once has to show which three: a row that only changes weight
+   when it is on is a row nobody can scan, and a filled row for every
+   selection turns a short list into a block of green. The box is the one
+   shape everybody already reads as "this one is on".
+
+   The tick is the two borders of a small box, turned 45 degrees. It sits at
+   the padding plus half the box, which is where the box's own centre is, so
+   the two cannot drift apart when the padding changes. */
+.chip::before{ content:""; width:20px; height:20px; flex:none;
+  border:1.5px solid var(--line); border-radius:6px; background:var(--surface);
+  transition:background .14s var(--ease), border-color .14s var(--ease); }
+.chip[aria-pressed="true"]::before{ background:var(--green);
+  border-color:var(--green); }
+.chip::after{ content:""; position:absolute;
+  inset-inline-start:calc(12px + 10px - 3px); inset-block-start:50%;
+  width:5px; height:10px; margin-block-start:-7px;
+  border:solid var(--mint); border-width:0 2px 2px 0;
+  transform:rotate(45deg) scale(.5); opacity:0;
+  transition:opacity .14s var(--ease), transform .14s var(--ease); }
+.chip[aria-pressed="true"]::after{ opacity:1; transform:rotate(45deg) scale(1); }
+/* Forced colors throws away every background we set, so the filled box and
+   the mint tick both vanish and every row looks the same. The system's own
+   pair is the only thing that survives it. */
+@media (forced-colors: active){
+  .chip[aria-pressed="true"]::before{ background:Highlight; border-color:Highlight; }
+  .chip::after{ border-color:HighlightText; }
+}
+
 .reset,.linkish{ font:inherit; font-size:.94rem; font-weight:600; cursor:pointer;
   background:none; border:0; color:var(--green); text-decoration:underline;
   text-underline-offset:3px; padding:8px 0; justify-self:start; }
+/* In the bar the reset is a segment like the others, so it needs the bar's
+   side padding and the bar's height rather than a link's. */
+.find__filters > .reset{ padding-inline:clamp(13px,1.5vw,18px); min-height:52px; }
 /* what the box got you, immediately under the box, with the one action that
    applies to it */
 /* Row two: the count, its footnote beside it rather than under it, and the
@@ -811,7 +905,12 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
      disappearing. */
   .grp__head{ grid-template-columns:auto minmax(0,1fr); }
   .grp__top{ grid-column:1/-1; justify-self:start; margin-top:4px; }
-  .r__do{ flex-direction:column; align-items:stretch; }
+  /* nowrap for the same reason the search bar needs it: a wrapping row
+     turned into a column is a multi-column flex, and its line takes its
+     width from the buttons on it rather than from the card. It does not
+     overflow today only because a Call button is narrower than a phone
+     screen — which is a property of the labels, not of the layout. */
+  .r__do{ flex-direction:column; flex-wrap:nowrap; align-items:stretch; }
   .call,.visit{ justify-content:center; }
 }
 
@@ -831,6 +930,13 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
      to be a color that survives, not a tint. */
   .enote{ border-inline-start-color:var(--gold-deep); }
   .enote__h{ color:var(--ink-2); }
+  /* The search bar's segments are told apart by hairlines, and the search
+     segment itself carries a border that is transparent until here. Somebody
+     who asked their system for more contrast has said a hairline is not
+     something they can see, so the box gets its border back and every divider
+     in the bar takes the darker line. */
+  .find__box,.find__filters,.facet + .facet,
+  .chip::before{ border-color:var(--line); }
 }
 
 /* ---------------------------------------------------------------- print */
