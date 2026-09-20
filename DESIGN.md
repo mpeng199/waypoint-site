@@ -565,8 +565,10 @@ everything inside inherits:
 | `.sos` (the clay emergency panel) | `#FFF` | 7.6:1 |
 | `body` on the narrative side | `--gold-lit` | 11.5:1 |
 
-Dark *controls* — `.skip`, `.call`, a pressed `.chip` — deliberately set
-nothing: their ring lands on the light page outside them.
+Dark *controls* — `.skip`, `.call` — deliberately set nothing: their ring
+lands on the light page outside them. A pressed `.chip` used to be one of them;
+it is a light row with a filled checkbox now, so its ring is `--green` on white
+like every other control in the panel.
 
 Two controls hand their ring to a wrapper and set `outline:none`; both restore
 a `Highlight` ring under `@media (forced-colors: active)`, where the border
@@ -826,13 +828,34 @@ and `help.js` may write markup in at most two places.
 ### Search
 
 The search box, the result count, the print button and the filters are **one
-card, three zones divided by hairlines**: what you type, what that got you, and
-how to narrow it further. They were four separate objects — a labeled box, an
-orphaned gray line under it, a bordered card of chips, and, below the lot and
-outside everything, the count on the left with the print button on the right.
-All four did the same job and none looked related to any other.
+card, two rows**: the bar you narrow the list with, and what that got you. They
+were four separate objects — a labeled box, an orphaned gray line under it, a
+bordered card of chips, and, below the lot and outside everything, the count on
+the left with the print button on the right. All four did the same job and none
+looked related to any other.
 
-The count sits directly under the box that changes it. The scope note beside it
+Row one is **one bar of four segments** — what you type, then Where you are,
+Language you speak, Only show — divided by a hairline each and carrying no
+outline of their own. It was a bordered box beside three bordered pills inside
+a bordered card: three rings all saying "this is a control", and the eye
+crossed two of them getting from the cursor to the first filter. The card draws
+the only edge now. Each facet opens with the shape of what it narrows (a pin, a
+globe, a pair of sliders), and underlines itself while it is open — or while it
+is filtering with the panel shut, which is the same job the count badge does
+and the reason a closed dropdown cannot hide why the list got shorter.
+
+The choices inside a panel are **rows with a checkbox**, not a wrap of pills.
+Nineteen pills rewrap at every width, so the same list was a different shape on
+every screen; a column lines every label up at one edge and gives each choice
+the same 44px. The box is filled and ticked when the choice is on, because
+these facets hold several answers at once and weight alone is not scannable.
+
+Under 560px the bar turns on its side: the segments stack, the dividers become
+horizontal, and the panels drop into the flow instead of floating. Both flex
+containers must say `flex-wrap:nowrap` when they do — see
+`check_no_sideways_scroll`, whose third clause exists because they did not.
+
+The count sits directly under the bar that changes it. The scope note beside it
 no longer repeats the number standing next to it, which is one fewer place for
 a count to go stale.
 

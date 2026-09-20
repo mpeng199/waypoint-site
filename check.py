@@ -3883,6 +3883,32 @@ def check_no_sideways_scroll():
     else:
         ok("help.css: both children of the category grid may shrink")
 
+    # A third cause, and not a grid one: a flex row that wraps, turned into a
+    # column for a phone. flex-wrap:wrap on a column container is a multi-
+    # COLUMN flex, and a wrapped flex line takes its cross size from the items
+    # on it rather than from the box around them — so align-items:stretch
+    # stretches each item to the widest label instead of to the card. The
+    # search bar did exactly this: 445px of bar in a 281px card, 144px off the
+    # side of a 320px screen at 200% text, with every check above still green.
+    # Both containers wrap at desk widths, so both have to say nowrap.
+    rules = re.findall(r"([^{}]+)\{([^{}]*)\}", tight)
+    wraps = set()
+    for sel, decl in rules:
+        if "flex-wrap:wrap" in decl:
+            wraps.update(s.split("{")[-1] for s in sel.split(","))
+    columns = set()
+    for sel, decl in rules:
+        if "flex-direction:column" in decl and "flex-wrap:nowrap" not in decl:
+            columns.update(s.split("{")[-1] for s in sel.split(",")
+                           if s.split("{")[-1] in wraps)
+    if columns:
+        bad(f"help.css: {sorted(columns)} wraps at one width and turns into a "
+            "column at another without saying flex-wrap:nowrap. That is a "
+            "multi-column flex, which sizes itself to its own content and "
+            "scrolls the page sideways at 320px.")
+    else:
+        ok("help.css: no wrapping row becomes a column without nowrap")
+
 
 def _js_constants():
     """The scoring constants, read out of help.js rather than typed here.
