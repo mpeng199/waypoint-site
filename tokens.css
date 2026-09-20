@@ -303,3 +303,77 @@
 }
 @media (max-width:767px){ :root{ --head-h:160px; } }
 @media (max-width:359px){ :root{ --head-h:210px; } }
+
+/* ============================================================
+   FOOTER — shared chrome, defined once
+   ============================================================
+   This lives in tokens.css and not in styles.css or help.css for the same
+   reason the header does: it is the same object on both halves of the site,
+   and tokens.css is the only sheet every page loads. footer.py renders the
+   markup; this styles it. Changing one without the other is what check.py's
+   footer guard is for.
+
+   The column is the header's column, deliberately. The wordmark in the footer
+   now sits directly under the wordmark in the header on every page, and does
+   not move when you switch pages — the same argument --head-wrap was created
+   for. It is 120px narrower than index.html's own --container, so the footer
+   is inset slightly from the sections above it there. That is the price of
+   the footer not changing width between index.html and help.html.
+
+   The gap above it is measured here for a dense page that just ends. The
+   narrative pages override the padding in styles.css with var(--gap): there
+   the footer is the last phase of a scroll and needs a screen's breath before
+   it, and check.py's one-phase-at-a-time guard holds it to that. */
+.footer{ position:relative; z-index:3; --focus:var(--gold-lit);
+  background:var(--green-deep); color:var(--cream); border-top:1px solid var(--hair);
+  padding:clamp(34px,5vw,58px) 0 36px; }
+.footer__wrap{ max-width:var(--head-wrap); margin-inline:auto; padding-inline:var(--head-gutter); }
+.footer__grid{ display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:40px; padding-bottom:44px; border-bottom:1px solid var(--hair); }
+.footer__note{ margin-top:20px; max-width:44ch; font-size:14px; color:var(--ink-soft); line-height:1.65; }
+/* the footer sits on green-deep on every page, including the light directory
+   pages, so the wordmark cannot inherit the page's ink */
+.footer .brand{ color:var(--cream); text-decoration:none; }
+.footer .brand__txt{ color:var(--cream); }
+.footer .brand__txt small{ color:var(--ink-faint); letter-spacing:.18em; }
+/* h2, not h4: the page runs h1 then h2 sections, and a footer column
+   label is not a sub-sub-heading of the last one. It looked right and
+   read as h2 -> h4 to anything navigating by heading. */
+.footer__h{ font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:14px; font-weight:600; }
+/* text-decoration is declared, not inherited: help.css underlines every
+   link in the body copy, styles.css does not, and a footer that is one
+   object cannot look like two depending on which sheet the page loads. */
+.footer__col a{ display:block; font-size:14px; color:var(--ink-soft); padding:5px 0;
+  text-decoration:none; transition:color .2s; }
+.footer__col a:hover{ color:var(--gold); }
+.footer__base{ display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap; padding-top:26px; font-size:12.5px; color:var(--ink-faint); }
+.footer__ul{ text-decoration:none; border-bottom:1px solid rgba(231,197,126,.5); }
+/* the directory pages' freshness line, under the bottom bar */
+.footer__ver{ margin-top:20px; padding-top:18px; font-size:.84rem;
+  border-top:1px solid var(--hair); color:var(--ink-faint); }
+
+@media (max-width:900px){
+  /* the statement runs the full width and the three link groups pair off
+     beneath it. Collapsing all four to one column (which is what the old
+     560px rule did) made a 1,096px footer: eleven links, each its own
+     full-width row, over two screens of nothing but a list. */
+  /* minmax(0,1fr), not 1fr: a bare 1fr floors at min-content, and the one
+     unbreakable token down there — the contact address — dragged its column to
+     200px and left the other on 108, where half the link labels wrapped. Equal
+     halves, and the address is allowed to break instead of setting the width. */
+  .footer__grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:26px 22px; }
+  .footer__grid > :first-child{ grid-column:1/-1; }
+  .footer__note{ max-width:100%; }
+  /* <wbr/> in the address gives the wrap a place to happen; break-word is
+     only the backstop, so nothing else splits mid-word */
+  .footer__col a{ overflow-wrap:break-word; }
+  /* the columns are stacked here, so they grow to the 44px target instead of
+     taking an inset: 22px line + 22 = the full 44 */
+  .footer__col a{ padding-block:11px; }
+  .footer__ul{ display:inline-block; padding-block:12px; }
+}
+
+@media print{
+  .footer{ background:none; color:#000; border-top:1pt solid #000; padding:6pt 0 0; }
+  .footer__grid{ display:none; }
+  .footer__note,.footer__ver,.footer__base{ font-size:7.5pt; color:#000; }
+}

@@ -842,24 +842,10 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .vowbox__src{ margin-top:1em; font-size:.88rem; color:var(--ink-faint); }
 
 /* ------------------------------------------------------------------ foot */
-/* The same footer as the narrative site, to the hue: deep green ground, cream
-   text at .78, gold on hover, the brand lockup top-left. It is the last thing
-   on both halves of the site and there is no reason on earth for it to be two
-   different objects. */
-.hfoot{ --focus:var(--gold-lit); background:var(--green-deep); color:var(--cream); }
-.hfoot__in{ max-width:var(--wrap); margin:0 auto; padding:clamp(34px,5vw,58px) var(--pad) clamp(26px,3vw,36px); }
-.hfoot .brand{ margin-bottom:18px; }
-.hfoot .brand{ color:var(--cream); }
-.hfoot .brand__txt{ color:var(--cream); }
-.hfoot .brand__txt small{ color:var(--ink-faint); letter-spacing:.18em; }
-.hfoot__say{ max-width:62ch; color:var(--ink-soft); font-size:.97rem; }
-.hfoot__links{ display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:22px;
-  padding-top:22px; border-top:1px solid var(--hair); }
-.hfoot__links a{ font-weight:500; color:var(--ink-soft); text-underline-offset:3px;
-  display:inline-flex; align-items:center; min-height:44px; overflow-wrap:anywhere; }
-.hfoot__links a:hover{ color:var(--gold); }
-.hfoot__ver{ margin-top:20px; padding-top:18px; font-size:.84rem;
-  border-top:1px solid var(--hair); color:var(--ink-faint); }
+/* The footer is .footer, in tokens.css, and it is now literally the same
+   object as the narrative site's — which is what the note that used to sit
+   here asked for. Only the per-script leading below is still local, because
+   only these pages carry a .help--xx class. */
 
 /* ------------------------------------------------------------ responsive */
 @media (max-width:640px){
@@ -952,7 +938,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
      being hidden and started printing as three-column grids. Found by
      rendering the print block, not by reading it. */
   .sitehead,.find,.jump,.results,.sibs,.cat__rail,.crumb,
-  .skip,.hfoot__links,.grp__top,.dir__none,.printbtn,
+  .skip,.grp__top,.dir__none,.printbtn,
   .cl__all,.clusters__say,.langbar,.sprite,.mast__bg{ display:none !important; }
 
   /* The front page's printed form is the leave-behind students hand across a
@@ -1080,10 +1066,6 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   .vowbox__full{ color:#000 !important; font-size:8.5pt; max-width:none; }
   .vowbox__src{ color:#000 !important; font-size:7.5pt; }
 
-  .hfoot{ background:none; border-top:1pt solid #000; }
-  .hfoot__in{ padding:6pt 0 0; }
-  .hfoot__say,.hfoot__ver{ font-size:7.5pt; color:#000; }
-
   @page{ margin:12mm 10mm; }
 }
 
@@ -1144,12 +1126,12 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 /* ---- room to breathe, per script ---- */
 .help--bn .mast__title{ line-height:1.35; }
 .help--bn .cl__b,.help--bn .enote__p,.help--bn .vowbox__full,
-.help--bn .sos__for,.help--bn .mast__say,.help--bn .hfoot__say{ line-height:1.85; }
+.help--bn .sos__for,.help--bn .mast__say,.help--bn .footer__note{ line-height:1.85; }
 .help--ar .mast__title,.help--ur .mast__title{ line-height:1.4; }
 .help--ar .cl__b,.help--ar .enote__p,.help--ar .vowbox__full,
-.help--ar .sos__for,.help--ar .mast__say,.help--ar .hfoot__say,
+.help--ar .sos__for,.help--ar .mast__say,.help--ar .footer__note,
 .help--ur .cl__b,.help--ur .enote__p,.help--ur .vowbox__full,
-.help--ur .sos__for,.help--ur .mast__say,.help--ur .hfoot__say{ line-height:1.9; }
+.help--ur .sos__for,.help--ur .mast__say,.help--ur .footer__note{ line-height:1.9; }
 /* CJK has no word spaces, so the eye wants the line shorter, not looser. */
 .help--zh .mast__say,.help--ko .mast__say,
 .help--zh .vowbox__full,.help--ko .vowbox__full,
