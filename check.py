@@ -65,10 +65,10 @@ LANGUAGE_PAGES = _lang_pages()
 # Everything the directory serves. RESIDENT_PAGES is what a resident reads;
 # the English ones are checked for English prose, the ten language ones are
 # not, so most guards want ENGLISH_PAGES instead.
-ENGLISH_PAGES = ["help.html"] + CATEGORY_PAGES
+ENGLISH_PAGES = ["help.html", "events.html"] + CATEGORY_PAGES
 RESIDENT_PAGES = ENGLISH_PAGES
 
-PAGES = (["index.html", "help.html"] + CATEGORY_PAGES + LANGUAGE_PAGES +
+PAGES = (["index.html", "help.html", "events.html"] + CATEGORY_PAGES + LANGUAGE_PAGES +
          ["privacy.html", "terms.html", "partner-pitch.html",
           "cohort-onboarding.html", "students.html", "partners.html", "admin.html"])
 
@@ -1941,11 +1941,26 @@ def check_directory_no_js_contract():
                 f"attribute, so a reader without JavaScript never sees them")
     ok(f"no resource row is hidden in any of the {len(CATEGORY_PAGES)} category pages")
 
+    # Named per page rather than assumed, because the events page is a
+    # resident page whose script-only controls are a different three. The
+    # table is the point: a page with no entry here is a page whose
+    # JavaScript-only controls nobody has thought about, and the loop says so
+    # rather than skipping it.
+    SCRIPT_ONLY = {
+        "events.html": [
+            (r'<section class="evf"[^>]*\shidden>', "the event filters"),
+            (r'class="days__none" hidden>', "the no-matches message"),
+            (r'class="cal__reset" hidden>', "the show-every-day button"),
+        ],
+    }
+    DIRECTORY_CONTROLS = [
+        (r'<section class="find"[^>]*\shidden>', "the search and filter block"),
+        (r'class="dir__none" hidden>', "the no-matches message"),
+        (r'<button type="button" class="printbtn" hidden>', "the print button"),
+    ]
     for page in RESIDENT_PAGES:
         src = read(page)
-        for sel, why in [(r'<section class="find"[^>]*\shidden>', "the search and filter block"),
-                         (r'class="dir__none" hidden>', "the no-matches message"),
-                         (r'<button type="button" class="printbtn" hidden>', "the print button")]:
+        for sel, why in SCRIPT_ONLY.get(page, DIRECTORY_CONTROLS):
             if not re.search(sel, src):
                 bad(f"{page}: {why} no longer ships hidden — without JavaScript "
                     f"it would be a control that does nothing")

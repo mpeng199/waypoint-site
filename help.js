@@ -128,6 +128,271 @@
     stick();
   }
 
+  /* The three blocks below run BEFORE the search machinery's early
+     return. That return exists because a page with neither a search
+     index nor a directory has nothing to search — which is true of
+     events.html, and is exactly why its filters stayed hidden when
+     this code sat at the bottom of the file. Anything that is not
+     search goes above that line. */
+  /* ---------- the featured events row -------------------------------------
+
+     The track scrolls, snaps and swipes on its own; CSS does all of it. The
+     only thing missing without script is a pointer affordance on a desktop
+     with no touch screen, so the two arrows ship hidden and are revealed
+     here. Everything below is scrollBy and a disabled state. */
+  var track = document.getElementById("fevTrack");
+  if (track) {
+    var nav = document.querySelector(".fev__nav");
+    var arws = document.querySelectorAll("[data-fev]");
+    if (nav && arws.length) {
+      nav.hidden = false;
+      var step = function () {
+        var card = track.querySelector(".fev__c");
+        /* One card plus its gap, rather than a round number: the lead card is
+           a different width from the rest, so a fixed 300 would land the
+           track mid-card on every second press. */
+        return card ? card.getBoundingClientRect().width + 18 : 280;
+      };
+      var sync = function () {
+        var max = track.scrollWidth - track.clientWidth - 2;
+        Array.prototype.forEach.call(arws, function (b) {
+          b.disabled = b.getAttribute("data-fev") === "prev"
+            ? track.scrollLeft <= 2
+            : track.scrollLeft >= max;
+        });
+      };
+      Array.prototype.forEach.call(arws, function (b) {
+        b.addEventListener("click", function () {
+          var dir = b.getAttribute("data-fev") === "prev" ? -1 : 1;
+          track.scrollBy({ left: dir * step(), behavior: "smooth" });
+        });
+      });
+      track.addEventListener("scroll", sync, { passive: true });
+      window.addEventListener("resize", sync);
+      sync();
+    }
+  }
+
+  /* ---------- the events page: pick a day, narrow by kind ------------------
+
+     Same contract as the directory: every event is already in the markup,
+     grouped by day, and this only hides. With script off the calendar's days
+     are plain anchors that jump to the right heading, which is why they are
+     written as <a href="#d-..."> rather than as buttons. */
+  var days = document.getElementById("days");
+  if (days) {
+    var evs = days.querySelectorAll(".ev");
+    var blocks = days.querySelectorAll(".day");
+    var none = days.querySelector(".days__none");
+    var filters = document.querySelector(".evf");
+    var state = filters && filters.querySelector(".evf__state");
+    var calReset = document.querySelector(".cal__reset");
+    var picked = "";
+
+    var chosen = function (kind) {
+      var out = [];
+      Array.prototype.forEach.call(
+        document.querySelectorAll('[data-f="' + kind + '"]:checked'),
+        function (i) { out.push(i.value); });
+      return out;
+    };
+
+    var apply = function () {
+      var need = chosen("need"), boro = chosen("boro"), fmt = chosen("fmt");
+      var shown = 0;
+
+      Array.prototype.forEach.call(evs, function (el) {
+        var ok =
+          (!need.length || need.indexOf(el.getAttribute("data-need")) > -1) &&
+          (!boro.length || boro.indexOf(el.getAttribute("data-boro")) > -1) &&
+          (!fmt.length || fmt.indexOf(el.getAttribute("data-fmt")) > -1);
+        el.hidden = !ok;
+        if (ok) shown++;
+      });
+
+      /* A day heading with every event under it hidden is a date with
+         nothing after it. Hide the whole block instead. */
+      Array.prototype.forEach.call(blocks, function (b) {
+        var dayOk = !picked || b.getAttribute("data-day") === picked;
+        var live = b.querySelectorAll(".ev:not([hidden])").length;
+        b.hidden = !dayOk || !live;
+        if (!dayOk) {
+          shown -= live;
+        }
+      });
+
+      if (none) { none.hidden = shown > 0; }
+      if (calReset) { calReset.hidden = !picked; }
+      if (state) {
+        var filtered = need.length || boro.length || fmt.length || picked;
+        state.textContent = filtered
+          ? shown + (shown === 1 ? " event" : " events") + " shown"
+          : "";
+      }
+      /* aria-current rather than a class: it is what tells a screen reader
+         which day is showing, and the stylesheet can hang the selected look
+         off the same attribute. */
+      Array.prototype.forEach.call(document.querySelectorAll(".cal__a"),
+        function (a) {
+          if (picked && a.getAttribute("data-day") === picked) {
+            a.setAttribute("aria-current", "date");
+          } else {
+            a.removeAttribute("aria-current");
+          }
+        });
+    };
+
+    if (filters) {
+      filters.hidden = false;
+      filters.addEventListener("change", apply);
+    }
+
+    /* ---- one month at a time ------------------------------------------
+       Every month is in the markup, which is what a reader with no script
+       gets: five grids, listed. With a script, one shows and the arrows
+       move between them. */
+    var months = [].slice.call(document.querySelectorAll(".cal__m"));
+    if (months.length) {
+      var at = 0;
+      /* Open on the month containing today, not on the first month in the
+         file — they are the same today and will not be in January. */
+      var todayKey = (function () {
+        var d = new Date();
+        return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
+      })();
+      months.forEach(function (m, i) {
+        if (m.getAttribute("data-month") === todayKey) { at = i; }
+      });
+
+      var showMonth = function (i) {
+        at = Math.max(0, Math.min(months.length - 1, i));
+        months.forEach(function (m, j) { m.hidden = j !== at; });
+        var nav = months[at].querySelector(".cal__nav");
+        if (nav) { nav.hidden = false; }
+        var btns = months[at].querySelectorAll("[data-mon]");
+        Array.prototype.forEach.call(btns, function (b) {
+          b.disabled = b.getAttribute("data-mon") === "prev"
+            ? at === 0
+            : at === months.length - 1;
+        });
+      };
+
+      Array.prototype.forEach.call(document.querySelectorAll("[data-mon]"),
+        function (b) {
+          b.addEventListener("click", function () {
+            showMonth(at + (b.getAttribute("data-mon") === "prev" ? -1 : 1));
+            /* Move focus to the same arrow in the month now showing, so a
+               keyboard user is not dropped back at the top of the page when
+               the button they pressed is hidden under them. */
+            var same = months[at].querySelector(
+              '[data-mon="' + b.getAttribute("data-mon") + '"]');
+            if (same && !same.disabled) { same.focus(); }
+          });
+        });
+      showMonth(at);
+
+      /* Picking a day from the list side should bring its month into view. */
+      window.__waypointShowMonth = function (key) {
+        months.forEach(function (m, i) {
+          if (m.getAttribute("data-month") === key.slice(0, 7)) { showMonth(i); }
+        });
+      };
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll("[data-day]"),
+      function (a) {
+        if (a.tagName !== "A") { return; }
+        a.addEventListener("click", function (e) {
+          var d = a.getAttribute("data-day");
+          /* Clicking the selected day again clears it, so the calendar is a
+             toggle rather than a trap you can only leave with the button. */
+          picked = (picked === d) ? "" : d;
+          if (picked && window.__waypointShowMonth) {
+            window.__waypointShowMonth(picked);
+          }
+          if (picked) {
+            e.preventDefault();
+            apply();
+            var b = document.getElementById("d-" + picked);
+            if (b) { b.scrollIntoView({ behavior: "smooth", block: "start" }); }
+          } else {
+            e.preventDefault();
+            apply();
+          }
+        });
+      });
+
+    Array.prototype.forEach.call(document.querySelectorAll("[data-cal=\"all\"]"),
+      function (b) {
+        b.addEventListener("click", function () {
+          picked = "";
+          Array.prototype.forEach.call(
+            document.querySelectorAll(".evf__o input:checked"),
+            function (i) { i.checked = false; });
+          apply();
+        });
+      });
+
+    apply();
+  }
+
+  /* ---------- "tell us about an event" ------------------------------------
+
+     The same edge function every other form on this site posts to, with the
+     same envelope; form_type is what sorts them apart in the admin list. The
+     narrative pages get this from script.js, which the directory does not
+     load, so the twenty lines live in both places rather than making every
+     directory page carry the whole of script.js for one form. */
+  var evForm = document.querySelector('form[data-form="event"]');
+  if (evForm) {
+    var SUBMIT_URL = "https://zzsqvztwbhdgrdvjpbrr.supabase.co/functions/v1/submit";
+    var LOADED = Date.now();
+    evForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var okEl = evForm.querySelector(".form__ok");
+      var errEl = evForm.querySelector(".form__err");
+      var btn = evForm.querySelector('button[type="submit"]');
+      var fd = new FormData(evForm);
+      var payload = {};
+      fd.forEach(function (v, k) {
+        if (["name", "email", "trap"].indexOf(k) === -1) {
+          v = v.toString().trim();
+          if (v) { payload[k] = v; }
+        }
+      });
+      if (errEl) { errEl.classList.remove("show"); }
+      if (btn) {
+        btn.disabled = true;
+        btn.dataset.label = btn.dataset.label || btn.textContent;
+        btn.textContent = "Sending\u2026";
+      }
+      fetch(SUBMIT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          form_type: "event",
+          name: (fd.get("name") || "").toString().trim(),
+          email: (fd.get("email") || "").toString().trim(),
+          payload: payload,
+          trap: (fd.get("trap") || "").toString() || null,
+          elapsed: Date.now() - LOADED
+        })
+      }).then(function (r) {
+        if (!r.ok) { throw new Error("HTTP " + r.status); }
+        if (okEl) { okEl.classList.add("show"); }
+        Array.prototype.forEach.call(
+          evForm.querySelectorAll(".tellus__g, .btn"),
+          function (el) { el.style.display = "none"; });
+      }).catch(function () {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = btn.dataset.label || "Send it to us";
+        }
+        if (errEl) { errEl.classList.add("show"); }
+      });
+    });
+  }
+
   var ixEl = document.getElementById("ix");
   var dir = document.getElementById("dir");
   if (!ixEl && !dir) return;
@@ -1067,4 +1332,5 @@
   }
 
   mode.apply();
+
 })();

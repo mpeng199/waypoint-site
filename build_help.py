@@ -2455,6 +2455,15 @@ def render_overview(rows):
     p += sos_frag(rows)
     A('<hr class="rule" />')
 
+    # Events, above the search bar: they are the part of this page with a
+    # deadline on it. Renders to nothing at all when data/events.json has not
+    # been fetched, so a fresh clone still builds.
+    import events as _events
+    _fev = _events.featured_frag(_events.load(), sys.modules[__name__])
+    if _fev:
+        p += _fev
+        A('<hr class="rule" />')
+
     A('<noscript><p class="noscript-note">Search needs JavaScript, which is turned '
       'off. Nothing is lost: every heading below opens a page '
       'with all of that kind of help on it, and every phone number on this page '
@@ -3050,6 +3059,12 @@ def build():
     overview = ROOT / "help.html"
     overview.write_text(render_overview(rows), encoding="utf-8")
     written.append(overview)
+
+    import events as _events
+    ev = ROOT / "events.html"
+    ev.write_text(_events.render_page(_events.load(), sys.modules[__name__], rows),
+                  encoding="utf-8")
+    written.append(ev)
 
     for need in NEEDS:
         path = ROOT / page_for(need["key"])
