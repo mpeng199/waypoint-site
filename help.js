@@ -247,6 +247,58 @@
       filters.addEventListener("change", apply);
     }
 
+    /* ---- one month at a time ------------------------------------------
+       Every month is in the markup, which is what a reader with no script
+       gets: five grids, listed. With a script, one shows and the arrows
+       move between them. */
+    var months = [].slice.call(document.querySelectorAll(".cal__m"));
+    if (months.length) {
+      var at = 0;
+      /* Open on the month containing today, not on the first month in the
+         file — they are the same today and will not be in January. */
+      var todayKey = (function () {
+        var d = new Date();
+        return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2);
+      })();
+      months.forEach(function (m, i) {
+        if (m.getAttribute("data-month") === todayKey) { at = i; }
+      });
+
+      var showMonth = function (i) {
+        at = Math.max(0, Math.min(months.length - 1, i));
+        months.forEach(function (m, j) { m.hidden = j !== at; });
+        var nav = months[at].querySelector(".cal__nav");
+        if (nav) { nav.hidden = false; }
+        var btns = months[at].querySelectorAll("[data-mon]");
+        Array.prototype.forEach.call(btns, function (b) {
+          b.disabled = b.getAttribute("data-mon") === "prev"
+            ? at === 0
+            : at === months.length - 1;
+        });
+      };
+
+      Array.prototype.forEach.call(document.querySelectorAll("[data-mon]"),
+        function (b) {
+          b.addEventListener("click", function () {
+            showMonth(at + (b.getAttribute("data-mon") === "prev" ? -1 : 1));
+            /* Move focus to the same arrow in the month now showing, so a
+               keyboard user is not dropped back at the top of the page when
+               the button they pressed is hidden under them. */
+            var same = months[at].querySelector(
+              '[data-mon="' + b.getAttribute("data-mon") + '"]');
+            if (same && !same.disabled) { same.focus(); }
+          });
+        });
+      showMonth(at);
+
+      /* Picking a day from the list side should bring its month into view. */
+      window.__waypointShowMonth = function (key) {
+        months.forEach(function (m, i) {
+          if (m.getAttribute("data-month") === key.slice(0, 7)) { showMonth(i); }
+        });
+      };
+    }
+
     Array.prototype.forEach.call(document.querySelectorAll("[data-day]"),
       function (a) {
         if (a.tagName !== "A") { return; }
@@ -255,6 +307,9 @@
           /* Clicking the selected day again clears it, so the calendar is a
              toggle rather than a trap you can only leave with the button. */
           picked = (picked === d) ? "" : d;
+          if (picked && window.__waypointShowMonth) {
+            window.__waypointShowMonth(picked);
+          }
           if (picked) {
             e.preventDefault();
             apply();

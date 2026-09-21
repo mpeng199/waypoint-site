@@ -98,6 +98,13 @@ def _svg(path, cls="ico"):
             f'stroke-linecap="round" stroke-linejoin="round">{path}</svg>')
 
 
+_ARW_L = ('<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
+          'stroke="currentColor" stroke-width="1.9" stroke-linecap="round" '
+          'stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>')
+_ARW_R = ('<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" '
+          'stroke="currentColor" stroke-width="1.9" stroke-linecap="round" '
+          'stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>')
+
 CAL = _svg('<rect x="3" y="5" width="18" height="16" rx="2"/>'
            '<path d="M8 3v4M16 3v4M3 10h18"/>')
 PIN = _svg('<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>'
@@ -241,12 +248,17 @@ def featured_frag(doc, build_help):
 
 # ------------------------------------------------------------- the calendar
 
-def month_grid(year, month, counts, build_help):
-    """One month, Monday-first, with a count on every day that has something.
+def month_grid(year, month, counts, build_help, first_month, last_month):
+    """One month, Monday-first.
 
-    Every day with events is a link to that day's heading further down the
-    page, so the calendar works with JavaScript off. help.js upgrades the same
-    links into a filter.
+    A day with something on it gets a dot under the number, not a filled
+    cell: with five months on the page every grid was a block of green and
+    the eye had nothing to catch. The count is still announced — it is in
+    the link's accessible name — it just is not painted any more.
+
+    The arrows ship hidden inside every month and help.js reveals the pair
+    belonging to whichever month is showing. Without a script all the months
+    are simply listed, which is what they were before there was a nav.
     """
     esc = build_help.esc
     first = date(year, month, 1)
@@ -255,7 +267,19 @@ def month_grid(year, month, counts, build_help):
     today = date.today()
 
     a = [f'<div class="cal__m" data-month="{year}-{month:02d}">',
-         f'  <h3 class="cal__mh">{MONTHS[month - 1]} {year}</h3>',
+         '  <div class="cal__mtop">',
+         f'    <h3 class="cal__mh">{MONTHS[month - 1]} {year}</h3>',
+         '    <div class="cal__nav" hidden>',
+         f'      <button type="button" class="cal__arw" data-mon="prev" '
+         f'aria-label="Go to the month before {MONTHS[month - 1]} {year}"'
+         + (' disabled' if f"{year}-{month:02d}" == first_month else '')
+         + '>' + _ARW_L + '</button>',
+         f'      <button type="button" class="cal__arw" data-mon="next" '
+         f'aria-label="Go to the month after {MONTHS[month - 1]} {year}"'
+         + (' disabled' if f"{year}-{month:02d}" == last_month else '')
+         + '>' + _ARW_R + '</button>',
+         '    </div>',
+         '  </div>',
          '  <div class="cal__dow" aria-hidden="true">'
          + "".join(f"<span>{d[0]}</span>" for d in DAYS) + '</div>',
          '  <ul class="cal__grid">']
@@ -273,15 +297,11 @@ def month_grid(year, month, counts, build_help):
         if c:
             label = (f'{c} event{"s" if c != 1 else ""} on '
                      f'{DAYS[d.weekday()]} {MONTHS[month - 1]} {dnum}')
-            # The class goes on the anchor, not the <li>: the anchor is the
-            # thing you can focus, and check_focus_ring decides whether a dark
-            # rule is a room or a control by asking whether its class ever
-            # lands on a focusable tag.
             a.append(f'    <li class="{cls}"><a class="cal__a" '
                      f'href="#{day_id(key)}" '
                      f'data-day="{key}" aria-label="{esc(label)}">'
                      f'<span class="cal__n">{dnum}</span>'
-                     f'<span class="cal__c" aria-hidden="true">{c}</span></a></li>')
+                     f'<span class="cal__dot" aria-hidden="true"></span></a></li>')
         else:
             a.append(f'    <li class="{cls}"><span class="cal__n">{dnum}</span></li>')
     a += ['  </ul>', '</div>']
@@ -297,15 +317,14 @@ def calendar_frag(events, build_help):
         return []
     months = sorted({k[:7] for k in counts})
     a = ['<section class="cal" aria-labelledby="cal-h">',
-         '  <div class="cal__top">',
-         '    <h2 id="cal-h">Pick a day</h2>',
-         '    <p class="cal__say">A number means something is happening. '
-         'Tap a day to see only that day.</p>',
-         '  </div>',
+         '  <h2 id="cal-h" class="cal__h">Pick a day</h2>',
+         '  <p class="cal__say">A dot means something is happening. '
+         'Choose a day to see only that day.</p>',
          '  <div class="cal__ms">']
     for m in months:
         y, mo = int(m[:4]), int(m[5:7])
-        a += ["    " + ln for ln in month_grid(y, mo, counts, build_help)]
+        a += ["    " + ln for ln in
+              month_grid(y, mo, counts, build_help, months[0], months[-1])]
     a += ['  </div>',
           '  <p class="cal__reset" hidden><button type="button" class="linkish" '
           'data-cal="all">Show every day again</button></p>',
@@ -385,7 +404,7 @@ def render_page(doc, build_help, rows):
         "A day-by-day calendar of free events in New York City: mobile food "
         "pantries, free legal help, and things to do in every borough. Updated "
         "every morning from the organizations that run them.",
-        "#cal-h", "Skip to the calendar",
+        "#days", "Skip to the events",
         build_help.alternates("events.html"))
     p += build_help.header_frag()
     A('<main class="wrap">')
@@ -429,10 +448,19 @@ def render_page(doc, build_help, rows):
       'this page already, listed under the day it happens, and every link '
       'works.</p></noscript>')
 
-    p += calendar_frag(events, build_help)
+    # Two columns from here: the days on the left, the calendar and the
+    # filters in a rail that stays put while the list scrolls past it. With
+    # 175 events over 51 days a calendar at the top of the page was a control
+    # you had to scroll back up to reach, which is most of the reason it was
+    # easier to ignore it and scroll.
+    A('<div class="evl">')
+    A('<div class="evl__main">')
+    _rail = calendar_frag(events, build_help)
 
-    # ---- filters. Plain checkboxes wrapped in labels: the whole control is
-    # the hit area, and with JavaScript off they are simply inert.
+    # ---- filters, under the calendar in the same rail. Both are built
+    # into _rail and emitted after the day list, so the document order is
+    # the reading order: the events first, the controls for them after.
+    _page_len = len(p)
     if n:
         A('<section class="evf" aria-labelledby="evf-h" hidden>')
         A('  <h2 id="evf-h" class="evf__h">Narrow it down</h2>')
@@ -465,8 +493,15 @@ def render_page(doc, build_help, rows):
         A('  <p class="evf__state" role="status"></p>')
         A('</section>')
 
+    _rail += p[_page_len:]
+    del p[_page_len:]
+
     # ---- the days
     A('<div class="days" id="days">')
+    # The day headings are h3s, and the h2 they hang off used to be the
+    # calendar's — which now sits after them in the document. Without this the
+    # page goes h1 straight to h3.
+    A('  <h2 class="days__h" id="days-h">Every event, day by day</h2>')
     if not by_day:
         A('  <p class="dir__none">No events are listed right now. The '
           '<a href="help.html">directory</a> is still here, and every phone '
@@ -477,6 +512,11 @@ def render_page(doc, build_help, rows):
       '<button type="button" class="linkish" data-cal="all">Show everything '
       'again</button></p>')
     A('</div>')
+    A('</div>')        # .evl__main
+    A('<aside class="evl__side">')
+    p += _rail
+    A('</aside>')
+    A('</div>')        # .evl
 
     # ---- tell us about one. Posts to the same edge function as every other
     # form on the site; form_type is what sorts them in the admin list.
