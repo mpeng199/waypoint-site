@@ -69,7 +69,7 @@ ENGLISH_PAGES = ["help.html", "events.html"] + CATEGORY_PAGES
 RESIDENT_PAGES = ENGLISH_PAGES
 
 PAGES = (["index.html", "help.html", "events.html"] + CATEGORY_PAGES + LANGUAGE_PAGES +
-         ["privacy.html", "terms.html", "partner-pitch.html",
+         ["privacy.html", "terms.html", "partner-pitch.html", "suggest.html",
           "cohort-onboarding.html", "students.html", "partners.html", "admin.html"])
 
 # Printed on every flyer, every table sign, and the site. It exists to stop a
@@ -1824,7 +1824,8 @@ def check_directory_is_generated():
         bad(f"check_links_live.py soft-404 self-check failed: {e}")
 
     rows = build_help.load()
-    want = {"help.html": build_help.render_overview(rows)}
+    want = {"help.html": build_help.render_overview(rows),
+            build_help.SUGGEST_PAGE: build_help.render_suggest(rows)}
     for need in build_help.NEEDS:
         want[build_help.page_for(need["key"])] = build_help.render_category(need, rows)
     by_need = {n["key"]: build_help.ordered(rows, n["key"]) for n in build_help.NEEDS}
