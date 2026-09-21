@@ -1296,7 +1296,27 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   margin:clamp(20px,3vw,32px) 0; }
 .evl__main{ min-width:0; }
 .evl__side{ position:sticky; top:calc(var(--head-h) + 14px); display:grid;
-  gap:16px; min-width:0; }
+  gap:16px; min-width:0; align-content:start;
+  /* The rail is 838px of calendar and filters. A 900px-tall window has about
+     790px of room for it and a 760px one has 645px, so on an ordinary laptop
+     it overflows — and because sticky pins the TOP, the bottom of the filter
+     box was not merely clipped, it could not be reached by scrolling at all.
+     The rail gets its own scroll instead. Chaining is left on: scroll past
+     the end of the rail and the page carries on, which is what the wheel
+     over that column should do once there is nothing left to see. */
+  max-height:calc(100vh - var(--head-h) - 28px);
+  overflow-y:auto; scrollbar-width:thin;
+  scrollbar-color:var(--line) transparent;
+  /* Bottom room so the last control ends on space rather than on the cut,
+     and side room so a focus ring is not shaved off by the scroll box: the
+     shared ring is 3px of outline at 3px offset, so it reaches 6px past the
+     control and the gutter has to beat that. The reset button sits directly
+     in the rail with nothing between it and the edge. */
+  padding:7px 8px 18px; }
+.evl__side::-webkit-scrollbar{ width:9px; }
+.evl__side::-webkit-scrollbar-thumb{ background:var(--line);
+  border-radius:99px; border:3px solid var(--cream); }
+.evl__side::-webkit-scrollbar-track{ background:transparent; }
 
 .cal{ margin:0; }
 .cal__h{ font-family:var(--display); font-size:clamp(1.3rem,2.6vw,1.6rem);
@@ -1417,7 +1437,10 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
      The rail also stops being sticky: on a phone it would eat the screen
      the list needs. */
   .evl{ grid-template-columns:minmax(0,1fr); }
-  .evl__side{ position:static; order:-1; }
+  /* Stacked, the rail is just part of the page again: no cap, no scroll box
+     of its own, and nothing to scroll inside something that is scrolling. */
+  .evl__side{ position:static; order:-1; max-height:none; overflow:visible;
+    padding:0; }
 }
 @media (max-width:560px){
   .ev{ grid-template-columns:1fr; }
