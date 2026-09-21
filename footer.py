@@ -202,7 +202,8 @@ def params_for(name):
             return dict(home=name, help_href=name, anchor="index.html#",
                         words=words_for(i18n.UI[L["key"]]),
                         rtl=L["dir"] == "rtl")
-    if name in ("help.html", "events.html") or name.startswith("help-"):
+    if name in ("help.html", "events.html", "suggest.html") \
+            or name.startswith("help-"):
         return dict(anchor="index.html#")   # an English directory page
     return None
 

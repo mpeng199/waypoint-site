@@ -735,6 +735,9 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .sos--slim .sos__for{ font-size:.82rem; }
 
 .find__scope{ font-size:.88rem; color:var(--ink-3); }
+/* Outside .find on purpose: the search block ships hidden for a reader with no
+   JavaScript, and the page this points at is static HTML with a form on it. */
+.find__add{ margin:10px 2px 0; font-size:.9rem; color:var(--ink-3); }
 .grp__why{ margin:-6px 0 14px; font-size:.9rem; color:var(--ink-3); max-width:62ch; }
 
 .grp{ margin-bottom:clamp(38px,6vw,64px); scroll-margin-top:calc(var(--head-h) + 14px); }
@@ -1447,7 +1450,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   .ev__tags{ grid-column:1; }
 }
 
-.tellus{ margin:clamp(28px,4.5vw,46px) 0; padding:clamp(20px,3vw,32px);
+.tellus{ scroll-margin-top:calc(var(--head-h) + 14px);
+  margin:clamp(28px,4.5vw,46px) 0; padding:clamp(20px,3vw,32px);
   background:var(--green-deep); color:var(--cream); border-radius:var(--r);
   --focus:var(--gold-lit); }
 .tellus h2{ font-family:var(--display); font-size:clamp(1.3rem,2.8vw,1.8rem);
@@ -1457,11 +1461,14 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .tellus__f{ display:grid; gap:14px; max-width:560px; }
 .tellus__g{ display:grid; gap:6px; }
 .tellus__g label{ font-size:.88rem; font-weight:600; color:var(--ink-soft); }
-.tellus__g input{ font:inherit; font-size:.98rem; padding:11px 13px;
+.tellus__g input, .tellus__g textarea{ font:inherit; font-size:.98rem; padding:11px 13px;
   border-radius:10px; border:1.5px solid var(--hair); min-height:44px;
   background:rgba(252,254,247,.07); color:var(--cream); }
-.tellus__g input::placeholder{ color:var(--ink-faint); }
-.tellus__g input:focus{ border-color:var(--gold); outline:none; }
+.tellus__g textarea{ min-height:88px; resize:vertical; }
+.tellus__g input::placeholder, .tellus__g textarea::placeholder{ color:var(--ink-faint); }
+.tellus__g input:focus, .tellus__g textarea:focus{ border-color:var(--gold); outline:none; }
+.tellus__legal{ margin:0; font-size:.84rem; color:var(--ink-3); max-width:56ch; }
+.tellus__legal a{ color:inherit; }
 .tellus .btn{ justify-self:start; min-height:46px; padding:0 22px;
   border-radius:999px; border:0; cursor:pointer; font:inherit; font-weight:700;
   background:var(--gold); color:#3A2B06; }

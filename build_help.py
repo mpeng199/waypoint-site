@@ -2470,6 +2470,7 @@ def render_overview(rows):
       'dials.</p></noscript>')
     p += search_frag("Try: food, rent, dentist, lawyer",
                      "Searches every one of them, not only the ones shown below.")
+    p += suggest_line_frag()
 
     # ---- search results (built by help.js from the index below; empty until then)
     A('<section class="results" id="results" hidden aria-labelledby="results-h">')
@@ -2850,6 +2851,124 @@ def carryover_frag():
     return out
 
 
+SUGGEST_PAGE = "suggest.html"
+
+# The one line that sends a reader here, under the search box on every English
+# directory page. It sits outside .find, which ships hidden for the readers who
+# have no JavaScript — the page it points at is static HTML and a form that
+# posts, so it works for them too.
+def suggest_line_frag():
+    return ['<p class="find__add">Know a place that is not listed? '
+            f'<a href="{SUGGEST_PAGE}">Tell us about it</a>.</p>']
+
+
+def render_suggest(rows):
+    """Tell us about a program we missed.
+
+    The same offer the events page makes, for the directory itself: one form,
+    posting to the same edge function, sorted in the admin list by its
+    form_type. No new markup vocabulary — the .tellus block is the one the
+    events page already uses, and it is already styled.
+    """
+    n = len(rows)
+    p = []
+    A = p.append
+    p += head("Tell us about a program we missed — Waypoint",
+              "Know a free or low-cost program, nonprofit or clinic in New York City "
+              "that is not in our directory? Send it to us and we will check it and "
+              "add it.",
+              "#add", "Skip to the form")
+    p += header_frag()
+    A('<main class="wrap">')
+    A('<nav class="crumb" aria-label="Breadcrumb"><a href="help.html">'
+      '<span class="arr crumb__back" aria-hidden="true">&larr;</span> All free help</a>'
+      '<span class="crumb__sep" aria-hidden="true">/</span><span aria-current="page">'
+      'Suggest a place</span></nav>')
+
+    A('<section class="mast mast--cat">')
+    A('  <div class="mast__bg" aria-hidden="true"></div>')
+    A('  <span class="eyebrow mast__eye">Waypoint &middot; Free help in New York City</span>')
+    A('  <h1>Tell us about a place <em>we missed.</em></h1>')
+    A(f'  <p class="mast__say">The directory lists {n} places, and New York has '
+      'more. If you know a free or low-cost program, nonprofit, clinic or legal '
+      'service that should be on it, send it here.</p>')
+    A('  <p class="mast__say mast__say--2">We read every one. We call the number, '
+      'check what the program actually does, and add it if it fits &mdash; free or '
+      'close to it, open to the public, and reachable by a person who calls. We '
+      'cannot promise a listing, and we will not add anything we could not '
+      'verify.</p>')
+    A('</section>')
+
+    A('<section class="tellus" id="add" aria-labelledby="tellus-h">')
+    A('  <h2 id="tellus-h">Send us a program</h2>')
+    A('  <p class="tellus__say">Anything you know is useful. The name and a phone '
+      'number or a link is enough &mdash; we will find the rest.</p>')
+    A('  <form class="tellus__f" data-form="resource">')
+    A('    <div class="tellus__g">')
+    A('      <label for="rs-org">What is the program or organization?</label>')
+    A('      <input id="rs-org" name="org" type="text" required />')
+    A('    </div>')
+    A('    <div class="tellus__g">')
+    A('      <label for="rs-does">What do they help with?</label>')
+    A('      <input id="rs-does" name="helps" type="text" '
+      'placeholder="Free groceries, help with a medical bill, immigration lawyers" '
+      'required />')
+    A('    </div>')
+    A('    <div class="tellus__g">')
+    A('      <label for="rs-phone">Their phone number, if you have it</label>')
+    A('      <input id="rs-phone" name="phone" type="tel" inputmode="tel" />')
+    A('    </div>')
+    A('    <div class="tellus__g">')
+    A('      <label for="rs-link">Their website, if there is one</label>')
+    A('      <input id="rs-link" name="link" type="url" inputmode="url" />')
+    A('    </div>')
+    A('    <div class="tellus__g">')
+    A('      <label for="rs-where">Where are they, or who can use them?</label>')
+    A('      <input id="rs-where" name="where" type="text" '
+      'placeholder="Bronx, or all five boroughs" />')
+    A('    </div>')
+    A('    <div class="tellus__g">')
+    A('      <label for="rs-more">Anything else we should know</label>')
+    A('      <textarea id="rs-more" name="message" rows="3"></textarea>')
+    A('    </div>')
+    A('    <div class="tellus__g">')
+    A('      <label for="rs-name">Your name</label>')
+    A('      <input id="rs-name" name="name" type="text" autocomplete="name" required />')
+    A('    </div>')
+    A('    <div class="tellus__g">')
+    A('      <label for="rs-email">Your email, so we can ask if something is unclear</label>')
+    A('      <input id="rs-email" name="email" type="email" autocomplete="email" required />')
+    A('    </div>')
+    # The same honeypot script.js already knows how to read.
+    A('    <div class="trap" aria-hidden="true"><label for="rs-trap">Leave this '
+      'empty</label><input id="rs-trap" name="trap" type="text" tabindex="-1" '
+      'autocomplete="off" /></div>')
+    A('    <button type="submit" class="btn">Send it to us</button>')
+    A('    <p class="tellus__legal">By sending this, you agree to our '
+      '<a href="privacy.html">Privacy &amp; Legal</a> notice. We use your details '
+      'only to reply.</p>')
+    A('    <p class="form__ok" role="status">Thank you &mdash; we have it.</p>')
+    A('    <p class="form__err" role="alert">That did not send. Please email '
+      '<a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a>.</p>')
+    A('  </form>')
+    A('</section>')
+
+    A('<section class="tellus" aria-labelledby="else-h">')
+    A('  <h2 id="else-h">Something else you might mean</h2>')
+    A('  <p class="tellus__say">If something already on the directory is wrong or '
+      'has closed, email <a href="mailto:waypointoutreach@gmail.com">'
+      'waypointoutreach@gmail.com</a> and we will fix it. If you run an event that '
+      'is free and open to the public, the <a href="events.html#add">events page</a> '
+      'takes those. If your organization wants to work with us, '
+      '<a href="partners.html">partners</a> is the page for that.</p>')
+    A('</section>')
+
+    p += vow_frag()
+    A('</main>')
+    p += footer_frag(n, checked(rows))
+    return "\n".join(p) + "\n"
+
+
 def render_category(need, rows):
     """One kind of help, on its own page: a rail you can skim, the resources
     broken into buckets, and every neighboring kind of help one tap away."""
@@ -2940,6 +3059,7 @@ def render_category(need, rows):
     p += carryover_frag()
     p += search_frag(esc(need["ph"]),
                      "Searches every place on this page.")
+    p += suggest_line_frag()
 
     # ---- what is on the page, in the same place the front page puts it:
     # under the search panel, above the list, as a row of chips. It used to be
@@ -3065,6 +3185,10 @@ def build():
     ev.write_text(_events.render_page(_events.load(), sys.modules[__name__], rows),
                   encoding="utf-8")
     written.append(ev)
+
+    sug = ROOT / SUGGEST_PAGE
+    sug.write_text(render_suggest(rows), encoding="utf-8")
+    written.append(sug)
 
     for need in NEEDS:
         path = ROOT / page_for(need["key"])
