@@ -524,7 +524,15 @@ def render_page(doc, build_help, rows):
     A('  <h2 id="tellus-h">Know an event that is not here?</h2>')
     A('  <p class="tellus__say">If your organization runs something free and '
       'open to the public, tell us and we will add it. We read every one.</p>')
-    A('  <form class="tellus__f" data-form="event">')
+    # method="post", though the form is sent by fetch and never submits
+    # natively. That is exactly why it is here: with the script absent or
+    # broken, a GET puts every field in the query string, and these fields are
+    # a name and an email address. In the URL means in browser history and in
+    # the Referer header of the next link the sender touches. A POST that goes
+    # nowhere loses the message; a GET that goes nowhere loses the message and
+    # publishes the sender.
+    A('  <form class="tellus__f" data-form="event" method="post">')
+    A('<noscript><p class="noscript-note">This form needs JavaScript, which is turned off. Email <a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a> instead and we will read it the same way.</p></noscript>')
     A('    <div class="tellus__g">')
     A('      <label for="ev-name">Your name</label>')
     A('      <input id="ev-name" name="name" type="text" autocomplete="name" required />')

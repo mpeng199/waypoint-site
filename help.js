@@ -343,10 +343,25 @@
      narrative pages get this from script.js, which the directory does not
      load, so the twenty lines live in both places rather than making every
      directory page carry the whole of script.js for one form. */
-  var evForm = document.querySelector('form[data-form="event"]');
-  if (evForm) {
+  /* Every form on a directory page, not only the events one.
+
+     This listened for form[data-form="event"] alone. suggest.html carries
+     form[data-form="resource"] and loads help.min.js and nothing else — the
+     generic handler is in script.js, which is the narrative bundle and is not
+     on that page — so nothing anywhere listened to it. Submitting did what a
+     form with no action and no method does: a GET to its own URL. The message
+     was dropped on the floor, and the sender's name and email went into the
+     query string, which means into their browser history and into the Referer
+     header of the next link they touch. It had never worked.
+
+     Binding to the attribute rather than to one of its values is the whole
+     fix: form_type is now whatever the form says it is, so a third form is
+     wired up by existing. */
+  var forms = document.querySelectorAll("form[data-form]");
+  if (forms.length) {
     var SUBMIT_URL = "https://zzsqvztwbhdgrdvjpbrr.supabase.co/functions/v1/submit";
     var LOADED = Date.now();
+    Array.prototype.forEach.call(forms, function (evForm) {
     evForm.addEventListener("submit", function (e) {
       e.preventDefault();
       var okEl = evForm.querySelector(".form__ok");
@@ -370,7 +385,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          form_type: "event",
+          form_type: evForm.getAttribute("data-form"),
           name: (fd.get("name") || "").toString().trim(),
           email: (fd.get("email") || "").toString().trim(),
           payload: payload,
@@ -390,6 +405,7 @@
         }
         if (errEl) { errEl.classList.add("show"); }
       });
+    });
     });
   }
 

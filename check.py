@@ -5276,6 +5276,86 @@ def check_every_resource_says_what_it_is():
         ok("every resource says what it is, in a whole sentence")
 
 
+def check_every_form_is_wired_up():
+    """A form nobody listens to does not fail. It succeeds, quietly, at the
+    wrong thing.
+
+    suggest.html carries form[data-form="resource"] and loads help.min.js and
+    nothing else. help.js bound form[data-form="event"] by name; the generic
+    handler lives in script.js, which is the narrative bundle and is not on
+    that page. So nothing anywhere listened, and submitting did exactly what a
+    form with no action and no method does: a GET to its own URL. The message
+    went nowhere and the sender's name and email went into the query string —
+    which means into their browser history, and into the Referer header of the
+    next link they touch. It had never worked, with JavaScript on or off, and
+    nothing said so: the page just reloaded with empty fields.
+
+    Three things have to hold, and none of them is visible by looking at the
+    page:
+
+      1. every form is bound by a script that page actually loads,
+      2. every form says method="post", so a submit that escapes the script
+         cannot put a name and an email in a URL,
+      3. every form says so when the script is not there.
+    """
+    pages = sorted(Path(".").glob("*.html"))
+    seen = 0
+    for page in pages:
+        html_src = read(page.name)
+        forms = re.findall(r'<form[^>]*\bdata-form="([^"]+)"[^>]*>', html_src)
+        if not forms:
+            continue
+        seen += 1
+
+        # 2. method="post"
+        for tag in re.findall(r"<form[^>]*\bdata-form=[^>]*>", html_src):
+            kind = re.search(r'data-form="([^"]+)"', tag).group(1)
+            if not re.search(r'\bmethod="post"', tag, re.I):
+                bad(f"{page.name}: the {kind} form has no method=\"post\". If the "
+                    f"script is missing or throws, the browser GETs the form to "
+                    f"its own URL and writes every field — including the "
+                    f"sender's name and email — into the address bar, their "
+                    f"history, and the Referer of their next click.")
+            else:
+                ok(f"{page.name}: the {kind} form cannot submit as a GET")
+
+        # 1. a script on THIS page binds it
+        scripts = re.findall(r'<script[^>]+src="([^"]+)"', html_src)
+        js = ""
+        for s in scripts:
+            f = ROOT / s.split("?")[0]
+            if f.is_file():
+                js += "\n" + f.read_text(encoding="utf-8", errors="ignore")
+        if not scripts:
+            bad(f"{page.name} carries {len(forms)} form(s) and loads no script at "
+                f"all, so nothing can be listening to them")
+            continue
+        for kind in sorted(set(forms)):
+            generic = "form[data-form]" in js
+            named = f'form[data-form="{kind}"]' in js
+            if generic or named:
+                ok(f"{page.name}: the {kind} form is bound by a script it loads")
+            else:
+                bad(f"{page.name}: nothing in {', '.join(scripts)} binds the "
+                    f"{kind} form. It is not broken in a way anybody will "
+                    f"report — it reloads the page with the fields cleared, "
+                    f"which reads as success.")
+
+        # 3. it says so without script
+        if "needs JavaScript" not in html_src:
+            bad(f"{page.name} has a form and no <noscript> telling a reader "
+                f"without script that it will not work, or what to do instead")
+        else:
+            ok(f"{page.name}: the form says so when there is no script")
+
+    if seen < 2:
+        bad(f"check_every_form_is_wired_up found forms on only {seen} page(s); "
+            f"it should see at least suggest.html and events.html, so either a "
+            f"form was removed or this guard stopped finding them")
+    else:
+        ok(f"every form on {seen} pages is bound, POSTs, and degrades")
+
+
 def check_the_phone_header_and_its_clearance_agree():
     """Below 900px the bar does not follow the page, and the scroll-margins
     must know it.
@@ -6238,6 +6318,7 @@ def main():
                check_every_resource_says_what_it_is,
                check_a_page_without_script_does_not_trust_head_h,
                check_the_phone_header_and_its_clearance_agree,
+               check_every_form_is_wired_up,
                check_a_deep_link_lands_where_it_says,
                check_a_number_dials_what_it_shows,
                check_the_data_file_keeps_its_shape,

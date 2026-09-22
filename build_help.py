@@ -2473,23 +2473,6 @@ def render_overview(rows):
       'you somewhere, in your language, at any hour.</p>')
     A('</section>')
 
-    # Events used to sit above the search bar, on the grounds that they are
-    # the part of this page with a deadline on it. That is a publisher's
-    # reason, not a reader's: measured at 390px the carousel put the search
-    # box 2.53 screens down, where every comparable directory — findhelp,
-    # ACCESS NYC, Citizens Advice, NHS, GOV.UK — has it inside the first
-    # screen. The deadline is still the carousel's own argument for being
-    # above the seventeen clusters; it was never an argument for being above
-    # the one control that answers a question in one move.
-    #
-    # Renders to nothing at all when data/events.json has not been fetched,
-    # so a fresh clone still builds.
-    import events as _events
-    _fev = _events.featured_frag(_events.load(), sys.modules[__name__])
-    if _fev:
-        A('<hr class="rule" />')
-        p += _fev
-
     A('<hr class="rule" />')
 
     # ---- the clusters
@@ -2532,6 +2515,33 @@ def render_overview(rows):
         A('  </section></li>')
     A('  </ul>')
     A('</div>')
+
+    # Events, below the directory.
+    #
+    # They were above the search bar, on the grounds that they are the part of
+    # this page with a deadline on it. Measured, that reason did not survive
+    # contact with a phone. At 390px the carousel is a 1189px track in a 354px
+    # box — it shows ONE card, and the next one peeks by 19px (9px at 320px),
+    # so the deadline was being announced to nobody. It charged 647px for that,
+    # and pushed #needs, which is the directory and the whole job of the page,
+    # to 3.07 screens down. The first actionable link on every service
+    # directory this one is measured against sits between 209px (benefits.gov)
+    # and 1094px (findhelp): 211 at 320, getcalfresh 441, ACCESS NYC 515, NHS
+    # 896, Citizens Advice 897, GOV.UK 950.
+    #
+    # So the order is now the one they all use: who we are, the emergency
+    # numbers, the search box, the directory, and then the browse content. The
+    # deadline is real and the events are still on the page, still linked from
+    # it, and still have a page of their own with all fifty-three on it. What
+    # they no longer do is stand between somebody frightened and the list.
+    #
+    # Renders to nothing at all when data/events.json has not been fetched, so
+    # a fresh clone still builds.
+    import events as _events
+    _fev = _events.featured_frag(_events.load(), sys.modules[__name__])
+    if _fev:
+        A('<hr class="rule" />')
+        p += _fev
 
     p += vow_frag()
     A('</main>')
@@ -2913,7 +2923,15 @@ def render_suggest(rows):
     A('  <h2 id="tellus-h">Send us a program</h2>')
     A('  <p class="tellus__say">Anything you know is useful. The name and a phone '
       'number or a link is enough &mdash; we will find the rest.</p>')
-    A('  <form class="tellus__f" data-form="resource">')
+    # method="post", though the form is sent by fetch and never submits
+    # natively. That is exactly why it is here: with the script absent or
+    # broken, a GET puts every field in the query string, and these fields are
+    # a name and an email address. In the URL means in browser history and in
+    # the Referer header of the next link the sender touches. A POST that goes
+    # nowhere loses the message; a GET that goes nowhere loses the message and
+    # publishes the sender.
+    A('  <form class="tellus__f" data-form="resource" method="post">')
+    A('<noscript><p class="noscript-note">This form needs JavaScript, which is turned off. Email <a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a> instead and we will read it the same way.</p></noscript>')
     A('    <div class="tellus__g">')
     A('      <label for="rs-org">What is the program or organization?</label>')
     A('      <input id="rs-org" name="org" type="text" required />')

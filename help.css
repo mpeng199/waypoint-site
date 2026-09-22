@@ -245,10 +245,25 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 /* Two veils, not one. The linear keeps the type legible over whatever the
    photograph is doing at that width; the radial keeps the light coming from
    the same place it comes from on the door. */
+/* The light end of the linear veil was 42% opaque, and 42% is not a veil.
+   It sat exactly where the photograph is brightest and where .mast__to sits,
+   and the type on top of it was measured — glyph-masked, against the pixel
+   actually composited behind each glyph, not against the flat token green —
+   at 2.08:1 on the Arabic page's "About Waypoint" link, with 100% of its
+   glyphs below AA. Twenty of thirty measured runs of text across English,
+   Spanish, Arabic and a category page failed, the eyebrow and that link
+   worst. DESIGN.md claimed 7:1 for interactive elements; that figure was
+   computed against --green-deep, which is not what is behind them.
+
+   These three stops are the LIGHTEST that clear AA everywhere, searched
+   rather than picked: worst element now 5.25:1 against a 4.5 requirement.
+   The photograph is still a photograph. The third stop also stops being a
+   different green (19,53,40) from the first two — at 78% opacity the hue
+   shift read as a smudge rather than as light. */
 .mast__bg::after{ content:""; position:absolute; inset:0;
   background:
-    radial-gradient(120% 150% at 78% 12%, rgba(231,197,126,.20) 0%, transparent 58%),
-    linear-gradient(100deg, rgba(12,22,16,.88) 0%, rgba(12,22,16,.72) 44%, rgba(19,53,40,.42) 100%); }
+    radial-gradient(120% 150% at 78% 12%, rgba(231,197,126,.10) 0%, transparent 58%),
+    linear-gradient(100deg, rgba(12,22,16,.88) 0%, rgba(12,22,16,.80) 44%, rgba(12,22,16,.78) 100%); }
 .mast__eye{ display:block; font-size:.72rem; color:rgba(231,197,126,.92);
   margin-bottom:clamp(14px,2vw,22px); }
 .mast h1{ font-size:clamp(2.1rem,1.35rem + 3.3vw,3.8rem); letter-spacing:-.025em;
@@ -1524,7 +1539,14 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .tellus__g textarea{ min-height:88px; resize:vertical; }
 .tellus__g input::placeholder, .tellus__g textarea::placeholder{ color:var(--ink-faint); }
 .tellus__g input:focus, .tellus__g textarea:focus{ border-color:var(--gold); outline:none; }
-.tellus__legal{ margin:0; font-size:.84rem; color:var(--ink-3); max-width:56ch; }
+/* --ink-3 is the tertiary ink for a LIGHT ground; it resolves to --green-4,
+   which is stated in tokens.css as "tertiary ink on light — 5.3:1". .tellus
+   is a --green-deep panel, so this was a light-room token in a dark room:
+   measured 2.99:1 at 13px, on the one paragraph on the site that carries a
+   live "Privacy & Legal" link beside a field asking for somebody's email.
+   --ink-faint is the same idea in the room it is actually in, and measures
+   5.8:1 on that ground. */
+.tellus__legal{ margin:0; font-size:.84rem; color:var(--ink-faint); max-width:56ch; }
 .tellus__legal a{ color:inherit; }
 .tellus .btn{ justify-self:start; min-height:46px; padding:0 22px;
   border-radius:999px; border:0; cursor:pointer; font:inherit; font-weight:700;
@@ -1560,4 +1582,47 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    whole clearance a jump needs. */
 @media (max-width:900px){
   .clusters,.cl,.results,.dir,.grp,.r,.days,.day,.tellus{ scroll-margin-top:14px; }
+}
+
+/* The featured-events carousel on a phone — and, like the scroll-margins
+   above, this has to be at the end of the sheet or it does nothing.
+
+   .fev__nav, .fev__track and .fev__pic are all declared around line 1240, in
+   the events component, which is four hundred lines BELOW the responsive
+   block where a mobile rule naturally wants to live. One bare class against
+   the same bare class ties on specificity, so the later one wins. Written up
+   there, .fev__c:nth-child(n+3) took effect (it is a class plus a
+   pseudo-class, so it outranks .fev__c) while every single-class rule beside
+   it was inert: measured, two cards correctly hidden inside a track that was
+   still 625px wide in a 354px box, still scrolling sideways, still 647px
+   tall, with the arrows and the decorative art both still painted. Half a fix
+   looks like a whole one until something measures it.
+
+   This is the second time this sheet's ordering has done that. If a third
+   mobile rule needs to beat a component rule, it belongs here too.
+
+The featured events stop being a carousel.
+
+     Measured at 390px: the track is 1189px of content in a 354px box, so it
+     shows ONE card at a time, and the next card peeks by 19px — 9px at 320px.
+     A horizontal scroller whose only affordance is a nine-pixel sliver is not
+     a scroller, it is four cards of which three are invisible, and it was
+     charging 647px (0.77 of a screen; 1.37 at 320px) for the one that shows.
+
+     Stacked, two of them fit in less room than one did, the third and fourth
+     are behind the "See all N events" link that was always the way to the
+     rest, and nothing depends on a gesture nobody can see is available.
+
+     .fev__pic goes with it: 150px of the 459px card, a third of it, is a
+     generated decorative SVG — not a photograph of the event, nothing a
+     reader learns anything from. It is the first thing to cut on a phone and
+     the last thing to cut anywhere else, which is why it is cut here only. */
+@media (max-width:640px){
+  .fev__nav{ display:none; }
+  .fev__track{ display:grid; grid-template-columns:1fr; gap:12px;
+    overflow:visible; padding:0; }
+  .fev__c,.fev__c--lead{ width:auto; }
+  .fev__c:nth-child(n+3){ display:none; }
+  .fev__c--lead .fev__card{ flex-direction:column; }
+  .fev__pic{ display:none; }
 }
