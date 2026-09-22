@@ -362,6 +362,11 @@
     var SUBMIT_URL = "https://zzsqvztwbhdgrdvjpbrr.supabase.co/functions/v1/submit";
     var LOADED = Date.now();
     Array.prototype.forEach.call(forms, function (evForm) {
+    /* First, before any listener: if this line never runs the button
+       stays visibly off, which is the signal. */
+    Array.prototype.forEach.call(
+      evForm.querySelectorAll('button[type="submit"][disabled]'),
+      function (btn) { btn.disabled = false; });
     evForm.addEventListener("submit", function (e) {
       e.preventDefault();
       var okEl = evForm.querySelector(".form__ok");

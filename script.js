@@ -84,6 +84,13 @@
      --head-h is the observed height where a script runs and the measured
      fallback in tokens.css where one does not. */
   function headClearance() {
+    /* Below 900px the bar is absolute: it scrolls away, so nothing is
+       overhead to clear and reserving --head-h would open 155px of blank
+       above every heading a jump lands on — the defect this function exists
+       to prevent, upside down. Lenis never reads scroll-margin-top, so the
+       stylesheet's half of this cannot reach the code path almost every
+       visitor actually takes. It has to be said twice, in both places. */
+    if (window.matchMedia("(max-width:900px)").matches) return 14;
     var h = parseFloat(getComputedStyle(document.documentElement)
       .getPropertyValue("--head-h"));
     return (h || 0) + 14;
@@ -614,6 +621,13 @@
   var PAGE_LOAD_TIME = Date.now();
 
   $$("form[data-form]").forEach(function (form) {
+    /* First, before any listener: the Send button ships disabled so that a
+       script which never arrives cannot leave a live-looking form that eats
+       what somebody typed. <noscript> only fires when script is DISABLED, not
+       when it fails to load, which on a cheap phone or a data saver is the
+       common case. If this line never runs the button stays visibly off. */
+    $$('button[type="submit"][disabled]', form)
+      .forEach(function (btn) { btn.disabled = false; });
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var ok = form.querySelector(".form__ok");

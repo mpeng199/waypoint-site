@@ -5430,6 +5430,65 @@ def check_the_phone_header_and_its_clearance_agree():
     else:
         ok("the phone's scroll-margin override comes after every rule it overrides")
 
+    # ---- and the narrative half, which has the same arrangement and one
+    # extra way to get it wrong: Lenis does its own scrolling and never reads
+    # scroll-margin-top, so the stylesheet's half of the fix cannot reach the
+    # code path almost every visitor takes. Both have to say it.
+    nar = read("styles.css")
+    njs = read("script.js")
+
+    if not re.search(r"@media \(max-width:900px\)\{[^@]*?\.sitehead\{[^}]*position:(?:static|absolute)",
+                     nar, flags=re.S):
+        bad("styles.css lets the bar follow the narrative page on a phone "
+            "again. It is position:fixed there, 155px at 390px and 203px at "
+            "320px — 18% and 36% of the viewport, held for the whole scroll, "
+            "on the page most first-time readers land on. The directory "
+            "stopped doing this; this half has to as well.")
+    else:
+        ok("the narrative bar stops following the page below 900px")
+
+    nover = None
+    for m0 in re.finditer(r"@media \(max-width:900px\)\{", nar):
+        i = m0.end(); depth = 1
+        while i < len(nar) and depth:
+            if nar[i] == "{":
+                depth += 1
+            elif nar[i] == "}":
+                depth -= 1
+            i += 1
+        if re.search(r"main > section\{[^}]*scroll-margin-top\s*:\s*14px", nar[m0.end():i]):
+            nover = m0.start()
+    base = max((m.start() for m in
+                re.finditer(r"main > section\{[^}]*scroll-margin-top:\s*calc\(var\(--head-h\)", nar)),
+               default=-1)
+    if nover is None:
+        bad("styles.css has no below-900px override for `main > section`'s "
+            "scroll-margin. With the bar out of the flow the clearance opens "
+            "155px of blank above every heading a jump lands on.")
+    elif base > nover:
+        bad(f"styles.css: the below-900px scroll-margin override is at line "
+            f"{nar[:nover].count(chr(10)) + 1} but the rule reserving --head-h "
+            f"is at line {nar[:base].count(chr(10)) + 1}. Same selector, so the "
+            f"later one wins and the override is inert.")
+    else:
+        ok("the narrative scroll-margin override comes after the rule it overrides")
+
+    # Lenis never reads scroll-margin-top. If headClearance() does not come
+    # down on a phone, every jump on the page overshoots by the bar's height
+    # no matter what the stylesheet says.
+    fn = re.search(r"function headClearance\(\)\s*\{(.*?)\n  \}", njs, flags=re.S)
+    if not fn:
+        bad("script.js: headClearance() is gone, so the Lenis half of the "
+            "jump clearance cannot be checked")
+    elif not re.search(r"max-width:\s*900px", fn.group(1)):
+        bad("script.js: headClearance() no longer comes down below 900px. "
+            "Lenis does its own scrolling and never reads scroll-margin-top, "
+            "so the stylesheet's rule does nothing on the path almost every "
+            "visitor takes: every jump lands its heading 155px down a screen "
+            "with no bar on it.")
+    else:
+        ok("headClearance() stops reserving a bar that is not there")
+
 
 def check_a_page_without_script_does_not_trust_head_h():
     """--head-h is a guess, and only JavaScript makes it true.

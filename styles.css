@@ -545,7 +545,28 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   filter:blur(calc(var(--doorT,0) * 16px));
   will-change:opacity,transform,filter; }
 .hero__eye{ grid-area:1/1/2/3; margin:0; }
-.hero__head{ grid-area:2/1/3/3; margin:0; font-weight:400; display:grid;
+/* A scrim, because the door's light shaft is brighter than the type on it.
+
+   Measured glyph-masked at 390px — render twice, diff to find the pixels a
+   glyph actually covers, compare the text colour to the pixel composited
+   behind it — the gold italic ran at 1.64:1 and 1.90:1 against the 3.0 that
+   large text needs, a quarter of its glyphs below AA, exactly where the line
+   crosses the beam. The white line was 2.67:1. Nothing in this stylesheet
+   said so, because what it is failing against is a live WebGL canvas and no
+   static colour value describes it.
+
+   A text-shadow is the obvious reach and the wrong instrument: it is part of
+   how the text is drawn, not part of the ground behind it, so it earns
+   nothing under the only measurement that matters. A background on the
+   element paints behind that element's own glyphs, which is exactly what is
+   being measured, and this one fades to nothing well inside its own box, so
+   it reads as the depth the door already has rather than as a panel.
+
+   .55 is the LIGHTEST of three tested that clears AA: the worst run of type
+   goes from 1.64:1 to 4.08:1. The beam is still the brightest thing here. */
+.hero__head{ background:radial-gradient(75% 150% at 50% 50%,
+    rgba(8,15,11,.55) 0%, rgba(8,15,11,.4) 52%, rgba(8,15,11,0) 78%);
+  grid-area:2/1/3/3; margin:0; font-weight:400; display:grid;
   grid-template-columns:1fr 1fr; grid-template-rows:auto auto; align-content:space-between; }
 .hero__l,.hero__r{ display:block; font-family:var(--display); font-weight:400; letter-spacing:-.032em;
   line-height:.95; font-size:clamp(2.5rem,6.4vw,6rem); text-shadow:0 2px 50px rgba(6,12,9,.8); }
@@ -995,3 +1016,23 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   transition:border-color .25s var(--ease), background .25s var(--ease); }
 .langcue a:hover, .langcue a:focus-visible{ border-color:var(--gold);
   background:rgba(231,197,126,.14); }
+
+/* The bar stops following this half too, below 900px — and like the
+   directory's, the clearance has to come down with it or the fix is half a
+   fix. Last in the sheet for the same reason: `main > section` is declared at
+   line 232 and one bare selector cannot beat another one that comes later.
+
+   The directory got this and the narrative page did not, which left the site's
+   own front door holding 155px at 390px and 203px at 320px — 18% and 36% of
+   the viewport — for the whole scroll, which is exactly the thing DESIGN.md
+   argues against and exactly the page most first-time readers land on.
+
+   `absolute`, not `static`. The bar is `fixed; inset:0 0 auto 0` because it
+   floats OVER the door rather than sitting above it, and the door is a
+   full-bleed WebGL scene that the composition puts type into. Static would
+   push a solid strip above the scene and change the first thing anybody sees.
+   Absolute keeps it exactly where it is at rest and lets it scroll away. */
+@media (max-width:900px){
+  .sitehead{ position:absolute; }
+  main > section{ scroll-margin-top:14px; }
+}

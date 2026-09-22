@@ -562,7 +562,13 @@ def render_page(doc, build_help, rows):
     A('    <div class="trap" aria-hidden="true"><label for="ev-trap">Leave this '
       'empty</label><input id="ev-trap" name="trap" type="text" tabindex="-1" '
       'autocomplete="off" /></div>')
-    A('    <button type="submit" class="btn">Send it to us</button>')
+    # The Send button turns on when the page's script loads. `<noscript>` only
+    # fires when script is DISABLED, not when it fails to arrive — which on a
+    # cheap phone, a data saver or a flaky network is the common case, and
+    # there the form looked live, took a message, and POSTed it into a 501. A
+    # button that is visibly off is a worse experience than one that works and
+    # a much better one than a form that eats what you typed.
+    A('    <button type="submit" class="btn" disabled>Send it to us</button>')
     A('    <p class="form__ok" role="status">Thank you &mdash; we have it.</p>')
     A('    <p class="form__err" role="alert">That did not send. Please email '
       '<a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a>.</p>')

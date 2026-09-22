@@ -868,6 +868,83 @@ and clips "Open website" on 28 of 30 rows at 360px and below. The stacked
 buttons are right. What that page needs is fewer rows on screen at once, not
 shorter ones, and `.cat__rail` is the existing answer.
 
+### Round two: what an independent audit found that the first pass missed
+
+Two cold audits, measuring rather than reading. Both confirmed the section
+above; both found things it had not looked for. Three of them were defects
+that had nothing to do with page length.
+
+- **The forms had never worked.** `suggest.html` carries
+  `form[data-form="resource"]`, loads `help.min.js` and nothing else, and
+  `help.js` bound `form[data-form="event"]` *by name* — the generic handler is
+  in `script.js`, the narrative bundle, which that page does not load. Nothing
+  listened, so submitting did what a form with no `action` and no `method`
+  does: a GET to its own URL. The message was dropped and the sender's name
+  and email went into the query string, which is their browser history and the
+  `Referer` of their next click. `help.js` now binds the **attribute**, not one
+  of its values, so `form_type` is whatever the form says and a third form is
+  wired by existing. Every form POSTs, carries a `<noscript>` note, and ships
+  its Send button `disabled` — `<noscript>` only fires when script is *turned
+  off*, not when it fails to arrive, which on a cheap phone is the common case
+  and left a live-looking form that ate what you typed.
+  `check_every_form_is_wired_up` then found the same defect on `index.html`'s
+  two forms, which work but would have leaked the same way.
+
+- **The masthead failed AA against what is actually behind it.** Measured
+  glyph-masked — render twice, diff to find the pixels a glyph covers, compare
+  the text colour to the composited pixel — 20 of 30 runs of type failed, worst
+  the Arabic "About Waypoint" link at **2.08:1** with 100% of its glyphs below
+  AA. The light end of the veil was 42% opaque and sat exactly where the
+  photograph is brightest. The 7:1 claimed under **Color Contrast** above was
+  computed against the flat token green, which is not what is behind that
+  type; the figure was never wrong about the token and never right about the
+  page. The three stops now used are the *lightest* that clear AA everywhere.
+  `.tellus__legal` was `--ink-3` — the tertiary ink for a **light** ground — on
+  a `--green-deep` panel, 2.99:1 on the one paragraph carrying a live Privacy
+  link beside a field asking for an email.
+
+- **The narrative hero failed worse, at 1.64:1**, and could not be fixed the
+  same way: what is behind it is a live WebGL canvas that no static colour
+  describes. A `text-shadow` is the obvious reach and earns nothing, because it
+  is part of how the text is drawn and not part of the ground. `.hero__head`
+  now carries its own soft radial background, which is what the measurement
+  reads.
+
+- **The featured-events carousel showed one card of four.** At 390px the track
+  is 1189px of content in a 354px box and the next card peeks by 19px — 9px at
+  320px. It charged 647px for that. Stacked, two cards show in the same room,
+  and the block moved below the directory. `#needs` went from 3.07 screens to
+  2.24.
+
+- **The bar was still fixed on `index.html`** — the one page most first-time
+  readers land on, holding 36% of a 320px viewport for the whole scroll, while
+  the directory had stopped doing it. It is `absolute` below 900px, not
+  `static`: the bar floats *over* the door by design, and static would push a
+  strip above the artwork. `headClearance()` in `script.js` comes down with it,
+  because Lenis does its own scrolling and never reads `scroll-margin-top`.
+
+**The ordering trap, twice more.** A mobile rule written in the mid-file
+responsive block is inert if the component it overrides is declared later at
+equal specificity. It cost the scroll-margins once and the carousel once —
+`.fev__nav`, `.fev__track` and `.fev__pic` are declared four hundred lines
+below, so `.fev__c:nth-child(n+3)` (class + pseudo-class) took effect while
+every single-class rule beside it did nothing, and the result was two cards
+correctly hidden inside a track that was still scrolling sideways. Both fixes
+now sit at the end of their sheets. `check_the_phone_header_and_its_clearance_agree`
+holds the arrangement on both halves, including the Lenis half.
+
+**Still open, and both are product decisions rather than CSS.** The language
+bar is 179px at 390px and 279px at 320px — ten pills at the 44px this site
+holds to, above everything, on all 28 generated pages. Every remedy tried
+hides a language from the people who read it, which is backwards; the one
+worth building is a disclosure whose summary carries the names in their own
+scripts, and that is an `i18n.py` change across ten languages, not a
+stylesheet edit. And the category pages stay 23–29 screens because every field
+of every place is rendered inline: the `<details>` that would hold the detail
+is **already in the card and already collapsed**. Name, one line, Call, rest
+behind it is the shape every comparable directory uses, and it is the only
+thing that would move those pages.
+
 ### Why generated rather than fetched
 
 The reader is plausibly on a six-year-old Android, on transit data, at a
