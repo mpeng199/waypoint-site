@@ -808,6 +808,66 @@ Two rules that are not obvious and are load-bearing:
   center is tagged "dental" so a search for a dentist finds it. Letting that
   decide where rows file put sixteen general clinics under "Teeth".
 
+### What the phone gets, and the two decisions that were reversed for it
+
+Measured with headless Chrome at 390, 360 and 320px, against the directories
+this page is judged beside. The overview was **19.5 phone screens at 390px and
+32.5 at 320px**, with the search box 2.53 and 4.99 screens down. findhelp is
+3.5 screens with search at 0.71; Citizens Advice 4.5 at 0.0; ACCESS NYC 5.4 at
+0.16; NHS 5.8 at 0.61; 211 6.3 with its phone number at 0.42; GOV.UK 9.3 at
+0.0. Not one of them is over ten screens, and not one puts its search past the
+first screen. Four changes, all measured rather than argued:
+
+- **The bar does not follow the page below 900px.** With five tabs it is 155px
+  at 390px and 203px at 320px and it does not shrink: 18% of the viewport on a
+  modern phone, 36% on a small one, held for the whole scroll, for five links
+  to the narrative half of the site. This is the argument already made and
+  costed for the ten language pages, which is under "The ten language pages"
+  above; the only thing that kept it off the English half was that a script
+  there could *measure* the bar correctly, which was never a reason to keep
+  spending the screen. ACCESS NYC, the closest relative this site has, does not
+  make its header sticky at all. The cost is the same as it is there: the five
+  tabs are not on screen while scrolling, and the footer carries all five plus
+  a link back to the top.
+- **The scroll-margins come down with it**, or the clearance opens 155px of
+  blank above every heading a reader jumps to — the same defect upside down.
+  This is one bare class overriding another, so it ties on specificity and
+  source order decides it; written beside the header rule it lost to `.grp`
+  five hundred lines below and was completely inert, measured as a jump
+  landing its heading 169px down a 390px screen.
+  `check_the_phone_header_and_its_clearance_agree` holds both halves together
+  and fails if the override is moved back up, because nothing about it looks
+  wrong on a laptop.
+- **One preview per cluster on a phone, not three.** Three is a desktop
+  measurement: in the multi-column grid they sit beside each other and cost
+  nothing, and in one column seventeen clusters of three are 11,411px — 13.5
+  screens at 390px to reach a promise and a footer nobody was seeing. The card
+  still carries a real place with a dialable number, which is what the front
+  page is for, and "See all N places" still says how much is behind it.
+  It is `:nth-child` in the stylesheet, not a shorter list from the generator,
+  so `help.html` keeps rendering three for the desktop grid and for
+  `check_directory_clusters` to verify against the category pages.
+- **Search sits above the events carousel.** Events were put above it on the
+  grounds that they are the part of the page with a deadline; that is a
+  publisher's reason, and it was costing the one control that answers a
+  question in a single move 647px of carousel. The deadline is still the
+  carousel's argument for being above the seventeen clusters.
+
+And one plain defect the measuring found: `.find__box` was `flex:1 1 260px`,
+written for a row where 260px is a minimum *width*. Below 560px the bar turns
+on its side and the main axis becomes the block axis, so that basis became a
+minimum **height**: the search box was 260px tall around a 52px input, 208px of
+empty card around the busiest control on the directory, on every phone.
+
+The overview is now 13.3 screens at 390px and 22.5 at 320px, with search at
+1.70 and 3.53. **A category page is unchanged and is the longest thing on the
+site** — 23 screens at 390px, 39 at 320px — because its length is thirty real
+places with real descriptions and real buttons, not padding. Putting the Call
+and Open website buttons side by side was tried and measured: it saves 3–6%
+and clips "Open website" on 28 of 30 rows at 360px and below. The stacked
+buttons are right. What that page needs is fewer rows on screen at once, not
+shorter ones, and `.cat__rail` is the existing answer.
+
 ### Why generated rather than fetched
 
 The reader is plausibly on a six-year-old Android, on transit data, at a

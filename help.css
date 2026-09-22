@@ -155,6 +155,35 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   body[data-lang] .sitehead{ --head-bg:transparent; --head-line:transparent; }
 }
 
+/* And below 900px, nothing follows the reader — not on the ten language pages,
+   not here.
+
+   The language pages stopped being sticky because they ship no script, so
+   --head-h stayed at its guess and the bar covered the heading every jump
+   landed on. That was the bug. This is the cost, which is separate and was
+   never about measurement: with five tabs the bar is 155px at 390px and 203px
+   at 320px, and it does not shrink. On a 568px screen that is 36% of the
+   viewport, held for the whole scroll, so that five links to the narrative
+   half of the site are permanently on screen for somebody looking for a food
+   pantry. Measured against the directories this page is judged beside —
+   findhelp, ACCESS NYC, Citizens Advice, 211, NHS, GOV.UK — not one carries a
+   sticky bar anywhere near that tall on a phone, and ACCESS NYC, the closest
+   relative of all, does not make its header sticky at all.
+
+   What it costs is stated in DESIGN.md for the language pages and is the same
+   here: while scrolling, the five tabs are not on screen. The footer carries
+   the same five destinations plus a link back to the top, and the skip link
+   still reaches the directory. Above 900px the bar is a row or two on a wide
+   screen, where it costs a fraction of the viewport, and it still follows.
+
+   The scroll-margins go with it. They exist only to keep a heading out from
+   behind a bar that is still there on arrival; left at --head-h with nothing
+   overhead they open 155px of blank space above every heading a reader jumps
+   to, which is the same defect upside down. */
+@media (max-width:900px){
+  .sitehead{ position:static; }
+}
+
 /* ------------------------------------------------------------- language */
 /* First thing under the header, because somebody who cannot read the page
    should not have to read the page to find their way off it. */
@@ -438,7 +467,16 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
      page and hung 144px off the side at 320px with text at 200%. Both
      containers wrap by default at wider widths, so both have to say it. */
   .find__top{ flex-direction:column; flex-wrap:nowrap; }
-  .find__box{ max-width:none; }
+  /* flex:1 1 260px was written for a row, where 260px is the box's width and
+     the input inside sets its height. Turning the bar on its side turns that
+     basis on its side too: main-axis becomes the block axis, and the 260px
+     that used to be a sensible minimum width became a 260px minimum HEIGHT
+     around a 52px input. Measured at 390px the search box was 260px tall with
+     208px of nothing in it — a fifth of a screen of blank card wrapped round
+     the one control that answers a question in a single move, on every phone
+     on the site. The basis only ever meant "do not get narrower than this",
+     and in a column nothing needs to say that. */
+  .find__box{ max-width:none; flex:0 0 auto; }
   .find__filters{ flex-direction:column; flex-wrap:nowrap; align-items:stretch;
     border-inline-start:0; border-block-start:1px solid var(--line-2); }
   .facet{ position:static; display:block; }
@@ -887,6 +925,25 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   .jump a{ flex:1; min-height:44px; padding:6px 11px; font-size:.84rem;
     line-height:1.2; }
   .cl{ padding:16px 16px 18px; }
+  /* Three previews a cluster is a desktop measurement. In the multi-column
+     grid they cost nothing — they sit beside each other. In one column they
+     stack, and seventeen clusters of three put 11,411px of card on the page:
+     13.5 screens at 390px, 20 at 320px, to reach a promise and a footer that
+     most readers never see.
+
+     The card's job is to show what kind of thing is behind the sentence, and
+     one real place with a real number does that. What the other two were
+     carrying was the dialable number DESIGN.md asks the front page to hold,
+     and the first preview still holds it — it is the same first row, the one
+     `ordered()` already puts at the top. The count on "See all N places" is
+     what says how much more is behind it, and that stays.
+
+     :nth-child, not a shorter list from the generator: help.html has to keep
+     rendering three so the desktop grid gets three and so
+     check_directory_clusters keeps reading the previews it verifies against
+     the category pages. This is a layout decision and it belongs in the
+     layout. */
+  .cl__pv .pv:nth-child(n+2){ display:none; }
   /* The back-link was hidden here, on the one device where the scroll is
      longest and there is no other way up. Because the groups interleave, a
      link at the head of each one is never more than a group away while
@@ -1485,3 +1542,22 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .src__h{ font-size:1rem; margin:0 0 12px; color:var(--green-deep); }
 .src__l{ margin:0; padding:0 0 0 1.1em; color:var(--green-3);
   font-size:.93rem; display:grid; gap:7px; }
+
+/* The other half of un-sticking the bar, and it has to be last in the file.
+
+   Every scroll-margin on this sheet is calc(var(--head-h) + 14px), set on a
+   plain class — .grp, .cl, .results — and those rules live from line 500
+   onward. An override written up beside the header rule is :is(...) at one
+   class of specificity against a bare class at one class of specificity, so
+   the two tie and source order decides: the later, bigger value wins and the
+   override does nothing at all. It measured as a jump landing its heading
+   169px down a 390px screen with no bar there to need the clearance — 155px
+   of blank above the thing the reader had just asked to be taken to, which is
+   the defect the clearance exists to prevent, upside down.
+
+   Declared here, after the rules it corrects, it ties on specificity and wins
+   on order. Below 900px the bar does not follow the page, so 14px is the
+   whole clearance a jump needs. */
+@media (max-width:900px){
+  .clusters,.cl,.results,.dir,.grp,.r,.days,.day,.tellus{ scroll-margin-top:14px; }
+}

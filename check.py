@@ -5276,6 +5276,81 @@ def check_every_resource_says_what_it_is():
         ok("every resource says what it is, in a whole sentence")
 
 
+def check_the_phone_header_and_its_clearance_agree():
+    """Below 900px the bar does not follow the page, and the scroll-margins
+    must know it.
+
+    Two halves, in one file, that only work together. The bar stops being
+    sticky on a phone because with five tabs it is 155px at 390px and 203px at
+    320px and it does not shrink — a third of a small screen, held for the
+    whole scroll, for five links to the narrative half of the site. The
+    scroll-margins then have to come down with it: they are
+    calc(var(--head-h) + 14px) so that a jump does not park its heading behind
+    a bar that is still there, and with no bar there they open the same
+    distance of blank above every heading a reader jumps to. The defect
+    inverted, and just as invisible on a laptop.
+
+    The order is the whole trick and is why this is checked rather than
+    remembered. The overriding rule is a bare class against a bare class, so
+    it ties on specificity and source order decides. Written beside the header
+    rule near the top of the sheet it loses to .grp and .cl five hundred lines
+    below and does nothing whatsoever: measured, the jump landed its heading
+    169px down a 390px screen. It has to come after them, and a later edit
+    tidying it back up beside its comment would silently undo it.
+    """
+    css = read("help.css")
+
+    m = re.search(r"@media \(max-width:900px\)\{[^@]*?\.sitehead\{[^}]*position:static",
+                  css, flags=re.S)
+    if not m:
+        bad("help.css no longer takes the bar out of the flow below 900px. "
+            "With five tabs it is 155px at 390px and 203px at 320px, and it "
+            "does not shrink — on a 568px screen that is 36% of the viewport "
+            "held for the whole scroll.")
+    else:
+        ok("the bar stops following the page below 900px")
+
+    # the clearance that goes with it, and where it sits. Brace-matched
+    # rather than regexed to the next "}": these blocks hold rules, so the
+    # first closing brace is a rule's, not the query's, and a pattern that
+    # stops there reports "no override at all" for an override that is
+    # merely in the wrong place — which sends whoever reads it looking for
+    # the wrong bug.
+    over = None
+    for m0 in re.finditer(r"@media \(max-width:900px\)\{", css):
+        i = m0.end(); depth = 1
+        while i < len(css) and depth:
+            if css[i] == "{":
+                depth += 1
+            elif css[i] == "}":
+                depth -= 1
+            i += 1
+        if re.search(r"scroll-margin-top\s*:\s*14px", css[m0.end():i]):
+            over = m0.start()
+    if over is None:
+        bad("help.css has no below-900px scroll-margin override. With the bar "
+            "out of the flow, every scroll-margin still reserving --head-h "
+            "opens 155px of blank space above the heading a jump was aimed at.")
+        return
+
+    # every rule it has to beat must come before it
+    last_reserving = max(
+        (mm.start() for mm in
+         re.finditer(r"scroll-margin-top:\s*calc\(var\(--head-h\)", css)),
+        default=-1)
+    if last_reserving > over:
+        line_over = css[:over].count("\n") + 1
+        line_last = css[:last_reserving].count("\n") + 1
+        bad(f"help.css: the below-900px scroll-margin override is at line "
+            f"{line_over}, but a rule still reserving --head-h is at line "
+            f"{line_last}. Both are one bare class, so they tie on "
+            f"specificity and the later one wins: the override is inert and "
+            f"every jump on a phone lands its heading 155px down a blank "
+            f"screen. It has to come last in the sheet.")
+    else:
+        ok("the phone's scroll-margin override comes after every rule it overrides")
+
+
 def check_a_page_without_script_does_not_trust_head_h():
     """--head-h is a guess, and only JavaScript makes it true.
 
@@ -6162,6 +6237,7 @@ def main():
                check_every_page_names_itself,
                check_every_resource_says_what_it_is,
                check_a_page_without_script_does_not_trust_head_h,
+               check_the_phone_header_and_its_clearance_agree,
                check_a_deep_link_lands_where_it_says,
                check_a_number_dials_what_it_shows,
                check_the_data_file_keeps_its_shape,
