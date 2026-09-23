@@ -1689,3 +1689,26 @@ The featured events stop being a carousel.
   .grp__top{ grid-column:auto; justify-self:end; margin-top:0;
     padding:6px 12px; font-size:.85rem; }
 }
+
+/* The events page's own controls, which the rest of the site's 44px rule
+   never reached.
+
+   Hit-tested at 390, 360 and 320: the seven filter checkboxes are 17px tall
+   and the label wrapping each one is 34 — so the whole control is 34, on the
+   one page whose filters are the only way to narrow 175 events. .chip is 44,
+   .jump a is 44, .call is 56; this was simply missed, and a checkbox is
+   exactly where a thumb misses.
+
+   The month arrows are 32x32 and are NOT in the seven-column grid — they sit
+   beside the month name, so nothing stops them being 44. The day cells are
+   in the grid, but the grid constrains their WIDTH (about 40px at 320) and
+   not their height.
+
+   Last in the sheet, like everything else here: .evf__o is declared at 1490
+   and .cal__arw at 1441. */
+@media (max-width:900px){
+  .evf__o{ min-height:44px; }
+  .evf__o input{ width:22px; height:22px; }
+  .cal__arw{ width:44px; height:44px; }
+  .cal__a{ min-height:44px; }
+}
