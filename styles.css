@@ -218,13 +218,25 @@ img,svg{ display:block; max-width:100%; }
    Scoped to .at-door so nothing is promoted after the hand-over. */
 .at-door .poster__beam,.at-door .poster__pool{ will-change:opacity; }
 
-/* Reduced motion gets the still it always got. door.js renders its one WebGL
-   frame at t=0.34; the poster parks at the same place, so the two halves of
-   the fallback are the same picture. */
+/* Reduced motion gets the still it always got — the CLOSED door, not a frame
+   part-way through the opening.
+
+   The first version parked this at scale 1.41 and -38deg to match the t=0.34
+   frame door.js renders for reduced motion on a desktop. Rendered, that was a
+   mistake: half-open, off-centre, with the haze still thick enough to hide
+   the valley, it read as a washed ghost of a door rather than a door. The
+   original still was a finished picture and it is what this should be.
+
+   Under reduced motion the hero is 100svh, so its scroll span is zero, heroT
+   returns 0 and --doorT never leaves it — which already makes every rule
+   above its own identity. Pinning --push and the panel here is belt and
+   braces for the day the hero's height changes and nobody remembers this. */
 @media (prefers-reduced-motion:reduce){
-  .doorstage__poster{ transform:scale(1.41); will-change:auto; }
-  .poster__panel{ transform:translate(0,-50%) perspective(820px) rotateY(-38deg); }
-  .poster__glow{ transform:translate(-50%,-50%) scaleX(1.3); }
+  .doorstage__poster{ --push:0; transform:none; will-change:auto; }
+  .poster__panel{ transform:translate(0,-50%) perspective(820px) rotateY(-26deg); }
+  .poster__glow{ transform:translate(-50%,-50%); opacity:1; }
+  .poster__beam,.poster__pool{ opacity:1; will-change:auto; }
+  .poster__case{ --haze:.86; }
 }
 
 #doorCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block;
