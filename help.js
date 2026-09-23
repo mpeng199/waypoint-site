@@ -962,13 +962,24 @@
     function rowHTML(it) {
       var a = [];
       a.push('<li class="r" data-key="' + esc(it.i) + '">');
-      a.push('<div class="r__head"><h3 class="r__name">' + esc(it.n) + "</h3>");
-      if (it.k) a.push('<p class="r__kind">' + esc(it.k) + "</p>");
-      a.push("</div>");
+      /* The same card build_help.py renders, and it has to stay the same
+         card: this one is what search results on help.html are made of, so
+         any difference here is two card designs on one site. Name is the
+         link, subcategory is the first chip in the badge row, and there is
+         no second full-width button. */
+      a.push('<div class="r__head"><h3 class="r__name">');
+      if (it.w) {
+        a.push('<a class="visit" href="' + esc(it.w) + '" target="_blank" rel="noopener">' +
+          esc(it.n) + '<span class="arr" aria-hidden="true">&#8599;</span></a>');
+      } else {
+        a.push(esc(it.n));
+      }
+      a.push("</h3></div>");
       a.push('<p class="r__what">' + esc(it.d) + "</p>");
       var flags = (it.f || "").split(" ");
       var bdg = BADGES.filter(function (b) { return flags.indexOf(b[0]) !== -1; })
         .map(function (b) { return '<span class="bdg bdg--' + b[0] + '">' + b[1] + "</span>"; });
+      if (it.k) bdg.unshift('<span class="r__kind bdg bdg--kind">' + esc(it.k) + "</span>");
       if (bdg.length) a.push('<p class="r__badges">' + bdg.join("") + "</p>");
       a.push('<div class="r__do">');
       if (it.c === "call") {
@@ -979,11 +990,6 @@
         a.push('<a class="call call--text" href="' + esc(it.h) + '">' +
           '<svg class="ico" aria-hidden="true"><use href="#i-text"/></svg>' +
           "<span><small>Text</small>" + esc(it.p) + "</span></a>");
-      }
-      if (it.w) {
-        a.push('<a class="visit" href="' + esc(it.w) + '" target="_blank" rel="noopener">' +
-          '<span class="visit__t">Open website</span>' +
-          '<span class="arr" aria-hidden="true">&#8599;</span></a>');
       }
       a.push("</div>");
       a.push('<p class="r__where"><a href="' + esc(ix.page[it.g]) + "#r-" +

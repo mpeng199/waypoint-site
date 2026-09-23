@@ -831,24 +831,57 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    the page, past the edge of the screen. Invisible at 100% text on a laptop;
    at 200% text on a 320px phone it put the page into horizontal scroll, which
    is exactly the reader this page exists for. */
+/* 16px and 10px, not 20 and 12. Measured at 390px, padding plus the five
+   gaps between the card's parts came to 100px of a 441px card — 23% of it,
+   carrying nothing — and across thirty places that is 3,000px. 16 still
+   clears the 12px minimum the rest of this sheet works to. */
 .r{ background:var(--surface); border:1.5px solid var(--line);
-  border-radius:var(--r); padding:20px; display:flex; flex-direction:column;
-  gap:12px; scroll-margin-top:calc(var(--head-h) + 14px); min-width:0; }
-.r__name{ font-size:1.22rem; line-height:1.2; }
-.r__kind{ font-size:.8rem; font-weight:600; letter-spacing:.05em;
-  text-transform:uppercase; color:var(--ink-3); margin-top:5px; }
+  border-radius:var(--r); padding:16px; display:flex; flex-direction:column;
+  gap:10px; scroll-margin-top:calc(var(--head-h) + 14px); min-width:0; }
+.r__name{ font-size:1.22rem; line-height:1.25; }
+/* The name is the link now, so it needs a thumb's worth of height on its own.
+   Not a stretched ::after over the whole card: that measures better and means
+   any mis-tap on 300px of card navigates somebody off to an external site.
+   inline-flex keeps the arrow on the last line rather than orphaning it. */
+.r__name .visit{ display:inline-flex; align-items:center; gap:6px;
+  min-height:44px; border:0; padding:0; background:none; font:inherit;
+  color:var(--ink); text-decoration:none;
+  text-decoration-line:underline; text-decoration-color:transparent;
+  text-underline-offset:3px; text-decoration-thickness:1.5px;
+  transition:text-decoration-color .16s var(--ease), color .16s var(--ease); }
+.r__name .visit:hover{ color:var(--green-2); text-decoration-color:var(--gold-deep); }
+.r__name .visit .arr{ color:var(--gold-deep); flex:none; }
+/* The subcategory is a chip in the badge row, not its own line of 12.8px
+   letter-spaced uppercase under a heading that usually already said it. */
+.r__kind{ font-size:.8rem; font-weight:600; letter-spacing:0;
+  text-transform:none; color:var(--ink-2); margin-top:0; }
+.bdg--kind{ background:var(--line-2); color:var(--ink-2); }
 /* A measure, because a card is no longer always a column of a grid: the
    group that holds one place now takes the whole page, and its description
    was setting 140 characters to the line. */
-.r__what{ color:var(--ink-2); font-size:.97rem; line-height:1.5; max-width:72ch; }
+/* Two lines. Measured across help-food's thirty descriptions the line counts
+   were {2:1, 3:17, 4:6, 5:5, 6:1} — a median of three and a tail of six. The
+   full text is already inside .r__more, so the clamp hides nothing that is
+   not one tap away. .97rem goes to 1rem at the same time: the clamp should
+   not also be a reason the type got smaller, and 15.5px was under the floor
+   this sheet's own body rule argues for. */
+.r__what{ color:var(--ink-2); font-size:1rem; line-height:1.5; max-width:72ch;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden; }
 .r__badges{ display:flex; flex-wrap:wrap; gap:6px; }
-.bdg{ font-size:.78rem; font-weight:600; padding:5px 10px; border-radius:999px;
+/* .78rem was 12.5px against a root of 16 — the smallest type on the card, on
+   the line that says whether somebody will be asked about their immigration
+   status. .82rem is 13.1px, and the chips carry the subcategory now too. */
+.bdg{ font-size:.82rem; font-weight:600; padding:5px 10px; border-radius:999px;
   letter-spacing:.01em; }
 .bdg--free{ background:#E8F2E4; color:#2A4A22; }
 .bdg--open-247{ background:#FBF1DC; color:#6E5210; }
 .bdg--no-status{ background:#E6EEF5; color:#1F4260; }
 
 .r__do{ display:flex; flex-wrap:wrap; gap:10px; margin-top:auto; padding-top:4px; }
+/* A row with no phone and no text line has nothing in it, and an empty flex
+   row still spends its gap and its padding. */
+.r__do:empty{ display:none; }
 .call{ display:inline-flex; align-items:center; gap:10px; text-decoration:none;
   background:var(--green); color:var(--mint); border-radius:var(--r-s);
   padding:11px 18px; min-height:52px; font-weight:600;
@@ -1625,4 +1658,34 @@ The featured events stop being a carousel.
   .fev__c:nth-child(n+3){ display:none; }
   .fev__c--lead .fev__card{ flex-direction:column; }
   .fev__pic{ display:none; }
+}
+
+/* The group heading follows you, and like everything else in this trailing
+   block it is here because .grp__head is declared at line 804 and the narrow
+   override at line 1000, so a rule written anywhere above loses on source
+   order and does nothing at all.
+
+   This is the "single block format all the way down" the page actually had.
+   Measured on help-food.html at 390px, "Pantries and groceries" is 7,296px of
+   uninterrupted cards — 8.6 screens — and help-legal's immigration group is
+   7,176px. Inside one of those there is no landmark on screen at any point:
+   the heading scrolled away at the top and the next one is five screens
+   below, and the .cat__rail index that would have told you where you are is
+   one-shot at 2.05 screens and never comes back.
+
+   Sticky costs no scroll at all — it is the one fix here that buys
+   orientation for zero pixels. It works because .sitehead is position:static
+   below 900px, so top:0 is unoccupied; if the bar ever follows the page again
+   this has to move down by --head-h with it.
+
+   And the header goes back to one row. The narrow override put "Back to the
+   top" on a line of its own, which cost 39px per group and, on a bar that is
+   now permanently on screen, would have spent two rows of every screen. */
+@media (max-width:900px){
+  .grp__head{ position:sticky; top:0; z-index:3;
+    background:var(--ground);
+    grid-template-columns:minmax(0,1fr) auto; align-items:center;
+    gap:12px; padding:10px 0 12px; margin-bottom:14px; }
+  .grp__top{ grid-column:auto; justify-self:end; margin-top:0;
+    padding:6px 12px; font-size:.85rem; }
 }

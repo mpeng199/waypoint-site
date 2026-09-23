@@ -1878,7 +1878,9 @@ def check_directory_reachable():
     unreachable = [r for r in rows if 'href="tel:' not in r
                    and 'href="sms:' not in r and 'class="visit"' not in r]
     if unreachable:
-        names = re.findall(r'class="r__name">([^<]+)', "".join(unreachable))
+        names = [_r_name_text(h) for h in
+                 re.findall(r'<h3 class="r__name">(.*?)</h3>',
+                            "".join(unreachable), re.S)]
         bad(f"{len(unreachable)} resource(s) with no phone and no "
             f"website, so there is no way to act on them: {names[:5]}")
     else:
@@ -4157,6 +4159,19 @@ def check_page_furniture():
         ok(f"every search placeholder fits its box ({LIMIT} characters or fewer)")
 
 
+def _r_name_text(markup):
+    """The text of a resource's <h3>, whatever the card is built from.
+
+    The name used to be the h3's only content. It is now wrapped in the
+    anchor that replaced the "Open website" button, and it carries a
+    decorative arrow span. Dropping the arrow BEFORE stripping tags matters:
+    strip first and &#8599; survives as text, so every name reads as
+    "The Fortune Society\u2197" and never matches anything.
+    """
+    markup = re.sub(r'<span class="arr".*?</span>', "", markup, flags=re.S)
+    return html.unescape(re.sub(r"<[^>]+>", "", markup)).strip()
+
+
 def check_directory_clusters():
     """The front page is one cluster per need, each a way in to one page.
 
@@ -4538,8 +4553,21 @@ def check_directory_needs():
             continue
         names = re.findall(r'class="pv__n"[^>]*>([^<]+)</a>', block.group(0))
         page = read(build_help.page_for(need["key"]))
+        # The resource name is the TEXT of the h3, which is not the same as
+        # the h3's markup: since the card's name became its link it is
+        # <h3 class="r__name"><a ...>Name<span class="arr">arrow</span></a></h3>.
+        # Matching `>{name}</h3>` was matching the markup, so the whole guard
+        # went red the moment the anchor arrived — correctly, since it could no
+        # longer see what it was asserting, but for the wrong reason. Compare
+        # text to text and it stops caring how the card is built.
+        on_page = {_r_name_text(h)
+                   for h in re.findall(r'<h3 class="r__name">(.*?)</h3>', page, re.S)}
         for nm in names:
-            if f">{nm}</h3>" not in page:
+            # Both sides unescaped, or an ampersand alone fails the comparison:
+            # the preview says "SSI/SSDI &amp; retirement" and the page, once
+            # its tags are stripped, says "SSI/SSDI & retirement".
+            nm = html.unescape(nm).strip()
+            if nm not in on_page:
                 bad(f'help.html: the {need["key"]} cluster previews {nm!r}, which '
                     f'is not on {build_help.page_for(need["key"])}')
     ok("every preview on the front page is a resource that is really on the "

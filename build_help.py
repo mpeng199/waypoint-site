@@ -1842,15 +1842,45 @@ def render_row(r, need_key):
              f' data-tags="{esc(tagtext(r))}"'
              f' data-find="{esc(haystack(r)[0])}"'
              f' data-cat="{esc(haystack(r)[1])}">')
+    # The NAME is the link to the website, not a second full-width button
+    # under the first one.
+    #
+    # Measured at 390px, the two stacked buttons were 122px of a 441px card to
+    # carry four words — "Call 311" and "Open website" — and across thirty
+    # places that is 3,660px, four and a bit screens of a page that has 24.
+    # Every directory this one is measured against makes the item's name its
+    # link: NYC's own Food Help finder, GOV.UK, NHS, Yelp.
+    #
+    # The hit area is the name, deliberately NOT the whole card. A stretched
+    # ::after over all 300px is what those peers do and it measures better,
+    # but it also means any mis-tap anywhere on a tall card navigates a
+    # frightened reader off to an external site. The name gets 44px of its
+    # own; Call keeps its own 56px button, because calling is the thing this
+    # page is for.
+    #
+    # class="visit" stays on the anchor: check_directory_reachable asks every
+    # row whether it has a tel:, an sms: or a class="visit", and without it
+    # all 351 rows read as unreachable.
     a.append('<div class="r__head">')
-    a.append(f'<h3 class="r__name">{esc(r["Resource Name"])}</h3>')
-    if r["Subcategory"]:
-        a.append(f'<p class="r__kind">{esc(r["Subcategory"])}</p>')
+    if r["Website"]:
+        a.append(f'<h3 class="r__name"><a class="visit" href="{esc(r["Website"])}" '
+                 f'target="_blank" rel="noopener">{esc(r["Resource Name"])}'
+                 f'<span class="arr" aria-hidden="true">&#8599;</span></a></h3>')
+    else:
+        a.append(f'<h3 class="r__name">{esc(r["Resource Name"])}</h3>')
     a.append("</div>")
     a.append(f'<p class="r__what">{esc(r["Description"])}</p>')
 
+    # The subcategory joins the badge row as its first chip rather than
+    # standing as its own 20px line of 12.8px letter-spaced uppercase. Inside
+    # "Pantries and groceries" its values are PANTRY & MEALS, SOUP KITCHEN &
+    # PANTRY, A PANTRY WHERE YOU CHOOSE YOUR OWN FOOD — under a heading that
+    # already said pantries. It keeps the r__kind class because help.js reads
+    # it for search ranking and the print sheet styles it.
     badges = [f'<span class="bdg bdg--{k}">{v}</span>'
               for k, v in BADGES if k in r["_flags"]]
+    if r["Subcategory"]:
+        badges.insert(0, f'<span class="r__kind bdg bdg--kind">{esc(r["Subcategory"])}</span>')
     if badges:
         a.append('<p class="r__badges">' + "".join(badges) + "</p>")
 
@@ -1865,10 +1895,6 @@ def render_row(r, need_key):
         a.append(f'<a class="call call--text" href="{esc(href)}">'
                  f'<svg class="ico" aria-hidden="true"><use href="#i-text"/></svg>'
                  f'<span><small>Text</small>{esc(label)}</span></a>')
-    if r["Website"]:
-        a.append(f'<a class="visit" href="{esc(r["Website"])}" target="_blank" rel="noopener">'
-                 f'<span class="visit__t">Open website</span>'
-                 f'<span class="arr" aria-hidden="true">&#8599;</span></a>')
     a.append("</div>")
 
     # details
