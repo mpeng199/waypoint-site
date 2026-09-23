@@ -945,6 +945,87 @@ is **already in the card and already collapsed**. Name, one line, Call, rest
 behind it is the shape every comparable directory uses, and it is the only
 thing that would move those pages.
 
+### The overnight pass: the door moves, the card halves, and type stops shrinking
+
+Two more cold audits, 22–23 Sep 2026, measuring rather than reading. One on
+the narrative half and the site type system, one on the directory. Both
+benchmarked against real sites at 390px in the same browser.
+
+**The door was a photograph on every phone, and did not have to be.**
+`worthTheDownload()` in `assets/door.js` returns false for `coarse` — every
+screen under 900px — because three.js is 750KB across two chunks to composite
+a layer `.door-gone` discards a screen later. That stays true. What was wrong
+is that `--doorT` has streamed from `script.js` on every device the whole
+time, 0→1 across the hero's 760px, and the six gradient layers of the CSS
+poster ignored it: at `--doorT` 0.6 the picture was pixel-identical to 0.
+
+The poster now reads it, for zero bytes. The push is gated to start at 0.35
+and squared, because the headline is legible until 0.69 by its own opacity
+clamp and a camera already moving under type somebody is reading is what makes
+a hero feel like it is hurrying you. The panel swings 59°, not 36°: a hinged
+panel leaves the frame less its *projected* width, cos θ of the real one, so
+at −62° it still covered 47% of the doorway and the view stayed a slot; at
+`--doorT` 0.95 it reaches −82°, covers 14%, and the opening measures 419px
+across a 390px screen. What is beyond it is `land1.webp` — what `door.js`
+binds as the texture past the opening on a desktop, already preloaded here for
+the journey background — under a haze that starts at .86 and lifts to .14.
+
+Every animated value is a transform or an opacity: no blur radius, no
+background-position, nothing `check_mobile_budget` exists to keep off a
+phone's per-frame bill. The honest cost, at 6× CPU throttle: p90 17.9→20.7ms
+and 6 frames of 113 over 32ms, against 0 before. **Two freezes are
+load-bearing** — reduced motion, and the closing scene, where `--doorT` is
+pinned at 1 and the poster otherwise drew a 3.6× doorway with its jamb across
+the middle of the final beat. `check_the_poster_moves_and_knows_when_not_to`
+holds all of it.
+
+**The card was 63% chrome.** Measured at 390px against NYC's own Food Help
+finder (145px per place), GOV.UK, NHS, ACCESS NYC, Booking and Yelp. The
+correction that mattered: *the words per screen were fine* — help-food showed
+80 to a screenful against GOV.UK's 84 — and what was wrong was 1.75 places per
+screen where every peer shows 2.8–5.9. The name is the link now and the second
+full-width button is deleted rather than rearranged; the subcategory is the
+first chip in the badge row; the description clamps to two lines with the full
+text one tap away inside `.r__more`. Card 441→351px, help-legal 28.9→23.5
+screens, card #25 from 16.1→13.5 screens down.
+
+The hit area is the name and deliberately **not** the whole card. A stretched
+`::after` measures better and is what the peers do, and it means any mis-tap
+on 300px of card sends a frightened reader to an external site.
+
+**"Single block format all the way down" was literal and it was the group
+headings.** `.grp__head` was `position:static`, and "Pantries and groceries"
+is 7,296px — 8.6 screens — of uninterrupted cards with no landmark on screen
+at any point inside it. Sticky costs no scroll at all, and works because
+`.sitehead` is static below 900px; if the bar ever follows the page again this
+has to move down by `--head-h` with it.
+
+**Type stopped ignoring the reader.** 33 font-sizes on the narrative half and
+in the shared footer were px, so they were the same pixels whatever text size
+the reader had set — 7 of 13 sampled styles measured ×1.00 when the root was
+doubled while `.say` measured ×2.00. `help.css` already had this right, 0 px
+in 131 declarations. Everything is rem now and `check_type_scales_with_the_reader`
+holds all three sheets to it. Six sizes went up on the way through, and a
+later pass raised six more that carry content: `.sos__for` — the line saying
+*which* emergency each number is for — was 13.6px.
+
+**A method correction worth keeping.** Reading the 10th-percentile glyph pixel
+for contrast is wrong and it nearly cost a day: `.btn`, dark text on a solid
+cream button, scores p10 **1.29**, because about a tenth of any glyph's box is
+antialiased edge and an edge is ~1:1 by construction. On that metric small
+text can never pass. **Use the median.** By it there were three real failures
+on `index.html`, not five, and "Work with us" measures 14.7:1 with a ground
+rather than the 3.45 that was about to be chased further.
+
+**Still open, and both are editorial rather than CSS.** `partners.html` and
+`students.html` measure 129 and 127 words a screen after spacing, against a
+target of ≤80. Space alone cannot close that without roughly doubling the
+page. The rest is a quantified cut — five paragraphs at 56, 47, 46, 35 and 34
+words to be taken to 22 each — and that is the organisation's own argument to
+the people it is asking for help, so it is theirs to approve. The language bar
+is the other one: 179px at 390px on all 28 generated pages, and every remedy
+tried hides a language from the people who read it.
+
 ### Why generated rather than fetched
 
 The reader is plausibly on a six-year-old Android, on transit data, at a
