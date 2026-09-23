@@ -231,6 +231,21 @@ img,svg{ display:block; max-width:100%; }
    returns 0 and --doorT never leaves it — which already makes every rule
    above its own identity. Pinning --push and the panel here is belt and
    braces for the day the hero's height changes and nobody remembers this. */
+/* Two cases park the poster at the closed door, and they are the same
+   picture: reduced motion, and the closing scene.
+
+   The closing scene is the journey's last beat and it is the door seen from
+   the far side — on a desktop door.js re-frames its camera for it. The poster
+   cannot re-frame, and --doorT is pinned at 1 by then, so left alone it
+   renders the hero's final frame: a 3.6x doorway whose edges fall across the
+   middle of the scene. Closed is the right answer for both, and it is the
+   picture the page opened on. */
+:is(html.closing) .doorstage__poster{ --push:0; transform:none; will-change:auto; }
+:is(html.closing) .poster__panel{ transform:translate(0,-50%) perspective(820px) rotateY(-26deg); }
+:is(html.closing) .poster__glow{ transform:translate(-50%,-50%); opacity:1; }
+:is(html.closing) .poster__beam,:is(html.closing) .poster__pool{ opacity:1; will-change:auto; }
+:is(html.closing) .poster__case{ --haze:.86; }
+
 @media (prefers-reduced-motion:reduce){
   .doorstage__poster{ --push:0; transform:none; will-change:auto; }
   .poster__panel{ transform:translate(0,-50%) perspective(820px) rotateY(-26deg); }

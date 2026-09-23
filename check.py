@@ -5276,6 +5276,74 @@ def check_every_resource_says_what_it_is():
         ok("every resource says what it is, in a whole sentence")
 
 
+def check_the_poster_moves_and_knows_when_not_to():
+    """The CSS poster is the door on every phone, and it animates from --doorT.
+
+    three.js never loads below 900px — worthTheDownload() returns false for
+    `coarse` — so the six gradient layers of .doorstage__poster ARE the door
+    for every phone reader. They animate from --doorT, which script.js has
+    always published and which they ignored until Sep 2026: at --doorT 0.6 the
+    picture was pixel-identical to --doorT 0.
+
+    Two things have to hold together, and the second is the one that bites.
+
+    The poster may only animate transform and opacity. A blur radius, a
+    background-position or a box-shadow spread driven by --doorT re-rasterizes
+    a full-screen layer every frame, which is the entire subject of
+    check_mobile_budget.
+
+    And --doorT is pinned at 1 for the whole rest of the page, so anything
+    reading it renders the hero's last frame forever. The closing scene brings
+    the doorstage back at full opacity to show the door from the far side;
+    door.js re-frames its camera for that, and the poster cannot. Left alone
+    it drew a 3.6x-scaled doorway across the closing scene with its jamb a
+    hard vertical edge at 76% of the screen. So script.js marks that beat and
+    the poster parks closed for it.
+    """
+    css = read("styles.css")
+    js = read("script.js")
+
+    # There are several .doorstage__poster rules — the base box, the token
+    # block, the animation, and two freezes. Ask whether ANY of them reads the
+    # scroll, not whether the first one does.
+    blocks = re.findall(r"\.doorstage__poster\{[^}]*\}", css)
+    if not any("--doorT" in b for b in blocks):
+        bad("styles.css: .doorstage__poster no longer reads --doorT, so the "
+            "door is a photograph again on every phone — which is every "
+            "reader who gets the poster, because three.js does not load "
+            "below 900px.")
+    else:
+        ok("the poster animates from --doorT")
+
+    # only compositor-safe properties may be driven by the scroll variable
+    for prop in ("filter", "background-position", "box-shadow", "width", "height"):
+        hit = re.search(rf"\.(?:doorstage__poster|poster__\w+)\{{[^}}]*{prop}\s*:[^;}}]*var\(--doorT",
+                        css)
+        if hit:
+            bad(f"styles.css drives {prop} from --doorT on a poster layer. That "
+                f"re-rasterizes a full-screen layer every frame on exactly the "
+                f"devices the poster exists for. Transform and opacity only.")
+    ok("the poster drives only transform and opacity from the scroll")
+
+    if 'classList.toggle("closing"' not in js:
+        bad("script.js no longer marks the closing scene. --doorT is pinned at "
+            "1 there, so the poster renders the hero's last frame: a scaled "
+            "doorway with its edges across the middle of the final beat.")
+    elif not re.search(r"html\.closing[^{]*\.doorstage__poster\{[^}]*transform\s*:\s*none", css):
+        bad("styles.css does not park the poster closed for html.closing. The "
+            "class is set and nothing reads it, which looks exactly like a "
+            "working fix and is not one.")
+    else:
+        ok("the poster parks closed for the closing scene")
+
+    if not re.search(r"@media \(prefers-reduced-motion:reduce\)\{[^@]*\.doorstage__poster\{[^}]*transform\s*:\s*none",
+                     css, flags=re.S):
+        bad("the poster no longer parks for reduced motion, so a reader who "
+            "asked for less movement gets the full pass-through")
+    else:
+        ok("the poster parks closed under reduced motion")
+
+
 def check_every_form_is_wired_up():
     """A form nobody listens to does not fail. It succeeds, quietly, at the
     wrong thing.
@@ -6378,6 +6446,7 @@ def main():
                check_a_page_without_script_does_not_trust_head_h,
                check_the_phone_header_and_its_clearance_agree,
                check_every_form_is_wired_up,
+               check_the_poster_moves_and_knows_when_not_to,
                check_a_deep_link_lands_where_it_says,
                check_a_number_dials_what_it_shows,
                check_the_data_file_keeps_its_shape,

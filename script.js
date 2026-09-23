@@ -253,6 +253,15 @@
     var closeShow = cT < 0 ? 0 : ramp(cT, 0.04, 0.42) * (1 - ramp(cT, 0.86, 1));
     var show = Math.max(heroShow, closeShow);
 
+    /* Which beat owns the stage. The WebGL door is told this directly
+       (api.set(cT,"out") below) and re-frames itself from the far side; the
+       CSS poster has no camera and cannot, so it has to be told in a way CSS
+       can read. Without it the poster kept rendering the hero's last frame —
+       --doorT is pinned at 1 down there — which on a phone put a 3.6x-scaled
+       doorway across the closing scene, its jamb a hard vertical edge at 76%
+       of the screen and its sill a hard horizontal one at 86%. */
+    root.classList.toggle("closing", closeShow > heroShow && cT >= 0);
+
     root.style.setProperty("--doorShow", show.toFixed(3));
     /* opacity:0 still keeps a full-screen layer — a WebGL canvas and six
        gradient divs — alive in the compositor. visibility lets it be skipped,
