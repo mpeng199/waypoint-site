@@ -570,12 +570,29 @@
   /* ---------- blur-to-focus reveals ---------- */
   var foci = $$(".focus-in");
   if ("IntersectionObserver" in window && !reduced) {
+    /* Reveal once, and never take it back.
+
+       The -22% inset on both edges made the legible band the middle 56% of
+       the screen, and the observer REMOVED .in on the way out — .focus-in
+       un-revealed is blur(16px) and opacity:0. So a paragraph parked in the
+       top or bottom fifth of the viewport was not merely un-animated, it was
+       erased. Measured at 390px across the thirteen rest positions on this
+       page: 1,085 words laid out, 831 readable. Twenty-three per cent of the
+       words on screen at rest were blurred out, and the dead zone is exactly
+       where a one-handed reader parks a paragraph after thumbing it up.
+       jeskojets, the reference for this page's pacing, hides nothing at any
+       scroll position; it paces with layout alone.
+
+       So: reveal slightly before the element's top edge arrives, and once it
+       is revealed leave it alone. data-once is now what everything does, and
+       the attribute is left on the four blocks that carry it rather than
+       swept up, because nothing reads it any more and removing it from the
+       markup would be a second diff for no gain. */
     var fo = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
-        if (e.isIntersecting) e.target.classList.add("in");
-        else if (e.target.getAttribute("data-once") === null) e.target.classList.remove("in");
+        if (e.isIntersecting) { e.target.classList.add("in"); fo.unobserve(e.target); }
       });
-    }, { rootMargin: "-22% 0px -22% 0px", threshold: 0 });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0 });
     foci.forEach(function (el) { fo.observe(el); });
   } else {
     foci.forEach(function (el) { el.classList.add("in"); });

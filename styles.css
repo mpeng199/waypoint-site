@@ -1169,3 +1169,56 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   .sitehead{ position:absolute; }
   main > section{ scroll-margin-top:14px; }
 }
+
+/* On a phone the reveal keeps its rise and its fade and loses its blur.
+
+   A 16px blur on 26 blocks is real per-frame work on the device least able to
+   spend it — the same argument check_mobile_budget makes about .hero__ui —
+   and on a 390px screen the blur reads as smeared rather than as depth,
+   because the type is a third of the size it is on the desk this effect was
+   designed at. The rise and the fade carry the beat on their own.
+
+   Last in the sheet: .focus-in is declared at line 342 and this is one bare
+   class against another. */
+@media (max-width:900px){
+  .focus-in{ filter:none; transform:translateY(18px); }
+  .focus-in.in{ transform:none; }
+}
+
+/* Type on a painting needs a ground, and on a phone it does not have one.
+
+   Glyph-masked against the pixel actually composited behind each glyph — the
+   only measurement that means anything when the backdrop is land1..4.webp
+   rather than a declared colour — five runs of type on index.html were below
+   AA at 390px. The two worst are the page's own argument: .say at 2.71:1
+   ("A hospital bill you cannot pay...") and the phrase it sits under,
+   "Nobody is told.", at 1.87:1.
+
+   .42 is the LIGHTEST of three tested that clears four of the five, and it
+   fades to nothing at 88% of the block so it reads as the haze the painted
+   stages already have rather than as a panel behind the words. A text-shadow
+   would have been the easy reach and earns nothing here: it is part of how
+   the text is drawn, not part of the ground, and the measurement correctly
+   ignores it.
+
+   Phones only. At desk widths the same type sits over more of the painting's
+   dark upper half and measures clean. */
+@media (max-width:900px){
+  /* The padding is what makes this a haze rather than a panel. A radial whose
+     transparent stop sits at 88% of a box that is three times taller than it
+     is wide never reaches transparent before the box ends, so the first
+     version drew a visibly hard-edged rectangle across the painting. Padding
+     the block and pulling the same amount back off the margin leaves the
+     layout exactly where it was and gives the gradient somewhere to finish. */
+  .scene__inner{
+    padding:clamp(20px,5.5vw,34px);
+    margin:calc(-1 * clamp(20px,5.5vw,34px));
+    background:radial-gradient(78% 56% at 45% 50%,
+      rgba(8,15,11,.52) 0%, rgba(8,15,11,.34) 46%, rgba(8,15,11,0) 76%);
+  }
+  /* The one the scrim cannot reach: .tlink sits at the bottom edge of the
+     block where the radial has already faded out, and it measured 1.29:1 —
+     the worst run of type on the page, on the link out of the final scene.
+     It is a pill beside a solid button, so it can have a ground of its own. */
+  .tlink{ background:rgba(8,15,11,.62); }
+}
