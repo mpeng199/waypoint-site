@@ -1712,3 +1712,27 @@ The featured events stop being a carousel.
   .cal__arw{ width:44px; height:44px; }
   .cal__a{ min-height:44px; }
 }
+
+/* The last of the type that carries content and sits under the floor.
+
+   Everything below is prose or a fact a reader acts on, measured at 13.6px to
+   14.4px against a root of 16 and a body rule that argues for 18. The counts
+   are what make them worth the bytes: .ev__by and the event meta appear 53
+   and 36 times on events.html, .ev__b 38 times, .pv__d and .cl__b 17 times
+   each on the front page.
+
+   .sos__for is the one that matters most and was the smallest of them: it is
+   the line beside each emergency number that says WHICH emergency it is —
+   "You are in danger, or someone is being hurt" — at 13.6px, on the strip
+   that exists for the worst moment anybody arrives in.
+
+   Sizes only. No copy moves, nothing is hidden, and the card work above
+   already bought back more height than this spends. */
+@media (max-width:900px){
+  .sos__for{ font-size:.95rem; }
+  .sos--slim .sos__for{ font-size:.9rem; }
+  .pv__d{ font-size:.95rem; }
+  .cl__b{ font-size:.98rem; }
+  .ev__b{ font-size:1rem; }
+  .ev__meta{ font-size:.95rem; }
+}
