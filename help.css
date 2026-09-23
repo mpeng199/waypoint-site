@@ -1736,3 +1736,26 @@ The featured events stop being a carousel.
   .ev__b{ font-size:1rem; }
   .ev__meta{ font-size:.95rem; }
 }
+
+/* The front page's seventeen cluster cards, on a phone.
+
+   Measured: 382px each, 6,513px of grid, 7.7 screens. Of that 382, the single
+   preview costs 206 — 54% — and "See all N places" another 74 as a bordered
+   block with its own margin and padding.
+
+   Two cuts, and neither touches the thing the preview is FOR. DESIGN.md's
+   argument is that a phone number on the front page is the shortest path
+   between somebody arriving and somebody being helped, and the number stays:
+   what goes is the preview's second line, a sentence describing a place the
+   reader has not chosen yet, under a name that already says what it is. And
+   "See all N places" keeps its count — it is the only place the size of a
+   category is stated — but stops being a bordered block: the card's own
+   heading already links to the same page, so this is the second link to one
+   destination and does not need to look like a button too.
+
+   -64px and -30px a card, 17 cards: about 1.9 screens off the directory's
+   front page. Last in the sheet, like the rest. */
+@media (max-width:900px){
+  .cl__pv .pv__d{ display:none; }
+  .cl__all{ margin-top:10px; padding-top:0; border-top:0; }
+}
