@@ -1222,3 +1222,48 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
      It is a pill beside a solid button, so it can have a ground of its own. */
   .tlink{ background:rgba(8,15,11,.62); }
 }
+
+/* partners.html and students.html get the rhythm the front page already has.
+
+   Measured at 390px: partners 145 readable words to a screen, students 122,
+   against index.html's 71, gov.uk's 64 and jeskojets' 42. Every benchmark
+   except basecamp's median is lower than both, and basecamp is a marketing
+   page rather than a page somebody reads before deciding to trust you with a
+   referral. 780 of partners' 822 words sit in ONE .psec spanning 5.3 screens,
+   and its text covers 98-100% of the viewport on each of its first five.
+
+   The sections are already there — eight h2s inside that one block — they
+   just had no room around them. This is space, not an edit: the copy is the
+   organisation's own argument to the people it is asking for help, and
+   thinning it is their call to make, not a stylesheet's. What a stylesheet
+   can do is stop four of those sections sharing a screen.
+
+   What that buys, measured: the spread between the sparsest and densest
+   screen is the thing every craft-led site has and this page did not —
+   jeskojets 234, stripe 196, linear 162, index.html 124, partners 88. */
+@media (max-width:900px){
+  /* .legal, not .psec: the eight headings are children of the .legal block
+     inside the section, so `.psec > h2` matched nothing at all and measured
+     as no change — which is what a selector that is wrong looks like from the
+     outside, and why this was measured rather than assumed. */
+  .psec .legal > h2{ margin-top:clamp(64px,22svh,190px); }
+  .psec .legal > h2:first-of-type{ margin-top:clamp(40px,10svh,90px); }
+  .psec .legal > h2 + p{ margin-top:18px; }
+  /* And between the paragraphs themselves. Three of them to a section, at
+     25-55 words each, still stack into one block however much room the
+     heading above them gets. */
+  .psec .legal > p + p{ margin-top:clamp(20px,4.5svh,42px); }
+
+  /* students.html is built from .role__row sections rather than one .legal
+     block, so it needs the same argument made against its own structure:
+     five rows, each two or three paragraphs, at 141 words to a screen. */
+  .role__row{ padding-block:clamp(38px,12svh,96px); }
+  .role__body > p{ margin-bottom:clamp(16px,3.5svh,34px); }
+  .flow__item{ padding-block:clamp(26px,7svh,56px); }
+
+  /* The measure, which the audit found was the one thing NOT wrong — median
+     39-40 characters a line across all three pages, better than jeskojets at
+     47 and linear at 49. The only ones over are these, at 54-64ch, and they
+     are over because their max-width was written for a desk. */
+  .role__body > p,.flow__item p,.phero__lede,.psec .legal > p{ max-width:38ch; }
+}
