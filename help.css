@@ -1773,3 +1773,24 @@ The featured events stop being a carousel.
   .cl__pv .pv__d{ display:none; }
   .cl__all{ margin-top:10px; padding-top:0; border-top:0; }
 }
+
+/* The day you are looking at follows you, for the same reason the group
+   heading does.
+
+   events.html is 22 screens and .days alone is 17 of them — 53 events across
+   a run of day sections, with the date scrolling off the top and the next one
+   several screens below. The filter is already at 0.84 screens thanks to
+   .evl__side's order:-1, so the page's ONE orientation affordance is the
+   thing you passed at the start.
+
+   Bounded from the outset rather than after the fact: the group heading had
+   to be capped when 200% text took it to 45% of a 320px screen, and this is
+   the same shape of element. A day heading is one short line, so one clamped
+   line and a sixth of the screen is plenty. */
+@media (max-width:900px){
+  .day__h{ position:sticky; top:0; z-index:2;
+    background:var(--ground);
+    padding:8px 0 10px; margin:0 0 10px;
+    max-height:16svh; overflow:hidden;
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+}
