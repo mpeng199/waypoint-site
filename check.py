@@ -5304,6 +5304,40 @@ def check_every_resource_says_what_it_is():
         ok("every resource says what it is, in a whole sentence")
 
 
+def check_type_scales_with_the_reader():
+    """A font-size in px ignores the reader's font-size setting. Every one of
+    them, on every sheet a reader loads.
+
+    WCAG 1.4.4 is usually read as "pinch zoom works", and it does here — the
+    viewport meta sets no maximum-scale. But a reader who has set a larger
+    default text size in their browser or their OS, which is what somebody
+    with low vision actually does, gets nothing from a px declaration: it is
+    the same number of pixels whatever they asked for.
+
+    help.css already had this right — 0 px font-sizes in 131 declarations.
+    styles.css had 27 in 60 and tokens.css 6, so on the narrative half, and in
+    the footer of all 33 pages, more than half the type did not move at all
+    when the root font-size was doubled. Measured before: 7 of 13 sampled
+    styles at x1.00 against .say and .beat at x2.00. Measured after: x2.00
+    across the board on index.html, partners.html and help-food.html.
+
+    Print is exempt: a print sheet is sized in pt against paper, and pt is the
+    right unit there.
+    """
+    for fname in ("styles.css", "tokens.css", "help.css"):
+        css = read(fname)
+        # drop @media print blocks before looking
+        body = re.sub(r"@media print\{.*?\n\}", "", css, flags=re.S)
+        hits = re.findall(r"font-size:\s*([0-9.]+)px", body)
+        if hits:
+            bad(f"{fname} sets {len(hits)} font-size(s) in px ({', '.join(sorted(set(hits))[:6])}). "
+                f"A reader who has asked their browser or their phone for "
+                f"larger text gets exactly none of it from a px declaration. "
+                f"rem, or a clamp() in rem.")
+        else:
+            ok(f"{fname}: every font-size scales with the reader's setting")
+
+
 def check_the_poster_moves_and_knows_when_not_to():
     """The CSS poster is the door on every phone, and it animates from --doorT.
 
@@ -6475,6 +6509,7 @@ def main():
                check_the_phone_header_and_its_clearance_agree,
                check_every_form_is_wired_up,
                check_the_poster_moves_and_knows_when_not_to,
+               check_type_scales_with_the_reader,
                check_a_deep_link_lands_where_it_says,
                check_a_number_dials_what_it_shows,
                check_the_data_file_keeps_its_shape,

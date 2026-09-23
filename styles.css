@@ -39,7 +39,7 @@ html.lenis,html.lenis body{ height:auto; }
 body{
   font-family:var(--sans); background:var(--green-deep); color:var(--cream);
   --focus:var(--gold-lit);   /* the whole narrative side is a dark room */
-  line-height:1.6; font-size:17px; -webkit-font-smoothing:antialiased;
+  line-height:1.6; font-size:1.0625rem; -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
 }
 
@@ -283,7 +283,7 @@ img,svg{ display:block; max-width:100%; }
 .skip{ position:absolute; width:1px; height:1px; overflow:hidden;
   clip-path:inset(50%); white-space:nowrap; z-index:200;
   background:var(--cream); color:var(--green-deep);
-  padding:12px 18px; border-radius:0 0 6px 0; font-weight:600; font-size:14px; }
+  padding:12px 18px; border-radius:0 0 6px 0; font-weight:600; font-size:.875rem; }
 .skip:focus{ position:fixed; inset-block-start:0; inset-inline-start:0;
   width:auto; height:auto; overflow:visible; clip-path:none; }
 
@@ -323,7 +323,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 
 
 /* ---------- buttons (slim, not pills) ---------- */
-.btn{ display:inline-flex; align-items:center; gap:10px; font-family:var(--sans); font-weight:600; font-size:14.5px;
+.btn{ display:inline-flex; align-items:center; gap:10px; font-family:var(--sans); font-weight:600; font-size:.9375rem;
   padding:13px 24px; border-radius:3px; border:1px solid rgba(252,254,247,.45); color:var(--cream); background:rgba(252,254,247,.04);
   cursor:pointer; transition:background .3s var(--ease), border-color .3s, color .3s, transform .3s var(--ease); }
 .btn .arr{ transition:transform .3s var(--ease); }
@@ -331,7 +331,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .btn:hover .arr{ transform:translateX(4px); }
 .btn--solid{ background:var(--cream); color:var(--green); border-color:var(--cream); }
 .btn--solid:hover{ background:var(--gold); border-color:var(--gold); color:var(--green-deep); }
-.tlink{ display:inline-flex; align-items:center; gap:9px; font-weight:600; font-size:15px; color:var(--cream);
+.tlink{ display:inline-flex; align-items:center; gap:9px; font-weight:600; font-size:.9375rem; color:var(--cream);
   border-bottom:1px solid rgba(252,254,247,.5); padding-bottom:4px; transition:gap .25s var(--ease), border-color .25s; }
 .tlink .arr{ transition:transform .3s var(--ease); }
 .tlink:hover{ gap:13px; border-color:var(--gold); }
@@ -413,10 +413,10 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .scene--center .scene__cta{ justify-content:center; }
 
 /* opening scene flourishes */
-.eyebrow{ font-size:12.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--ink-faint);
+.eyebrow{ font-size:.8125rem; letter-spacing:.24em; text-transform:uppercase; color:var(--ink-faint);
   margin-bottom:24px; display:inline-block; }
 .scrollcue{ position:absolute; bottom:5vh; left:50%; transform:translateX(-50%); z-index:3;
-  font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); display:flex; flex-direction:column; align-items:center; gap:10px; }
+  font-size:.6875rem; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); display:flex; flex-direction:column; align-items:center; gap:10px; }
 .scrollcue i{ width:1px; height:46px; background:linear-gradient(var(--cream), transparent); position:relative; overflow:hidden; }
 .scrollcue i::after{ content:""; position:absolute; inset:0; top:-100%; background:var(--gold); animation:cue 2s var(--ease) infinite; }
 @keyframes cue{ to{ top:100%; } }
@@ -444,7 +444,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   background:rgba(19,35,26,.32); backdrop-filter:blur(6px); transition:background .35s var(--ease), border-color .35s, transform .35s var(--ease); }
 .door:hover{ background:rgba(19,35,26,.5); border-color:var(--gold); transform:translateY(-5px); }
 .door h3{ font-family:var(--display); font-weight:500; font-size:1.4rem; margin-bottom:8px; }
-.door p{ font-size:14px; color:var(--ink-soft); margin-bottom:18px; }
+.door p{ font-size:.875rem; color:var(--ink-soft); margin-bottom:18px; }
 @media (max-width:760px){ .doors{ grid-template-columns:1fr; } }
 
 /* ============================================================
@@ -474,7 +474,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .phero__bg{ position:absolute; inset:0; background-size:cover; background-position:center; z-index:0; }
 .phero__bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(12,22,16,.35), rgba(19,35,26,.6) 60%, var(--green-deep)); }
 .phero__in{ position:relative; z-index:2; max-width:var(--container); margin-inline:auto; width:100%; }
-.phero__crumb{ font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:22px; display:flex; gap:10px; align-items:center; }
+.phero__crumb{ font-size:.75rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:22px; display:flex; gap:10px; align-items:center; }
 /* a 19px breadcrumb link is not a tap target; the glyph stays put and the
    area around it grows */
 .phero__crumb a{ position:relative; }
@@ -486,7 +486,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .phero__cta{ margin-top:30px; display:flex; gap:13px; flex-wrap:wrap; }
 
 .psec{ max-width:var(--container); margin-inline:auto; padding:clamp(48px,6vw,90px) var(--pad); }
-.ey{ font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); }
+.ey{ font-size:.75rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); }
 .flow{ display:grid; gap:0; margin-top:34px; }
 .flow__item{ display:grid; grid-template-columns:auto 1fr; gap:clamp(20px,4vw,52px); padding:clamp(26px,3vw,40px) 0; border-top:1px solid rgba(252,254,247,.14); align-items:start; }
 .flow__item:last-child{ border-bottom:1px solid rgba(252,254,247,.14); }
@@ -496,14 +496,14 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .facts{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(20px,3vw,40px); margin-top:34px; }
 .fact{ border-top:1px solid rgba(252,254,247,.3); padding-top:16px; }
 .fact .n{ font-family:var(--display); font-weight:400; font-size:clamp(1.7rem,3vw,2.4rem); color:var(--gold); }
-.fact p{ margin-top:10px; font-size:14px; color:var(--ink-soft); }
+.fact p{ margin-top:10px; font-size:1rem; color:var(--ink-soft); }
 
 .cta-band{ border:1px solid rgba(252,254,247,.16); border-radius:14px; padding:clamp(36px,5vw,68px); background:var(--green); position:relative; overflow:hidden; }
 .form{ display:grid; grid-template-columns:repeat(12,1fr); gap:18px; margin-top:30px; }
 .field{ grid-column:span 6; display:flex; flex-direction:column; gap:8px; }
 .field.full{ grid-column:span 12; }
-.field label{ font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); }
-.field input,.field select,.field textarea{ font-family:var(--sans); font-size:16px; color:var(--cream); background:rgba(252,254,247,.05);
+.field label{ font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); }
+.field input,.field select,.field textarea{ font-family:var(--sans); font-size:1rem; color:var(--cream); background:rgba(252,254,247,.05);
   border:1px solid rgba(252,254,247,.2); border-radius:8px; padding:13px 15px; transition:border-color .25s, background .25s, box-shadow .25s; }
 .field input::placeholder,.field textarea::placeholder{ color:var(--ink-faint); }
 .field input:focus,.field select:focus,.field textarea:focus{ outline:none; border-color:var(--gold); background:rgba(252,254,247,.08); box-shadow:0 0 0 3px rgba(231,197,126,.14); }
@@ -514,12 +514,12 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 }
 .field select{ appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A6C39A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 13px center; background-size:18px; }
 .form__submit{ grid-column:1/13; display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:6px; }
-.form__note{ font-size:13px; color:var(--ink-faint); }
-.form__legal{ grid-column:1/13; margin-top:2px; font-size:12.5px; color:var(--ink-faint); }
+.form__note{ font-size:.8125rem; color:var(--ink-faint); }
+.form__legal{ grid-column:1/13; margin-top:2px; font-size:.8125rem; color:var(--ink-faint); }
 .form__legal a{ color:var(--gold); border-bottom:1px solid rgba(231,197,126,.5); }
-.form__ok{ grid-column:1/13; display:none; padding:18px 20px; border:1px solid var(--gold); border-radius:8px; background:rgba(231,197,126,.1); color:var(--cream); font-size:15px; }
+.form__ok{ grid-column:1/13; display:none; padding:18px 20px; border:1px solid var(--gold); border-radius:8px; background:rgba(231,197,126,.1); color:var(--cream); font-size:.9375rem; }
 .form__ok.show{ display:block; }
-.form__err{ grid-column:1/13; display:none; padding:14px 18px; border:1px solid rgba(224,134,88,.55); border-radius:8px; background:rgba(224,134,88,.12); color:#f6e3d7; font-size:14px; }
+.form__err{ grid-column:1/13; display:none; padding:14px 18px; border:1px solid rgba(224,134,88,.55); border-radius:8px; background:rgba(224,134,88,.12); color:#f6e3d7; font-size:.875rem; }
 .form__err.show{ display:block; }
 /* The spam honeypot. Clipped rather than parked at -9999px for the same
    reason the skip link is: a physical offset is off the end of the
@@ -538,7 +538,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .legal li{ position:relative; padding-left:22px; color:var(--ink-soft); }
 .legal li::before{ content:""; position:absolute; left:0; top:11px; width:7px; height:7px; background:var(--gold); transform:rotate(45deg); }
 .legal a.inl{ color:var(--gold); border-bottom:1px solid rgba(231,197,126,.5); }
-.legal__date{ margin-top:36px; padding-top:20px; border-top:1px solid rgba(252,254,247,.14); font-size:13px; color:var(--ink-faint); }
+.legal__date{ margin-top:36px; padding-top:20px; border-top:1px solid rgba(252,254,247,.14); font-size:.8125rem; color:var(--ink-faint); }
 
 /* ============================================================
    THE ROLE PAGE (students.html)
@@ -579,7 +579,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .role__head h2{ font-family:var(--display); font-weight:500; line-height:1.08;
   font-size:clamp(1.45rem,2.5vw,2rem); letter-spacing:-.015em; }
 .role__head .k{ display:block; font-family:var(--sans); font-weight:600;
-  font-size:11px; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  font-size:.6875rem; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
   color:var(--gold); margin-bottom:11px; }
 .role__body > p{ color:var(--ink-soft); max-width:64ch; margin-bottom:14px; }
 .role__body > p:last-child{ margin-bottom:0; }
@@ -629,7 +629,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
    the layout says so. Read down one column, or listened to, it does not — so
    the framing stays in the text rather than in the grid. */
 .swap .cue{ display:block; font-family:var(--sans); font-weight:600; font-style:normal;
-  font-size:10.5px; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  font-size:.6562rem; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
   color:var(--ink-faint); margin-bottom:7px; }
 
 /* the statement, at full width between two gold rules. It is the one thing
@@ -640,11 +640,11 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .creed p{ font-family:var(--display); font-weight:400; line-height:1.38;
   font-size:clamp(1.18rem,2.4vw,2.05rem); color:var(--cream); }
 .creed .k{ display:block; font-family:var(--sans); font-weight:600;
-  font-size:11px; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  font-size:.6875rem; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
   color:var(--gold); margin-bottom:16px; }
 /* the note about the statement is not part of the statement, and .creed p
    would otherwise set it in the same display face at the same size */
-.creed p.creed__why{ font-family:var(--sans); font-size:14px; line-height:1.6;
+.creed p.creed__why{ font-family:var(--sans); font-size:1rem; line-height:1.6;
   color:var(--ink-faint); max-width:60ch; margin-bottom:22px; }
 
 /* the close: the ask on one side, the door on the other */
@@ -711,7 +711,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   text-shadow:0 1px 26px rgba(6,12,9,.85); }
 .hero__cta{ margin-top:22px; display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
 .hero__cue{ grid-area:3/2/4/3; align-self:end; justify-self:end; display:flex; align-items:center; gap:14px;
-  font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
+  font-size:.6875rem; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
 .hero__cue i{ width:clamp(40px,7vw,74px); height:1px; background:rgba(252,254,247,.26); position:relative; overflow:hidden; }
 .hero__cue i::after{ content:""; position:absolute; top:0; bottom:0; left:-100%; width:100%; background:var(--gold); animation:cue-x 2.4s var(--ease) infinite; }
 @keyframes cue-x{ to{ left:100%; } }
@@ -758,7 +758,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
    no script ever runs. */
 .vow__more{ margin-top:26px; }
 .vow__more > summary{ display:inline-flex; align-items:center; gap:9px; cursor:pointer;
-  font-family:var(--sans); font-size:13px; letter-spacing:.02em; color:var(--ink-soft);
+  font-family:var(--sans); font-size:.875rem; letter-spacing:.02em; color:var(--ink-soft);
   padding:7px 2px; list-style:none; transition:color .3s var(--ease); }
 .vow__more > summary::-webkit-details-marker{ display:none; }   /* Safari's triangle */
 .vow__more > summary::after{ content:""; width:7px; height:7px; flex:none;
@@ -770,7 +770,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 /* the verbatim statement reads as the document it is: sans, plain, unstyled */
 .vow__full{ max-width:66ch; margin-inline:auto; font-size:clamp(.98rem,1.2vw,1.08rem);
   line-height:1.68; color:var(--ink-soft); text-shadow:0 1px 20px rgba(6,12,9,.8); }
-.vow__src{ margin-top:16px; font-size:12.5px; letter-spacing:.02em; color:var(--ink-faint); }
+.vow__src{ margin-top:16px; font-size:.7812rem; letter-spacing:.02em; color:var(--ink-faint); }
 
 
 /* ============================================================
@@ -903,7 +903,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   /* a 60-character kicker set in tracked uppercase micro-type wrapped to three
      lines at 360px. Tightened so it holds two, and dropped entirely when the
      screen is too short to afford them. */
-  .hero__eye{ grid-area:1/1/2/2; font-size:11.5px; letter-spacing:.15em; margin-bottom:0; }
+  .hero__eye{ grid-area:1/1/2/2; font-size:.7188rem; letter-spacing:.15em; margin-bottom:0; }
   /* the gap is free: this row is 1fr and its content is centered inside it, so
      the space comes out of the row's own slack and never off the page. At the
      13px it started from, the two halves were a line apart in a headline whose
@@ -1139,12 +1139,12 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
    page, or reach the directory first, to find a way in. Each one lands on the
    matching in-language panel of help.html, which opens on :target and needs
    no JavaScript to do it. */
-.langcue-h{ margin-top:30px; font-size:12.5px; letter-spacing:.2em;
+.langcue-h{ margin-top:30px; font-size:.7812rem; letter-spacing:.2em;
   text-transform:uppercase; color:var(--ink-faint); }
 .langcue{ list-style:none; margin:12px 0 0; padding:0;
   display:flex; flex-wrap:wrap; gap:8px; }
 .langcue a{ display:inline-flex; align-items:center; min-height:44px;
-  padding:8px 15px; border-radius:100px; font-size:15px; font-weight:500;
+  padding:8px 15px; border-radius:100px; font-size:.9375rem; font-weight:500;
   color:var(--cream); border:1px solid rgba(252,254,247,.28);
   transition:border-color .25s var(--ease), background .25s var(--ease); }
 .langcue a:hover, .langcue a:focus-visible{ border-color:var(--gold);
