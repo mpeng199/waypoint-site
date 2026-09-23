@@ -1685,7 +1685,21 @@ The featured events stop being a carousel.
   .grp__head{ position:sticky; top:0; z-index:3;
     background:var(--ground);
     grid-template-columns:minmax(0,1fr) auto; align-items:center;
-    gap:12px; padding:10px 0 12px; margin-bottom:14px; }
+    gap:12px; padding:10px 0 12px; margin-bottom:14px;
+    /* A sticky bar has to be bounded or it becomes the thing it was meant to
+       fix. At the default text size this header is 68px. At 200% on a 320px
+       screen it measured 257px — 45% of the viewport, held for the whole
+       scroll, which is precisely the defect the site header was un-stuck to
+       remove earlier tonight. Reintroducing it one element lower would have
+       been an embarrassing way to ship an accessibility improvement.
+
+       So the heading takes at most two lines and the bar at most a fifth of
+       the screen. A clipped group name is still orientation — "Pantries and
+       grocer..." tells you where you are — and the whole name is at the top
+       of the group you just scrolled past. */
+    max-height:20svh; }
+  .grp__head h2{ display:-webkit-box; -webkit-line-clamp:2;
+    -webkit-box-orient:vertical; overflow:hidden; min-width:0; }
   .grp__top{ grid-column:auto; justify-self:end; margin-top:0;
     padding:6px 12px; font-size:.85rem; }
 }
