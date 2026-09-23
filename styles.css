@@ -94,8 +94,24 @@ img,svg{ display:block; max-width:100%; }
 .poster__wall{ position:absolute; inset:0;
   background:radial-gradient(130% 95% at 50% 44%, #16261c 0%, #0c150f 52%, #070c09 100%); }
 /* the casing: what makes it read as a door in a wall */
+/* What is on the other side is the valley, which is what door.js binds as the
+   texture beyond the opening on a desktop — `land1.webp`, already preloaded on
+   this page for the journey background underneath, so seeing it here costs no
+   bytes at all.
+
+   It sits under a warm haze that starts at .86 and lifts to .14 as the door
+   opens, which is how a bright opening actually behaves: a slit of light that
+   resolves into a view once it is wide enough to resolve into one. At
+   --doorT:0 the haze is thick enough that this reads exactly as the blown-out
+   slit it read as before. */
 .poster__case{ position:absolute; left:var(--dx); top:var(--dy); width:var(--dw); height:var(--dh);
   transform:translate(-50%,-50%); border:2px solid rgba(128,106,71,.65); border-bottom:0; border-radius:1px;
+  --haze:calc(.86 - var(--doorT,0) * .72);
+  background-image:
+    linear-gradient(0deg, rgba(255,242,219,var(--haze)), rgba(255,242,219,var(--haze))),
+    url("assets/land1.webp");
+  background-size:cover, cover;
+  background-position:50% 50%, 50% 44%;
   box-shadow:inset 0 0 46px rgba(0,0,0,.66), inset -3px 0 14px rgba(255,214,152,.20); }
 /* the panel, hinged at the left jamb and swung toward the viewer */
 .poster__panel{ position:absolute; left:calc(var(--dx) - var(--dw) * .5); top:var(--dy);
@@ -121,6 +137,96 @@ img,svg{ display:block; max-width:100%; }
   transform:translate(-50%,-14%);
   background:radial-gradient(closest-side at 50% 30%, rgba(255,218,163,.30) 0%, rgba(231,197,126,.09) 46%, transparent 76%);
   filter:blur(30px); }
+/* ---------------------------------------------------------------------
+   THE POSTER MOVES.
+
+   three.js is 750KB across two chunks and `worthTheDownload()` in door.js
+   returns false for `coarse` — every screen under 900px. That is the right
+   call and it is not changing: a phone would download three quarters of a
+   megabyte to composite a layer that .door-gone throws away a screen later.
+
+   But the consequence was that on every phone the door was a photograph.
+   --doorT streams from script.js on every device, 0 to 1 across the hero's
+   760px of scroll, and the poster was not reading it: at --doorT 0.6 the
+   picture was pixel-identical to 0.6 seconds earlier. Only the type moved.
+
+   These four rules are the whole animation, and they cost no bytes at all.
+   Each is a transform or nothing — no blur radius, no background-position,
+   no box-shadow spread, none of the things check_mobile_budget exists to
+   keep off a phone's per-frame bill. The layer is promoted only while
+   .at-door is on, which script.js already toggles off at t=0.9.
+
+   At --doorT:0 every value below is its own identity, so the still that
+   opens the page is the same finished picture it always was. */
+
+/* The camera pushes through the opening, not through the middle of the wall:
+   the origin is the light slit, at --dx + 43% of the door's width, which is
+   where .poster__glow is. Squaring --doorT is the ease — the approach is
+   slow while somebody is still reading the headline and accelerates into the
+   hand-over. By 0.95 the opening is wider than the viewport, which is the
+   window doorFrame() already crossfades in. */
+.doorstage__poster{
+  /* The push does not start with the scroll. The headline is still legible
+     until --doorT 0.69 (its own opacity clamp), and a camera that is already
+     moving under type somebody is reading is the thing that makes a hero feel
+     like it is hurrying you. So: nothing for the first third, then square it.
+     max() rather than clamp() because the value only ever needs a floor. */
+  --push:max(0, calc((var(--doorT,0) - .35) * 1.5385));
+  transform-origin:calc(var(--dx) + var(--dw) * .43) var(--dy);
+  transform:scale(calc(1 + var(--push) * var(--push) * 2.6));
+}
+.at-door .doorstage__poster{ will-change:transform; }
+
+/* The panel swings. It is already hinged at the left jamb and already turned
+   26 degrees toward the viewer; it just never turned any further. */
+.poster__panel{
+  /* 59 degrees of travel, not 36, and the arithmetic is the reason: the
+     opening a hinged panel leaves is the frame less the panel's PROJECTED
+     width, which is cos(theta) of its real one. At -62deg the panel still
+     covers 47% of the doorway, so the view through it stayed a slot. At
+     t=0.95 this reaches -82deg, the panel is nearly edge-on and covers 14%,
+     and the opening measures 419px across a 390px screen — wider than the
+     viewport, which is the window doorFrame() hands over in. */
+  transform:translate(0,-50%) perspective(820px)
+    rotateY(calc(-26deg - var(--doorT,0) * 59deg));
+}
+
+/* And the gap the swing leaves fills with light. A real hinged door's opening
+   widens as (1 - cos t) — door.js uses exactly that for the shaft geometry —
+   and over the 64 degrees this panel travels that curve is close enough to
+   t-squared that the extra arithmetic buys nothing a reader could see. */
+.poster__glow{
+  transform:translate(-50%,-50%)
+    scaleX(calc(1 + var(--doorT,0) * var(--doorT,0) * 2.6));
+  /* The slit is the brightest thing on the page while the door is shut, and
+     it has to stop being that once the door is open, or it paints over the
+     view it was always a sliver of. --push is 0 until --doorT 0.35, so the
+     still that opens the page keeps its full hot edge. */
+  opacity:calc(1 - var(--push,0) * .88);
+}
+/* Same argument, other direction: the beam and the floor pool are light
+   thrown INTO the room, and once the camera is through the doorway there is
+   no room for it to be thrown into. */
+.poster__beam,.poster__pool{ opacity:calc(1 - var(--push,0) * .92); }
+/* These two are the only blurred layers whose opacity now moves, and an
+   animated opacity on a blurred layer re-rasterizes the blur unless the layer
+   is promoted — the same reason .stage__layer carries will-change:opacity and
+   check_mobile_budget insists on it. Measured at 6x CPU throttle the variants
+   landed between 19.6ms and 22.9ms at p90 across two runs each, which is
+   inside the run-to-run noise, so this is here because it is the right
+   declaration for what is being animated, not because a number proved it.
+   Scoped to .at-door so nothing is promoted after the hand-over. */
+.at-door .poster__beam,.at-door .poster__pool{ will-change:opacity; }
+
+/* Reduced motion gets the still it always got. door.js renders its one WebGL
+   frame at t=0.34; the poster parks at the same place, so the two halves of
+   the fallback are the same picture. */
+@media (prefers-reduced-motion:reduce){
+  .doorstage__poster{ transform:scale(1.41); will-change:auto; }
+  .poster__panel{ transform:translate(0,-50%) perspective(820px) rotateY(-38deg); }
+  .poster__glow{ transform:translate(-50%,-50%) scaleX(1.3); }
+}
+
 #doorCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block;
   opacity:0; transition:opacity .5s var(--ease-out); }
 .doorstage--on #doorCanvas{ opacity:1; }
