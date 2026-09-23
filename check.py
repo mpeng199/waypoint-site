@@ -5304,6 +5304,65 @@ def check_every_resource_says_what_it_is():
         ok("every resource says what it is, in a whole sentence")
 
 
+def check_the_type_floor_on_the_directory():
+    """The styles that carry content on the directory, and how small they may get.
+
+    body.help's own comment states the standard: "18px floor. The reference
+    audience includes people over 70 reading on a phone at arm's length; 16px
+    is a design default, not a decision." The body rule holds to it. The
+    styles UNDER it did not, and they are where the content is — measured on
+    the built pages at 12.5px to 14.4px against a root of 16.
+
+    The counts are why it mattered: .ev__by renders 53 times on events.html
+    and the event meta 36, .ev__b 38, .pv__d and .cl__b 17 each on the front
+    page. And .sos__for is the line beside each emergency number saying WHICH
+    emergency it is, on the strip that exists for the worst moment anybody
+    arrives in; it was the smallest of them.
+
+    This lists the styles rather than scanning for a number, deliberately, in
+    the same way check_tap_targets names its controls: a micro-label — an
+    eyebrow, a build stamp, a legend — is allowed to be small, and a rule that
+    could not tell one from a sentence would either fail on those or pass on
+    everything.
+    """
+    css = read("help.css")
+    # (selector, floor in rem, what it carries)
+    FLOOR = [
+        (r"\.sos__for",  .95, "the line saying which emergency each number is for"),
+        (r"\.pv__d",     .95, "the preview description on a cluster card"),
+        (r"\.cl__b",     .95, "what a cluster of help covers"),
+        (r"\.r__what",  1.0,  "a resource's description"),
+        (r"\.ev__b",    1.0,  "an event's description"),
+        (r"\.bdg",       .8,  "the badges, including whether status is asked"),
+    ]
+    seen = 0
+    for rx, floor, what in FLOOR:
+        name = rx.replace("\\", "")      # the message shows a selector, not a regex
+        # the LAST declaration wins, and the mobile overrides are at the end
+        # The selector must BEGIN its rule. Without that anchor,
+        # `.sos--slim .sos__for{...}` matches as `.sos__for{...}` and the
+        # guard reads a deliberately smaller variant as the main rule — which
+        # it did, and failed the file it was written against.
+        sizes = re.findall(r"(?:^|[\n;{}])\s*" + rx + r"\s*\{[^}]*font-size:\s*([0-9.]*)rem",
+                           css, flags=re.M)
+        if not sizes:
+            bad(f"{name} has no rem font-size in help.css; it may have been "
+                f"renamed away from this check, or set in px, which is its own "
+                f"failure — see check_type_scales_with_the_reader")
+            continue
+        seen += 1
+        got = float(sizes[-1])
+        if got < floor:
+            bad(f"{name} is {got}rem ({got*16:.1f}px at a 16px root) and carries "
+                f"{what}. The floor here is {floor}rem. body.help argues for 18px "
+                f"and this audience is the reason.")
+        else:
+            ok(f"{name} holds the floor at {got}rem — {what}")
+    if seen < len(FLOOR):
+        bad(f"only {seen} of {len(FLOOR)} content styles were found; this guard "
+            f"is checking less than it thinks it is")
+
+
 def check_type_scales_with_the_reader():
     """A font-size in px ignores the reader's font-size setting. Every one of
     them, on every sheet a reader loads.
@@ -6510,6 +6569,7 @@ def main():
                check_every_form_is_wired_up,
                check_the_poster_moves_and_knows_when_not_to,
                check_type_scales_with_the_reader,
+               check_the_type_floor_on_the_directory,
                check_a_deep_link_lands_where_it_says,
                check_a_number_dials_what_it_shows,
                check_the_data_file_keeps_its_shape,
