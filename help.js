@@ -414,6 +414,45 @@
     });
   }
 
+  /* ---------- a horizontally scrolling shelf has to be keyboard-operable ----------
+
+     Where a category's resources are laid out as a shelf, the track scrolls
+     sideways. Tabbing already reaches every card — focusing a link in the
+     sixteenth card scrolls the track to it, measured — but a scrollable
+     region that is not focusable cannot be scrolled with the arrow keys at
+     all, which is WCAG 2.1.1, and a screen reader lands in sixteen cards
+     with nothing saying which shelf they belong to.
+
+     Applied from script and only to tracks that actually overflow, so the
+     vertical layout does not collect a tab stop it has no use for. The ten
+     translated pages ship no script and carry no resource cards, so they are
+     not involved either way. */
+  function shelves() {
+    var tracks = document.querySelectorAll(".grp .rows");
+    Array.prototype.forEach.call(tracks, function (t) {
+      var scrolls = t.scrollWidth > t.clientWidth + 2;
+      if (!scrolls) {
+        t.removeAttribute("tabindex");
+        t.removeAttribute("role");
+        t.removeAttribute("aria-label");
+        return;
+      }
+      if (t.getAttribute("tabindex") !== null) return;
+      var grp = t.closest(".grp");
+      var h = grp && grp.querySelector(".grp__head h2");
+      t.setAttribute("tabindex", "0");
+      t.setAttribute("role", "group");
+      t.setAttribute("aria-label",
+        (h ? h.textContent.trim() + " \u2014 " : "") + t.querySelectorAll(".r").length +
+        " places, scroll sideways for more");
+    });
+  }
+  shelves();
+  var shelfTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(shelfTimer); shelfTimer = setTimeout(shelves, 150);
+  }, { passive: true });
+
   var ixEl = document.getElementById("ix");
   var dir = document.getElementById("dir");
   if (!ixEl && !dir) return;

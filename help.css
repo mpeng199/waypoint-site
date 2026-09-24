@@ -1794,3 +1794,101 @@ The featured events stop being a carousel.
     max-height:16svh; overflow:hidden;
     display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 }
+
+/* ===================================================================
+   SHELVES — one horizontal track per category, two categories on screen.
+
+   Measured on help-food.html at 390px before this went site-wide: the page
+   went from 19.6 screens to 9.5, two category headings are on screen at once
+   instead of one, and 136px of the next card shows past the screen edge.
+
+   That last number is the whole design. The featured-events carousel removed
+   earlier used clamp(230px,74vw,268px) and left a 19px sliver at 390px — 9px
+   at 320 — which is not an affordance, it is a rounding error, and it is why
+   that carousel showed one card of four to everybody. 62vw shows 1.6 cards.
+
+   Scoped to `.grp .rows`, which is exactly the seventeen category pages:
+   .grp does not appear on help.html, events.html, suggest.html or any of the
+   ten translated pages, and help.html's one .rows is #resultRows, the search
+   results, which stay a vertical list on purpose — a result set is not a
+   category and has nothing to be a shelf of.
+   =================================================================== */
+@media (max-width:900px){
+  /* A shelf heading does not need to follow you: its own track is one card
+     tall and the next heading is always on screen. Two or three sticky bars
+     competing for the top of the viewport would be worse than none. */
+  .grp .grp__head{
+    position:static; max-height:none; padding:0 0 8px; margin-bottom:8px; }
+  /* And it gets its whole name back. The clamp existed because the heading
+     was sticky and an unbounded bar eats the screen; static, it costs
+     nothing to let "Sealing a record, and being turned down for work
+     because of it" be what it is instead of "...turned down f...". */
+  .grp .grp__head h2{ display:block; -webkit-line-clamp:none; overflow:visible; }
+
+  .grp{ margin-bottom:18px; }
+
+  /* The track. Bled to the screen edges so the card that is half-visible is
+     cut by the SCREEN rather than by a margin — that is what reads as "there
+     is more this way". */
+  .grp .rows{
+    display:flex; gap:12px;
+    grid-template-columns:none;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    scroll-snap-type:x proximity;
+    margin-inline:calc(-1 * var(--pad));
+    padding:4px var(--pad) 12px;
+    scrollbar-width:none; }
+  .grp .rows::-webkit-scrollbar{ display:none; }
+
+  .grp .r{
+    flex:0 0 62vw; max-width:300px; scroll-snap-align:start; min-width:0; }
+
+  /* A category with one place in it is not a shelf. "Start here" is often
+     exactly one, and a 242px card with 148px of nothing beside it reads as a
+     layout that failed rather than as a row you can scroll. */
+  .grp .rows .r:only-child{ flex:1 1 100%; max-width:none; }
+
+  /* The card gets shorter to fit the shelf: the name takes two lines, the
+     description two, and "More about this" stays because it is the only
+     route to hours and an address. */
+  .grp .r{ padding:14px; gap:8px; }
+  .grp .r__name{ font-size:1.05rem; }
+  /* min-height stays 44. Dropping it to 0 to let the clamp work took the
+     name — the card's primary link — to a 29px target, which is the one rule
+     this directory does not bend. -webkit-box and min-height coexist fine. */
+  .grp .r__name .visit{ min-height:44px; padding:2px 0;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  /* -webkit-box is not a flex container, so the gap that separated the name
+     from its arrow everywhere else does nothing here and it rendered as
+     "Plentiful<arrow>". A margin works in both boxes. */
+  .grp .r__name .visit .arr{ margin-inline-start:.3em; }
+  .grp .r__what{ -webkit-line-clamp:2; font-size:.95rem; }
+  .grp .r__do{ padding-top:0; }
+  /* At 242px a badge row wraps to three. "Free" is the site's own headline
+     claim — the masthead already says nearly all of these are free — and
+     24/7 is a detail, so in the shelf the chips are what the place IS and
+     the one thing this audience most needs to know before dialling. Both
+     dropped chips are still on the card inside "More about this". */
+  .grp .bdg--free,
+  .grp .bdg--open-247{ display:none; }
+  .grp .r__badges{ gap:6px; }
+  /* 44, not 40. The shelf is not a reason to shave a target. What the shelf
+     DOES justify is losing the rule and the block padding above it: inside a
+     242px card a full-width divider under four other elements is the card
+     telling you it is a form. */
+  .grp .r__more{ padding-top:2px; border-top:0; }
+  .grp .r__more summary{ min-height:44px; }
+}
+
+/* Narrower screens get a WIDER card, which is the opposite of the instinct
+   and the right answer: at 320px a 62vw card is 198px, the name wraps to
+   three lines and the description to three, and the card grows to 393px
+   tall — so fewer shelves fit, not more. 78vw is 250px, the text wraps
+   less, the card is shorter, and 58px of the next card still shows.
+
+   Its own top-level query rather than nested inside the one above, so the
+   minifier never has to reason about nested at-rules. */
+@media (max-width:380px){
+  .grp .r{ flex:0 0 78vw; }
+  .grp .rows .r:only-child{ flex:1 1 100%; }
+}

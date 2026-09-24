@@ -5304,6 +5304,80 @@ def check_every_resource_says_what_it_is():
         ok("every resource says what it is, in a whole sentence")
 
 
+def check_the_shelves():
+    """Each category's places are a horizontal shelf on a phone, and the one
+    thing that must never become one is the search results.
+
+    `.rows` is the class on BOTH a category's list of places and on
+    #resultRows, the front page's search results. The shelf rules are scoped
+    to `.grp .rows` for that reason: .grp appears only on the seventeen
+    category pages — not on help.html, events.html, suggest.html or the ten
+    translated pages — and a result set is not a category, so it has nothing
+    to be a shelf of. A rule that reached it would turn every search on the
+    site into a sideways scroll of answers.
+
+    What the shelf is worth, measured at 390px across all seventeen pages
+    before this was written: two category headings on screen instead of one,
+    pages down from 20-29 screens to 8-11, and 136px of the next card showing
+    past the screen edge. That last number is the design: the featured-events
+    carousel that was removed left a 19px sliver and showed one card of four
+    to everybody.
+    """
+    css = read("help.css")
+    js = read("help.js")
+
+    # scoped to .grp, and the bare selector never targeted
+    shelf = re.search(r"\.grp \.rows\{[^}]*\}", css)
+    if not shelf:
+        bad("help.css has no `.grp .rows` track rule; the shelves are gone")
+    else:
+        body = shelf.group(0)
+        for prop, why in [("display:flex", "the track is not a flex row"),
+                          ("overflow-x:auto", "the track cannot scroll sideways")]:
+            if prop not in body.replace(" ", ""):
+                bad(f"help.css: `.grp .rows` lost {prop} — {why}")
+        ok("the shelf track is a horizontal, scrollable flex row")
+
+    # the bare `.rows` must never be made a flex track: that is #resultRows
+    for m in re.finditer(r"(?:^|[\n;{}])\s*\.rows\s*\{([^}]*)\}", css, flags=re.M):
+        if "display:flex" in m.group(1).replace(" ", ""):
+            bad("help.css turns the bare `.rows` into a flex track. That class "
+                "is also #resultRows on help.html, so every search result set "
+                "on the site becomes a sideways scroll of answers.")
+            break
+    else:
+        ok("the bare `.rows` is left alone, so search results stay a list")
+
+    # a lone place is not a shelf
+    if ":only-child" not in css:
+        bad("help.css: no `:only-child` rule, so a category holding one place "
+            "renders a 242px card with 148px of nothing beside it")
+    else:
+        ok("a category with one place fills its row")
+
+    # the name is still a 44px target inside the shelf
+    m = re.search(r"\.grp \.r__name \.visit\{([^}]*)\}", css)
+    if not m or not re.search(r"min-height:\s*44px", m.group(1)):
+        bad("the shelf card's name — its primary link — is not 44px. Clamping "
+            "it to two lines without a min-height took it to 29px once "
+            "already; -webkit-box and min-height coexist fine.")
+    else:
+        ok("the shelf card's name holds 44px")
+
+    # and the track is reachable by keyboard when it actually scrolls
+    if "function shelves" not in js:
+        bad("help.js no longer labels the shelves. A scrollable region that is "
+            "not focusable cannot be scrolled with the arrow keys at all "
+            "(WCAG 2.1.1), and a screen reader lands in sixteen cards with "
+            "nothing saying which shelf they belong to.")
+    elif "scrollWidth > t.clientWidth" not in js:
+        bad("help.js labels every track rather than only the ones that "
+            "overflow, so the vertical layout collects a tab stop it has no "
+            "use for")
+    else:
+        ok("an overflowing shelf is focusable and labelled; a fitting one is not")
+
+
 def check_the_type_floor_on_the_directory():
     """The styles that carry content on the directory, and how small they may get.
 
@@ -6570,6 +6644,7 @@ def main():
                check_the_poster_moves_and_knows_when_not_to,
                check_type_scales_with_the_reader,
                check_the_type_floor_on_the_directory,
+               check_the_shelves,
                check_a_deep_link_lands_where_it_says,
                check_a_number_dials_what_it_shows,
                check_the_data_file_keeps_its_shape,
