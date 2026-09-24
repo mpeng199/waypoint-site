@@ -1878,7 +1878,9 @@ def check_directory_reachable():
     unreachable = [r for r in rows if 'href="tel:' not in r
                    and 'href="sms:' not in r and 'class="visit"' not in r]
     if unreachable:
-        names = re.findall(r'class="r__name">([^<]+)', "".join(unreachable))
+        names = [_r_name_text(h) for h in
+                 re.findall(r'<h3 class="r__name">(.*?)</h3>',
+                            "".join(unreachable), re.S)]
         bad(f"{len(unreachable)} resource(s) with no phone and no "
             f"website, so there is no way to act on them: {names[:5]}")
     else:
@@ -4157,6 +4159,19 @@ def check_page_furniture():
         ok(f"every search placeholder fits its box ({LIMIT} characters or fewer)")
 
 
+def _r_name_text(markup):
+    """The text of a resource's <h3>, whatever the card is built from.
+
+    The name used to be the h3's only content. It is now wrapped in the
+    anchor that replaced the "Open website" button, and it carries a
+    decorative arrow span. Dropping the arrow BEFORE stripping tags matters:
+    strip first and &#8599; survives as text, so every name reads as
+    "The Fortune Society\u2197" and never matches anything.
+    """
+    markup = re.sub(r'<span class="arr".*?</span>', "", markup, flags=re.S)
+    return html.unescape(re.sub(r"<[^>]+>", "", markup)).strip()
+
+
 def check_directory_clusters():
     """The front page is one cluster per need, each a way in to one page.
 
@@ -4538,8 +4553,21 @@ def check_directory_needs():
             continue
         names = re.findall(r'class="pv__n"[^>]*>([^<]+)</a>', block.group(0))
         page = read(build_help.page_for(need["key"]))
+        # The resource name is the TEXT of the h3, which is not the same as
+        # the h3's markup: since the card's name became its link it is
+        # <h3 class="r__name"><a ...>Name<span class="arr">arrow</span></a></h3>.
+        # Matching `>{name}</h3>` was matching the markup, so the whole guard
+        # went red the moment the anchor arrived — correctly, since it could no
+        # longer see what it was asserting, but for the wrong reason. Compare
+        # text to text and it stops caring how the card is built.
+        on_page = {_r_name_text(h)
+                   for h in re.findall(r'<h3 class="r__name">(.*?)</h3>', page, re.S)}
         for nm in names:
-            if f">{nm}</h3>" not in page:
+            # Both sides unescaped, or an ampersand alone fails the comparison:
+            # the preview says "SSI/SSDI &amp; retirement" and the page, once
+            # its tags are stripped, says "SSI/SSDI & retirement".
+            nm = html.unescape(nm).strip()
+            if nm not in on_page:
                 bad(f'help.html: the {need["key"]} cluster previews {nm!r}, which '
                     f'is not on {build_help.page_for(need["key"])}')
     ok("every preview on the front page is a resource that is really on the "
@@ -5274,6 +5302,455 @@ def check_every_resource_says_what_it_is():
         bad(t)
     if not thin and not shape:
         ok("every resource says what it is, in a whole sentence")
+
+
+def check_the_shelves():
+    """Each category's places are a horizontal shelf on a phone, and the one
+    thing that must never become one is the search results.
+
+    `.rows` is the class on BOTH a category's list of places and on
+    #resultRows, the front page's search results. The shelf rules are scoped
+    to `.grp .rows` for that reason: .grp appears only on the seventeen
+    category pages — not on help.html, events.html, suggest.html or the ten
+    translated pages — and a result set is not a category, so it has nothing
+    to be a shelf of. A rule that reached it would turn every search on the
+    site into a sideways scroll of answers.
+
+    What the shelf is worth, measured at 390px across all seventeen pages
+    before this was written: two category headings on screen instead of one,
+    pages down from 20-29 screens to 8-11, and 136px of the next card showing
+    past the screen edge. That last number is the design: the featured-events
+    carousel that was removed left a 19px sliver and showed one card of four
+    to everybody.
+    """
+    css = read("help.css")
+    js = read("help.js")
+
+    # scoped to .grp, and the bare selector never targeted
+    shelf = re.search(r"\.grp \.rows\{[^}]*\}", css)
+    if not shelf:
+        bad("help.css has no `.grp .rows` track rule; the shelves are gone")
+    else:
+        body = shelf.group(0)
+        for prop, why in [("display:flex", "the track is not a flex row"),
+                          ("overflow-x:auto", "the track cannot scroll sideways")]:
+            if prop not in body.replace(" ", ""):
+                bad(f"help.css: `.grp .rows` lost {prop} — {why}")
+        ok("the shelf track is a horizontal, scrollable flex row")
+
+    # the bare `.rows` must never be made a flex track: that is #resultRows
+    for m in re.finditer(r"(?:^|[\n;{}])\s*\.rows\s*\{([^}]*)\}", css, flags=re.M):
+        if "display:flex" in m.group(1).replace(" ", ""):
+            bad("help.css turns the bare `.rows` into a flex track. That class "
+                "is also #resultRows on help.html, so every search result set "
+                "on the site becomes a sideways scroll of answers.")
+            break
+    else:
+        ok("the bare `.rows` is left alone, so search results stay a list")
+
+    # a lone place is not a shelf
+    if ":only-child" not in css:
+        bad("help.css: no `:only-child` rule, so a category holding one place "
+            "renders a 242px card with 148px of nothing beside it")
+    else:
+        ok("a category with one place fills its row")
+
+    # the name is still a 44px target inside the shelf
+    m = re.search(r"\.grp \.r__name \.visit\{([^}]*)\}", css)
+    if not m or not re.search(r"min-height:\s*44px", m.group(1)):
+        bad("the shelf card's name — its primary link — is not 44px. Clamping "
+            "it to two lines without a min-height took it to 29px once "
+            "already; -webkit-box and min-height coexist fine.")
+    else:
+        ok("the shelf card's name holds 44px")
+
+    # and the track is reachable by keyboard when it actually scrolls
+    if "function shelves" not in js:
+        bad("help.js no longer labels the shelves. A scrollable region that is "
+            "not focusable cannot be scrolled with the arrow keys at all "
+            "(WCAG 2.1.1), and a screen reader lands in sixteen cards with "
+            "nothing saying which shelf they belong to.")
+    elif "scrollWidth > t.clientWidth" not in js:
+        bad("help.js labels every track rather than only the ones that "
+            "overflow, so the vertical layout collects a tab stop it has no "
+            "use for")
+    else:
+        ok("an overflowing shelf is focusable and labelled; a fitting one is not")
+
+
+def check_the_type_floor_on_the_directory():
+    """The styles that carry content on the directory, and how small they may get.
+
+    body.help's own comment states the standard: "18px floor. The reference
+    audience includes people over 70 reading on a phone at arm's length; 16px
+    is a design default, not a decision." The body rule holds to it. The
+    styles UNDER it did not, and they are where the content is — measured on
+    the built pages at 12.5px to 14.4px against a root of 16.
+
+    The counts are why it mattered: .ev__by renders 53 times on events.html
+    and the event meta 36, .ev__b 38, .pv__d and .cl__b 17 each on the front
+    page. And .sos__for is the line beside each emergency number saying WHICH
+    emergency it is, on the strip that exists for the worst moment anybody
+    arrives in; it was the smallest of them.
+
+    This lists the styles rather than scanning for a number, deliberately, in
+    the same way check_tap_targets names its controls: a micro-label — an
+    eyebrow, a build stamp, a legend — is allowed to be small, and a rule that
+    could not tell one from a sentence would either fail on those or pass on
+    everything.
+    """
+    css = read("help.css")
+    # (selector, floor in rem, what it carries)
+    FLOOR = [
+        (r"\.sos__for",  .95, "the line saying which emergency each number is for"),
+        (r"\.pv__d",     .95, "the preview description on a cluster card"),
+        (r"\.cl__b",     .95, "what a cluster of help covers"),
+        (r"\.r__what",  1.0,  "a resource's description"),
+        (r"\.ev__b",    1.0,  "an event's description"),
+        (r"\.bdg",       .8,  "the badges, including whether status is asked"),
+    ]
+    seen = 0
+    for rx, floor, what in FLOOR:
+        name = rx.replace("\\", "")      # the message shows a selector, not a regex
+        # the LAST declaration wins, and the mobile overrides are at the end
+        # The selector must BEGIN its rule. Without that anchor,
+        # `.sos--slim .sos__for{...}` matches as `.sos__for{...}` and the
+        # guard reads a deliberately smaller variant as the main rule — which
+        # it did, and failed the file it was written against.
+        sizes = re.findall(r"(?:^|[\n;{}])\s*" + rx + r"\s*\{[^}]*font-size:\s*([0-9.]*)rem",
+                           css, flags=re.M)
+        if not sizes:
+            bad(f"{name} has no rem font-size in help.css; it may have been "
+                f"renamed away from this check, or set in px, which is its own "
+                f"failure — see check_type_scales_with_the_reader")
+            continue
+        seen += 1
+        got = float(sizes[-1])
+        if got < floor:
+            bad(f"{name} is {got}rem ({got*16:.1f}px at a 16px root) and carries "
+                f"{what}. The floor here is {floor}rem. body.help argues for 18px "
+                f"and this audience is the reason.")
+        else:
+            ok(f"{name} holds the floor at {got}rem — {what}")
+    if seen < len(FLOOR):
+        bad(f"only {seen} of {len(FLOOR)} content styles were found; this guard "
+            f"is checking less than it thinks it is")
+
+
+def check_type_scales_with_the_reader():
+    """A font-size in px ignores the reader's font-size setting. Every one of
+    them, on every sheet a reader loads.
+
+    WCAG 1.4.4 is usually read as "pinch zoom works", and it does here — the
+    viewport meta sets no maximum-scale. But a reader who has set a larger
+    default text size in their browser or their OS, which is what somebody
+    with low vision actually does, gets nothing from a px declaration: it is
+    the same number of pixels whatever they asked for.
+
+    help.css already had this right — 0 px font-sizes in 131 declarations.
+    styles.css had 27 in 60 and tokens.css 6, so on the narrative half, and in
+    the footer of all 33 pages, more than half the type did not move at all
+    when the root font-size was doubled. Measured before: 7 of 13 sampled
+    styles at x1.00 against .say and .beat at x2.00. Measured after: x2.00
+    across the board on index.html, partners.html and help-food.html.
+
+    Print is exempt: a print sheet is sized in pt against paper, and pt is the
+    right unit there.
+    """
+    for fname in ("styles.css", "tokens.css", "help.css"):
+        css = read(fname)
+        # drop @media print blocks before looking
+        body = re.sub(r"@media print\{.*?\n\}", "", css, flags=re.S)
+        hits = re.findall(r"font-size:\s*([0-9.]+)px", body)
+        if hits:
+            bad(f"{fname} sets {len(hits)} font-size(s) in px ({', '.join(sorted(set(hits))[:6])}). "
+                f"A reader who has asked their browser or their phone for "
+                f"larger text gets exactly none of it from a px declaration. "
+                f"rem, or a clamp() in rem.")
+        else:
+            ok(f"{fname}: every font-size scales with the reader's setting")
+
+
+def check_the_poster_moves_and_knows_when_not_to():
+    """The CSS poster is the door on every phone, and it animates from --doorT.
+
+    three.js never loads below 900px — worthTheDownload() returns false for
+    `coarse` — so the six gradient layers of .doorstage__poster ARE the door
+    for every phone reader. They animate from --doorT, which script.js has
+    always published and which they ignored until Sep 2026: at --doorT 0.6 the
+    picture was pixel-identical to --doorT 0.
+
+    Two things have to hold together, and the second is the one that bites.
+
+    The poster may only animate transform and opacity. A blur radius, a
+    background-position or a box-shadow spread driven by --doorT re-rasterizes
+    a full-screen layer every frame, which is the entire subject of
+    check_mobile_budget.
+
+    And --doorT is pinned at 1 for the whole rest of the page, so anything
+    reading it renders the hero's last frame forever. The closing scene brings
+    the doorstage back at full opacity to show the door from the far side;
+    door.js re-frames its camera for that, and the poster cannot. Left alone
+    it drew a 3.6x-scaled doorway across the closing scene with its jamb a
+    hard vertical edge at 76% of the screen. So script.js marks that beat and
+    the poster parks closed for it.
+    """
+    css = read("styles.css")
+    js = read("script.js")
+
+    # There are several .doorstage__poster rules — the base box, the token
+    # block, the animation, and two freezes. Ask whether ANY of them reads the
+    # scroll, not whether the first one does.
+    blocks = re.findall(r"\.doorstage__poster\{[^}]*\}", css)
+    if not any("--doorT" in b for b in blocks):
+        bad("styles.css: .doorstage__poster no longer reads --doorT, so the "
+            "door is a photograph again on every phone — which is every "
+            "reader who gets the poster, because three.js does not load "
+            "below 900px.")
+    else:
+        ok("the poster animates from --doorT")
+
+    # only compositor-safe properties may be driven by the scroll variable
+    for prop in ("filter", "background-position", "box-shadow", "width", "height"):
+        hit = re.search(rf"\.(?:doorstage__poster|poster__\w+)\{{[^}}]*{prop}\s*:[^;}}]*var\(--doorT",
+                        css)
+        if hit:
+            bad(f"styles.css drives {prop} from --doorT on a poster layer. That "
+                f"re-rasterizes a full-screen layer every frame on exactly the "
+                f"devices the poster exists for. Transform and opacity only.")
+    ok("the poster drives only transform and opacity from the scroll")
+
+    if 'classList.toggle("closing"' not in js:
+        bad("script.js no longer marks the closing scene. --doorT is pinned at "
+            "1 there, so the poster renders the hero's last frame: a scaled "
+            "doorway with its edges across the middle of the final beat.")
+    elif not re.search(r"html\.closing[^{]*\.doorstage__poster\{[^}]*transform\s*:\s*none", css):
+        bad("styles.css does not park the poster closed for html.closing. The "
+            "class is set and nothing reads it, which looks exactly like a "
+            "working fix and is not one.")
+    else:
+        ok("the poster parks closed for the closing scene")
+
+    if not re.search(r"@media \(prefers-reduced-motion:reduce\)\{[^@]*\.doorstage__poster\{[^}]*transform\s*:\s*none",
+                     css, flags=re.S):
+        bad("the poster no longer parks for reduced motion, so a reader who "
+            "asked for less movement gets the full pass-through")
+    else:
+        ok("the poster parks closed under reduced motion")
+
+
+def check_every_form_is_wired_up():
+    """A form nobody listens to does not fail. It succeeds, quietly, at the
+    wrong thing.
+
+    suggest.html carries form[data-form="resource"] and loads help.min.js and
+    nothing else. help.js bound form[data-form="event"] by name; the generic
+    handler lives in script.js, which is the narrative bundle and is not on
+    that page. So nothing anywhere listened, and submitting did exactly what a
+    form with no action and no method does: a GET to its own URL. The message
+    went nowhere and the sender's name and email went into the query string —
+    which means into their browser history, and into the Referer header of the
+    next link they touch. It had never worked, with JavaScript on or off, and
+    nothing said so: the page just reloaded with empty fields.
+
+    Three things have to hold, and none of them is visible by looking at the
+    page:
+
+      1. every form is bound by a script that page actually loads,
+      2. every form says method="post", so a submit that escapes the script
+         cannot put a name and an email in a URL,
+      3. every form says so when the script is not there.
+    """
+    pages = sorted(Path(".").glob("*.html"))
+    seen = 0
+    for page in pages:
+        html_src = read(page.name)
+        forms = re.findall(r'<form[^>]*\bdata-form="([^"]+)"[^>]*>', html_src)
+        if not forms:
+            continue
+        seen += 1
+
+        # 2. method="post"
+        for tag in re.findall(r"<form[^>]*\bdata-form=[^>]*>", html_src):
+            kind = re.search(r'data-form="([^"]+)"', tag).group(1)
+            if not re.search(r'\bmethod="post"', tag, re.I):
+                bad(f"{page.name}: the {kind} form has no method=\"post\". If the "
+                    f"script is missing or throws, the browser GETs the form to "
+                    f"its own URL and writes every field — including the "
+                    f"sender's name and email — into the address bar, their "
+                    f"history, and the Referer of their next click.")
+            else:
+                ok(f"{page.name}: the {kind} form cannot submit as a GET")
+
+        # 1. a script on THIS page binds it
+        scripts = re.findall(r'<script[^>]+src="([^"]+)"', html_src)
+        js = ""
+        for s in scripts:
+            f = ROOT / s.split("?")[0]
+            if f.is_file():
+                js += "\n" + f.read_text(encoding="utf-8", errors="ignore")
+        if not scripts:
+            bad(f"{page.name} carries {len(forms)} form(s) and loads no script at "
+                f"all, so nothing can be listening to them")
+            continue
+        for kind in sorted(set(forms)):
+            generic = "form[data-form]" in js
+            named = f'form[data-form="{kind}"]' in js
+            if generic or named:
+                ok(f"{page.name}: the {kind} form is bound by a script it loads")
+            else:
+                bad(f"{page.name}: nothing in {', '.join(scripts)} binds the "
+                    f"{kind} form. It is not broken in a way anybody will "
+                    f"report — it reloads the page with the fields cleared, "
+                    f"which reads as success.")
+
+        # 3. it says so without script
+        if "needs JavaScript" not in html_src:
+            bad(f"{page.name} has a form and no <noscript> telling a reader "
+                f"without script that it will not work, or what to do instead")
+        else:
+            ok(f"{page.name}: the form says so when there is no script")
+
+    if seen < 2:
+        bad(f"check_every_form_is_wired_up found forms on only {seen} page(s); "
+            f"it should see at least suggest.html and events.html, so either a "
+            f"form was removed or this guard stopped finding them")
+    else:
+        ok(f"every form on {seen} pages is bound, POSTs, and degrades")
+
+
+def check_the_phone_header_and_its_clearance_agree():
+    """Below 900px the bar does not follow the page, and the scroll-margins
+    must know it.
+
+    Two halves, in one file, that only work together. The bar stops being
+    sticky on a phone because with five tabs it is 155px at 390px and 203px at
+    320px and it does not shrink — a third of a small screen, held for the
+    whole scroll, for five links to the narrative half of the site. The
+    scroll-margins then have to come down with it: they are
+    calc(var(--head-h) + 14px) so that a jump does not park its heading behind
+    a bar that is still there, and with no bar there they open the same
+    distance of blank above every heading a reader jumps to. The defect
+    inverted, and just as invisible on a laptop.
+
+    The order is the whole trick and is why this is checked rather than
+    remembered. The overriding rule is a bare class against a bare class, so
+    it ties on specificity and source order decides. Written beside the header
+    rule near the top of the sheet it loses to .grp and .cl five hundred lines
+    below and does nothing whatsoever: measured, the jump landed its heading
+    169px down a 390px screen. It has to come after them, and a later edit
+    tidying it back up beside its comment would silently undo it.
+    """
+    css = read("help.css")
+
+    m = re.search(r"@media \(max-width:900px\)\{[^@]*?\.sitehead\{[^}]*position:static",
+                  css, flags=re.S)
+    if not m:
+        bad("help.css no longer takes the bar out of the flow below 900px. "
+            "With five tabs it is 155px at 390px and 203px at 320px, and it "
+            "does not shrink — on a 568px screen that is 36% of the viewport "
+            "held for the whole scroll.")
+    else:
+        ok("the bar stops following the page below 900px")
+
+    # the clearance that goes with it, and where it sits. Brace-matched
+    # rather than regexed to the next "}": these blocks hold rules, so the
+    # first closing brace is a rule's, not the query's, and a pattern that
+    # stops there reports "no override at all" for an override that is
+    # merely in the wrong place — which sends whoever reads it looking for
+    # the wrong bug.
+    over = None
+    for m0 in re.finditer(r"@media \(max-width:900px\)\{", css):
+        i = m0.end(); depth = 1
+        while i < len(css) and depth:
+            if css[i] == "{":
+                depth += 1
+            elif css[i] == "}":
+                depth -= 1
+            i += 1
+        if re.search(r"scroll-margin-top\s*:\s*14px", css[m0.end():i]):
+            over = m0.start()
+    if over is None:
+        bad("help.css has no below-900px scroll-margin override. With the bar "
+            "out of the flow, every scroll-margin still reserving --head-h "
+            "opens 155px of blank space above the heading a jump was aimed at.")
+        return
+
+    # every rule it has to beat must come before it
+    last_reserving = max(
+        (mm.start() for mm in
+         re.finditer(r"scroll-margin-top:\s*calc\(var\(--head-h\)", css)),
+        default=-1)
+    if last_reserving > over:
+        line_over = css[:over].count("\n") + 1
+        line_last = css[:last_reserving].count("\n") + 1
+        bad(f"help.css: the below-900px scroll-margin override is at line "
+            f"{line_over}, but a rule still reserving --head-h is at line "
+            f"{line_last}. Both are one bare class, so they tie on "
+            f"specificity and the later one wins: the override is inert and "
+            f"every jump on a phone lands its heading 155px down a blank "
+            f"screen. It has to come last in the sheet.")
+    else:
+        ok("the phone's scroll-margin override comes after every rule it overrides")
+
+    # ---- and the narrative half, which has the same arrangement and one
+    # extra way to get it wrong: Lenis does its own scrolling and never reads
+    # scroll-margin-top, so the stylesheet's half of the fix cannot reach the
+    # code path almost every visitor takes. Both have to say it.
+    nar = read("styles.css")
+    njs = read("script.js")
+
+    if not re.search(r"@media \(max-width:900px\)\{[^@]*?\.sitehead\{[^}]*position:(?:static|absolute)",
+                     nar, flags=re.S):
+        bad("styles.css lets the bar follow the narrative page on a phone "
+            "again. It is position:fixed there, 155px at 390px and 203px at "
+            "320px — 18% and 36% of the viewport, held for the whole scroll, "
+            "on the page most first-time readers land on. The directory "
+            "stopped doing this; this half has to as well.")
+    else:
+        ok("the narrative bar stops following the page below 900px")
+
+    nover = None
+    for m0 in re.finditer(r"@media \(max-width:900px\)\{", nar):
+        i = m0.end(); depth = 1
+        while i < len(nar) and depth:
+            if nar[i] == "{":
+                depth += 1
+            elif nar[i] == "}":
+                depth -= 1
+            i += 1
+        if re.search(r"main > section\{[^}]*scroll-margin-top\s*:\s*14px", nar[m0.end():i]):
+            nover = m0.start()
+    base = max((m.start() for m in
+                re.finditer(r"main > section\{[^}]*scroll-margin-top:\s*calc\(var\(--head-h\)", nar)),
+               default=-1)
+    if nover is None:
+        bad("styles.css has no below-900px override for `main > section`'s "
+            "scroll-margin. With the bar out of the flow the clearance opens "
+            "155px of blank above every heading a jump lands on.")
+    elif base > nover:
+        bad(f"styles.css: the below-900px scroll-margin override is at line "
+            f"{nar[:nover].count(chr(10)) + 1} but the rule reserving --head-h "
+            f"is at line {nar[:base].count(chr(10)) + 1}. Same selector, so the "
+            f"later one wins and the override is inert.")
+    else:
+        ok("the narrative scroll-margin override comes after the rule it overrides")
+
+    # Lenis never reads scroll-margin-top. If headClearance() does not come
+    # down on a phone, every jump on the page overshoots by the bar's height
+    # no matter what the stylesheet says.
+    fn = re.search(r"function headClearance\(\)\s*\{(.*?)\n  \}", njs, flags=re.S)
+    if not fn:
+        bad("script.js: headClearance() is gone, so the Lenis half of the "
+            "jump clearance cannot be checked")
+    elif not re.search(r"max-width:\s*900px", fn.group(1)):
+        bad("script.js: headClearance() no longer comes down below 900px. "
+            "Lenis does its own scrolling and never reads scroll-margin-top, "
+            "so the stylesheet's rule does nothing on the path almost every "
+            "visitor takes: every jump lands its heading 155px down a screen "
+            "with no bar on it.")
+    else:
+        ok("headClearance() stops reserving a bar that is not there")
 
 
 def check_a_page_without_script_does_not_trust_head_h():
@@ -6162,6 +6639,12 @@ def main():
                check_every_page_names_itself,
                check_every_resource_says_what_it_is,
                check_a_page_without_script_does_not_trust_head_h,
+               check_the_phone_header_and_its_clearance_agree,
+               check_every_form_is_wired_up,
+               check_the_poster_moves_and_knows_when_not_to,
+               check_type_scales_with_the_reader,
+               check_the_type_floor_on_the_directory,
+               check_the_shelves,
                check_a_deep_link_lands_where_it_says,
                check_a_number_dials_what_it_shows,
                check_the_data_file_keeps_its_shape,

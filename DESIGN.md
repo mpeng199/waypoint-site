@@ -808,6 +808,224 @@ Two rules that are not obvious and are load-bearing:
   center is tagged "dental" so a search for a dentist finds it. Letting that
   decide where rows file put sixteen general clinics under "Teeth".
 
+### What the phone gets, and the two decisions that were reversed for it
+
+Measured with headless Chrome at 390, 360 and 320px, against the directories
+this page is judged beside. The overview was **19.5 phone screens at 390px and
+32.5 at 320px**, with the search box 2.53 and 4.99 screens down. findhelp is
+3.5 screens with search at 0.71; Citizens Advice 4.5 at 0.0; ACCESS NYC 5.4 at
+0.16; NHS 5.8 at 0.61; 211 6.3 with its phone number at 0.42; GOV.UK 9.3 at
+0.0. Not one of them is over ten screens, and not one puts its search past the
+first screen. Four changes, all measured rather than argued:
+
+- **The bar does not follow the page below 900px.** With five tabs it is 155px
+  at 390px and 203px at 320px and it does not shrink: 18% of the viewport on a
+  modern phone, 36% on a small one, held for the whole scroll, for five links
+  to the narrative half of the site. This is the argument already made and
+  costed for the ten language pages, which is under "The ten language pages"
+  above; the only thing that kept it off the English half was that a script
+  there could *measure* the bar correctly, which was never a reason to keep
+  spending the screen. ACCESS NYC, the closest relative this site has, does not
+  make its header sticky at all. The cost is the same as it is there: the five
+  tabs are not on screen while scrolling, and the footer carries all five plus
+  a link back to the top.
+- **The scroll-margins come down with it**, or the clearance opens 155px of
+  blank above every heading a reader jumps to — the same defect upside down.
+  This is one bare class overriding another, so it ties on specificity and
+  source order decides it; written beside the header rule it lost to `.grp`
+  five hundred lines below and was completely inert, measured as a jump
+  landing its heading 169px down a 390px screen.
+  `check_the_phone_header_and_its_clearance_agree` holds both halves together
+  and fails if the override is moved back up, because nothing about it looks
+  wrong on a laptop.
+- **One preview per cluster on a phone, not three.** Three is a desktop
+  measurement: in the multi-column grid they sit beside each other and cost
+  nothing, and in one column seventeen clusters of three are 11,411px — 13.5
+  screens at 390px to reach a promise and a footer nobody was seeing. The card
+  still carries a real place with a dialable number, which is what the front
+  page is for, and "See all N places" still says how much is behind it.
+  It is `:nth-child` in the stylesheet, not a shorter list from the generator,
+  so `help.html` keeps rendering three for the desktop grid and for
+  `check_directory_clusters` to verify against the category pages.
+- **Search sits above the events carousel.** Events were put above it on the
+  grounds that they are the part of the page with a deadline; that is a
+  publisher's reason, and it was costing the one control that answers a
+  question in a single move 647px of carousel. The deadline is still the
+  carousel's argument for being above the seventeen clusters.
+
+And one plain defect the measuring found: `.find__box` was `flex:1 1 260px`,
+written for a row where 260px is a minimum *width*. Below 560px the bar turns
+on its side and the main axis becomes the block axis, so that basis became a
+minimum **height**: the search box was 260px tall around a 52px input, 208px of
+empty card around the busiest control on the directory, on every phone.
+
+The overview is now 13.3 screens at 390px and 22.5 at 320px, with search at
+1.70 and 3.53. **A category page is unchanged and is the longest thing on the
+site** — 23 screens at 390px, 39 at 320px — because its length is thirty real
+places with real descriptions and real buttons, not padding. Putting the Call
+and Open website buttons side by side was tried and measured: it saves 3–6%
+and clips "Open website" on 28 of 30 rows at 360px and below. The stacked
+buttons are right. What that page needs is fewer rows on screen at once, not
+shorter ones, and `.cat__rail` is the existing answer.
+
+### Round two: what an independent audit found that the first pass missed
+
+Two cold audits, measuring rather than reading. Both confirmed the section
+above; both found things it had not looked for. Three of them were defects
+that had nothing to do with page length.
+
+- **The forms had never worked.** `suggest.html` carries
+  `form[data-form="resource"]`, loads `help.min.js` and nothing else, and
+  `help.js` bound `form[data-form="event"]` *by name* — the generic handler is
+  in `script.js`, the narrative bundle, which that page does not load. Nothing
+  listened, so submitting did what a form with no `action` and no `method`
+  does: a GET to its own URL. The message was dropped and the sender's name
+  and email went into the query string, which is their browser history and the
+  `Referer` of their next click. `help.js` now binds the **attribute**, not one
+  of its values, so `form_type` is whatever the form says and a third form is
+  wired by existing. Every form POSTs, carries a `<noscript>` note, and ships
+  its Send button `disabled` — `<noscript>` only fires when script is *turned
+  off*, not when it fails to arrive, which on a cheap phone is the common case
+  and left a live-looking form that ate what you typed.
+  `check_every_form_is_wired_up` then found the same defect on `index.html`'s
+  two forms, which work but would have leaked the same way.
+
+- **The masthead failed AA against what is actually behind it.** Measured
+  glyph-masked — render twice, diff to find the pixels a glyph covers, compare
+  the text colour to the composited pixel — 20 of 30 runs of type failed, worst
+  the Arabic "About Waypoint" link at **2.08:1** with 100% of its glyphs below
+  AA. The light end of the veil was 42% opaque and sat exactly where the
+  photograph is brightest. The 7:1 claimed under **Color Contrast** above was
+  computed against the flat token green, which is not what is behind that
+  type; the figure was never wrong about the token and never right about the
+  page. The three stops now used are the *lightest* that clear AA everywhere.
+  `.tellus__legal` was `--ink-3` — the tertiary ink for a **light** ground — on
+  a `--green-deep` panel, 2.99:1 on the one paragraph carrying a live Privacy
+  link beside a field asking for an email.
+
+- **The narrative hero failed worse, at 1.64:1**, and could not be fixed the
+  same way: what is behind it is a live WebGL canvas that no static colour
+  describes. A `text-shadow` is the obvious reach and earns nothing, because it
+  is part of how the text is drawn and not part of the ground. `.hero__head`
+  now carries its own soft radial background, which is what the measurement
+  reads.
+
+- **The featured-events carousel showed one card of four.** At 390px the track
+  is 1189px of content in a 354px box and the next card peeks by 19px — 9px at
+  320px. It charged 647px for that. Stacked, two cards show in the same room,
+  and the block moved below the directory. `#needs` went from 3.07 screens to
+  2.24.
+
+- **The bar was still fixed on `index.html`** — the one page most first-time
+  readers land on, holding 36% of a 320px viewport for the whole scroll, while
+  the directory had stopped doing it. It is `absolute` below 900px, not
+  `static`: the bar floats *over* the door by design, and static would push a
+  strip above the artwork. `headClearance()` in `script.js` comes down with it,
+  because Lenis does its own scrolling and never reads `scroll-margin-top`.
+
+**The ordering trap, twice more.** A mobile rule written in the mid-file
+responsive block is inert if the component it overrides is declared later at
+equal specificity. It cost the scroll-margins once and the carousel once —
+`.fev__nav`, `.fev__track` and `.fev__pic` are declared four hundred lines
+below, so `.fev__c:nth-child(n+3)` (class + pseudo-class) took effect while
+every single-class rule beside it did nothing, and the result was two cards
+correctly hidden inside a track that was still scrolling sideways. Both fixes
+now sit at the end of their sheets. `check_the_phone_header_and_its_clearance_agree`
+holds the arrangement on both halves, including the Lenis half.
+
+**Still open, and both are product decisions rather than CSS.** The language
+bar is 179px at 390px and 279px at 320px — ten pills at the 44px this site
+holds to, above everything, on all 28 generated pages. Every remedy tried
+hides a language from the people who read it, which is backwards; the one
+worth building is a disclosure whose summary carries the names in their own
+scripts, and that is an `i18n.py` change across ten languages, not a
+stylesheet edit. And the category pages stay 23–29 screens because every field
+of every place is rendered inline: the `<details>` that would hold the detail
+is **already in the card and already collapsed**. Name, one line, Call, rest
+behind it is the shape every comparable directory uses, and it is the only
+thing that would move those pages.
+
+### The overnight pass: the door moves, the card halves, and type stops shrinking
+
+Two more cold audits, 22–23 Sep 2026, measuring rather than reading. One on
+the narrative half and the site type system, one on the directory. Both
+benchmarked against real sites at 390px in the same browser.
+
+**The door was a photograph on every phone, and did not have to be.**
+`worthTheDownload()` in `assets/door.js` returns false for `coarse` — every
+screen under 900px — because three.js is 750KB across two chunks to composite
+a layer `.door-gone` discards a screen later. That stays true. What was wrong
+is that `--doorT` has streamed from `script.js` on every device the whole
+time, 0→1 across the hero's 760px, and the six gradient layers of the CSS
+poster ignored it: at `--doorT` 0.6 the picture was pixel-identical to 0.
+
+The poster now reads it, for zero bytes. The push is gated to start at 0.35
+and squared, because the headline is legible until 0.69 by its own opacity
+clamp and a camera already moving under type somebody is reading is what makes
+a hero feel like it is hurrying you. The panel swings 59°, not 36°: a hinged
+panel leaves the frame less its *projected* width, cos θ of the real one, so
+at −62° it still covered 47% of the doorway and the view stayed a slot; at
+`--doorT` 0.95 it reaches −82°, covers 14%, and the opening measures 419px
+across a 390px screen. What is beyond it is `land1.webp` — what `door.js`
+binds as the texture past the opening on a desktop, already preloaded here for
+the journey background — under a haze that starts at .86 and lifts to .14.
+
+Every animated value is a transform or an opacity: no blur radius, no
+background-position, nothing `check_mobile_budget` exists to keep off a
+phone's per-frame bill. The honest cost, at 6× CPU throttle: p90 17.9→20.7ms
+and 6 frames of 113 over 32ms, against 0 before. **Two freezes are
+load-bearing** — reduced motion, and the closing scene, where `--doorT` is
+pinned at 1 and the poster otherwise drew a 3.6× doorway with its jamb across
+the middle of the final beat. `check_the_poster_moves_and_knows_when_not_to`
+holds all of it.
+
+**The card was 63% chrome.** Measured at 390px against NYC's own Food Help
+finder (145px per place), GOV.UK, NHS, ACCESS NYC, Booking and Yelp. The
+correction that mattered: *the words per screen were fine* — help-food showed
+80 to a screenful against GOV.UK's 84 — and what was wrong was 1.75 places per
+screen where every peer shows 2.8–5.9. The name is the link now and the second
+full-width button is deleted rather than rearranged; the subcategory is the
+first chip in the badge row; the description clamps to two lines with the full
+text one tap away inside `.r__more`. Card 441→351px, help-legal 28.9→23.5
+screens, card #25 from 16.1→13.5 screens down.
+
+The hit area is the name and deliberately **not** the whole card. A stretched
+`::after` measures better and is what the peers do, and it means any mis-tap
+on 300px of card sends a frightened reader to an external site.
+
+**"Single block format all the way down" was literal and it was the group
+headings.** `.grp__head` was `position:static`, and "Pantries and groceries"
+is 7,296px — 8.6 screens — of uninterrupted cards with no landmark on screen
+at any point inside it. Sticky costs no scroll at all, and works because
+`.sitehead` is static below 900px; if the bar ever follows the page again this
+has to move down by `--head-h` with it.
+
+**Type stopped ignoring the reader.** 33 font-sizes on the narrative half and
+in the shared footer were px, so they were the same pixels whatever text size
+the reader had set — 7 of 13 sampled styles measured ×1.00 when the root was
+doubled while `.say` measured ×2.00. `help.css` already had this right, 0 px
+in 131 declarations. Everything is rem now and `check_type_scales_with_the_reader`
+holds all three sheets to it. Six sizes went up on the way through, and a
+later pass raised six more that carry content: `.sos__for` — the line saying
+*which* emergency each number is for — was 13.6px.
+
+**A method correction worth keeping.** Reading the 10th-percentile glyph pixel
+for contrast is wrong and it nearly cost a day: `.btn`, dark text on a solid
+cream button, scores p10 **1.29**, because about a tenth of any glyph's box is
+antialiased edge and an edge is ~1:1 by construction. On that metric small
+text can never pass. **Use the median.** By it there were three real failures
+on `index.html`, not five, and "Work with us" measures 14.7:1 with a ground
+rather than the 3.45 that was about to be chased further.
+
+**Still open, and both are editorial rather than CSS.** `partners.html` and
+`students.html` measure 129 and 127 words a screen after spacing, against a
+target of ≤80. Space alone cannot close that without roughly doubling the
+page. The rest is a quantified cut — five paragraphs at 56, 47, 46, 35 and 34
+words to be taken to 22 each — and that is the organisation's own argument to
+the people it is asking for help, so it is theirs to approve. The language bar
+is the other one: 179px at 390px on all 28 generated pages, and every remedy
+tried hides a language from the people who read it.
+
 ### Why generated rather than fetched
 
 The reader is plausibly on a six-year-old Android, on transit data, at a

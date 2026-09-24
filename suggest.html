@@ -46,7 +46,8 @@
 <section class="tellus" id="add" aria-labelledby="tellus-h">
   <h2 id="tellus-h">Send us a program</h2>
   <p class="tellus__say">Anything you know is useful. The name and a phone number or a link is enough &mdash; we will find the rest.</p>
-  <form class="tellus__f" data-form="resource">
+  <form class="tellus__f" data-form="resource" method="post">
+<noscript><p class="noscript-note">This form needs JavaScript, which is turned off. Email <a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a> instead and we will read it the same way.</p></noscript>
     <div class="tellus__g">
       <label for="rs-org">What is the program or organization?</label>
       <input id="rs-org" name="org" type="text" required />
@@ -80,7 +81,7 @@
       <input id="rs-email" name="email" type="email" autocomplete="email" required />
     </div>
     <div class="trap" aria-hidden="true"><label for="rs-trap">Leave this empty</label><input id="rs-trap" name="trap" type="text" tabindex="-1" autocomplete="off" /></div>
-    <button type="submit" class="btn">Send it to us</button>
+    <button type="submit" class="btn" disabled>Send it to us</button>
     <p class="tellus__legal">By sending this, you agree to our <a href="privacy.html">Privacy &amp; Legal</a> notice. We use your details only to reply.</p>
     <p class="form__ok" role="status">Thank you &mdash; we have it.</p>
     <p class="form__err" role="alert">That did not send. Please email <a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a>.</p>

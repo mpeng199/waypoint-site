@@ -343,10 +343,30 @@
      narrative pages get this from script.js, which the directory does not
      load, so the twenty lines live in both places rather than making every
      directory page carry the whole of script.js for one form. */
-  var evForm = document.querySelector('form[data-form="event"]');
-  if (evForm) {
+  /* Every form on a directory page, not only the events one.
+
+     This listened for form[data-form="event"] alone. suggest.html carries
+     form[data-form="resource"] and loads help.min.js and nothing else — the
+     generic handler is in script.js, which is the narrative bundle and is not
+     on that page — so nothing anywhere listened to it. Submitting did what a
+     form with no action and no method does: a GET to its own URL. The message
+     was dropped on the floor, and the sender's name and email went into the
+     query string, which means into their browser history and into the Referer
+     header of the next link they touch. It had never worked.
+
+     Binding to the attribute rather than to one of its values is the whole
+     fix: form_type is now whatever the form says it is, so a third form is
+     wired up by existing. */
+  var forms = document.querySelectorAll("form[data-form]");
+  if (forms.length) {
     var SUBMIT_URL = "https://zzsqvztwbhdgrdvjpbrr.supabase.co/functions/v1/submit";
     var LOADED = Date.now();
+    Array.prototype.forEach.call(forms, function (evForm) {
+    /* First, before any listener: if this line never runs the button
+       stays visibly off, which is the signal. */
+    Array.prototype.forEach.call(
+      evForm.querySelectorAll('button[type="submit"][disabled]'),
+      function (btn) { btn.disabled = false; });
     evForm.addEventListener("submit", function (e) {
       e.preventDefault();
       var okEl = evForm.querySelector(".form__ok");
@@ -370,7 +390,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          form_type: "event",
+          form_type: evForm.getAttribute("data-form"),
           name: (fd.get("name") || "").toString().trim(),
           email: (fd.get("email") || "").toString().trim(),
           payload: payload,
@@ -391,7 +411,47 @@
         if (errEl) { errEl.classList.add("show"); }
       });
     });
+    });
   }
+
+  /* ---------- a horizontally scrolling shelf has to be keyboard-operable ----------
+
+     Where a category's resources are laid out as a shelf, the track scrolls
+     sideways. Tabbing already reaches every card — focusing a link in the
+     sixteenth card scrolls the track to it, measured — but a scrollable
+     region that is not focusable cannot be scrolled with the arrow keys at
+     all, which is WCAG 2.1.1, and a screen reader lands in sixteen cards
+     with nothing saying which shelf they belong to.
+
+     Applied from script and only to tracks that actually overflow, so the
+     vertical layout does not collect a tab stop it has no use for. The ten
+     translated pages ship no script and carry no resource cards, so they are
+     not involved either way. */
+  function shelves() {
+    var tracks = document.querySelectorAll(".grp .rows");
+    Array.prototype.forEach.call(tracks, function (t) {
+      var scrolls = t.scrollWidth > t.clientWidth + 2;
+      if (!scrolls) {
+        t.removeAttribute("tabindex");
+        t.removeAttribute("role");
+        t.removeAttribute("aria-label");
+        return;
+      }
+      if (t.getAttribute("tabindex") !== null) return;
+      var grp = t.closest(".grp");
+      var h = grp && grp.querySelector(".grp__head h2");
+      t.setAttribute("tabindex", "0");
+      t.setAttribute("role", "group");
+      t.setAttribute("aria-label",
+        (h ? h.textContent.trim() + " \u2014 " : "") + t.querySelectorAll(".r").length +
+        " places, scroll sideways for more");
+    });
+  }
+  shelves();
+  var shelfTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(shelfTimer); shelfTimer = setTimeout(shelves, 150);
+  }, { passive: true });
 
   var ixEl = document.getElementById("ix");
   var dir = document.getElementById("dir");
@@ -941,13 +1001,24 @@
     function rowHTML(it) {
       var a = [];
       a.push('<li class="r" data-key="' + esc(it.i) + '">');
-      a.push('<div class="r__head"><h3 class="r__name">' + esc(it.n) + "</h3>");
-      if (it.k) a.push('<p class="r__kind">' + esc(it.k) + "</p>");
-      a.push("</div>");
+      /* The same card build_help.py renders, and it has to stay the same
+         card: this one is what search results on help.html are made of, so
+         any difference here is two card designs on one site. Name is the
+         link, subcategory is the first chip in the badge row, and there is
+         no second full-width button. */
+      a.push('<div class="r__head"><h3 class="r__name">');
+      if (it.w) {
+        a.push('<a class="visit" href="' + esc(it.w) + '" target="_blank" rel="noopener">' +
+          esc(it.n) + '<span class="arr" aria-hidden="true">&#8599;</span></a>');
+      } else {
+        a.push(esc(it.n));
+      }
+      a.push("</h3></div>");
       a.push('<p class="r__what">' + esc(it.d) + "</p>");
       var flags = (it.f || "").split(" ");
       var bdg = BADGES.filter(function (b) { return flags.indexOf(b[0]) !== -1; })
         .map(function (b) { return '<span class="bdg bdg--' + b[0] + '">' + b[1] + "</span>"; });
+      if (it.k) bdg.unshift('<span class="r__kind bdg bdg--kind">' + esc(it.k) + "</span>");
       if (bdg.length) a.push('<p class="r__badges">' + bdg.join("") + "</p>");
       a.push('<div class="r__do">');
       if (it.c === "call") {
@@ -958,11 +1029,6 @@
         a.push('<a class="call call--text" href="' + esc(it.h) + '">' +
           '<svg class="ico" aria-hidden="true"><use href="#i-text"/></svg>' +
           "<span><small>Text</small>" + esc(it.p) + "</span></a>");
-      }
-      if (it.w) {
-        a.push('<a class="visit" href="' + esc(it.w) + '" target="_blank" rel="noopener">' +
-          '<span class="visit__t">Open website</span>' +
-          '<span class="arr" aria-hidden="true">&#8599;</span></a>');
       }
       a.push("</div>");
       a.push('<p class="r__where"><a href="' + esc(ix.page[it.g]) + "#r-" +

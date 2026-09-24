@@ -263,14 +263,15 @@
         <span class="ey">Sign up</span>
         <h3>Walk the first block <em>with us.</em></h3>
         <p>We will follow up with the next cohort dates. Nothing here is shared or sold, and there is no commitment yet.</p>
-        <form class="form" data-form="students">
-          <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <form class="form" data-form="students" method="post">
+          <noscript><p class="form__legal">This form needs JavaScript, which is turned off. Email <a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a> instead and we will read it the same way.</p></noscript>
+                    <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div class="field"><label for="s-name">Name</label><input id="s-name" name="name" required placeholder="Your name" /></div>
           <div class="field"><label for="s-email">Email</label><input id="s-email" type="email" name="email" required placeholder="you@email.com" /></div>
           <div class="field"><label for="s-school">School &amp; grade</label><input id="s-school" name="school" placeholder="e.g. Stuyvesant, 11th" /></div>
           <div class="field"><label for="s-lang">Languages you speak</label><input id="s-lang" name="languages" placeholder="e.g. English, Mandarin" /></div>
           <div class="field full"><label for="s-msg">Anything you want us to know</label><textarea id="s-msg" name="message" rows="3" placeholder="Optional"></textarea></div>
-          <div class="form__submit"><button type="submit" class="btn btn--solid">Send <span class="arr">→</span></button></div>
+          <div class="form__submit"><button type="submit" class="btn btn--solid" disabled>Send <span class="arr">→</span></button></div>
           <p class="form__legal">By sending this, you agree to our <a href="privacy.html">Privacy &amp; Legal</a> notice. We use your details only to reply.</p>
           <div class="form__ok">Thanks. You're on the list, and we'll reach out with the next cohort dates.</div>
           <div class="form__err">Sorry, something went wrong sending that. Please try again, or email waypointoutreach@gmail.com.</div>
@@ -313,8 +314,9 @@
         <span class="ey">Start a partnership</span>
         <h3>Send us <em>a note.</em></h3>
         <p>Materials we can distribute, a person we can route people to, a space, or twenty minutes to read our routing sheet. We will come back with something specific.</p>
-        <form class="form" data-form="partners">
-          <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <form class="form" data-form="partners" method="post">
+          <noscript><p class="form__legal">This form needs JavaScript, which is turned off. Email <a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a> instead and we will read it the same way.</p></noscript>
+                    <input class="trap" type="text" name="trap" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div class="field"><label for="p-org">Organization</label><input id="p-org" name="org" required placeholder="Organization name" /></div>
           <div class="field"><label for="p-name">Your name</label><input id="p-name" name="name" required placeholder="Contact name" /></div>
           <div class="field"><label for="p-email">Email</label><input id="p-email" type="email" name="email" required placeholder="you@org.org" /></div>
@@ -338,7 +340,7 @@
             </select>
           </div>
           <div class="field full"><label for="p-msg">What you have in mind</label><textarea id="p-msg" name="message" rows="3" placeholder="Who you serve, and what would be genuinely useful to you"></textarea></div>
-          <div class="form__submit"><button type="submit" class="btn btn--solid">Send <span class="arr">→</span></button></div>
+          <div class="form__submit"><button type="submit" class="btn btn--solid" disabled>Send <span class="arr">→</span></button></div>
           <p class="form__legal">By sending this, you agree to our <a href="privacy.html">Privacy &amp; Legal</a> notice. We use your details only to reply.</p>
           <div class="form__ok">Thanks. We'll be in touch with something specific.</div>
           <div class="form__err">Sorry, something went wrong sending that. Please try again, or email waypointoutreach@gmail.com.</div>

@@ -524,7 +524,15 @@ def render_page(doc, build_help, rows):
     A('  <h2 id="tellus-h">Know an event that is not here?</h2>')
     A('  <p class="tellus__say">If your organization runs something free and '
       'open to the public, tell us and we will add it. We read every one.</p>')
-    A('  <form class="tellus__f" data-form="event">')
+    # method="post", though the form is sent by fetch and never submits
+    # natively. That is exactly why it is here: with the script absent or
+    # broken, a GET puts every field in the query string, and these fields are
+    # a name and an email address. In the URL means in browser history and in
+    # the Referer header of the next link the sender touches. A POST that goes
+    # nowhere loses the message; a GET that goes nowhere loses the message and
+    # publishes the sender.
+    A('  <form class="tellus__f" data-form="event" method="post">')
+    A('<noscript><p class="noscript-note">This form needs JavaScript, which is turned off. Email <a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a> instead and we will read it the same way.</p></noscript>')
     A('    <div class="tellus__g">')
     A('      <label for="ev-name">Your name</label>')
     A('      <input id="ev-name" name="name" type="text" autocomplete="name" required />')
@@ -554,7 +562,13 @@ def render_page(doc, build_help, rows):
     A('    <div class="trap" aria-hidden="true"><label for="ev-trap">Leave this '
       'empty</label><input id="ev-trap" name="trap" type="text" tabindex="-1" '
       'autocomplete="off" /></div>')
-    A('    <button type="submit" class="btn">Send it to us</button>')
+    # The Send button turns on when the page's script loads. `<noscript>` only
+    # fires when script is DISABLED, not when it fails to arrive — which on a
+    # cheap phone, a data saver or a flaky network is the common case, and
+    # there the form looked live, took a message, and POSTed it into a 501. A
+    # button that is visibly off is a worse experience than one that works and
+    # a much better one than a form that eats what you typed.
+    A('    <button type="submit" class="btn" disabled>Send it to us</button>')
     A('    <p class="form__ok" role="status">Thank you &mdash; we have it.</p>')
     A('    <p class="form__err" role="alert">That did not send. Please email '
       '<a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a>.</p>')

@@ -1842,15 +1842,45 @@ def render_row(r, need_key):
              f' data-tags="{esc(tagtext(r))}"'
              f' data-find="{esc(haystack(r)[0])}"'
              f' data-cat="{esc(haystack(r)[1])}">')
+    # The NAME is the link to the website, not a second full-width button
+    # under the first one.
+    #
+    # Measured at 390px, the two stacked buttons were 122px of a 441px card to
+    # carry four words — "Call 311" and "Open website" — and across thirty
+    # places that is 3,660px, four and a bit screens of a page that has 24.
+    # Every directory this one is measured against makes the item's name its
+    # link: NYC's own Food Help finder, GOV.UK, NHS, Yelp.
+    #
+    # The hit area is the name, deliberately NOT the whole card. A stretched
+    # ::after over all 300px is what those peers do and it measures better,
+    # but it also means any mis-tap anywhere on a tall card navigates a
+    # frightened reader off to an external site. The name gets 44px of its
+    # own; Call keeps its own 56px button, because calling is the thing this
+    # page is for.
+    #
+    # class="visit" stays on the anchor: check_directory_reachable asks every
+    # row whether it has a tel:, an sms: or a class="visit", and without it
+    # all 351 rows read as unreachable.
     a.append('<div class="r__head">')
-    a.append(f'<h3 class="r__name">{esc(r["Resource Name"])}</h3>')
-    if r["Subcategory"]:
-        a.append(f'<p class="r__kind">{esc(r["Subcategory"])}</p>')
+    if r["Website"]:
+        a.append(f'<h3 class="r__name"><a class="visit" href="{esc(r["Website"])}" '
+                 f'target="_blank" rel="noopener">{esc(r["Resource Name"])}'
+                 f'<span class="arr" aria-hidden="true">&#8599;</span></a></h3>')
+    else:
+        a.append(f'<h3 class="r__name">{esc(r["Resource Name"])}</h3>')
     a.append("</div>")
     a.append(f'<p class="r__what">{esc(r["Description"])}</p>')
 
+    # The subcategory joins the badge row as its first chip rather than
+    # standing as its own 20px line of 12.8px letter-spaced uppercase. Inside
+    # "Pantries and groceries" its values are PANTRY & MEALS, SOUP KITCHEN &
+    # PANTRY, A PANTRY WHERE YOU CHOOSE YOUR OWN FOOD — under a heading that
+    # already said pantries. It keeps the r__kind class because help.js reads
+    # it for search ranking and the print sheet styles it.
     badges = [f'<span class="bdg bdg--{k}">{v}</span>'
               for k, v in BADGES if k in r["_flags"]]
+    if r["Subcategory"]:
+        badges.insert(0, f'<span class="r__kind bdg bdg--kind">{esc(r["Subcategory"])}</span>')
     if badges:
         a.append('<p class="r__badges">' + "".join(badges) + "</p>")
 
@@ -1865,10 +1895,6 @@ def render_row(r, need_key):
         a.append(f'<a class="call call--text" href="{esc(href)}">'
                  f'<svg class="ico" aria-hidden="true"><use href="#i-text"/></svg>'
                  f'<span><small>Text</small>{esc(label)}</span></a>')
-    if r["Website"]:
-        a.append(f'<a class="visit" href="{esc(r["Website"])}" target="_blank" rel="noopener">'
-                 f'<span class="visit__t">Open website</span>'
-                 f'<span class="arr" aria-hidden="true">&#8599;</span></a>')
     a.append("</div>")
 
     # details
@@ -2455,15 +2481,6 @@ def render_overview(rows):
     p += sos_frag(rows)
     A('<hr class="rule" />')
 
-    # Events, above the search bar: they are the part of this page with a
-    # deadline on it. Renders to nothing at all when data/events.json has not
-    # been fetched, so a fresh clone still builds.
-    import events as _events
-    _fev = _events.featured_frag(_events.load(), sys.modules[__name__])
-    if _fev:
-        p += _fev
-        A('<hr class="rule" />')
-
     A('<noscript><p class="noscript-note">Search needs JavaScript, which is turned '
       'off. Nothing is lost: every heading below opens a page '
       'with all of that kind of help on it, and every phone number on this page '
@@ -2481,6 +2498,8 @@ def render_overview(rows):
       'If you cannot find it, call <a href="tel:311">311</a> &mdash; they will point '
       'you somewhere, in your language, at any hour.</p>')
     A('</section>')
+
+    A('<hr class="rule" />')
 
     # ---- the clusters
     A('<div class="clusters" id="needs">')
@@ -2522,6 +2541,33 @@ def render_overview(rows):
         A('  </section></li>')
     A('  </ul>')
     A('</div>')
+
+    # Events, below the directory.
+    #
+    # They were above the search bar, on the grounds that they are the part of
+    # this page with a deadline on it. Measured, that reason did not survive
+    # contact with a phone. At 390px the carousel is a 1189px track in a 354px
+    # box — it shows ONE card, and the next one peeks by 19px (9px at 320px),
+    # so the deadline was being announced to nobody. It charged 647px for that,
+    # and pushed #needs, which is the directory and the whole job of the page,
+    # to 3.07 screens down. The first actionable link on every service
+    # directory this one is measured against sits between 209px (benefits.gov)
+    # and 1094px (findhelp): 211 at 320, getcalfresh 441, ACCESS NYC 515, NHS
+    # 896, Citizens Advice 897, GOV.UK 950.
+    #
+    # So the order is now the one they all use: who we are, the emergency
+    # numbers, the search box, the directory, and then the browse content. The
+    # deadline is real and the events are still on the page, still linked from
+    # it, and still have a page of their own with all fifty-three on it. What
+    # they no longer do is stand between somebody frightened and the list.
+    #
+    # Renders to nothing at all when data/events.json has not been fetched, so
+    # a fresh clone still builds.
+    import events as _events
+    _fev = _events.featured_frag(_events.load(), sys.modules[__name__])
+    if _fev:
+        A('<hr class="rule" />')
+        p += _fev
 
     p += vow_frag()
     A('</main>')
@@ -2903,7 +2949,15 @@ def render_suggest(rows):
     A('  <h2 id="tellus-h">Send us a program</h2>')
     A('  <p class="tellus__say">Anything you know is useful. The name and a phone '
       'number or a link is enough &mdash; we will find the rest.</p>')
-    A('  <form class="tellus__f" data-form="resource">')
+    # method="post", though the form is sent by fetch and never submits
+    # natively. That is exactly why it is here: with the script absent or
+    # broken, a GET puts every field in the query string, and these fields are
+    # a name and an email address. In the URL means in browser history and in
+    # the Referer header of the next link the sender touches. A POST that goes
+    # nowhere loses the message; a GET that goes nowhere loses the message and
+    # publishes the sender.
+    A('  <form class="tellus__f" data-form="resource" method="post">')
+    A('<noscript><p class="noscript-note">This form needs JavaScript, which is turned off. Email <a href="mailto:waypointoutreach@gmail.com">waypointoutreach@gmail.com</a> instead and we will read it the same way.</p></noscript>')
     A('    <div class="tellus__g">')
     A('      <label for="rs-org">What is the program or organization?</label>')
     A('      <input id="rs-org" name="org" type="text" required />')
@@ -2943,7 +2997,13 @@ def render_suggest(rows):
     A('    <div class="trap" aria-hidden="true"><label for="rs-trap">Leave this '
       'empty</label><input id="rs-trap" name="trap" type="text" tabindex="-1" '
       'autocomplete="off" /></div>')
-    A('    <button type="submit" class="btn">Send it to us</button>')
+    # The Send button turns on when the page's script loads. `<noscript>` only
+    # fires when script is DISABLED, not when it fails to arrive — which on a
+    # cheap phone, a data saver or a flaky network is the common case, and
+    # there the form looked live, took a message, and POSTed it into a 501. A
+    # button that is visibly off is a worse experience than one that works and
+    # a much better one than a form that eats what you typed.
+    A('    <button type="submit" class="btn" disabled>Send it to us</button>')
     A('    <p class="tellus__legal">By sending this, you agree to our '
       '<a href="privacy.html">Privacy &amp; Legal</a> notice. We use your details '
       'only to reply.</p>')

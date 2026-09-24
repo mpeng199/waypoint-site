@@ -84,6 +84,13 @@
      --head-h is the observed height where a script runs and the measured
      fallback in tokens.css where one does not. */
   function headClearance() {
+    /* Below 900px the bar is absolute: it scrolls away, so nothing is
+       overhead to clear and reserving --head-h would open 155px of blank
+       above every heading a jump lands on — the defect this function exists
+       to prevent, upside down. Lenis never reads scroll-margin-top, so the
+       stylesheet's half of this cannot reach the code path almost every
+       visitor actually takes. It has to be said twice, in both places. */
+    if (window.matchMedia("(max-width:900px)").matches) return 14;
     var h = parseFloat(getComputedStyle(document.documentElement)
       .getPropertyValue("--head-h"));
     return (h || 0) + 14;
@@ -245,6 +252,15 @@
     var heroShow = 1 - ramp(t, 0.95, 1);
     var closeShow = cT < 0 ? 0 : ramp(cT, 0.04, 0.42) * (1 - ramp(cT, 0.86, 1));
     var show = Math.max(heroShow, closeShow);
+
+    /* Which beat owns the stage. The WebGL door is told this directly
+       (api.set(cT,"out") below) and re-frames itself from the far side; the
+       CSS poster has no camera and cannot, so it has to be told in a way CSS
+       can read. Without it the poster kept rendering the hero's last frame —
+       --doorT is pinned at 1 down there — which on a phone put a 3.6x-scaled
+       doorway across the closing scene, its jamb a hard vertical edge at 76%
+       of the screen and its sill a hard horizontal one at 86%. */
+    root.classList.toggle("closing", closeShow > heroShow && cT >= 0);
 
     root.style.setProperty("--doorShow", show.toFixed(3));
     /* opacity:0 still keeps a full-screen layer — a WebGL canvas and six
@@ -554,12 +570,29 @@
   /* ---------- blur-to-focus reveals ---------- */
   var foci = $$(".focus-in");
   if ("IntersectionObserver" in window && !reduced) {
+    /* Reveal once, and never take it back.
+
+       The -22% inset on both edges made the legible band the middle 56% of
+       the screen, and the observer REMOVED .in on the way out — .focus-in
+       un-revealed is blur(16px) and opacity:0. So a paragraph parked in the
+       top or bottom fifth of the viewport was not merely un-animated, it was
+       erased. Measured at 390px across the thirteen rest positions on this
+       page: 1,085 words laid out, 831 readable. Twenty-three per cent of the
+       words on screen at rest were blurred out, and the dead zone is exactly
+       where a one-handed reader parks a paragraph after thumbing it up.
+       jeskojets, the reference for this page's pacing, hides nothing at any
+       scroll position; it paces with layout alone.
+
+       So: reveal slightly before the element's top edge arrives, and once it
+       is revealed leave it alone. data-once is now what everything does, and
+       the attribute is left on the four blocks that carry it rather than
+       swept up, because nothing reads it any more and removing it from the
+       markup would be a second diff for no gain. */
     var fo = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
-        if (e.isIntersecting) e.target.classList.add("in");
-        else if (e.target.getAttribute("data-once") === null) e.target.classList.remove("in");
+        if (e.isIntersecting) { e.target.classList.add("in"); fo.unobserve(e.target); }
       });
-    }, { rootMargin: "-22% 0px -22% 0px", threshold: 0 });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0 });
     foci.forEach(function (el) { fo.observe(el); });
   } else {
     foci.forEach(function (el) { el.classList.add("in"); });
@@ -614,6 +647,13 @@
   var PAGE_LOAD_TIME = Date.now();
 
   $$("form[data-form]").forEach(function (form) {
+    /* First, before any listener: the Send button ships disabled so that a
+       script which never arrives cannot leave a live-looking form that eats
+       what somebody typed. <noscript> only fires when script is DISABLED, not
+       when it fails to load, which on a cheap phone or a data saver is the
+       common case. If this line never runs the button stays visibly off. */
+    $$('button[type="submit"][disabled]', form)
+      .forEach(function (btn) { btn.disabled = false; });
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var ok = form.querySelector(".form__ok");

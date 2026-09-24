@@ -39,7 +39,7 @@ html.lenis,html.lenis body{ height:auto; }
 body{
   font-family:var(--sans); background:var(--green-deep); color:var(--cream);
   --focus:var(--gold-lit);   /* the whole narrative side is a dark room */
-  line-height:1.6; font-size:17px; -webkit-font-smoothing:antialiased;
+  line-height:1.6; font-size:1.0625rem; -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
 }
 
@@ -94,8 +94,24 @@ img,svg{ display:block; max-width:100%; }
 .poster__wall{ position:absolute; inset:0;
   background:radial-gradient(130% 95% at 50% 44%, #16261c 0%, #0c150f 52%, #070c09 100%); }
 /* the casing: what makes it read as a door in a wall */
+/* What is on the other side is the valley, which is what door.js binds as the
+   texture beyond the opening on a desktop — `land1.webp`, already preloaded on
+   this page for the journey background underneath, so seeing it here costs no
+   bytes at all.
+
+   It sits under a warm haze that starts at .86 and lifts to .14 as the door
+   opens, which is how a bright opening actually behaves: a slit of light that
+   resolves into a view once it is wide enough to resolve into one. At
+   --doorT:0 the haze is thick enough that this reads exactly as the blown-out
+   slit it read as before. */
 .poster__case{ position:absolute; left:var(--dx); top:var(--dy); width:var(--dw); height:var(--dh);
   transform:translate(-50%,-50%); border:2px solid rgba(128,106,71,.65); border-bottom:0; border-radius:1px;
+  --haze:calc(.86 - var(--doorT,0) * .72);
+  background-image:
+    linear-gradient(0deg, rgba(255,242,219,var(--haze)), rgba(255,242,219,var(--haze))),
+    url("assets/land1.webp");
+  background-size:cover, cover;
+  background-position:50% 50%, 50% 44%;
   box-shadow:inset 0 0 46px rgba(0,0,0,.66), inset -3px 0 14px rgba(255,214,152,.20); }
 /* the panel, hinged at the left jamb and swung toward the viewer */
 .poster__panel{ position:absolute; left:calc(var(--dx) - var(--dw) * .5); top:var(--dy);
@@ -121,6 +137,123 @@ img,svg{ display:block; max-width:100%; }
   transform:translate(-50%,-14%);
   background:radial-gradient(closest-side at 50% 30%, rgba(255,218,163,.30) 0%, rgba(231,197,126,.09) 46%, transparent 76%);
   filter:blur(30px); }
+/* ---------------------------------------------------------------------
+   THE POSTER MOVES.
+
+   three.js is 750KB across two chunks and `worthTheDownload()` in door.js
+   returns false for `coarse` — every screen under 900px. That is the right
+   call and it is not changing: a phone would download three quarters of a
+   megabyte to composite a layer that .door-gone throws away a screen later.
+
+   But the consequence was that on every phone the door was a photograph.
+   --doorT streams from script.js on every device, 0 to 1 across the hero's
+   760px of scroll, and the poster was not reading it: at --doorT 0.6 the
+   picture was pixel-identical to 0.6 seconds earlier. Only the type moved.
+
+   These four rules are the whole animation, and they cost no bytes at all.
+   Each is a transform or nothing — no blur radius, no background-position,
+   no box-shadow spread, none of the things check_mobile_budget exists to
+   keep off a phone's per-frame bill. The layer is promoted only while
+   .at-door is on, which script.js already toggles off at t=0.9.
+
+   At --doorT:0 every value below is its own identity, so the still that
+   opens the page is the same finished picture it always was. */
+
+/* The camera pushes through the opening, not through the middle of the wall:
+   the origin is the light slit, at --dx + 43% of the door's width, which is
+   where .poster__glow is. Squaring --doorT is the ease — the approach is
+   slow while somebody is still reading the headline and accelerates into the
+   hand-over. By 0.95 the opening is wider than the viewport, which is the
+   window doorFrame() already crossfades in. */
+.doorstage__poster{
+  /* The push does not start with the scroll. The headline is still legible
+     until --doorT 0.69 (its own opacity clamp), and a camera that is already
+     moving under type somebody is reading is the thing that makes a hero feel
+     like it is hurrying you. So: nothing for the first third, then square it.
+     max() rather than clamp() because the value only ever needs a floor. */
+  --push:max(0, calc((var(--doorT,0) - .35) * 1.5385));
+  transform-origin:calc(var(--dx) + var(--dw) * .43) var(--dy);
+  transform:scale(calc(1 + var(--push) * var(--push) * 2.6));
+}
+.at-door .doorstage__poster{ will-change:transform; }
+
+/* The panel swings. It is already hinged at the left jamb and already turned
+   26 degrees toward the viewer; it just never turned any further. */
+.poster__panel{
+  /* 59 degrees of travel, not 36, and the arithmetic is the reason: the
+     opening a hinged panel leaves is the frame less the panel's PROJECTED
+     width, which is cos(theta) of its real one. At -62deg the panel still
+     covers 47% of the doorway, so the view through it stayed a slot. At
+     t=0.95 this reaches -82deg, the panel is nearly edge-on and covers 14%,
+     and the opening measures 419px across a 390px screen — wider than the
+     viewport, which is the window doorFrame() hands over in. */
+  transform:translate(0,-50%) perspective(820px)
+    rotateY(calc(-26deg - var(--doorT,0) * 59deg));
+}
+
+/* And the gap the swing leaves fills with light. A real hinged door's opening
+   widens as (1 - cos t) — door.js uses exactly that for the shaft geometry —
+   and over the 64 degrees this panel travels that curve is close enough to
+   t-squared that the extra arithmetic buys nothing a reader could see. */
+.poster__glow{
+  transform:translate(-50%,-50%)
+    scaleX(calc(1 + var(--doorT,0) * var(--doorT,0) * 2.6));
+  /* The slit is the brightest thing on the page while the door is shut, and
+     it has to stop being that once the door is open, or it paints over the
+     view it was always a sliver of. --push is 0 until --doorT 0.35, so the
+     still that opens the page keeps its full hot edge. */
+  opacity:calc(1 - var(--push,0) * .88);
+}
+/* Same argument, other direction: the beam and the floor pool are light
+   thrown INTO the room, and once the camera is through the doorway there is
+   no room for it to be thrown into. */
+.poster__beam,.poster__pool{ opacity:calc(1 - var(--push,0) * .92); }
+/* These two are the only blurred layers whose opacity now moves, and an
+   animated opacity on a blurred layer re-rasterizes the blur unless the layer
+   is promoted — the same reason .stage__layer carries will-change:opacity and
+   check_mobile_budget insists on it. Measured at 6x CPU throttle the variants
+   landed between 19.6ms and 22.9ms at p90 across two runs each, which is
+   inside the run-to-run noise, so this is here because it is the right
+   declaration for what is being animated, not because a number proved it.
+   Scoped to .at-door so nothing is promoted after the hand-over. */
+.at-door .poster__beam,.at-door .poster__pool{ will-change:opacity; }
+
+/* Reduced motion gets the still it always got — the CLOSED door, not a frame
+   part-way through the opening.
+
+   The first version parked this at scale 1.41 and -38deg to match the t=0.34
+   frame door.js renders for reduced motion on a desktop. Rendered, that was a
+   mistake: half-open, off-centre, with the haze still thick enough to hide
+   the valley, it read as a washed ghost of a door rather than a door. The
+   original still was a finished picture and it is what this should be.
+
+   Under reduced motion the hero is 100svh, so its scroll span is zero, heroT
+   returns 0 and --doorT never leaves it — which already makes every rule
+   above its own identity. Pinning --push and the panel here is belt and
+   braces for the day the hero's height changes and nobody remembers this. */
+/* Two cases park the poster at the closed door, and they are the same
+   picture: reduced motion, and the closing scene.
+
+   The closing scene is the journey's last beat and it is the door seen from
+   the far side — on a desktop door.js re-frames its camera for it. The poster
+   cannot re-frame, and --doorT is pinned at 1 by then, so left alone it
+   renders the hero's final frame: a 3.6x doorway whose edges fall across the
+   middle of the scene. Closed is the right answer for both, and it is the
+   picture the page opened on. */
+:is(html.closing) .doorstage__poster{ --push:0; transform:none; will-change:auto; }
+:is(html.closing) .poster__panel{ transform:translate(0,-50%) perspective(820px) rotateY(-26deg); }
+:is(html.closing) .poster__glow{ transform:translate(-50%,-50%); opacity:1; }
+:is(html.closing) .poster__beam,:is(html.closing) .poster__pool{ opacity:1; will-change:auto; }
+:is(html.closing) .poster__case{ --haze:.86; }
+
+@media (prefers-reduced-motion:reduce){
+  .doorstage__poster{ --push:0; transform:none; will-change:auto; }
+  .poster__panel{ transform:translate(0,-50%) perspective(820px) rotateY(-26deg); }
+  .poster__glow{ transform:translate(-50%,-50%); opacity:1; }
+  .poster__beam,.poster__pool{ opacity:1; will-change:auto; }
+  .poster__case{ --haze:.86; }
+}
+
 #doorCanvas{ position:absolute; inset:0; width:100%; height:100%; display:block;
   opacity:0; transition:opacity .5s var(--ease-out); }
 .doorstage--on #doorCanvas{ opacity:1; }
@@ -150,7 +283,7 @@ img,svg{ display:block; max-width:100%; }
 .skip{ position:absolute; width:1px; height:1px; overflow:hidden;
   clip-path:inset(50%); white-space:nowrap; z-index:200;
   background:var(--cream); color:var(--green-deep);
-  padding:12px 18px; border-radius:0 0 6px 0; font-weight:600; font-size:14px; }
+  padding:12px 18px; border-radius:0 0 6px 0; font-weight:600; font-size:.875rem; }
 .skip:focus{ position:fixed; inset-block-start:0; inset-inline-start:0;
   width:auto; height:auto; overflow:visible; clip-path:none; }
 
@@ -190,7 +323,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 
 
 /* ---------- buttons (slim, not pills) ---------- */
-.btn{ display:inline-flex; align-items:center; gap:10px; font-family:var(--sans); font-weight:600; font-size:14.5px;
+.btn{ display:inline-flex; align-items:center; gap:10px; font-family:var(--sans); font-weight:600; font-size:.9375rem;
   padding:13px 24px; border-radius:3px; border:1px solid rgba(252,254,247,.45); color:var(--cream); background:rgba(252,254,247,.04);
   cursor:pointer; transition:background .3s var(--ease), border-color .3s, color .3s, transform .3s var(--ease); }
 .btn .arr{ transition:transform .3s var(--ease); }
@@ -198,7 +331,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .btn:hover .arr{ transform:translateX(4px); }
 .btn--solid{ background:var(--cream); color:var(--green); border-color:var(--cream); }
 .btn--solid:hover{ background:var(--gold); border-color:var(--gold); color:var(--green-deep); }
-.tlink{ display:inline-flex; align-items:center; gap:9px; font-weight:600; font-size:15px; color:var(--cream);
+.tlink{ display:inline-flex; align-items:center; gap:9px; font-weight:600; font-size:.9375rem; color:var(--cream);
   border-bottom:1px solid rgba(252,254,247,.5); padding-bottom:4px; transition:gap .25s var(--ease), border-color .25s; }
 .tlink .arr{ transition:transform .3s var(--ease); }
 .tlink:hover{ gap:13px; border-color:var(--gold); }
@@ -280,10 +413,10 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .scene--center .scene__cta{ justify-content:center; }
 
 /* opening scene flourishes */
-.eyebrow{ font-size:12.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--ink-faint);
+.eyebrow{ font-size:.8125rem; letter-spacing:.24em; text-transform:uppercase; color:var(--ink-faint);
   margin-bottom:24px; display:inline-block; }
 .scrollcue{ position:absolute; bottom:5vh; left:50%; transform:translateX(-50%); z-index:3;
-  font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); display:flex; flex-direction:column; align-items:center; gap:10px; }
+  font-size:.6875rem; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); display:flex; flex-direction:column; align-items:center; gap:10px; }
 .scrollcue i{ width:1px; height:46px; background:linear-gradient(var(--cream), transparent); position:relative; overflow:hidden; }
 .scrollcue i::after{ content:""; position:absolute; inset:0; top:-100%; background:var(--gold); animation:cue 2s var(--ease) infinite; }
 @keyframes cue{ to{ top:100%; } }
@@ -311,7 +444,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   background:rgba(19,35,26,.32); backdrop-filter:blur(6px); transition:background .35s var(--ease), border-color .35s, transform .35s var(--ease); }
 .door:hover{ background:rgba(19,35,26,.5); border-color:var(--gold); transform:translateY(-5px); }
 .door h3{ font-family:var(--display); font-weight:500; font-size:1.4rem; margin-bottom:8px; }
-.door p{ font-size:14px; color:var(--ink-soft); margin-bottom:18px; }
+.door p{ font-size:.875rem; color:var(--ink-soft); margin-bottom:18px; }
 @media (max-width:760px){ .doors{ grid-template-columns:1fr; } }
 
 /* ============================================================
@@ -341,7 +474,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .phero__bg{ position:absolute; inset:0; background-size:cover; background-position:center; z-index:0; }
 .phero__bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(12,22,16,.35), rgba(19,35,26,.6) 60%, var(--green-deep)); }
 .phero__in{ position:relative; z-index:2; max-width:var(--container); margin-inline:auto; width:100%; }
-.phero__crumb{ font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:22px; display:flex; gap:10px; align-items:center; }
+.phero__crumb{ font-size:.75rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:22px; display:flex; gap:10px; align-items:center; }
 /* a 19px breadcrumb link is not a tap target; the glyph stays put and the
    area around it grows */
 .phero__crumb a{ position:relative; }
@@ -353,7 +486,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .phero__cta{ margin-top:30px; display:flex; gap:13px; flex-wrap:wrap; }
 
 .psec{ max-width:var(--container); margin-inline:auto; padding:clamp(48px,6vw,90px) var(--pad); }
-.ey{ font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); }
+.ey{ font-size:.75rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); }
 .flow{ display:grid; gap:0; margin-top:34px; }
 .flow__item{ display:grid; grid-template-columns:auto 1fr; gap:clamp(20px,4vw,52px); padding:clamp(26px,3vw,40px) 0; border-top:1px solid rgba(252,254,247,.14); align-items:start; }
 .flow__item:last-child{ border-bottom:1px solid rgba(252,254,247,.14); }
@@ -363,14 +496,14 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .facts{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(20px,3vw,40px); margin-top:34px; }
 .fact{ border-top:1px solid rgba(252,254,247,.3); padding-top:16px; }
 .fact .n{ font-family:var(--display); font-weight:400; font-size:clamp(1.7rem,3vw,2.4rem); color:var(--gold); }
-.fact p{ margin-top:10px; font-size:14px; color:var(--ink-soft); }
+.fact p{ margin-top:10px; font-size:1rem; color:var(--ink-soft); }
 
 .cta-band{ border:1px solid rgba(252,254,247,.16); border-radius:14px; padding:clamp(36px,5vw,68px); background:var(--green); position:relative; overflow:hidden; }
 .form{ display:grid; grid-template-columns:repeat(12,1fr); gap:18px; margin-top:30px; }
 .field{ grid-column:span 6; display:flex; flex-direction:column; gap:8px; }
 .field.full{ grid-column:span 12; }
-.field label{ font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); }
-.field input,.field select,.field textarea{ font-family:var(--sans); font-size:16px; color:var(--cream); background:rgba(252,254,247,.05);
+.field label{ font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); }
+.field input,.field select,.field textarea{ font-family:var(--sans); font-size:1rem; color:var(--cream); background:rgba(252,254,247,.05);
   border:1px solid rgba(252,254,247,.2); border-radius:8px; padding:13px 15px; transition:border-color .25s, background .25s, box-shadow .25s; }
 .field input::placeholder,.field textarea::placeholder{ color:var(--ink-faint); }
 .field input:focus,.field select:focus,.field textarea:focus{ outline:none; border-color:var(--gold); background:rgba(252,254,247,.08); box-shadow:0 0 0 3px rgba(231,197,126,.14); }
@@ -381,12 +514,12 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 }
 .field select{ appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A6C39A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 13px center; background-size:18px; }
 .form__submit{ grid-column:1/13; display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:6px; }
-.form__note{ font-size:13px; color:var(--ink-faint); }
-.form__legal{ grid-column:1/13; margin-top:2px; font-size:12.5px; color:var(--ink-faint); }
+.form__note{ font-size:.8125rem; color:var(--ink-faint); }
+.form__legal{ grid-column:1/13; margin-top:2px; font-size:.8125rem; color:var(--ink-faint); }
 .form__legal a{ color:var(--gold); border-bottom:1px solid rgba(231,197,126,.5); }
-.form__ok{ grid-column:1/13; display:none; padding:18px 20px; border:1px solid var(--gold); border-radius:8px; background:rgba(231,197,126,.1); color:var(--cream); font-size:15px; }
+.form__ok{ grid-column:1/13; display:none; padding:18px 20px; border:1px solid var(--gold); border-radius:8px; background:rgba(231,197,126,.1); color:var(--cream); font-size:.9375rem; }
 .form__ok.show{ display:block; }
-.form__err{ grid-column:1/13; display:none; padding:14px 18px; border:1px solid rgba(224,134,88,.55); border-radius:8px; background:rgba(224,134,88,.12); color:#f6e3d7; font-size:14px; }
+.form__err{ grid-column:1/13; display:none; padding:14px 18px; border:1px solid rgba(224,134,88,.55); border-radius:8px; background:rgba(224,134,88,.12); color:#f6e3d7; font-size:.875rem; }
 .form__err.show{ display:block; }
 /* The spam honeypot. Clipped rather than parked at -9999px for the same
    reason the skip link is: a physical offset is off the end of the
@@ -405,7 +538,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .legal li{ position:relative; padding-left:22px; color:var(--ink-soft); }
 .legal li::before{ content:""; position:absolute; left:0; top:11px; width:7px; height:7px; background:var(--gold); transform:rotate(45deg); }
 .legal a.inl{ color:var(--gold); border-bottom:1px solid rgba(231,197,126,.5); }
-.legal__date{ margin-top:36px; padding-top:20px; border-top:1px solid rgba(252,254,247,.14); font-size:13px; color:var(--ink-faint); }
+.legal__date{ margin-top:36px; padding-top:20px; border-top:1px solid rgba(252,254,247,.14); font-size:.8125rem; color:var(--ink-faint); }
 
 /* ============================================================
    THE ROLE PAGE (students.html)
@@ -446,7 +579,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .role__head h2{ font-family:var(--display); font-weight:500; line-height:1.08;
   font-size:clamp(1.45rem,2.5vw,2rem); letter-spacing:-.015em; }
 .role__head .k{ display:block; font-family:var(--sans); font-weight:600;
-  font-size:11px; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  font-size:.6875rem; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
   color:var(--gold); margin-bottom:11px; }
 .role__body > p{ color:var(--ink-soft); max-width:64ch; margin-bottom:14px; }
 .role__body > p:last-child{ margin-bottom:0; }
@@ -496,7 +629,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
    the layout says so. Read down one column, or listened to, it does not — so
    the framing stays in the text rather than in the grid. */
 .swap .cue{ display:block; font-family:var(--sans); font-weight:600; font-style:normal;
-  font-size:10.5px; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  font-size:.6562rem; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
   color:var(--ink-faint); margin-bottom:7px; }
 
 /* the statement, at full width between two gold rules. It is the one thing
@@ -507,11 +640,11 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .creed p{ font-family:var(--display); font-weight:400; line-height:1.38;
   font-size:clamp(1.18rem,2.4vw,2.05rem); color:var(--cream); }
 .creed .k{ display:block; font-family:var(--sans); font-weight:600;
-  font-size:11px; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
+  font-size:.6875rem; letter-spacing:var(--track-eyebrow); text-transform:uppercase;
   color:var(--gold); margin-bottom:16px; }
 /* the note about the statement is not part of the statement, and .creed p
    would otherwise set it in the same display face at the same size */
-.creed p.creed__why{ font-family:var(--sans); font-size:14px; line-height:1.6;
+.creed p.creed__why{ font-family:var(--sans); font-size:1rem; line-height:1.6;
   color:var(--ink-faint); max-width:60ch; margin-bottom:22px; }
 
 /* the close: the ask on one side, the door on the other */
@@ -545,7 +678,28 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   filter:blur(calc(var(--doorT,0) * 16px));
   will-change:opacity,transform,filter; }
 .hero__eye{ grid-area:1/1/2/3; margin:0; }
-.hero__head{ grid-area:2/1/3/3; margin:0; font-weight:400; display:grid;
+/* A scrim, because the door's light shaft is brighter than the type on it.
+
+   Measured glyph-masked at 390px — render twice, diff to find the pixels a
+   glyph actually covers, compare the text colour to the pixel composited
+   behind it — the gold italic ran at 1.64:1 and 1.90:1 against the 3.0 that
+   large text needs, a quarter of its glyphs below AA, exactly where the line
+   crosses the beam. The white line was 2.67:1. Nothing in this stylesheet
+   said so, because what it is failing against is a live WebGL canvas and no
+   static colour value describes it.
+
+   A text-shadow is the obvious reach and the wrong instrument: it is part of
+   how the text is drawn, not part of the ground behind it, so it earns
+   nothing under the only measurement that matters. A background on the
+   element paints behind that element's own glyphs, which is exactly what is
+   being measured, and this one fades to nothing well inside its own box, so
+   it reads as the depth the door already has rather than as a panel.
+
+   .55 is the LIGHTEST of three tested that clears AA: the worst run of type
+   goes from 1.64:1 to 4.08:1. The beam is still the brightest thing here. */
+.hero__head{ background:radial-gradient(75% 150% at 50% 50%,
+    rgba(8,15,11,.55) 0%, rgba(8,15,11,.4) 52%, rgba(8,15,11,0) 78%);
+  grid-area:2/1/3/3; margin:0; font-weight:400; display:grid;
   grid-template-columns:1fr 1fr; grid-template-rows:auto auto; align-content:space-between; }
 .hero__l,.hero__r{ display:block; font-family:var(--display); font-weight:400; letter-spacing:-.032em;
   line-height:.95; font-size:clamp(2.5rem,6.4vw,6rem); text-shadow:0 2px 50px rgba(6,12,9,.8); }
@@ -557,7 +711,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   text-shadow:0 1px 26px rgba(6,12,9,.85); }
 .hero__cta{ margin-top:22px; display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
 .hero__cue{ grid-area:3/2/4/3; align-self:end; justify-self:end; display:flex; align-items:center; gap:14px;
-  font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
+  font-size:.6875rem; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
 .hero__cue i{ width:clamp(40px,7vw,74px); height:1px; background:rgba(252,254,247,.26); position:relative; overflow:hidden; }
 .hero__cue i::after{ content:""; position:absolute; top:0; bottom:0; left:-100%; width:100%; background:var(--gold); animation:cue-x 2.4s var(--ease) infinite; }
 @keyframes cue-x{ to{ left:100%; } }
@@ -604,7 +758,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
    no script ever runs. */
 .vow__more{ margin-top:26px; }
 .vow__more > summary{ display:inline-flex; align-items:center; gap:9px; cursor:pointer;
-  font-family:var(--sans); font-size:13px; letter-spacing:.02em; color:var(--ink-soft);
+  font-family:var(--sans); font-size:.875rem; letter-spacing:.02em; color:var(--ink-soft);
   padding:7px 2px; list-style:none; transition:color .3s var(--ease); }
 .vow__more > summary::-webkit-details-marker{ display:none; }   /* Safari's triangle */
 .vow__more > summary::after{ content:""; width:7px; height:7px; flex:none;
@@ -616,7 +770,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 /* the verbatim statement reads as the document it is: sans, plain, unstyled */
 .vow__full{ max-width:66ch; margin-inline:auto; font-size:clamp(.98rem,1.2vw,1.08rem);
   line-height:1.68; color:var(--ink-soft); text-shadow:0 1px 20px rgba(6,12,9,.8); }
-.vow__src{ margin-top:16px; font-size:12.5px; letter-spacing:.02em; color:var(--ink-faint); }
+.vow__src{ margin-top:16px; font-size:.7812rem; letter-spacing:.02em; color:var(--ink-faint); }
 
 
 /* ============================================================
@@ -749,7 +903,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   /* a 60-character kicker set in tracked uppercase micro-type wrapped to three
      lines at 360px. Tightened so it holds two, and dropped entirely when the
      screen is too short to afford them. */
-  .hero__eye{ grid-area:1/1/2/2; font-size:11.5px; letter-spacing:.15em; margin-bottom:0; }
+  .hero__eye{ grid-area:1/1/2/2; font-size:.7188rem; letter-spacing:.15em; margin-bottom:0; }
   /* the gap is free: this row is 1fr and its content is centered inside it, so
      the space comes out of the row's own slack and never off the page. At the
      13px it started from, the two halves were a line apart in a headline whose
@@ -985,13 +1139,131 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
    page, or reach the directory first, to find a way in. Each one lands on the
    matching in-language panel of help.html, which opens on :target and needs
    no JavaScript to do it. */
-.langcue-h{ margin-top:30px; font-size:12.5px; letter-spacing:.2em;
+.langcue-h{ margin-top:30px; font-size:.7812rem; letter-spacing:.2em;
   text-transform:uppercase; color:var(--ink-faint); }
 .langcue{ list-style:none; margin:12px 0 0; padding:0;
   display:flex; flex-wrap:wrap; gap:8px; }
 .langcue a{ display:inline-flex; align-items:center; min-height:44px;
-  padding:8px 15px; border-radius:100px; font-size:15px; font-weight:500;
+  padding:8px 15px; border-radius:100px; font-size:.9375rem; font-weight:500;
   color:var(--cream); border:1px solid rgba(252,254,247,.28);
   transition:border-color .25s var(--ease), background .25s var(--ease); }
 .langcue a:hover, .langcue a:focus-visible{ border-color:var(--gold);
   background:rgba(231,197,126,.14); }
+
+/* The bar stops following this half too, below 900px — and like the
+   directory's, the clearance has to come down with it or the fix is half a
+   fix. Last in the sheet for the same reason: `main > section` is declared at
+   line 232 and one bare selector cannot beat another one that comes later.
+
+   The directory got this and the narrative page did not, which left the site's
+   own front door holding 155px at 390px and 203px at 320px — 18% and 36% of
+   the viewport — for the whole scroll, which is exactly the thing DESIGN.md
+   argues against and exactly the page most first-time readers land on.
+
+   `absolute`, not `static`. The bar is `fixed; inset:0 0 auto 0` because it
+   floats OVER the door rather than sitting above it, and the door is a
+   full-bleed WebGL scene that the composition puts type into. Static would
+   push a solid strip above the scene and change the first thing anybody sees.
+   Absolute keeps it exactly where it is at rest and lets it scroll away. */
+@media (max-width:900px){
+  .sitehead{ position:absolute; }
+  main > section{ scroll-margin-top:14px; }
+}
+
+/* On a phone the reveal keeps its rise and its fade and loses its blur.
+
+   A 16px blur on 26 blocks is real per-frame work on the device least able to
+   spend it — the same argument check_mobile_budget makes about .hero__ui —
+   and on a 390px screen the blur reads as smeared rather than as depth,
+   because the type is a third of the size it is on the desk this effect was
+   designed at. The rise and the fade carry the beat on their own.
+
+   Last in the sheet: .focus-in is declared at line 342 and this is one bare
+   class against another. */
+@media (max-width:900px){
+  .focus-in{ filter:none; transform:translateY(18px); }
+  .focus-in.in{ transform:none; }
+}
+
+/* Type on a painting needs a ground, and on a phone it does not have one.
+
+   Glyph-masked against the pixel actually composited behind each glyph — the
+   only measurement that means anything when the backdrop is land1..4.webp
+   rather than a declared colour — five runs of type on index.html were below
+   AA at 390px. The two worst are the page's own argument: .say at 2.71:1
+   ("A hospital bill you cannot pay...") and the phrase it sits under,
+   "Nobody is told.", at 1.87:1.
+
+   .42 is the LIGHTEST of three tested that clears four of the five, and it
+   fades to nothing at 88% of the block so it reads as the haze the painted
+   stages already have rather than as a panel behind the words. A text-shadow
+   would have been the easy reach and earns nothing here: it is part of how
+   the text is drawn, not part of the ground, and the measurement correctly
+   ignores it.
+
+   Phones only. At desk widths the same type sits over more of the painting's
+   dark upper half and measures clean. */
+@media (max-width:900px){
+  /* The padding is what makes this a haze rather than a panel. A radial whose
+     transparent stop sits at 88% of a box that is three times taller than it
+     is wide never reaches transparent before the box ends, so the first
+     version drew a visibly hard-edged rectangle across the painting. Padding
+     the block and pulling the same amount back off the margin leaves the
+     layout exactly where it was and gives the gradient somewhere to finish. */
+  .scene__inner{
+    padding:clamp(20px,5.5vw,34px);
+    margin:calc(-1 * clamp(20px,5.5vw,34px));
+    background:radial-gradient(78% 56% at 45% 50%,
+      rgba(8,15,11,.52) 0%, rgba(8,15,11,.34) 46%, rgba(8,15,11,0) 76%);
+  }
+  /* The one the scrim cannot reach: .tlink sits at the bottom edge of the
+     block where the radial has already faded out, and it measured 1.29:1 —
+     the worst run of type on the page, on the link out of the final scene.
+     It is a pill beside a solid button, so it can have a ground of its own. */
+  .tlink{ background:rgba(8,15,11,.62); }
+}
+
+/* partners.html and students.html get the rhythm the front page already has.
+
+   Measured at 390px: partners 145 readable words to a screen, students 122,
+   against index.html's 71, gov.uk's 64 and jeskojets' 42. Every benchmark
+   except basecamp's median is lower than both, and basecamp is a marketing
+   page rather than a page somebody reads before deciding to trust you with a
+   referral. 780 of partners' 822 words sit in ONE .psec spanning 5.3 screens,
+   and its text covers 98-100% of the viewport on each of its first five.
+
+   The sections are already there — eight h2s inside that one block — they
+   just had no room around them. This is space, not an edit: the copy is the
+   organisation's own argument to the people it is asking for help, and
+   thinning it is their call to make, not a stylesheet's. What a stylesheet
+   can do is stop four of those sections sharing a screen.
+
+   What that buys, measured: the spread between the sparsest and densest
+   screen is the thing every craft-led site has and this page did not —
+   jeskojets 234, stripe 196, linear 162, index.html 124, partners 88. */
+@media (max-width:900px){
+  /* .legal, not .psec: the eight headings are children of the .legal block
+     inside the section, so `.psec > h2` matched nothing at all and measured
+     as no change — which is what a selector that is wrong looks like from the
+     outside, and why this was measured rather than assumed. */
+  .psec .legal > h2{ margin-top:clamp(64px,22svh,190px); }
+  .psec .legal > h2:first-of-type{ margin-top:clamp(40px,10svh,90px); }
+  .psec .legal > h2 + p{ margin-top:18px; }
+  /* And between the paragraphs themselves. Three of them to a section, at
+     25-55 words each, still stack into one block however much room the
+     heading above them gets. */
+  .psec .legal > p + p{ margin-top:clamp(20px,4.5svh,42px); }
+
+  /* students.html is built from .role__row sections rather than one .legal
+     block, so it needs the same argument made against its own structure:
+     five rows, each two or three paragraphs, at 141 words to a screen. */
+  .role__row{ padding-block:clamp(38px,12svh,96px); }
+  .role__body > p{ margin-bottom:clamp(16px,3.5svh,34px); }
+  .flow__item{ padding-block:clamp(26px,7svh,56px); }
+
+  /* The measure, which the audit found was the one thing NOT wrong — median
+     39-40 characters a line across all three pages, better than jeskojets at
+     47 and linear at 49. The only ones over are these, at 54-64ch, and they
+     are over because their max-width was written for a desk. */
+  .role__body > p,.flow__item p,.phero__lede,.psec .legal > p{ max-width:38ch; }
+}

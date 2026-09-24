@@ -155,6 +155,35 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   body[data-lang] .sitehead{ --head-bg:transparent; --head-line:transparent; }
 }
 
+/* And below 900px, nothing follows the reader — not on the ten language pages,
+   not here.
+
+   The language pages stopped being sticky because they ship no script, so
+   --head-h stayed at its guess and the bar covered the heading every jump
+   landed on. That was the bug. This is the cost, which is separate and was
+   never about measurement: with five tabs the bar is 155px at 390px and 203px
+   at 320px, and it does not shrink. On a 568px screen that is 36% of the
+   viewport, held for the whole scroll, so that five links to the narrative
+   half of the site are permanently on screen for somebody looking for a food
+   pantry. Measured against the directories this page is judged beside —
+   findhelp, ACCESS NYC, Citizens Advice, 211, NHS, GOV.UK — not one carries a
+   sticky bar anywhere near that tall on a phone, and ACCESS NYC, the closest
+   relative of all, does not make its header sticky at all.
+
+   What it costs is stated in DESIGN.md for the language pages and is the same
+   here: while scrolling, the five tabs are not on screen. The footer carries
+   the same five destinations plus a link back to the top, and the skip link
+   still reaches the directory. Above 900px the bar is a row or two on a wide
+   screen, where it costs a fraction of the viewport, and it still follows.
+
+   The scroll-margins go with it. They exist only to keep a heading out from
+   behind a bar that is still there on arrival; left at --head-h with nothing
+   overhead they open 155px of blank space above every heading a reader jumps
+   to, which is the same defect upside down. */
+@media (max-width:900px){
+  .sitehead{ position:static; }
+}
+
 /* ------------------------------------------------------------- language */
 /* First thing under the header, because somebody who cannot read the page
    should not have to read the page to find their way off it. */
@@ -216,10 +245,25 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 /* Two veils, not one. The linear keeps the type legible over whatever the
    photograph is doing at that width; the radial keeps the light coming from
    the same place it comes from on the door. */
+/* The light end of the linear veil was 42% opaque, and 42% is not a veil.
+   It sat exactly where the photograph is brightest and where .mast__to sits,
+   and the type on top of it was measured — glyph-masked, against the pixel
+   actually composited behind each glyph, not against the flat token green —
+   at 2.08:1 on the Arabic page's "About Waypoint" link, with 100% of its
+   glyphs below AA. Twenty of thirty measured runs of text across English,
+   Spanish, Arabic and a category page failed, the eyebrow and that link
+   worst. DESIGN.md claimed 7:1 for interactive elements; that figure was
+   computed against --green-deep, which is not what is behind them.
+
+   These three stops are the LIGHTEST that clear AA everywhere, searched
+   rather than picked: worst element now 5.25:1 against a 4.5 requirement.
+   The photograph is still a photograph. The third stop also stops being a
+   different green (19,53,40) from the first two — at 78% opacity the hue
+   shift read as a smudge rather than as light. */
 .mast__bg::after{ content:""; position:absolute; inset:0;
   background:
-    radial-gradient(120% 150% at 78% 12%, rgba(231,197,126,.20) 0%, transparent 58%),
-    linear-gradient(100deg, rgba(12,22,16,.88) 0%, rgba(12,22,16,.72) 44%, rgba(19,53,40,.42) 100%); }
+    radial-gradient(120% 150% at 78% 12%, rgba(231,197,126,.10) 0%, transparent 58%),
+    linear-gradient(100deg, rgba(12,22,16,.88) 0%, rgba(12,22,16,.80) 44%, rgba(12,22,16,.78) 100%); }
 .mast__eye{ display:block; font-size:.72rem; color:rgba(231,197,126,.92);
   margin-bottom:clamp(14px,2vw,22px); }
 .mast h1{ font-size:clamp(2.1rem,1.35rem + 3.3vw,3.8rem); letter-spacing:-.025em;
@@ -438,7 +482,16 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
      page and hung 144px off the side at 320px with text at 200%. Both
      containers wrap by default at wider widths, so both have to say it. */
   .find__top{ flex-direction:column; flex-wrap:nowrap; }
-  .find__box{ max-width:none; }
+  /* flex:1 1 260px was written for a row, where 260px is the box's width and
+     the input inside sets its height. Turning the bar on its side turns that
+     basis on its side too: main-axis becomes the block axis, and the 260px
+     that used to be a sensible minimum width became a 260px minimum HEIGHT
+     around a 52px input. Measured at 390px the search box was 260px tall with
+     208px of nothing in it — a fifth of a screen of blank card wrapped round
+     the one control that answers a question in a single move, on every phone
+     on the site. The basis only ever meant "do not get narrower than this",
+     and in a column nothing needs to say that. */
+  .find__box{ max-width:none; flex:0 0 auto; }
   .find__filters{ flex-direction:column; flex-wrap:nowrap; align-items:stretch;
     border-inline-start:0; border-block-start:1px solid var(--line-2); }
   .facet{ position:static; display:block; }
@@ -778,24 +831,57 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    the page, past the edge of the screen. Invisible at 100% text on a laptop;
    at 200% text on a 320px phone it put the page into horizontal scroll, which
    is exactly the reader this page exists for. */
+/* 16px and 10px, not 20 and 12. Measured at 390px, padding plus the five
+   gaps between the card's parts came to 100px of a 441px card — 23% of it,
+   carrying nothing — and across thirty places that is 3,000px. 16 still
+   clears the 12px minimum the rest of this sheet works to. */
 .r{ background:var(--surface); border:1.5px solid var(--line);
-  border-radius:var(--r); padding:20px; display:flex; flex-direction:column;
-  gap:12px; scroll-margin-top:calc(var(--head-h) + 14px); min-width:0; }
-.r__name{ font-size:1.22rem; line-height:1.2; }
-.r__kind{ font-size:.8rem; font-weight:600; letter-spacing:.05em;
-  text-transform:uppercase; color:var(--ink-3); margin-top:5px; }
+  border-radius:var(--r); padding:16px; display:flex; flex-direction:column;
+  gap:10px; scroll-margin-top:calc(var(--head-h) + 14px); min-width:0; }
+.r__name{ font-size:1.22rem; line-height:1.25; }
+/* The name is the link now, so it needs a thumb's worth of height on its own.
+   Not a stretched ::after over the whole card: that measures better and means
+   any mis-tap on 300px of card navigates somebody off to an external site.
+   inline-flex keeps the arrow on the last line rather than orphaning it. */
+.r__name .visit{ display:inline-flex; align-items:center; gap:6px;
+  min-height:44px; border:0; padding:0; background:none; font:inherit;
+  color:var(--ink); text-decoration:none;
+  text-decoration-line:underline; text-decoration-color:transparent;
+  text-underline-offset:3px; text-decoration-thickness:1.5px;
+  transition:text-decoration-color .16s var(--ease), color .16s var(--ease); }
+.r__name .visit:hover{ color:var(--green-2); text-decoration-color:var(--gold-deep); }
+.r__name .visit .arr{ color:var(--gold-deep); flex:none; }
+/* The subcategory is a chip in the badge row, not its own line of 12.8px
+   letter-spaced uppercase under a heading that usually already said it. */
+.r__kind{ font-size:.8rem; font-weight:600; letter-spacing:0;
+  text-transform:none; color:var(--ink-2); margin-top:0; }
+.bdg--kind{ background:var(--line-2); color:var(--ink-2); }
 /* A measure, because a card is no longer always a column of a grid: the
    group that holds one place now takes the whole page, and its description
    was setting 140 characters to the line. */
-.r__what{ color:var(--ink-2); font-size:.97rem; line-height:1.5; max-width:72ch; }
+/* Two lines. Measured across help-food's thirty descriptions the line counts
+   were {2:1, 3:17, 4:6, 5:5, 6:1} — a median of three and a tail of six. The
+   full text is already inside .r__more, so the clamp hides nothing that is
+   not one tap away. .97rem goes to 1rem at the same time: the clamp should
+   not also be a reason the type got smaller, and 15.5px was under the floor
+   this sheet's own body rule argues for. */
+.r__what{ color:var(--ink-2); font-size:1rem; line-height:1.5; max-width:72ch;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden; }
 .r__badges{ display:flex; flex-wrap:wrap; gap:6px; }
-.bdg{ font-size:.78rem; font-weight:600; padding:5px 10px; border-radius:999px;
+/* .78rem was 12.5px against a root of 16 — the smallest type on the card, on
+   the line that says whether somebody will be asked about their immigration
+   status. .82rem is 13.1px, and the chips carry the subcategory now too. */
+.bdg{ font-size:.82rem; font-weight:600; padding:5px 10px; border-radius:999px;
   letter-spacing:.01em; }
 .bdg--free{ background:#E8F2E4; color:#2A4A22; }
 .bdg--open-247{ background:#FBF1DC; color:#6E5210; }
 .bdg--no-status{ background:#E6EEF5; color:#1F4260; }
 
 .r__do{ display:flex; flex-wrap:wrap; gap:10px; margin-top:auto; padding-top:4px; }
+/* A row with no phone and no text line has nothing in it, and an empty flex
+   row still spends its gap and its padding. */
+.r__do:empty{ display:none; }
 .call{ display:inline-flex; align-items:center; gap:10px; text-decoration:none;
   background:var(--green); color:var(--mint); border-radius:var(--r-s);
   padding:11px 18px; min-height:52px; font-weight:600;
@@ -887,6 +973,25 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   .jump a{ flex:1; min-height:44px; padding:6px 11px; font-size:.84rem;
     line-height:1.2; }
   .cl{ padding:16px 16px 18px; }
+  /* Three previews a cluster is a desktop measurement. In the multi-column
+     grid they cost nothing — they sit beside each other. In one column they
+     stack, and seventeen clusters of three put 11,411px of card on the page:
+     13.5 screens at 390px, 20 at 320px, to reach a promise and a footer that
+     most readers never see.
+
+     The card's job is to show what kind of thing is behind the sentence, and
+     one real place with a real number does that. What the other two were
+     carrying was the dialable number DESIGN.md asks the front page to hold,
+     and the first preview still holds it — it is the same first row, the one
+     `ordered()` already puts at the top. The count on "See all N places" is
+     what says how much more is behind it, and that stays.
+
+     :nth-child, not a shorter list from the generator: help.html has to keep
+     rendering three so the desktop grid gets three and so
+     check_directory_clusters keeps reading the previews it verifies against
+     the category pages. This is a layout decision and it belongs in the
+     layout. */
+  .cl__pv .pv:nth-child(n+2){ display:none; }
   /* The back-link was hidden here, on the one device where the scroll is
      longest and there is no other way up. Because the groups interleave, a
      link at the head of each one is never more than a group away while
@@ -1467,7 +1572,14 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .tellus__g textarea{ min-height:88px; resize:vertical; }
 .tellus__g input::placeholder, .tellus__g textarea::placeholder{ color:var(--ink-faint); }
 .tellus__g input:focus, .tellus__g textarea:focus{ border-color:var(--gold); outline:none; }
-.tellus__legal{ margin:0; font-size:.84rem; color:var(--ink-3); max-width:56ch; }
+/* --ink-3 is the tertiary ink for a LIGHT ground; it resolves to --green-4,
+   which is stated in tokens.css as "tertiary ink on light — 5.3:1". .tellus
+   is a --green-deep panel, so this was a light-room token in a dark room:
+   measured 2.99:1 at 13px, on the one paragraph on the site that carries a
+   live "Privacy & Legal" link beside a field asking for somebody's email.
+   --ink-faint is the same idea in the room it is actually in, and measures
+   5.8:1 on that ground. */
+.tellus__legal{ margin:0; font-size:.84rem; color:var(--ink-faint); max-width:56ch; }
 .tellus__legal a{ color:inherit; }
 .tellus .btn{ justify-self:start; min-height:46px; padding:0 22px;
   border-radius:999px; border:0; cursor:pointer; font:inherit; font-weight:700;
@@ -1485,3 +1597,298 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .src__h{ font-size:1rem; margin:0 0 12px; color:var(--green-deep); }
 .src__l{ margin:0; padding:0 0 0 1.1em; color:var(--green-3);
   font-size:.93rem; display:grid; gap:7px; }
+
+/* The other half of un-sticking the bar, and it has to be last in the file.
+
+   Every scroll-margin on this sheet is calc(var(--head-h) + 14px), set on a
+   plain class — .grp, .cl, .results — and those rules live from line 500
+   onward. An override written up beside the header rule is :is(...) at one
+   class of specificity against a bare class at one class of specificity, so
+   the two tie and source order decides: the later, bigger value wins and the
+   override does nothing at all. It measured as a jump landing its heading
+   169px down a 390px screen with no bar there to need the clearance — 155px
+   of blank above the thing the reader had just asked to be taken to, which is
+   the defect the clearance exists to prevent, upside down.
+
+   Declared here, after the rules it corrects, it ties on specificity and wins
+   on order. Below 900px the bar does not follow the page, so 14px is the
+   whole clearance a jump needs. */
+@media (max-width:900px){
+  .clusters,.cl,.results,.dir,.grp,.r,.days,.day,.tellus{ scroll-margin-top:14px; }
+}
+
+/* The featured-events carousel on a phone — and, like the scroll-margins
+   above, this has to be at the end of the sheet or it does nothing.
+
+   .fev__nav, .fev__track and .fev__pic are all declared around line 1240, in
+   the events component, which is four hundred lines BELOW the responsive
+   block where a mobile rule naturally wants to live. One bare class against
+   the same bare class ties on specificity, so the later one wins. Written up
+   there, .fev__c:nth-child(n+3) took effect (it is a class plus a
+   pseudo-class, so it outranks .fev__c) while every single-class rule beside
+   it was inert: measured, two cards correctly hidden inside a track that was
+   still 625px wide in a 354px box, still scrolling sideways, still 647px
+   tall, with the arrows and the decorative art both still painted. Half a fix
+   looks like a whole one until something measures it.
+
+   This is the second time this sheet's ordering has done that. If a third
+   mobile rule needs to beat a component rule, it belongs here too.
+
+The featured events stop being a carousel.
+
+     Measured at 390px: the track is 1189px of content in a 354px box, so it
+     shows ONE card at a time, and the next card peeks by 19px — 9px at 320px.
+     A horizontal scroller whose only affordance is a nine-pixel sliver is not
+     a scroller, it is four cards of which three are invisible, and it was
+     charging 647px (0.77 of a screen; 1.37 at 320px) for the one that shows.
+
+     Stacked, two of them fit in less room than one did, the third and fourth
+     are behind the "See all N events" link that was always the way to the
+     rest, and nothing depends on a gesture nobody can see is available.
+
+     .fev__pic goes with it: 150px of the 459px card, a third of it, is a
+     generated decorative SVG — not a photograph of the event, nothing a
+     reader learns anything from. It is the first thing to cut on a phone and
+     the last thing to cut anywhere else, which is why it is cut here only. */
+@media (max-width:640px){
+  .fev__nav{ display:none; }
+  .fev__track{ display:grid; grid-template-columns:1fr; gap:12px;
+    overflow:visible; padding:0; }
+  .fev__c,.fev__c--lead{ width:auto; }
+  .fev__c:nth-child(n+3){ display:none; }
+  .fev__c--lead .fev__card{ flex-direction:column; }
+  .fev__pic{ display:none; }
+}
+
+/* The group heading follows you, and like everything else in this trailing
+   block it is here because .grp__head is declared at line 804 and the narrow
+   override at line 1000, so a rule written anywhere above loses on source
+   order and does nothing at all.
+
+   This is the "single block format all the way down" the page actually had.
+   Measured on help-food.html at 390px, "Pantries and groceries" is 7,296px of
+   uninterrupted cards — 8.6 screens — and help-legal's immigration group is
+   7,176px. Inside one of those there is no landmark on screen at any point:
+   the heading scrolled away at the top and the next one is five screens
+   below, and the .cat__rail index that would have told you where you are is
+   one-shot at 2.05 screens and never comes back.
+
+   Sticky costs no scroll at all — it is the one fix here that buys
+   orientation for zero pixels. It works because .sitehead is position:static
+   below 900px, so top:0 is unoccupied; if the bar ever follows the page again
+   this has to move down by --head-h with it.
+
+   And the header goes back to one row. The narrow override put "Back to the
+   top" on a line of its own, which cost 39px per group and, on a bar that is
+   now permanently on screen, would have spent two rows of every screen. */
+@media (max-width:900px){
+  .grp__head{ position:sticky; top:0; z-index:3;
+    background:var(--ground);
+    grid-template-columns:minmax(0,1fr) auto; align-items:center;
+    gap:12px; padding:10px 0 12px; margin-bottom:14px;
+    /* A sticky bar has to be bounded or it becomes the thing it was meant to
+       fix. At the default text size this header is 68px. At 200% on a 320px
+       screen it measured 257px — 45% of the viewport, held for the whole
+       scroll, which is precisely the defect the site header was un-stuck to
+       remove earlier tonight. Reintroducing it one element lower would have
+       been an embarrassing way to ship an accessibility improvement.
+
+       So the heading takes at most two lines and the bar at most a fifth of
+       the screen. A clipped group name is still orientation — "Pantries and
+       grocer..." tells you where you are — and the whole name is at the top
+       of the group you just scrolled past. */
+    max-height:20svh; }
+  .grp__head h2{ display:-webkit-box; -webkit-line-clamp:2;
+    -webkit-box-orient:vertical; overflow:hidden; min-width:0; }
+  .grp__top{ grid-column:auto; justify-self:end; margin-top:0;
+    padding:6px 12px; font-size:.85rem; }
+}
+
+/* The events page's own controls, which the rest of the site's 44px rule
+   never reached.
+
+   Hit-tested at 390, 360 and 320: the seven filter checkboxes are 17px tall
+   and the label wrapping each one is 34 — so the whole control is 34, on the
+   one page whose filters are the only way to narrow 175 events. .chip is 44,
+   .jump a is 44, .call is 56; this was simply missed, and a checkbox is
+   exactly where a thumb misses.
+
+   The month arrows are 32x32 and are NOT in the seven-column grid — they sit
+   beside the month name, so nothing stops them being 44. The day cells are
+   in the grid, but the grid constrains their WIDTH (about 40px at 320) and
+   not their height.
+
+   Last in the sheet, like everything else here: .evf__o is declared at 1490
+   and .cal__arw at 1441. */
+@media (max-width:900px){
+  .evf__o{ min-height:44px; }
+  .evf__o input{ width:22px; height:22px; }
+  .cal__arw{ width:44px; height:44px; }
+  .cal__a{ min-height:44px; }
+}
+
+/* The last of the type that carries content and sits under the floor.
+
+   Everything below is prose or a fact a reader acts on, measured at 13.6px to
+   14.4px against a root of 16 and a body rule that argues for 18. The counts
+   are what make them worth the bytes: .ev__by and the event meta appear 53
+   and 36 times on events.html, .ev__b 38 times, .pv__d and .cl__b 17 times
+   each on the front page.
+
+   .sos__for is the one that matters most and was the smallest of them: it is
+   the line beside each emergency number that says WHICH emergency it is —
+   "You are in danger, or someone is being hurt" — at 13.6px, on the strip
+   that exists for the worst moment anybody arrives in.
+
+   Sizes only. No copy moves, nothing is hidden, and the card work above
+   already bought back more height than this spends. */
+@media (max-width:900px){
+  .sos__for{ font-size:.95rem; }
+  .sos--slim .sos__for{ font-size:.9rem; }
+  .pv__d{ font-size:.95rem; }
+  .cl__b{ font-size:.98rem; }
+  .ev__b{ font-size:1rem; }
+  .ev__meta{ font-size:.95rem; }
+}
+
+/* The front page's seventeen cluster cards, on a phone.
+
+   Measured: 382px each, 6,513px of grid, 7.7 screens. Of that 382, the single
+   preview costs 206 — 54% — and "See all N places" another 74 as a bordered
+   block with its own margin and padding.
+
+   Two cuts, and neither touches the thing the preview is FOR. DESIGN.md's
+   argument is that a phone number on the front page is the shortest path
+   between somebody arriving and somebody being helped, and the number stays:
+   what goes is the preview's second line, a sentence describing a place the
+   reader has not chosen yet, under a name that already says what it is. And
+   "See all N places" keeps its count — it is the only place the size of a
+   category is stated — but stops being a bordered block: the card's own
+   heading already links to the same page, so this is the second link to one
+   destination and does not need to look like a button too.
+
+   -64px and -30px a card, 17 cards: about 1.9 screens off the directory's
+   front page. Last in the sheet, like the rest. */
+@media (max-width:900px){
+  .cl__pv .pv__d{ display:none; }
+  .cl__all{ margin-top:10px; padding-top:0; border-top:0; }
+}
+
+/* The day you are looking at follows you, for the same reason the group
+   heading does.
+
+   events.html is 22 screens and .days alone is 17 of them — 53 events across
+   a run of day sections, with the date scrolling off the top and the next one
+   several screens below. The filter is already at 0.84 screens thanks to
+   .evl__side's order:-1, so the page's ONE orientation affordance is the
+   thing you passed at the start.
+
+   Bounded from the outset rather than after the fact: the group heading had
+   to be capped when 200% text took it to 45% of a 320px screen, and this is
+   the same shape of element. A day heading is one short line, so one clamped
+   line and a sixth of the screen is plenty. */
+@media (max-width:900px){
+  .day__h{ position:sticky; top:0; z-index:2;
+    background:var(--ground);
+    padding:8px 0 10px; margin:0 0 10px;
+    max-height:16svh; overflow:hidden;
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+}
+
+/* ===================================================================
+   SHELVES — one horizontal track per category, two categories on screen.
+
+   Measured on help-food.html at 390px before this went site-wide: the page
+   went from 19.6 screens to 9.5, two category headings are on screen at once
+   instead of one, and 136px of the next card shows past the screen edge.
+
+   That last number is the whole design. The featured-events carousel removed
+   earlier used clamp(230px,74vw,268px) and left a 19px sliver at 390px — 9px
+   at 320 — which is not an affordance, it is a rounding error, and it is why
+   that carousel showed one card of four to everybody. 62vw shows 1.6 cards.
+
+   Scoped to `.grp .rows`, which is exactly the seventeen category pages:
+   .grp does not appear on help.html, events.html, suggest.html or any of the
+   ten translated pages, and help.html's one .rows is #resultRows, the search
+   results, which stay a vertical list on purpose — a result set is not a
+   category and has nothing to be a shelf of.
+   =================================================================== */
+@media (max-width:900px){
+  /* A shelf heading does not need to follow you: its own track is one card
+     tall and the next heading is always on screen. Two or three sticky bars
+     competing for the top of the viewport would be worse than none. */
+  .grp .grp__head{
+    position:static; max-height:none; padding:0 0 8px; margin-bottom:8px; }
+  /* And it gets its whole name back. The clamp existed because the heading
+     was sticky and an unbounded bar eats the screen; static, it costs
+     nothing to let "Sealing a record, and being turned down for work
+     because of it" be what it is instead of "...turned down f...". */
+  .grp .grp__head h2{ display:block; -webkit-line-clamp:none; overflow:visible; }
+
+  .grp{ margin-bottom:18px; }
+
+  /* The track. Bled to the screen edges so the card that is half-visible is
+     cut by the SCREEN rather than by a margin — that is what reads as "there
+     is more this way". */
+  .grp .rows{
+    display:flex; gap:12px;
+    grid-template-columns:none;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    scroll-snap-type:x proximity;
+    margin-inline:calc(-1 * var(--pad));
+    padding:4px var(--pad) 12px;
+    scrollbar-width:none; }
+  .grp .rows::-webkit-scrollbar{ display:none; }
+
+  .grp .r{
+    flex:0 0 62vw; max-width:300px; scroll-snap-align:start; min-width:0; }
+
+  /* A category with one place in it is not a shelf. "Start here" is often
+     exactly one, and a 242px card with 148px of nothing beside it reads as a
+     layout that failed rather than as a row you can scroll. */
+  .grp .rows .r:only-child{ flex:1 1 100%; max-width:none; }
+
+  /* The card gets shorter to fit the shelf: the name takes two lines, the
+     description two, and "More about this" stays because it is the only
+     route to hours and an address. */
+  .grp .r{ padding:14px; gap:8px; }
+  .grp .r__name{ font-size:1.05rem; }
+  /* min-height stays 44. Dropping it to 0 to let the clamp work took the
+     name — the card's primary link — to a 29px target, which is the one rule
+     this directory does not bend. -webkit-box and min-height coexist fine. */
+  .grp .r__name .visit{ min-height:44px; padding:2px 0;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  /* -webkit-box is not a flex container, so the gap that separated the name
+     from its arrow everywhere else does nothing here and it rendered as
+     "Plentiful<arrow>". A margin works in both boxes. */
+  .grp .r__name .visit .arr{ margin-inline-start:.3em; }
+  .grp .r__what{ -webkit-line-clamp:2; font-size:.95rem; }
+  .grp .r__do{ padding-top:0; }
+  /* At 242px a badge row wraps to three. "Free" is the site's own headline
+     claim — the masthead already says nearly all of these are free — and
+     24/7 is a detail, so in the shelf the chips are what the place IS and
+     the one thing this audience most needs to know before dialling. Both
+     dropped chips are still on the card inside "More about this". */
+  .grp .bdg--free,
+  .grp .bdg--open-247{ display:none; }
+  .grp .r__badges{ gap:6px; }
+  /* 44, not 40. The shelf is not a reason to shave a target. What the shelf
+     DOES justify is losing the rule and the block padding above it: inside a
+     242px card a full-width divider under four other elements is the card
+     telling you it is a form. */
+  .grp .r__more{ padding-top:2px; border-top:0; }
+  .grp .r__more summary{ min-height:44px; }
+}
+
+/* Narrower screens get a WIDER card, which is the opposite of the instinct
+   and the right answer: at 320px a 62vw card is 198px, the name wraps to
+   three lines and the description to three, and the card grows to 393px
+   tall — so fewer shelves fit, not more. 78vw is 250px, the text wraps
+   less, the card is shorter, and 58px of the next card still shows.
+
+   Its own top-level query rather than nested inside the one above, so the
+   minifier never has to reason about nested at-rules. */
+@media (max-width:380px){
+  .grp .r{ flex:0 0 78vw; }
+  .grp .rows .r:only-child{ flex:1 1 100%; }
+}
