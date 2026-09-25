@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-24T14:13:39",
- "horizon": "2027-01-22",
+ "generated": "2026-09-25T14:37:28",
+ "horizon": "2027-01-23",
  "sources": [
   {
    "key": "nylag",
@@ -22,52 +22,12 @@
   }
  ],
  "featured": [
-  "nylag-2026-09-24-0000",
-  "nylag-2026-09-29-0002",
-  "foodbank-2026-09-24-0001",
-  "foodbank-2026-10-13-0010"
+  "nylag-2026-09-29-0000",
+  "nylag-2026-09-30-0001",
+  "foodbank-2026-10-13-0008",
+  "foodbank-2026-09-30-0002"
  ],
  "events": [
-  {
-   "title": "Van at Senator Roxanne Persaud’s Office",
-   "start": "2026-09-24T10:00:00",
-   "end": "2026-09-24T15:00:00",
-   "all_day": false,
-   "venue": "Senator Persuad’s District Office",
-   "borough": "Brooklyn",
-   "address": "1222 East 96th Street",
-   "description": "This site is in person. Please contact the office at 718-649-7653.",
-   "url": "https://nylag.org/event/senator-roxanne-persaud-sponsoring-2-2-2/2026-09-24/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-09-24-0000"
-  },
-  {
-   "title": "Mobile Pantry 09/24/2026",
-   "start": "2026-09-24T12:00:00",
-   "end": "2026-09-24T14:00:00",
-   "all_day": false,
-   "venue": "Fortune Society",
-   "borough": "Bronx",
-   "address": "502 E 163rd St",
-   "description": "",
-   "url": "https://www.foodbanknyc.org/event/mobile-pantry-09-24-2026/",
-   "image": null,
-   "kind": "Draft Mobile Pantry September",
-   "format": "In person",
-   "free": true,
-   "source": "Food Bank For New York City",
-   "source_key": "foodbank",
-   "source_url": "https://www.foodbanknyc.org/",
-   "need": "food",
-   "id": "foodbank-2026-09-24-0001"
-  },
   {
    "title": "Van at Office of Manhattan Borough President",
    "start": "2026-09-29T10:00:00",
@@ -86,7 +46,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-09-29-0002"
+   "id": "nylag-2026-09-29-0000"
   },
   {
    "title": "Van at Assembly Member Vanel’s District Office",
@@ -106,7 +66,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-09-30-0003"
+   "id": "nylag-2026-09-30-0001"
   },
   {
    "title": "Mobile Pantry 09/30/2026",
@@ -119,14 +79,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/mobile-pantry-09-30-2026/",
    "image": null,
-   "kind": "Draft Mobile Pantry September",
+   "kind": "Exclude from Fundraising Event Sections Mobile Pantry…",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-09-30-0004"
+   "id": "foodbank-2026-09-30-0002"
   },
   {
    "title": "Van at Assembly Member Catalina Cruz’s Office",
@@ -146,7 +106,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-05-0005"
+   "id": "nylag-2026-10-05-0003"
   },
   {
    "title": "Van at Senator Comrie’s office",
@@ -166,7 +126,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-07-0006"
+   "id": "nylag-2026-10-07-0004"
   },
   {
    "title": "26/10/7-PWH-1-Creating a balanced plate",
@@ -179,14 +139,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/creating-a-balanced-plate/",
    "image": null,
-   "kind": "Draft Power Your Health",
+   "kind": "Exclude from Fundraising Event Sections Power Your Health",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-07-0007"
+   "id": "foodbank-2026-10-07-0005"
   },
   {
    "title": "Van at Council Member Salaam’s Office",
@@ -206,7 +166,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-09-0008"
+   "id": "nylag-2026-10-09-0006"
   },
   {
    "title": "Van at Senator Serrano’s Office",
@@ -226,7 +186,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-13-0009"
+   "id": "nylag-2026-10-13-0007"
   },
   {
    "title": "Dishoom x Elder with Arun Kumar & Sujan Sarkar",
@@ -246,7 +206,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-13-0010"
+   "id": "foodbank-2026-10-13-0008"
   },
   {
    "title": "Van at Council Member Rita Joseph Office",
@@ -266,7 +226,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-15-0011"
+   "id": "nylag-2026-10-15-0009"
   },
   {
    "title": "Financial Empowerment Session 3 – English",
@@ -279,14 +239,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-3-english/",
    "image": null,
-   "kind": "Draft Financial Empowerment",
+   "kind": "Exclude from Fundraising Event Sections Financial…",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-15-0012"
+   "id": "foodbank-2026-10-15-0010"
   },
   {
    "title": "Van at Council Member Thomas-Henry’s Office",
@@ -306,7 +266,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-16-0013"
+   "id": "nylag-2026-10-16-0011"
   },
   {
    "title": "Van at Senator Sepulveda’s Office",
@@ -326,7 +286,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-20-0014"
+   "id": "nylag-2026-10-20-0012"
   },
   {
    "title": "Van at Assembly Member Manny De Los Santos’ Office",
@@ -346,7 +306,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-21-0015"
+   "id": "nylag-2026-10-21-0013"
   },
   {
    "title": "26/10/21-PWH-2-Eating the Rainbow",
@@ -359,14 +319,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/eating-the-rainbow-2/",
    "image": null,
-   "kind": "Draft Power Your Health",
+   "kind": "Exclude from Fundraising Event Sections Power Your Health",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-21-0016"
+   "id": "foodbank-2026-10-21-0014"
   },
   {
    "title": "Van at Assemblymember González-Rojas’ Office",
@@ -386,7 +346,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-22-0017"
+   "id": "nylag-2026-10-22-0015"
   },
   {
    "title": "Financial Empowerment Session 3 – Spanish",
@@ -399,14 +359,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-3-spanish/",
    "image": null,
-   "kind": "Draft Financial Empowerment",
+   "kind": "Exclude from Fundraising Event Sections Financial…",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-22-0018"
+   "id": "foodbank-2026-10-22-0016"
   },
   {
    "title": "Van at Council Member Zhuang’s Office",
@@ -426,7 +386,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-28-0019"
+   "id": "nylag-2026-10-28-0017"
   },
   {
    "title": "Van at Senator Roxanne Persaud’s Office",
@@ -446,7 +406,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-29-0020"
+   "id": "nylag-2026-10-29-0018"
   },
   {
    "title": "Van at Assembly Member Catalina Cruz’s Office",
@@ -466,7 +426,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-02-0021"
+   "id": "nylag-2026-11-02-0019"
   },
   {
    "title": "Van at Assembly Member Manny De Los Santos’ Office",
@@ -486,7 +446,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-04-0022"
+   "id": "nylag-2026-11-04-0020"
   },
   {
    "title": "26/11/4-PWH-3-Eating Well on a Budget",
@@ -499,14 +459,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/eating-well-on-a-budget-2/",
    "image": null,
-   "kind": "Draft Power Your Health",
+   "kind": "Exclude from Fundraising Event Sections Power Your Health",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-11-04-0023"
+   "id": "foodbank-2026-11-04-0021"
   },
   {
    "title": "Van at Council Member Salaam’s Office",
@@ -526,7 +486,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-06-0024"
+   "id": "nylag-2026-11-06-0022"
   },
   {
    "title": "Van at Assemblymember González-Rojas’ Office",
@@ -546,7 +506,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-10-0025"
+   "id": "nylag-2026-11-10-0023"
   },
   {
    "title": "Van at Senator Sepulveda’s Office",
@@ -566,7 +526,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-12-0026"
+   "id": "nylag-2026-11-12-0024"
   },
   {
    "title": "Financial Empowerment Session 4 – English",
@@ -579,14 +539,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-4-english/",
    "image": null,
-   "kind": "Draft Financial Empowerment",
+   "kind": "Exclude from Fundraising Event Sections Financial…",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-11-12-0027"
+   "id": "foodbank-2026-11-12-0025"
   },
   {
    "title": "Van at Senator Roxanne Persaud’s Office",
@@ -606,7 +566,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-13-0028"
+   "id": "nylag-2026-11-13-0026"
   },
   {
    "title": "Van at Council Member Alexa Avilés’ Office",
@@ -626,7 +586,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-16-0029"
+   "id": "nylag-2026-11-16-0027"
   },
   {
    "title": "Van at Council Member Rita Joseph Office",
@@ -646,7 +606,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-17-0030"
+   "id": "nylag-2026-11-17-0028"
   },
   {
    "title": "Van at Council Member Zhuang’s Office",
@@ -666,7 +626,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-18-0031"
+   "id": "nylag-2026-11-18-0029"
   },
   {
    "title": "26/11/18-PWH-4-Meal Planning Made Simple",
@@ -679,14 +639,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/meal-planning-made-simple-2/",
    "image": null,
-   "kind": "Draft Power Your Health",
+   "kind": "Exclude from Fundraising Event Sections Power Your Health",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-11-18-0032"
+   "id": "foodbank-2026-11-18-0030"
   },
   {
    "title": "Van at Council Member Thomas-Henry’s Office",
@@ -706,7 +666,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-19-0033"
+   "id": "nylag-2026-11-19-0031"
   },
   {
    "title": "Financial Empowerment Session 4 – Spanish",
@@ -719,14 +679,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-4-spanish/",
    "image": null,
-   "kind": "Draft Financial Empowerment",
+   "kind": "Exclude from Fundraising Event Sections Financial…",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-11-19-0034"
+   "id": "foodbank-2026-11-19-0032"
   },
   {
    "title": "Van at Senator Comrie’s office",
@@ -746,7 +706,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-23-0035"
+   "id": "nylag-2026-11-23-0033"
   },
   {
    "title": "Van at Senator Roxanne Persaud’s Office",
@@ -766,7 +726,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-01-0036"
+   "id": "nylag-2026-12-01-0034"
   },
   {
    "title": "Van at Senator Comrie’s office",
@@ -786,7 +746,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-02-0037"
+   "id": "nylag-2026-12-02-0035"
   },
   {
    "title": "Van at Senator Sepulveda’s Office",
@@ -806,7 +766,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-03-0038"
+   "id": "nylag-2026-12-03-0036"
   },
   {
    "title": "Van at Council Member Salaam’s Office",
@@ -826,7 +786,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-04-0039"
+   "id": "nylag-2026-12-04-0037"
   },
   {
    "title": "Van at Assembly Member Catalina Cruz’s Office",
@@ -846,7 +806,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-07-0040"
+   "id": "nylag-2026-12-07-0038"
   },
   {
    "title": "Van at Assembly Member Manny De Los Santos’ Office",
@@ -866,7 +826,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-09-0041"
+   "id": "nylag-2026-12-09-0039"
   },
   {
    "title": "Van at Assemblymember González-Rojas’ Office",
@@ -886,7 +846,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-10-0042"
+   "id": "nylag-2026-12-10-0040"
   },
   {
    "title": "Financial Empowerment Session 5 – English",
@@ -899,14 +859,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-5-english/",
    "image": null,
-   "kind": "Draft Financial Empowerment",
+   "kind": "Exclude from Fundraising Event Sections Financial…",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-12-10-0043"
+   "id": "foodbank-2026-12-10-0041"
   },
   {
    "title": "Van at Council Member Thomas-Henry’s Office",
@@ -926,7 +886,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-11-0044"
+   "id": "nylag-2026-12-11-0042"
   },
   {
    "title": "Van at Council Member Alexa Avilés’ Office",
@@ -946,7 +906,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-14-0045"
+   "id": "nylag-2026-12-14-0043"
   },
   {
    "title": "Van at Council Member Rita Joseph Office",
@@ -966,7 +926,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-15-0046"
+   "id": "nylag-2026-12-15-0044"
   },
   {
    "title": "Van at Council Member Zhuang’s Office",
@@ -986,7 +946,7 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-16-0047"
+   "id": "nylag-2026-12-16-0045"
   },
   {
    "title": "Financial Empowerment Session 5 – Spanish",
@@ -999,14 +959,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-5-spanish/",
    "image": null,
-   "kind": "Draft Financial Empowerment",
+   "kind": "Exclude from Fundraising Event Sections Financial…",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-12-17-0048"
+   "id": "foodbank-2026-12-17-0046"
   },
   {
    "title": "Financial Empowerment Session 6 – English",
@@ -1019,14 +979,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-6-english/",
    "image": null,
-   "kind": "Draft Financial Empowerment",
+   "kind": "Exclude from Fundraising Event Sections Financial…",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2027-01-14-0049"
+   "id": "foodbank-2027-01-14-0047"
   },
   {
    "title": "Financial Empowerment Session 6 – Spanish",
@@ -1039,14 +999,14 @@
    "description": "",
    "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-6-spanish/",
    "image": null,
-   "kind": "Draft Financial Empowerment",
+   "kind": "Exclude from Fundraising Event Sections Financial…",
    "format": "In person",
    "free": true,
    "source": "Food Bank For New York City",
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2027-01-21-0050"
+   "id": "foodbank-2027-01-21-0048"
   }
  ]
 }
