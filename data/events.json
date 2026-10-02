@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-01T16:28:19",
- "horizon": "2027-01-29",
+ "generated": "2026-10-02T15:51:03",
+ "horizon": "2027-01-30",
  "sources": [
   {
    "key": "nylag",
@@ -22,32 +22,10 @@
   }
  ],
  "featured": [
-  "foodbank-2026-10-13-0012",
-  "nylag-2026-10-05-0002",
-  "foodbank-2026-10-01-0000",
-  "nylag-2026-10-07-0004"
+  "foodbank-2026-10-13-0007",
+  "foodbank-2026-10-03-0000"
  ],
  "events": [
-  {
-   "title": "Mobile Pantry 10/01/2026",
-   "start": "2026-10-01T11:00:00",
-   "end": "2026-10-01T13:00:00",
-   "all_day": false,
-   "venue": "Medgar Evers College",
-   "borough": "Brooklyn",
-   "address": "1637 Bedford Avenue",
-   "description": "",
-   "url": "https://www.foodbanknyc.org/event/mobile-pantry-10-01-2026/",
-   "image": null,
-   "kind": "Mobile Pantry October",
-   "format": "In person",
-   "free": true,
-   "source": "Food Bank For New York City",
-   "source_key": "foodbank",
-   "source_url": "https://www.foodbanknyc.org/",
-   "need": "food",
-   "id": "foodbank-2026-10-01-0000"
-  },
   {
    "title": "Mobile Pantry 10/03/2026",
    "start": "2026-10-03T12:00:00",
@@ -66,27 +44,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-03-0001"
-  },
-  {
-   "title": "Van at Assembly Member Catalina Cruz’s Office",
-   "start": "2026-10-05T10:00:00",
-   "end": "2026-10-05T15:00:00",
-   "all_day": false,
-   "venue": "Assembly Member Cruz District Office",
-   "borough": "Queens",
-   "address": "41-40 Junction Boulevard,",
-   "description": "This site is in person. Please contact the office at 718-458-5367 to make an appointment.",
-   "url": "https://nylag.org/event/assembly-member-catalina-cruz-sponsoring-2020-03-20-2-2/2026-10-05/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-05-0002"
+   "id": "foodbank-2026-10-03-0000"
   },
   {
    "title": "Mobile Pantry 10/06/2026",
@@ -106,27 +64,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-06-0003"
-  },
-  {
-   "title": "Van at Senator Comrie’s office",
-   "start": "2026-10-07T10:00:00",
-   "end": "2026-10-07T15:00:00",
-   "all_day": false,
-   "venue": "Senator Comrie’s Office",
-   "borough": "Queens",
-   "address": "113-43 Farmers Boulevard",
-   "description": "This site is in person. Please contact the office at 718-765-6359 for more information.",
-   "url": "https://nylag.org/event/van-at-senator-comries-office/2026-10-07/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-07-0004"
+   "id": "foodbank-2026-10-06-0001"
   },
   {
    "title": "26/10/7-PWH-1-Creating a balanced plate",
@@ -146,7 +84,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-07-0005"
+   "id": "foodbank-2026-10-07-0002"
   },
   {
    "title": "Mobile Pantry 10/07/2026",
@@ -166,27 +104,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-07-0006"
-  },
-  {
-   "title": "Van at Council Member Salaam’s Office",
-   "start": "2026-10-09T10:00:00",
-   "end": "2026-10-09T15:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "",
-   "address": "",
-   "description": "Call (212) 678-4505 for more information",
-   "url": "https://nylag.org/event/cm-salaam-van-day/2026-10-09/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-09-0007"
+   "id": "foodbank-2026-10-07-0003"
   },
   {
    "title": "Mobile Pantry 10/09/2026",
@@ -206,7 +124,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-09-0008"
+   "id": "foodbank-2026-10-09-0004"
   },
   {
    "title": "Mobile Pantry 10/10/2026",
@@ -226,27 +144,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-10-0009"
-  },
-  {
-   "title": "Van at Senator Serrano’s Office",
-   "start": "2026-10-13T10:00:00",
-   "end": "2026-10-13T15:00:00",
-   "all_day": false,
-   "venue": "Serrano’s Office",
-   "borough": "",
-   "address": "335 E 100th Street",
-   "description": "This site is in person. Please contact the office at (212)-828-5829 for more information.",
-   "url": "https://nylag.org/event/van-at-senator-serranos-office/2026-10-13/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-13-0010"
+   "id": "foodbank-2026-10-10-0005"
   },
   {
    "title": "Mobile Pantry 10/13/2026",
@@ -266,7 +164,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-13-0011"
+   "id": "foodbank-2026-10-13-0006"
   },
   {
    "title": "Dishoom x Elder with Arun Kumar & Sujan Sarkar",
@@ -286,7 +184,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-13-0012"
+   "id": "foodbank-2026-10-13-0007"
   },
   {
    "title": "Mobile Pantry 10/14/2026",
@@ -306,7 +204,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-14-0013"
+   "id": "foodbank-2026-10-14-0008"
   },
   {
    "title": "Mobile Pantry 10/14/2026",
@@ -326,27 +224,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-14-0014"
-  },
-  {
-   "title": "Van at Council Member Rita Joseph Office",
-   "start": "2026-10-15T10:00:00",
-   "end": "2026-10-15T15:00:00",
-   "all_day": false,
-   "venue": "Council Member Rita Joseph Office",
-   "borough": "Brooklyn",
-   "address": "930 Flatbush Avenue",
-   "description": "This site is in person and by appointment only. Please contact the office at 718-287-8762 . for more information.",
-   "url": "https://nylag.org/event/van-at-council-member-rita-joseph-office/2026-10-15/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-15-0015"
+   "id": "foodbank-2026-10-14-0009"
   },
   {
    "title": "Financial Empowerment Session 3 – English",
@@ -366,27 +244,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-15-0016"
-  },
-  {
-   "title": "Van at Council Member Thomas-Henry’s Office",
-   "start": "2026-10-16T10:00:00",
-   "end": "2026-10-16T15:00:00",
-   "all_day": false,
-   "venue": "Council Member Thomas-Henry",
-   "borough": "Queens",
-   "address": "106-01 Corona Avenue",
-   "description": "This site is in person and by appointment only. Please contact the office at 718-651-1917 . for more information.",
-   "url": "https://nylag.org/event/senator-thomas-sponsoring/2026-10-16/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-16-0017"
+   "id": "foodbank-2026-10-15-0010"
   },
   {
    "title": "Mobile Pantry 10/17/2026",
@@ -406,7 +264,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-17-0018"
+   "id": "foodbank-2026-10-17-0011"
   },
   {
    "title": "Mobile Pantry 10/17/2026",
@@ -426,27 +284,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-17-0019"
-  },
-  {
-   "title": "Van at Senator Sepulveda’s Office",
-   "start": "2026-10-20T10:00:00",
-   "end": "2026-10-20T15:00:00",
-   "all_day": false,
-   "venue": "Senator Sepulveda’s Office",
-   "borough": "Bronx",
-   "address": "900 Roger's Place",
-   "description": "This site is in person and by appointment only. Please contact the office at 718-991-3161 for more information.",
-   "url": "https://nylag.org/event/van-at-senator-sepulvedas-office-2-2/2026-10-20/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-20-0020"
+   "id": "foodbank-2026-10-17-0012"
   },
   {
    "title": "Mobile Pantry 10/20/2026",
@@ -466,27 +304,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-20-0021"
-  },
-  {
-   "title": "Van at Assembly Member Manny De Los Santos’ Office",
-   "start": "2026-10-21T10:00:00",
-   "end": "2026-10-21T16:00:00",
-   "all_day": false,
-   "venue": "Assembly Member Santos’ Office",
-   "borough": "Manhattan",
-   "address": "210 Sherman Avenue",
-   "description": "This site is in person. For more information, call 212 544 2278.",
-   "url": "https://nylag.org/event/van-at-assembly-member-manny-de-los-santos-office-2-2/2026-10-21/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-21-0022"
+   "id": "foodbank-2026-10-20-0013"
   },
   {
    "title": "26/10/21-PWH-2-Eating the Rainbow",
@@ -506,27 +324,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-21-0023"
-  },
-  {
-   "title": "Van at Assemblymember González-Rojas’ Office",
-   "start": "2026-10-22T10:00:00",
-   "end": "2026-10-22T15:00:00",
-   "all_day": false,
-   "venue": "Assemblymember González-Rojas’ office",
-   "borough": "Queens",
-   "address": "75-35 31st Ave. Suite 206B (2nd Floor)",
-   "description": "This site is in-person For more information, call 718-457-0384.",
-   "url": "https://nylag.org/event/van-at-assemblymember-gonzalez-rojas-office/2026-10-22/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-22-0024"
+   "id": "foodbank-2026-10-21-0014"
   },
   {
    "title": "Financial Empowerment Session 3 – Spanish",
@@ -546,7 +344,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-22-0025"
+   "id": "foodbank-2026-10-22-0015"
   },
   {
    "title": "Mobile Pantry 10/27/2026",
@@ -566,27 +364,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-27-0026"
-  },
-  {
-   "title": "Van at Council Member Zhuang’s Office",
-   "start": "2026-10-28T10:00:00",
-   "end": "2026-10-28T15:00:00",
-   "all_day": false,
-   "venue": "6514 20th Ave. Brooklyn, NY 11204",
-   "borough": "Brooklyn",
-   "address": "",
-   "description": "Call office at 718-307-7151 to make appointment.",
-   "url": "https://nylag.org/event/van-at-council-member-zhuang-office-2/2026-10-28/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-28-0027"
+   "id": "foodbank-2026-10-27-0016"
   },
   {
    "title": "Mobile Pantry 10/28/2026",
@@ -606,27 +384,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-28-0028"
-  },
-  {
-   "title": "Van at Senator Roxanne Persaud’s Office",
-   "start": "2026-10-29T10:00:00",
-   "end": "2026-10-29T15:00:00",
-   "all_day": false,
-   "venue": "Senator Persuad’s District Office",
-   "borough": "Brooklyn",
-   "address": "1222 East 96th Street",
-   "description": "This site is in person. Please contact the office at 718-649-7653.",
-   "url": "https://nylag.org/event/senator-roxanne-persaud-sponsoring-2-2-2/2026-10-29/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-10-29-0029"
+   "id": "foodbank-2026-10-28-0017"
   },
   {
    "title": "Mobile Pantry 10/29/2026",
@@ -646,47 +404,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-10-29-0030"
-  },
-  {
-   "title": "Van at Assembly Member Catalina Cruz’s Office",
-   "start": "2026-11-02T10:00:00",
-   "end": "2026-11-02T15:00:00",
-   "all_day": false,
-   "venue": "Assembly Member Cruz District Office",
-   "borough": "Queens",
-   "address": "41-40 Junction Boulevard,",
-   "description": "This site is in person. Please contact the office at 718-458-5367 to make an appointment.",
-   "url": "https://nylag.org/event/assembly-member-catalina-cruz-sponsoring-2020-03-20-2-2/2026-11-02/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-02-0031"
-  },
-  {
-   "title": "Van at Assembly Member Manny De Los Santos’ Office",
-   "start": "2026-11-04T10:00:00",
-   "end": "2026-11-04T15:00:00",
-   "all_day": false,
-   "venue": "Assembly Member Santos’ Office",
-   "borough": "Manhattan",
-   "address": "210 Sherman Avenue",
-   "description": "This site is in person. For more information, call 212 544 2278.",
-   "url": "https://nylag.org/event/van-at-assembly-member-manny-de-los-santos-office-2-2/2026-11-04/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-04-0032"
+   "id": "foodbank-2026-10-29-0018"
   },
   {
    "title": "26/11/4-PWH-3-Eating Well on a Budget",
@@ -706,67 +424,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-11-04-0033"
-  },
-  {
-   "title": "Van at Council Member Salaam’s Office",
-   "start": "2026-11-06T10:00:00",
-   "end": "2026-11-06T15:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "",
-   "address": "",
-   "description": "Call (212) 678-4505 for more information",
-   "url": "https://nylag.org/event/cm-salaam-van-day/2026-11-06/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-06-0034"
-  },
-  {
-   "title": "Van at Assemblymember González-Rojas’ Office",
-   "start": "2026-11-10T10:00:00",
-   "end": "2026-11-10T15:00:00",
-   "all_day": false,
-   "venue": "Assemblymember González-Rojas’ office",
-   "borough": "Queens",
-   "address": "75-35 31st Ave. Suite 206B (2nd Floor)",
-   "description": "This site is in-person For more information, call 718-457-0384.",
-   "url": "https://nylag.org/event/van-at-assemblymember-gonzalez-rojas-office/2026-11-10/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-10-0035"
-  },
-  {
-   "title": "Van at Senator Sepulveda’s Office",
-   "start": "2026-11-12T10:00:00",
-   "end": "2026-11-12T15:00:00",
-   "all_day": false,
-   "venue": "Senator Sepulveda’s Office",
-   "borough": "Bronx",
-   "address": "900 Roger's Place",
-   "description": "This site is in person and by appointment only. Please contact the office at 718-991-3161 for more information.",
-   "url": "https://nylag.org/event/van-at-senator-sepulvedas-office-2-2/2026-11-12/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-12-0036"
+   "id": "foodbank-2026-11-04-0019"
   },
   {
    "title": "Financial Empowerment Session 4 – English",
@@ -786,87 +444,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-11-12-0037"
-  },
-  {
-   "title": "Van at Senator Roxanne Persaud’s Office",
-   "start": "2026-11-13T10:00:00",
-   "end": "2026-11-13T15:00:00",
-   "all_day": false,
-   "venue": "Senator Persuad’s District Office",
-   "borough": "Brooklyn",
-   "address": "1222 East 96th Street",
-   "description": "This site is in person. Please contact the office at 718-649-7653.",
-   "url": "https://nylag.org/event/senator-roxanne-persaud-sponsoring-2-2-2/2026-11-13/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-13-0038"
-  },
-  {
-   "title": "Van at Council Member Alexa Avilés’ Office",
-   "start": "2026-11-16T10:00:00",
-   "end": "2026-11-16T15:00:00",
-   "all_day": false,
-   "venue": "Council Member Avilés",
-   "borough": "Brooklyn",
-   "address": "4417 4th Avenue",
-   "description": "This site is in person. Please contact the office at 718-439-9012 for more information.",
-   "url": "https://nylag.org/event/van-at-council-member-alexa-aviles-office-2-2/2026-11-16/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-16-0039"
-  },
-  {
-   "title": "Van at Council Member Rita Joseph Office",
-   "start": "2026-11-17T10:00:00",
-   "end": "2026-11-17T15:00:00",
-   "all_day": false,
-   "venue": "Council Member Rita Joseph Office",
-   "borough": "Brooklyn",
-   "address": "930 Flatbush Avenue",
-   "description": "This site is in person and by appointment only. Please contact the office at 718-287-8762 . for more information.",
-   "url": "https://nylag.org/event/van-at-council-member-rita-joseph-office/2026-11-17/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-17-0040"
-  },
-  {
-   "title": "Van at Council Member Zhuang’s Office",
-   "start": "2026-11-18T10:00:00",
-   "end": "2026-11-18T15:00:00",
-   "all_day": false,
-   "venue": "6514 20th Ave. Brooklyn, NY 11204",
-   "borough": "Brooklyn",
-   "address": "",
-   "description": "Call office at 718-307-7151 to make appointment.",
-   "url": "https://nylag.org/event/van-at-council-member-zhuang-office-2/2026-11-18/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-18-0041"
+   "id": "foodbank-2026-11-12-0020"
   },
   {
    "title": "26/11/18-PWH-4-Meal Planning Made Simple",
@@ -886,27 +464,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-11-18-0042"
-  },
-  {
-   "title": "Van at Council Member Thomas-Henry’s Office",
-   "start": "2026-11-19T10:00:00",
-   "end": "2026-11-19T15:00:00",
-   "all_day": false,
-   "venue": "Council Member Thomas-Henry",
-   "borough": "Queens",
-   "address": "106-01 Corona Avenue",
-   "description": "This site is in person and by appointment only. Please contact the office at 718-651-1917 . for more information.",
-   "url": "https://nylag.org/event/senator-thomas-sponsoring/2026-11-19/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-19-0043"
+   "id": "foodbank-2026-11-18-0021"
   },
   {
    "title": "Financial Empowerment Session 4 – Spanish",
@@ -926,167 +484,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-11-19-0044"
-  },
-  {
-   "title": "Van at Senator Comrie’s office",
-   "start": "2026-11-23T10:00:00",
-   "end": "2026-11-23T15:00:00",
-   "all_day": false,
-   "venue": "Senator Comrie’s Office",
-   "borough": "Queens",
-   "address": "113-43 Farmers Boulevard",
-   "description": "This site is in person. Please contact the office at 718-765-6359 for more information.",
-   "url": "https://nylag.org/event/van-at-senator-comries-office/2026-11-23/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-11-23-0045"
-  },
-  {
-   "title": "Van at Senator Roxanne Persaud’s Office",
-   "start": "2026-12-01T10:00:00",
-   "end": "2026-12-01T15:00:00",
-   "all_day": false,
-   "venue": "Senator Persuad’s District Office",
-   "borough": "Brooklyn",
-   "address": "1222 East 96th Street",
-   "description": "This site is in person. Please contact the office at 718-649-7653.",
-   "url": "https://nylag.org/event/senator-roxanne-persaud-sponsoring-2-2-2/2026-12-01/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-01-0046"
-  },
-  {
-   "title": "Van at Senator Comrie’s office",
-   "start": "2026-12-02T10:00:00",
-   "end": "2026-12-02T15:00:00",
-   "all_day": false,
-   "venue": "Senator Comrie’s Office",
-   "borough": "Queens",
-   "address": "113-43 Farmers Boulevard",
-   "description": "This site is in person. Please contact the office at 718-765-6359 for more information.",
-   "url": "https://nylag.org/event/van-at-senator-comries-office/2026-12-02/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-02-0047"
-  },
-  {
-   "title": "Van at Senator Sepulveda’s Office",
-   "start": "2026-12-03T10:00:00",
-   "end": "2026-12-03T15:00:00",
-   "all_day": false,
-   "venue": "Senator Sepulveda’s Office",
-   "borough": "Bronx",
-   "address": "900 Roger's Place",
-   "description": "This site is in person and by appointment only. Please contact the office at 718-991-3161 for more information.",
-   "url": "https://nylag.org/event/van-at-senator-sepulvedas-office-2-2/2026-12-03/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-03-0048"
-  },
-  {
-   "title": "Van at Council Member Salaam’s Office",
-   "start": "2026-12-04T10:00:00",
-   "end": "2026-12-04T15:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "",
-   "address": "",
-   "description": "Call (212) 678-4505 for more information",
-   "url": "https://nylag.org/event/cm-salaam-van-day/2026-12-04/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-04-0049"
-  },
-  {
-   "title": "Van at Assembly Member Catalina Cruz’s Office",
-   "start": "2026-12-07T10:00:00",
-   "end": "2026-12-07T15:00:00",
-   "all_day": false,
-   "venue": "Assembly Member Cruz District Office",
-   "borough": "Queens",
-   "address": "41-40 Junction Boulevard,",
-   "description": "This site is in person. Please contact the office at 718-458-5367 to make an appointment.",
-   "url": "https://nylag.org/event/assembly-member-catalina-cruz-sponsoring-2020-03-20-2-2/2026-12-07/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-07-0050"
-  },
-  {
-   "title": "Van at Assembly Member Manny De Los Santos’ Office",
-   "start": "2026-12-09T10:00:00",
-   "end": "2026-12-09T15:00:00",
-   "all_day": false,
-   "venue": "Assembly Member Santos’ Office",
-   "borough": "Manhattan",
-   "address": "210 Sherman Avenue",
-   "description": "This site is in person. For more information, call 212 544 2278.",
-   "url": "https://nylag.org/event/van-at-assembly-member-manny-de-los-santos-office-2-2/2026-12-09/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-09-0051"
-  },
-  {
-   "title": "Van at Assemblymember González-Rojas’ Office",
-   "start": "2026-12-10T10:00:00",
-   "end": "2026-12-10T15:00:00",
-   "all_day": false,
-   "venue": "Assemblymember González-Rojas’ office",
-   "borough": "Queens",
-   "address": "75-35 31st Ave. Suite 206B (2nd Floor)",
-   "description": "This site is in-person For more information, call 718-457-0384.",
-   "url": "https://nylag.org/event/van-at-assemblymember-gonzalez-rojas-office/2026-12-10/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-10-0052"
+   "id": "foodbank-2026-11-19-0022"
   },
   {
    "title": "Financial Empowerment Session 5 – English",
@@ -1106,87 +504,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-12-10-0053"
-  },
-  {
-   "title": "Van at Council Member Thomas-Henry’s Office",
-   "start": "2026-12-11T10:00:00",
-   "end": "2026-12-11T15:00:00",
-   "all_day": false,
-   "venue": "Council Member Thomas-Henry",
-   "borough": "Queens",
-   "address": "106-01 Corona Avenue",
-   "description": "This site is in person and by appointment only. Please contact the office at 718-651-1917 . for more information.",
-   "url": "https://nylag.org/event/senator-thomas-sponsoring/2026-12-11/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-11-0054"
-  },
-  {
-   "title": "Van at Council Member Alexa Avilés’ Office",
-   "start": "2026-12-14T10:00:00",
-   "end": "2026-12-14T15:00:00",
-   "all_day": false,
-   "venue": "Council Member Avilés",
-   "borough": "Brooklyn",
-   "address": "4417 4th Avenue",
-   "description": "This site is in person. Please contact the office at 718-439-9012 for more information.",
-   "url": "https://nylag.org/event/van-at-council-member-alexa-aviles-office-2-2/2026-12-14/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-14-0055"
-  },
-  {
-   "title": "Van at Council Member Rita Joseph Office",
-   "start": "2026-12-15T10:00:00",
-   "end": "2026-12-15T15:00:00",
-   "all_day": false,
-   "venue": "Council Member Rita Joseph Office",
-   "borough": "Brooklyn",
-   "address": "930 Flatbush Avenue",
-   "description": "This site is in person and by appointment only. Please contact the office at 718-287-8762 . for more information.",
-   "url": "https://nylag.org/event/van-at-council-member-rita-joseph-office/2026-12-15/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-15-0056"
-  },
-  {
-   "title": "Van at Council Member Zhuang’s Office",
-   "start": "2026-12-16T10:00:00",
-   "end": "2026-12-16T15:00:00",
-   "all_day": false,
-   "venue": "6514 20th Ave. Brooklyn, NY 11204",
-   "borough": "Brooklyn",
-   "address": "",
-   "description": "Call office at 718-307-7151 to make appointment.",
-   "url": "https://nylag.org/event/van-at-council-member-zhuang-office-2/2026-12-16/",
-   "image": null,
-   "kind": "Mobile Legal Help Center",
-   "format": "In person",
-   "free": true,
-   "source": "New York Legal Assistance Group",
-   "source_key": "nylag",
-   "source_url": "https://nylag.org/",
-   "need": "legal",
-   "id": "nylag-2026-12-16-0057"
+   "id": "foodbank-2026-12-10-0023"
   },
   {
    "title": "Financial Empowerment Session 5 – Spanish",
@@ -1206,7 +524,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-12-17-0058"
+   "id": "foodbank-2026-12-17-0024"
   },
   {
    "title": "Financial Empowerment Session 6 – English",
@@ -1226,7 +544,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2027-01-14-0059"
+   "id": "foodbank-2027-01-14-0025"
   },
   {
    "title": "Financial Empowerment Session 6 – Spanish",
@@ -1246,7 +564,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2027-01-21-0060"
+   "id": "foodbank-2027-01-21-0026"
   }
  ]
 }
