@@ -32,8 +32,11 @@ MUTATIONS = [
   "build_help.py", "never charge for anything.", "do not charge for most things."),
  ("a language page drops a heading translation",
   "i18n.py", '"food": "Comida",', '"food": "Food",'),
+ # .hfoot became the shared .footer in tokens.css (Sep 2026) and this went on
+ # targeting a rule that no longer existed: "DID NOT APPLY", every run.
  ("a dark surface loses its focus ring color",
-  "help.css", ".hfoot{ --focus:var(--gold-lit);", ".hfoot{ --focus:var(--green);"),
+  "tokens.css", ".footer{ position:relative; z-index:3; --focus:var(--gold-lit);",
+  ".footer{ position:relative; z-index:3; --focus:var(--green);"),
  ("the shared header is restyled on one half",
   "styles.css", ".sitehead{\n  position:fixed;", ".sitehead{\n  padding:40px;\n  position:fixed;"),
  ("a tap target shrinks",
@@ -60,10 +63,12 @@ MUTATIONS = [
   "build_help.py", '{" dir=\\"rtl\\"" if rtl else ""}>', '>'),
  ("a language page claims to be English",
   "build_help.py", '<html lang="{L["tag"]}"{" dir=', '<html lang="en"{" dir='),
+ # the resource's name became its outbound link; the old Website button this
+ # targeted is gone, so the mutation had stopped applying
  ("an outbound link stops being sandboxed",
   "build_help.py",
-  'href="{esc(r["Website"])}" target="_blank" rel="noopener"',
-  'href="{esc(r["Website"])}" target="_blank"'),
+  'target="_blank" rel="noopener">{esc(r["Resource Name"])}',
+  'target="_blank">{esc(r["Resource Name"])}'),
  ("a wrapping row becomes a column without nowrap",
   "help.css", ".find__top{ flex-direction:column; flex-wrap:nowrap; }",
   ".find__top{ flex-direction:column; }"),
