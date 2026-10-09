@@ -214,7 +214,7 @@ def featured_frag(doc, build_help):
         return []
 
     n = len(doc.get("events", []))
-    a = ['<section class="fev" aria-labelledby="fev-h">',
+    a = ['<section class="fev" id="featured" aria-labelledby="fev-h">',
          '  <div class="fev__top">',
          '    <div>',
          '      <h2 id="fev-h">Featured events</h2>',
@@ -364,7 +364,7 @@ def day_block(key, evs, build_help):
         ]
         if e.get("description"):
             a.append(f'        <p class="ev__b">{esc(trim(e["description"], 180))}</p>')
-        a.append(f'        <p class="ev__meta">{PIN}<span>{esc(where(e))}</span>'
+        a.append(f'        <p class="ev__meta"><span class="ev__at">{PIN}<span>{esc(where(e))}</span></span>'
                  f'<span class="ev__dot" aria-hidden="true">&middot;</span>'
                  f'<span class="ev__by">{esc(e["source"])}</span></p>')
         a.append('      </span>')

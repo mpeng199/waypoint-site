@@ -242,8 +242,18 @@ img,svg{ display:block; max-width:100%; }
    picture the page opened on. */
 :is(html.closing) .doorstage__poster{ --push:0; transform:none; will-change:auto; }
 :is(html.closing) .poster__panel{ transform:translate(0,-50%) perspective(820px) rotateY(-26deg); }
-:is(html.closing) .poster__glow{ transform:translate(-50%,-50%); opacity:1; }
-:is(html.closing) .poster__beam,:is(html.closing) .poster__pool{ opacity:1; will-change:auto; }
+/* Closed, but seen from the side the light is on. door.js's "out" mode, the
+   same beat on a desktop, turns off the shaft, the pool and the slit's glow,
+   because from the lit side nothing is being thrown into the room you are
+   standing in. The poster kept all three at full strength, and the closing
+   headline is set right across them: glyph-masked at 390px, 7% of its roman
+   glyph pixels and 10% of its italic ones measured under 3:1, the worst at
+   1.46:1. Dimmed this far the slit still reads as a door left ajar, and
+   nothing in the line drops under 3:1 at 768, 390, 375, 360 or 320 (the
+   worst glyph is 3.04:1, at 375x667). At .26 and .5, 320px still had a
+   sliver of italic at 2.76:1. */
+:is(html.closing) .poster__glow{ transform:translate(-50%,-50%); opacity:.2; }
+:is(html.closing) .poster__beam,:is(html.closing) .poster__pool{ opacity:.44; will-change:auto; }
 :is(html.closing) .poster__case{ --haze:.86; }
 
 @media (prefers-reduced-motion:reduce){
@@ -308,6 +318,7 @@ img,svg{ display:block; max-width:100%; }
 .sitehead{
   position:fixed; inset:0 0 auto 0;
   --head-bg:rgba(19,35,26,.55);
+  --head-solid:var(--green-deep);
   --head-line:var(--hair);
   --head-ink:var(--cream);
   --head-ink-2:var(--ink-soft);
@@ -325,23 +336,29 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 /* ---------- buttons (slim, not pills) ---------- */
 .btn{ display:inline-flex; align-items:center; gap:10px; font-family:var(--sans); font-weight:600; font-size:.9375rem;
   padding:13px 24px; border-radius:3px; border:1px solid rgba(252,254,247,.45); color:var(--cream); background:rgba(252,254,247,.04);
-  cursor:pointer; transition:background .3s var(--ease), border-color .3s, color .3s, transform .3s var(--ease); }
-.btn .arr{ transition:transform .3s var(--ease); }
+  cursor:pointer;
+  /* Hover recolours in --t-hover; the press (tokens.css) answers in --t-press.
+     The arrow's lean is the shared device in tokens.css. This rule used to
+     restate it without the hover gate, which is how a tapped button's arrow
+     stayed leaning on a phone. */
+  transition:background var(--t-hover) var(--ease), border-color var(--t-hover) var(--ease),
+    color var(--t-hover) var(--ease), scale var(--t-press) var(--ease-out); }
 .btn:hover{ background:rgba(252,254,247,.14); border-color:var(--cream); }
-.btn:hover .arr{ transform:translateX(4px); }
 .btn--solid{ background:var(--cream); color:var(--green); border-color:var(--cream); }
 .btn--solid:hover{ background:var(--gold); border-color:var(--gold); color:var(--green-deep); }
+/* The arrow leans on hover through the shared device. This used to widen the
+   gap as well, which moved the arrow a second time, and did it by laying the
+   link out again on every frame of the transition. */
 .tlink{ display:inline-flex; align-items:center; gap:9px; font-weight:600; font-size:.9375rem; color:var(--cream);
-  border-bottom:1px solid rgba(252,254,247,.5); padding-bottom:4px; transition:gap .25s var(--ease), border-color .25s; }
-.tlink .arr{ transition:transform .3s var(--ease); }
-.tlink:hover{ gap:13px; border-color:var(--gold); }
+  border-bottom:1px solid rgba(252,254,247,.5); padding-bottom:4px;
+  transition:border-color var(--t-hover) var(--ease), scale var(--t-press) var(--ease-out); }
+.tlink:hover{ border-color:var(--gold); }
 
 /* ============================================================
    BLUR-TO-FOCUS reveal
    ============================================================ */
 .focus-in{ filter:blur(16px); opacity:0; transform:translateY(26px) scale(.99);
-  transition:filter 1.1s var(--ease-out), opacity 1.1s var(--ease-out), transform 1.1s var(--ease-out);
-  transition-delay:calc(var(--d,0)*90ms); }
+  transition:filter 1.1s var(--ease-out), opacity 1.1s var(--ease-out), transform 1.1s var(--ease-out); }
 .focus-in.in{ filter:blur(0); opacity:1; transform:none; }
 
 /* ============================================================
@@ -404,6 +421,14 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .phrase{ font-family:var(--display); font-weight:400; letter-spacing:-.025em; line-height:1.02;
   font-size:clamp(2.6rem,6vw,5.4rem); text-shadow:0 2px 40px rgba(12,22,16,.55); }
 .phrase em{ font-style:italic; color:var(--gold); }
+/* Display lines are set, not poured: balanced, so a two-line phrase never
+   leaves one word hanging under a full line. Prose gets `pretty`, which only
+   ever moves a word or two near the end of a paragraph so its last line is
+   not an orphan. Both fall back to ordinary wrapping where unsupported. Not
+   on .ways__blurb, whose three-line reserve is a promise `pretty` could break
+   by adding a line. */
+.phrase,.panel h3,.phero__title,.role__head h2,.role__close h2{ text-wrap:balance; }
+.say,.beat,.vow,.vow__full,.phero__lede,.role__body > p,.creed p{ text-wrap:pretty; }
 .scene--center .phrase{ font-size:clamp(2.8rem,7vw,6.4rem); }
 .say{ margin-top:24px; font-size:clamp(1.08rem,1.6vw,1.4rem); color:var(--cream); max-width:42ch; line-height:1.55;
   text-shadow:0 1px 24px rgba(12,22,16,.7); }
@@ -415,11 +440,6 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 /* opening scene flourishes */
 .eyebrow{ font-size:.8125rem; letter-spacing:.24em; text-transform:uppercase; color:var(--ink-faint);
   margin-bottom:24px; display:inline-block; }
-.scrollcue{ position:absolute; bottom:5vh; left:50%; transform:translateX(-50%); z-index:3;
-  font-size:.6875rem; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); display:flex; flex-direction:column; align-items:center; gap:10px; }
-.scrollcue i{ width:1px; height:46px; background:linear-gradient(var(--cream), transparent); position:relative; overflow:hidden; }
-.scrollcue i::after{ content:""; position:absolute; inset:0; top:-100%; background:var(--gold); animation:cue 2s var(--ease) infinite; }
-@keyframes cue{ to{ top:100%; } }
 
 /* (key-term pills removed — did not fit the theme) */
 
@@ -427,6 +447,11 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .scene--wide .scene__inner{ max-width:min(760px,94%); }
 .panel{ background:rgba(16,26,20,.66); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   border:1px solid rgba(252,254,247,.16); border-radius:16px; padding:clamp(28px,4vw,52px); box-shadow:0 30px 80px -40px rgba(0,0,0,.7); }
+/* A form is the last thing that should have a painting moving through it for
+   somebody who has asked for less transparency. */
+@media (prefers-reduced-transparency:reduce){
+  .panel{ background:var(--green-deep); backdrop-filter:none; -webkit-backdrop-filter:none; }
+}
 .panel .ey{ color:var(--gold); }
 .panel h3{ font-family:var(--display); font-weight:400; font-size:clamp(1.7rem,3.4vw,2.5rem); letter-spacing:-.02em; margin-top:10px; }
 .panel h3 em{ font-style:italic; color:var(--gold); }
@@ -438,14 +463,6 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 /* the same door at the foot of a hold stream, which is a grid and spaces it */
 .hold__cta{ margin-top:4px; }
 
-/* join scene — three quiet doorways */
-.doors{ margin-top:36px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-.door{ display:block; padding:26px 24px; border:1px solid rgba(252,254,247,.22); border-radius:8px;
-  background:rgba(19,35,26,.32); backdrop-filter:blur(6px); transition:background .35s var(--ease), border-color .35s, transform .35s var(--ease); }
-.door:hover{ background:rgba(19,35,26,.5); border-color:var(--gold); transform:translateY(-5px); }
-.door h3{ font-family:var(--display); font-weight:500; font-size:1.4rem; margin-bottom:8px; }
-.door p{ font-size:.875rem; color:var(--ink-soft); margin-bottom:18px; }
-@media (max-width:760px){ .doors{ grid-template-columns:1fr; } }
 
 /* ============================================================
    FOOTER (solid, arrival)
@@ -518,9 +535,15 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .form__legal{ grid-column:1/13; margin-top:2px; font-size:.8125rem; color:var(--ink-faint); }
 .form__legal a{ color:var(--gold); border-bottom:1px solid rgba(231,197,126,.5); }
 .form__ok{ grid-column:1/13; display:none; padding:18px 20px; border:1px solid var(--gold); border-radius:8px; background:rgba(231,197,126,.1); color:var(--cream); font-size:.9375rem; }
-.form__ok.show{ display:block; }
+/* The answer to a send arrives rather than appears. On success the fields
+   leave in one cut and this takes their place, so without a beat of entrance
+   the panel simply became a different, shorter panel. It is the one moment on
+   the page where somebody has done something, and it should land like it.
+   Keyframes, not a transition: it comes out of display:none, once. */
+.form__ok.show{ display:block; animation:arrive .32s var(--ease-out); }
 .form__err{ grid-column:1/13; display:none; padding:14px 18px; border:1px solid rgba(224,134,88,.55); border-radius:8px; background:rgba(224,134,88,.12); color:#f6e3d7; font-size:.875rem; }
-.form__err.show{ display:block; }
+.form__err.show{ display:block; animation:arrive .32s var(--ease-out); }
+@keyframes arrive{ from{ opacity:0; transform:translateY(6px); } }
 /* The spam honeypot. Clipped rather than parked at -9999px for the same
    reason the skip link is: a physical offset is off the end of the
    document rather than off-screen the moment a page runs right to left,
@@ -690,17 +713,36 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 
    A text-shadow is the obvious reach and the wrong instrument: it is part of
    how the text is drawn, not part of the ground behind it, so it earns
-   nothing under the only measurement that matters. A background on the
-   element paints behind that element's own glyphs, which is exactly what is
-   being measured, and this one fades to nothing well inside its own box, so
-   it reads as the depth the door already has rather than as a panel.
+   nothing under the only measurement that matters. A ground painted behind
+   the headline's own glyphs is exactly what is being measured, so that is
+   where this goes; the note under the rule says why it is a pseudo-element.
 
    .55 is the LIGHTEST of three tested that clears AA: the worst run of type
    goes from 1.64:1 to 4.08:1. The beam is still the brightest thing here. */
-.hero__head{ background:radial-gradient(75% 150% at 50% 50%,
-    rgba(8,15,11,.55) 0%, rgba(8,15,11,.4) 52%, rgba(8,15,11,0) 78%);
+.hero__head{ position:relative; isolation:isolate;
   grid-area:2/1/3/3; margin:0; font-weight:400; display:grid;
   grid-template-columns:1fr 1fr; grid-template-rows:auto auto; align-content:space-between; }
+/* The ground is a pseudo-element because on the element itself it could not
+   fade out. A radial gradient can only finish inside its box if its last stop
+   comes before the box ends, and this one (150% of the height, transparent at
+   78%) never did: at the headline's top and bottom edges it was still about
+   .45 dark, and it stopped there in a straight line. On a desktop that line
+   ran across the door, so the brightest thing on the page, the slit of light,
+   was cut into three pieces, with a hard step at the top of the headline and
+   another at its foot. The same frame with the ground removed showed the
+   steps were the only thing it changed.
+
+   The box below is the headline's own, plus 46% of its height above and below
+   and 8% of its width either side, and `closest-side` puts the transparent
+   stop exactly on that box's edge, so wherever the edge falls it falls
+   outside the type and fades to nothing on the way. Same three stops as
+   before. Glyph-masked, the worst run of gold italic is 4.0:1 at 390px and
+   3.8:1 at 360 (was 4.2 and 4.1: still clear of the 3:1 large type needs),
+   and on a desktop the only glyph pixels under 3:1 are the ones sitting on
+   the slit's white-hot core, 0.8% of them, the same share as before. */
+.hero__head::before{ content:""; position:absolute; z-index:-1; inset:-46% -8%;
+  pointer-events:none;
+  background:radial-gradient(closest-side, rgba(8,15,11,.55) 0%, rgba(8,15,11,.4) 52%, rgba(8,15,11,0) 100%); }
 .hero__l,.hero__r{ display:block; font-family:var(--display); font-weight:400; letter-spacing:-.032em;
   line-height:.95; font-size:clamp(2.5rem,6.4vw,6rem); text-shadow:0 2px 50px rgba(6,12,9,.8); }
 .hero__l em,.hero__r em{ font-style:italic; color:var(--gold); }
@@ -713,8 +755,42 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .hero__cue{ grid-area:3/2/4/3; align-self:end; justify-self:end; display:flex; align-items:center; gap:14px;
   font-size:.6875rem; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-faint); white-space:nowrap; }
 .hero__cue i{ width:clamp(40px,7vw,74px); height:1px; background:rgba(252,254,247,.26); position:relative; overflow:hidden; }
-.hero__cue i::after{ content:""; position:absolute; top:0; bottom:0; left:-100%; width:100%; background:var(--gold); animation:cue-x 2.4s var(--ease) infinite; }
-@keyframes cue-x{ to{ left:100%; } }
+.hero__cue i::after{ content:""; position:absolute; top:0; bottom:0; left:0; width:100%; background:var(--gold);
+  transform:translateX(-100%); animation:cue-x 2.4s var(--ease) infinite; }
+/* The cue says "scroll", and once somebody has, it has said it. It animated
+   `left`, which is laid out on the main thread, every frame, for the life of
+   the page: long after the hero had faded out, on a page whose own loops go
+   to sleep the moment the reader stops. On transform it runs on the
+   compositor, and past the door it stops (only where script can say where the
+   door is; without it the cue simply keeps on, now for nothing). */
+html.hasjs:not(.at-door) .hero__cue i::after{ animation:none; }
+@keyframes cue-x{ to{ transform:translateX(100%); } }
+
+/* ---------- the first frame arrives in reading order ----------
+   The one moment on the page that happens once, before anybody has scrolled,
+   so it is where the page spends its delay: the kicker, then the claim, then
+   the answer to it, then the two ways out, then the cue. It is the same
+   blur-to-focus the scenes use on the way down, shorter and nearer, so the
+   page has one way of arriving rather than two.
+
+   Desktop only. A phone pays for every frame of this in Speed Index (PERF.md
+   is why the mobile score is 84), and the person on the phone is the likelier
+   of the two to have a bill in their hand rather than a volunteer programme
+   to compare. They get the finished frame at once, as they always did.
+   Nothing waits on this: every control is live from the first frame, and
+   reduced motion removes it along with every other animation. `backwards`,
+   not `both`: the last frame is each element's own resting style, so once it
+   has played nothing needs to stay applied, and five finished animations do
+   not go on holding a filter for the life of the page. */
+@media (min-width:901px){
+  .hero__eye,.hero__l,.hero__r,.hero__foot,.hero__cue{
+    animation:hero-in .9s var(--ease-out) backwards; }
+  .hero__l{ animation-delay:.08s; }
+  .hero__r{ animation-delay:.26s; }
+  .hero__foot{ animation-delay:.44s; }
+  .hero__cue{ animation-delay:.62s; }
+}
+@keyframes hero-in{ from{ opacity:0; transform:translateY(14px); filter:blur(8px); } }
 
 /* ============================================================
    HOLD SCENES — the phrase holds its place while the substance
@@ -759,11 +835,11 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .vow__more{ margin-top:26px; }
 .vow__more > summary{ display:inline-flex; align-items:center; gap:9px; cursor:pointer;
   font-family:var(--sans); font-size:.875rem; letter-spacing:.02em; color:var(--ink-soft);
-  padding:7px 2px; list-style:none; transition:color .3s var(--ease); }
+  padding:7px 2px; list-style:none; transition:color var(--t-hover) var(--ease); }
 .vow__more > summary::-webkit-details-marker{ display:none; }   /* Safari's triangle */
 .vow__more > summary::after{ content:""; width:7px; height:7px; flex:none;
   border-right:1.2px solid currentcolor; border-bottom:1.2px solid currentcolor;
-  transform:translateY(-2px) rotate(45deg); transition:transform .35s var(--ease); }
+  transform:translateY(-2px) rotate(45deg); transition:transform var(--t-hover) var(--ease-out); }
 .vow__more[open] > summary::after{ transform:translateY(1px) rotate(-135deg); }
 .vow__more > summary:hover{ color:var(--gold); }
 .vow__body{ padding-top:6px; }
@@ -966,6 +1042,7 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 @media (prefers-reduced-motion:reduce){
   *{ animation:none !important; transition-duration:.01ms !important; }
   .focus-in{ filter:none; opacity:1; transform:none; }
+  .ways__row:active .ways__sign{ scale:none; }
   .stage__layer{ transform:none !important; }
   /* the door is still there, already open; stepping through is a cut, not a move */
   .hero{ height:100svh; }
@@ -1050,7 +1127,11 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
    A + that rotates to a − is one transform; swapping glyphs is a repaint you
    can see land. */
 .ways__sign{ position:relative; flex:none; width:17px; height:17px; color:var(--ink-faint);
-  transition:color .35s var(--ease); }
+  transition:color .35s var(--ease), scale var(--t-press) var(--ease-out); }
+/* The press lands on the sign, not the row. A row is the width of the column,
+   and a whole row sinking under a click reads as the section moving; the sign
+   is what the click is about, so the sign is what gives. */
+.ways__row:active .ways__sign{ scale:.8; }
 .ways__sign::before,.ways__sign::after{ content:""; position:absolute; left:0; right:0; top:50%;
   height:1.4px; background:currentColor; transform:translateY(-50%);
   transition:transform .5s var(--ease-out); }
@@ -1094,9 +1175,15 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
   max-width:44ch;
   min-height:calc(1.62em * 3 + clamp(18px,2.6vh,26px));
   opacity:1; transform:none;
-  transition:opacity .42s var(--ease-out) .06s, transform .42s var(--ease-out) .06s; }
+  /* Leaving is quicker than arriving. The words go in --t-press, so on a swap
+     the old description is gone before the new one starts: two paragraphs
+     half-visible in one place is the double exposure the doorstage handover
+     goes out of its way to avoid. Arriving keeps its .42s and its beat of
+     delay, so the row has begun to open before there is text in it. */
+  transition:opacity var(--t-press) var(--ease), transform var(--t-press) var(--ease); }
 .ways--js .ways__blurb{ opacity:0; transform:translateY(7px); }
-.ways--js .ways__row[aria-expanded="true"] + .ways__body .ways__blurb{ opacity:1; transform:none; }
+.ways--js .ways__row[aria-expanded="true"] + .ways__body .ways__blurb{ opacity:1; transform:none;
+  transition:opacity .42s var(--ease-out) .06s, transform .42s var(--ease-out) .06s; }
 
 /* ---------- the doors, narrow ---------- */
 @media (max-width:900px){
@@ -1146,7 +1233,8 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .langcue a{ display:inline-flex; align-items:center; min-height:44px;
   padding:8px 15px; border-radius:100px; font-size:.9375rem; font-weight:500;
   color:var(--cream); border:1px solid rgba(252,254,247,.28);
-  transition:border-color .25s var(--ease), background .25s var(--ease); }
+  transition:border-color .25s var(--ease), background .25s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .langcue a:hover, .langcue a:focus-visible{ border-color:var(--gold);
   background:rgba(231,197,126,.14); }
 

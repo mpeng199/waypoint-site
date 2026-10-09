@@ -102,6 +102,7 @@ b,strong{ font-weight:600; }
 .sitehead{
   position:sticky; top:0;
   --head-bg:rgba(252,254,247,.90);
+  --head-solid:var(--cream);
   --head-line:var(--line);
   --head-ink:var(--ink);
   --head-ink-2:var(--ink-2);
@@ -196,7 +197,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   padding:8px 16px; border:1.5px solid var(--line); border-radius:999px;
   background:var(--surface); text-decoration:none; font-weight:500;
   font-size:1rem; color:var(--ink);
-  transition:border-color .16s var(--ease), background .16s var(--ease); }
+  transition:border-color .16s var(--ease), background .16s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .langbar__list a:hover{ border-color:var(--green-2); background:var(--line-2); }
 
 /* Closed until its own id is the fragment. No script involved: this is the
@@ -313,8 +315,13 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .sos__list a{ display:flex; flex-direction:column; gap:2px; text-decoration:none; min-width:0;
   background:var(--surface); border-radius:var(--r-s);
   padding:14px 16px; min-height:60px; height:100%; justify-content:center;
-  transition:transform .16s var(--ease), box-shadow .16s var(--ease); }
-.sos__list a:hover{ transform:translateY(-2px); box-shadow:var(--shadow-up); }
+  transition:transform .16s var(--ease), box-shadow .16s var(--ease),
+    scale var(--t-press) var(--ease-out); }
+/* The lift is a hover invitation, so it only exists where something can
+   hover. A tap on a phone fires :hover and leaves it on, which left the number
+   somebody had just called floating above the other three. */
+.sos__list a:hover{ box-shadow:var(--shadow-up); }
+@media (hover:hover) and (pointer:fine){ .sos__list a:hover{ transform:translateY(-2px); } }
 .sos__num{ font-family:var(--display); font-size:1.55rem; color:var(--urgent); line-height:1.1; }
 .sos__for{ font-size:.9rem; color:var(--ink-2); line-height:1.35; }
 .sos__note{ margin-top:16px; font-size:.94rem; color:rgba(253,246,243,.88); max-width:70ch; }
@@ -432,8 +439,11 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .facet__btn::after{ content:""; position:absolute; inset-inline:0;
   inset-block-end:0; height:2px; background:var(--green);
   transform:scaleX(0); transition:transform .18s var(--ease); }
-.facet__btn:hover::after,
 .facet[open] > .facet__btn::after{ transform:scaleX(1); }
+@media (hover:hover) and (pointer:fine){ .facet__btn:hover::after{ transform:scaleX(1); } }
+/* A segment of the bar does not shrink under a press: it would come away from
+   the bar's own edges. It darkens instead, for as long as it is held. */
+.facet__btn:active,.facet[open] > .facet__btn:active{ background:var(--line); }
 
 /* A facet icon is read as a shape before the label is read as a word. */
 .facet__ico{ width:19px; height:19px; flex:none; color:var(--ink-3);
@@ -517,7 +527,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   width:100%; text-align:start;
   background:none; color:var(--ink-2); border:0; border-radius:var(--r-s);
   padding:9px 12px; min-height:44px;
-  transition:background .14s var(--ease), color .14s var(--ease); }
+  transition:background .14s var(--ease), color .14s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .chip:hover{ background:var(--line-2); color:var(--ink); }
 .chip[aria-pressed="true"]{ color:var(--ink); font-weight:600; }
 
@@ -570,7 +581,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   font-size:.94rem; font-weight:600; cursor:pointer; min-height:44px;
   padding:9px 15px; border:1.5px solid var(--line); border-radius:999px;
   background:var(--surface); color:var(--ink); flex:none;
-  transition:border-color .16s var(--ease), background .16s var(--ease); }
+  transition:border-color .16s var(--ease), background .16s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .printbtn:hover{ border-color:var(--green-2); background:var(--line-2); }
 .printbtn .ico{ width:18px; height:18px; }
 
@@ -587,6 +599,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    a page built for that one kind of help. Nobody has to read past the cluster
    that matches their sentence. */
 .clusters{ margin-bottom:clamp(34px,6vw,60px); scroll-margin-top:calc(var(--head-h) + 14px); }
+/* the other two places the header's Find help menu jumps to */
+.find,.fev{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .clusters__head h2{ font-size:clamp(1.7rem,1.3rem + 1.6vw,2.4rem); }
 .clusters__say{ margin-top:.55em; color:var(--ink-2); max-width:56ch; }
 
@@ -603,7 +617,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   padding:6px 14px; border:1.5px solid var(--line); border-radius:var(--r-pill);
   background:var(--surface); font-size:.9rem; font-weight:500;
   text-decoration:none; color:var(--ink-2);
-  transition:border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease); }
+  transition:border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .jump a:hover{ border-color:var(--green-2); background:var(--line-2); color:var(--ink); }
 
 .clusters__grid{ display:grid; gap:14px;
@@ -654,7 +669,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   min-height:44px; padding:5px 14px; border-radius:var(--r-pill);
   background:var(--line-2); border:1.5px solid var(--line);
   font-size:.86rem; font-weight:600; color:var(--green);
-  text-decoration:none; transition:background .16s var(--ease), border-color .16s var(--ease); }
+  text-decoration:none; transition:background .16s var(--ease), border-color .16s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .pv__call:hover{ background:var(--mint-2); border-color:var(--green-2); }
 .pv__call .ico{ width:15px; height:15px; flex:none; }
 
@@ -704,7 +720,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   font-weight:600; color:var(--green); text-decoration:none; }
 .crumb a:hover{ text-decoration:underline; text-underline-offset:3px; }
 .crumb__back{ color:var(--gold-deep); }
-.crumb a:hover .crumb__back{ transform:translateX(-4px); }
+@media (hover:hover) and (pointer:fine){ .crumb a:hover .crumb__back{ transform:translateX(-4px); } }
 /* --line is 1.26:1 against the page: the separator was there and nobody
    could see it, so the breadcrumb read as two words with a gap. */
 .crumb__sep{ color:var(--ink-3); }
@@ -740,7 +756,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   gap:8px; min-height:44px; padding:6px 13px; border-radius:var(--r-pill);
   border:1px solid var(--line-2); background:none;
   font-size:.86rem; font-weight:500; color:var(--ink-2); text-decoration:none;
-  transition:border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease); }
+  transition:border-color .16s var(--ease), background .16s var(--ease), color .16s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .rail__nav a:hover{ border-color:var(--green-2); background:var(--line-2); color:var(--ink); }
 /* The label wraps inside its own box; the count never leaves the first line.
    Letting the anchor itself wrap put the number underneath a three-line
@@ -766,7 +783,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   align-items:center; min-height:52px; padding:10px 14px;
   border:1.5px solid var(--line); border-radius:var(--r-s);
   background:var(--surface); text-decoration:none; color:var(--ink);
-  transition:border-color .16s var(--ease), background .16s var(--ease); }
+  transition:border-color .16s var(--ease), background .16s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .sibs a:hover{ border-color:var(--green-2); background:var(--line-2); }
 .sibs .ico{ width:20px; height:20px; color:var(--green-2); }
 .sibs__t{ font-size:.93rem; line-height:1.3; }
@@ -885,7 +903,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .call{ display:inline-flex; align-items:center; gap:10px; text-decoration:none;
   background:var(--green); color:var(--mint); border-radius:var(--r-s);
   padding:11px 18px; min-height:52px; font-weight:600;
-  transition:background .16s var(--ease); }
+  transition:background .16s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .call:hover{ background:var(--green-2); }
 .call .ico{ width:20px; height:20px; flex:none; }
 .call span{ display:flex; flex-direction:column; line-height:1.2; min-width:0; }
@@ -1266,8 +1285,17 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    is what is genuinely directional, and what must stay LTR inside a mirrored
    page. */
 [dir="rtl"] .arr{ transform:scaleX(-1); }
-[dir="rtl"] :where(a,button):hover > .arr,
-[dir="rtl"] :where(a,button):hover .arr{ transform:scaleX(-1) translateX(4px); }
+@media (hover:hover) and (pointer:fine){
+  [dir="rtl"] :where(a,button):hover > .arr,
+  [dir="rtl"] :where(a,button):hover .arr{ transform:scaleX(-1) translateX(4px); }
+}
+/* The shared reduced-motion rule sets a hovered arrow to transform:none, which
+   on a mirrored page would turn it back to point the wrong way, and it loses
+   to the rule above on specificity anyway, so a mirrored arrow went on
+   leaning for a reader who had asked for no movement. Mirrored, still. */
+@media (prefers-reduced-motion:reduce){
+  [dir="rtl"] :where(a,button):hover .arr{ transform:scaleX(-1); }
+}
 [dir="rtl"] .pv__call,[dir="rtl"] .sos__num{ direction:ltr; }
 [dir="rtl"] .cl__pv--bare .pv__n{ text-align:start; }
 
@@ -1295,7 +1323,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   display:grid; place-items:center; background:var(--surface);
   border:1.5px solid var(--line); color:var(--green);
   transition:background .18s var(--ease), border-color .18s var(--ease),
-    color .18s var(--ease), transform .18s var(--ease); }
+    color .18s var(--ease), transform .18s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .fev__arw:hover:not(:disabled){ background:var(--green); border-color:var(--green);
   color:var(--cream); }
 .fev__arw:disabled{ opacity:.34; cursor:default; }
@@ -1312,9 +1341,10 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   background:var(--surface); border:1.5px solid var(--line);
   border-radius:var(--r); overflow:hidden; box-shadow:var(--shadow);
   transition:border-color .18s var(--ease), box-shadow .18s var(--ease),
-    transform .18s var(--ease); }
+    transform .18s var(--ease), scale var(--t-press) var(--ease-out); }
 .fev__c--lead .fev__card{ flex-direction:row; align-items:stretch; }
-.fev__card:hover{ border-color:var(--green-2); transform:translateY(-2px); }
+.fev__card:hover{ border-color:var(--green-2); }
+@media (hover:hover) and (pointer:fine){ .fev__card:hover{ transform:translateY(-2px); } }
 
 /* The painted panel. One hue family per category, all out of tokens.css. */
 .fev__pic{ position:relative; display:block; flex:none; }
@@ -1347,6 +1377,19 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   padding:clamp(15px,1.9vw,22px); }
 .fev__h{ font-family:var(--display); font-size:clamp(1.05rem,2.1vw,1.35rem);
   line-height:1.2; margin:0; color:var(--green-deep); }
+/* A feed decides how long a title is, and nothing upstream limits it. One
+   140-character canoe tour made every card in the row 551px tall, the "Yoga"
+   beside it mostly blank. Three lines on a card and four on the lead keep the
+   row the height of what most titles need; the full title stays the link's own
+   text, so its accessible name is whole, and events.html prints it in full.
+   The clamp sits on the link, not the heading: an element's overflow never
+   clips its own outline, so the focus ring survives, and the stretched hit
+   area is positioned against the card, outside the clip, so it survives too.
+   On the heading the clamp cut the ring, and padding it clear of the ring
+   showed the top of the hidden line under the ellipsis. */
+.fev__h a{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3;
+  overflow:hidden; }
+.fev__c--lead .fev__h a{ -webkit-line-clamp:4; }
 .fev__c--lead .fev__h{ font-size:clamp(1.25rem,2.7vw,1.7rem); }
 .fev__h a{ color:inherit; text-decoration:none; }
 /* One stretched hit area over the whole card, so the card is clickable while
@@ -1363,8 +1406,9 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .fev__c--lead .fev__meta{ margin-top:.9em; }
 .fev__meta{ margin:auto 0 0; padding-top:.85em; display:flex; flex-wrap:wrap;
   align-items:center; gap:6px 9px; color:var(--green-4); font-size:.88rem; }
-.fev__m{ display:inline-flex; align-items:center; gap:6px; min-width:0; }
-.fev__m .ico{ width:15px; height:15px; flex:none; color:var(--gold-deep); }
+.fev__m{ display:inline-flex; align-items:flex-start; gap:6px; min-width:0; }
+.fev__m .ico{ width:15px; height:15px; flex:none; color:var(--gold-deep);
+  margin-top:calc((1lh - 15px) / 2); }
 .fev__sep{ color:var(--line); }
 .fev__go{ margin-top:.9em; display:inline-flex; align-items:center; gap:8px;
   font-weight:600; font-size:.95rem; color:var(--green); }
@@ -1441,7 +1485,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .cal__arw{ width:32px; height:32px; border-radius:8px; cursor:pointer;
   display:grid; place-items:center; background:none; border:1.5px solid var(--line);
   color:var(--green); transition:background .16s var(--ease),
-    border-color .16s var(--ease), color .16s var(--ease); }
+    border-color .16s var(--ease), color .16s var(--ease),
+    scale var(--t-press) var(--ease-out); }
 .cal__arw:hover:not(:disabled){ background:var(--mint-2);
   border-color:var(--green-2); }
 .cal__arw:disabled{ opacity:.3; cursor:default; }
@@ -1530,6 +1575,16 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .ev__meta{ margin:.5em 0 0; display:flex; align-items:center; flex-wrap:wrap;
   gap:4px 8px; color:var(--green-4); font-size:.86rem; }
 .ev__meta .ico{ width:14px; height:14px; flex:none; color:var(--gold-deep); }
+/* The pin and the place travel together. As separate items in a wrapping row,
+   a place name too long for what was left of the line went down to the next
+   one on its own and left the pin behind on a line by itself, which at 320px
+   happened with real listings ("Chinatown YMCA Beacon, Manhattan"). Grouped,
+   the place wraps beside its pin. */
+.ev__at{ display:inline-flex; align-items:flex-start; gap:6px; min-width:0; }
+/* and once it can wrap, the pin belongs to the first line of the place, not
+   the middle of three. 1lh where it is understood; elsewhere the pin sits at
+   the top of the line, which is still the right line. */
+.ev__at .ico{ margin-top:calc((1lh - 14px) / 2); }
 .ev__dot{ color:var(--line); }
 .ev__by{ font-weight:600; }
 .ev__tags{ grid-column:2; display:flex; flex-wrap:wrap; gap:5px;
@@ -1614,7 +1669,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    on order. Below 900px the bar does not follow the page, so 14px is the
    whole clearance a jump needs. */
 @media (max-width:900px){
-  .clusters,.cl,.results,.dir,.grp,.r,.days,.day,.tellus{ scroll-margin-top:14px; }
+  .clusters,.cl,.results,.dir,.grp,.r,.days,.day,.tellus,.find,.fev{ scroll-margin-top:14px; }
 }
 
 /* The featured-events carousel on a phone — and, like the scroll-margins

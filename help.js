@@ -38,6 +38,47 @@
      half of that, can only ever be added from here. A page without this
      script keeps a solid bar. */
   document.documentElement.classList.add("hasjs");
+  /* WebKit on iOS shows :active only while a touch listener exists somewhere
+     on the page (see script.js), and this page has none of its own. */
+  document.addEventListener("touchstart", function () {}, { passive: true });
+  /* The Find help menu in the header. A <details> opens and shuts on its own;
+     this adds what a dropdown needs and a disclosure does not do. Escape
+     closes it and puts you back on the pill, and a click anywhere else closes
+     it. So does choosing one of its links: on the directory's front page the
+     jump happens without a page load, and the panel would sit open over the
+     place it just took you to. The directory's filter dropdowns do the same. */
+  var findmenu = document.querySelector(".findmenu");
+  if (findmenu) {
+    /* Opened from the keyboard, the panel simply appears: a keyboard action
+       does not wait on an animation (MOTION.md). Decided on the key that opens
+       it, before the panel exists, and held until it shuts. Keyed off the
+       pill's own focus ring instead, the entrance replayed the moment Tab
+       moved into the list, because the ring moves with it. */
+    var pill = findmenu.querySelector("summary");
+    pill.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") findmenu.setAttribute("data-keyed", "");
+    });
+    pill.addEventListener("pointerdown", function () { findmenu.removeAttribute("data-keyed"); });
+    document.addEventListener("click", function (e) {
+      if (!findmenu.open) return;
+      var inLink = e.target.closest && e.target.closest(".findmenu__list a");
+      if (inLink || !findmenu.contains(e.target)) findmenu.open = false;
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape" || !findmenu.open) return;
+      findmenu.open = false;
+      pill.focus();
+    });
+  }
+  /* Scrolling this file asks for by hand has to ask the reader first. An
+     explicit behavior:"smooth" overrides the stylesheet, so the CSS that turns
+     smooth scrolling off under reduced motion never reached the carousel's
+     arrows or the calendar's jump to a day. Asked at the moment of scrolling,
+     so a setting changed with the page open is honoured. */
+  function glide() {
+    return window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  }
 
   /* The header is the same object as the narrative side's, and it follows the
      same rule: transparent at the top of the page, the page's own ground once
@@ -164,7 +205,7 @@
       Array.prototype.forEach.call(arws, function (b) {
         b.addEventListener("click", function () {
           var dir = b.getAttribute("data-fev") === "prev" ? -1 : 1;
-          track.scrollBy({ left: dir * step(), behavior: "smooth" });
+          track.scrollBy({ left: dir * step(), behavior: glide() });
         });
       });
       track.addEventListener("scroll", sync, { passive: true });
@@ -314,7 +355,7 @@
             e.preventDefault();
             apply();
             var b = document.getElementById("d-" + picked);
-            if (b) { b.scrollIntoView({ behavior: "smooth", block: "start" }); }
+            if (b) { b.scrollIntoView({ behavior: glide(), block: "start" }); }
           } else {
             e.preventDefault();
             apply();
@@ -1243,6 +1284,41 @@
 
   var findBlock = document.querySelector(".find");
   if (findBlock) findBlock.hidden = false;
+
+  /* "Search for help" in the header's Find help menu arrives with the cursor
+     already in the box. From another page that is help.html#search, and the
+     focus waits for the reveal above. On this page the link is taken over,
+     because the browser would only scroll, and a phone opens its keyboard only
+     for a focus that happens inside the tap itself, so it is given here,
+     synchronously, while the scroll is still under way. Paths are compared
+     without ".html" because the host may serve this page as /help. */
+  if (q && findBlock) {
+    var bare = function (p) { return p.replace(/\.html$/, "").replace(/\/index$/, "/"); };
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href$="#search"]');
+      if (!a || bare(a.pathname) !== bare(location.pathname)) return;
+      e.preventDefault();
+      findBlock.scrollIntoView({ block: "start", behavior: glide() });
+      q.focus({ preventScroll: true });
+      if (history.replaceState) history.replaceState(null, "", "#search");
+    });
+    if (location.hash === "#search") {
+      /* Arriving at #search, the browser's own handling of the fragment runs
+         just after this script and, because its target is a section rather
+         than a control, clears focus back to the page: measured, the cursor
+         was in the box for one millisecond. So it goes in now, and again once
+         that has happened, but only while nothing else has focus. A reader who
+         has already clicked somewhere keeps the focus they chose. */
+      var land = function () {
+        if (!document.activeElement || document.activeElement === document.body) {
+          q.focus({ preventScroll: true });
+        }
+      };
+      q.focus({ preventScroll: true });
+      setTimeout(land, 0);
+      addEventListener("load", land);
+    }
+  }
 
   /* The filters are a refinement, not the way in. Open where the space is
      free; closed on a phone, where nineteen chips is three screens between

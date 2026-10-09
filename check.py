@@ -6615,6 +6615,700 @@ def check_the_footer_is_one_object():
         ok("the second footer object is gone, markup and CSS")
 
 
+# ---------------------------------------------------------------------------
+# Motion. MOTION.md carries the reasoning; these hold the parts of it that an
+# edit can undo without anything looking wrong on the laptop it was made on —
+# a hover lift only misbehaves under a thumb, per-frame smoothing only runs
+# fast on a 120Hz screen, and a missing press is invisible until somebody taps
+# a phone number on a slow phone and cannot tell whether it registered.
+# ---------------------------------------------------------------------------
+MOTION_SHEETS = ("tokens.css", "styles.css", "help.css")
+
+# Every control that gives under a press, and the sheet whose own rule for it
+# has to carry `scale` in its transition list, or the give is a jump rather
+# than a movement. Named here, not read out of tokens.css: a guard must not ask
+# the code under test what the right answer is.
+PRESSABLE = {
+    ".btn": "styles.css", ".tlink": "styles.css", ".langcue a": "styles.css",
+    ".sitehead__links a": "tokens.css", ".sitehead__links summary": "tokens.css",
+    ".call": "help.css", ".pv__call": "help.css", ".printbtn": "help.css",
+    ".jump a": "help.css", ".langbar__list a": "help.css",
+    ".rail__nav a": "help.css", ".chip": "help.css", ".fev__arw": "help.css",
+    ".cal__arw": "help.css",
+}
+# Wide surfaces give less: the same scale moves a card's edges further.
+PRESSABLE_WIDE = {".sos__list a": "help.css", ".sibs a": "help.css",
+                  ".fev__card": "help.css"}
+
+
+def _css_rules(css):
+    """(enclosing at-rule preludes, selector text, body) for every style rule,
+    comments removed. The flat regex the older guards use cannot say whether a
+    rule sits inside @media (hover:hover), which is the whole question below."""
+    css = re.sub(r"/\*.*?\*/", " ", css, flags=re.S)
+    out, stack, buf, i = [], [], "", 0
+    while i < len(css):
+        ch = css[i]
+        if ch == "{":
+            prelude, buf = buf.strip(), ""
+            if prelude.startswith("@"):
+                stack.append(prelude)
+                i += 1
+                continue
+            j = css.index("}", i)
+            out.append((tuple(stack), prelude, css[i + 1:j]))
+            i = j + 1
+            continue
+        if ch == "}":
+            if stack:
+                stack.pop()
+            buf = ""
+        else:
+            buf += ch
+        i += 1
+    return out
+
+
+def _selectors(sel):
+    return [s.strip() for s in re.split(r",(?![^(]*\))", sel)]
+
+
+def check_motion_speaks_one_language():
+    """One set of curves, no unbounded transitions, nothing from nothing.
+
+    tokens.css holds every cubic-bezier on the site: a sheet that types its own
+    is how two nearly identical curves end up disagreeing in one interface.
+    `transition: all` animates whatever happens to change, layout included.
+    `ease-in` starts slow at exactly the moment the eye is on the thing. A
+    scale(0) entrance arrives from nowhere. And the motion hooks deleted in
+    October 2026 because nothing rendered them stay deleted: an orphaned
+    keyframe is how a dead scroll cue goes on animating on a page that has
+    forgotten it exists.
+    """
+    tok = read("tokens.css")
+    for name in ("--ease", "--ease-out", "--ease-in-out", "--t-press",
+                 "--t-hover", "--press", "--press-wide"):
+        if re.search(rf"{re.escape(name)}\s*:", tok):
+            ok(f"motion: tokens.css defines {name}")
+        else:
+            bad(f"motion: tokens.css no longer defines {name}, and every press "
+                f"and hover on the site reads it")
+    for sheet in ("styles.css", "help.css"):
+        body = re.sub(r"/\*.*?\*/", " ", read(sheet), flags=re.S)
+        if "cubic-bezier(" in body:
+            bad(f"motion: {sheet} types its own cubic-bezier; every curve lives "
+                f"in tokens.css so the two halves cannot drift")
+        else:
+            ok(f"motion: {sheet} uses only the shared curves")
+    for sheet in MOTION_SHEETS:
+        body = re.sub(r"/\*.*?\*/", " ", read(sheet), flags=re.S)
+        if re.search(r"transition(?:-property)?\s*:\s*all\b", body):
+            bad(f"motion: {sheet} has `transition: all`; name the properties, or "
+                f"a layout change will animate on the main thread")
+        else:
+            ok(f"motion: {sheet} names every property it transitions")
+        if re.search(r"\bease-in\b(?!-out)", body):
+            bad(f"motion: {sheet} uses ease-in, which starts slow at the moment "
+                f"the eye is on it")
+        else:
+            ok(f"motion: {sheet} has no ease-in")
+        if re.search(r"scale\(\s*0\s*\)|(?<![-\w])scale\s*:\s*0\s*[;}]", body):
+            bad(f"motion: {sheet} scales something from 0; nothing real appears "
+                f"out of nothing")
+        else:
+            ok(f"motion: {sheet} never scales from zero")
+    styles = re.sub(r"/\*.*?\*/", " ", read("styles.css"), flags=re.S)
+    for pat, what in [(r"\.scrollcue\b", "the .scrollcue rules nothing renders"),
+                      (r"@keyframes cue\{", "the cue keyframes that drove it"),
+                      (r"\.doors?\b(?![-_])", "the .door cards the journey replaced"),
+                      (r"var\(--d\b", "a stagger variable no element sets")]:
+        if re.search(pat, styles):
+            bad(f"motion: styles.css has {what} back")
+        else:
+            ok(f"motion: {what} stay deleted")
+    if "[data-count]" in read("script.js"):
+        bad("motion: script.js has the count-up back, which no page uses")
+    else:
+        ok("motion: the unused count-up stays deleted")
+
+
+def check_every_press_is_answered():
+    """Every control a finger presses gives the moment it is pressed.
+
+    Nothing on the site had an :active state, so on a slow phone a tap on a
+    number looked exactly like a tap that missed for as long as the dialer took
+    to appear. Three things have to be true together, and each fails silently:
+    the control is in the shared :active list in tokens.css; its own rule's
+    transition list carries `scale`, or the give is a jump; and the page has a
+    touch listener, without which WebKit on iOS never shows :active at all.
+    """
+    rules = _css_rules(read("tokens.css"))
+
+    def press_list(token):
+        for stack, sel, body in rules:
+            if (not stack and sel.startswith(":where(") and sel.endswith("):active")
+                    and re.search(rf"(?<![-\w])scale\s*:\s*var\({token}\)", body)):
+                return set(_selectors(sel[len(":where("):-len("):active")]))
+        return set()
+
+    calm = set()
+    for stack, sel, body in rules:
+        if (any("prefers-reduced-motion" in s for s in stack)
+                and sel.endswith("):active") and re.search(r"scale\s*:\s*none", body)
+                and re.search(r"opacity\s*:", body)):
+            calm |= set(_selectors(sel[len(":where("):-len("):active")]))
+
+    for group, token in ((PRESSABLE, "--press"), (PRESSABLE_WIDE, "--press-wide")):
+        listed = press_list(token)
+        for sel, sheet in group.items():
+            if sel in listed:
+                ok(f"press: {sel} gives to var({token})")
+            else:
+                bad(f"press: {sel} is not in tokens.css's :active list for "
+                    f"{token}; pressing it gives no feedback at all")
+            own = [b for st, s, b in _css_rules(read(sheet))
+                   if not st and sel in _selectors(s) and re.search(r"transition\s*:", b)]
+            if any(re.search(r"(?<![-\w])scale\s+var\(--t-press\)", b) for b in own):
+                ok(f"press: {sel}'s own transition animates the give")
+            else:
+                bad(f"press: {sheet}'s rule for {sel} has no `scale var(--t-press)` "
+                    f"in its transition, so the press snaps instead of giving")
+            if sel in calm:
+                ok(f"press: {sel} dims instead of moving under reduced motion")
+            else:
+                bad(f"press: {sel} has no reduced-motion press in tokens.css; it "
+                    f"either still moves for somebody who asked it not to, or "
+                    f"answers nothing")
+    for f in ("script.js", "help.js"):
+        if re.search(r'document\.addEventListener\("touchstart", function \(\) \{\}, '
+                     r'\{ passive: true \}\)', read(f)):
+            ok(f"press: {f} registers the touch listener iOS needs for :active")
+        else:
+            bad(f"press: {f} has no touchstart listener, so every press state on "
+                f"its pages is invisible on an iPhone")
+
+
+def check_hover_motion_needs_a_hover():
+    """A hover that moves something exists only where a pointer can hover.
+
+    A tap on a touch screen fires :hover and leaves it on until the next tap
+    lands somewhere else. So an arrow that leans on hover stayed leaning after
+    the choice was made, and the emergency number somebody had just called sat
+    lifted above the other three. Colour may change on any hover; movement
+    belongs inside @media (hover:hover) and (pointer:fine), or inside a
+    reduced-motion block that is taking movement away.
+    """
+    seen = 0
+    for sheet in MOTION_SHEETS:
+        for stack, sel, body in _css_rules(read(sheet)):
+            if ":hover" not in sel:
+                continue
+            if not re.search(r"(?:^|;)\s*(?:transform|translate|scale|rotate)\s*:", body):
+                continue
+            seen += 1
+            gated = any(re.search(r"hover\s*:\s*hover", s) and re.search(r"pointer\s*:\s*fine", s)
+                        for s in stack)
+            calming = any("prefers-reduced-motion" in s for s in stack)
+            if gated or calming:
+                ok(f"hover: {sheet} {sel[:48]} moves only where hovering exists")
+            else:
+                bad(f"hover: {sheet} {sel[:60]} moves on :hover with no "
+                    f"(hover:hover) and (pointer:fine) gate; on a phone it sticks "
+                    f"after the tap")
+    if seen:
+        ok(f"hover: {seen} hover rules that move something were checked")
+    else:
+        bad("hover: found no hover rule that moves anything, which means the "
+            "rule parser has stopped seeing the stylesheets")
+
+
+def check_scripted_scrolling_asks_first():
+    """A smooth scroll asked for in script honours reduced motion.
+
+    The stylesheets already turn smooth scrolling off for a reader who has
+    asked for less motion, but an explicit `behavior: "smooth"` in script
+    overrides the stylesheet. That is how the carousel's arrows and the
+    calendar's jump to a day went on gliding for exactly the readers the CSS
+    was written for.
+    """
+    for f in ("script.js", "help.js"):
+        src = re.sub(r"/\*.*?\*/|//[^\n]*", " ", read(f), flags=re.S)
+        lit = re.findall(r"behavior\s*:\s*[\"']smooth[\"']", src)
+        if lit:
+            bad(f"{f}: {len(lit)} scroll(s) ask for behavior:\"smooth\" outright, "
+                f"which overrides prefers-reduced-motion")
+        else:
+            ok(f"{f}: every smooth scroll asks about reduced motion first")
+    hj = read("help.js")
+    if re.search(r"function glide\(\)\s*\{[^}]*prefers-reduced-motion: reduce[^}]*\"auto\"", hj):
+        ok("help.js: glide() answers \"auto\" under reduced motion")
+    else:
+        bad("help.js: glide() no longer checks prefers-reduced-motion")
+    uses = len(re.findall(r"behavior:\s*glide\(\)", hj))
+    if uses >= 2:
+        ok(f"help.js: {uses} scripted scrolls go through glide()")
+    else:
+        bad(f"help.js: only {uses} scripted scroll(s) go through glide(); the "
+            f"carousel arrows and the calendar's day jump both should")
+
+
+def check_smoothing_is_per_second():
+    """The scroll choreography and the door settle in time, not in frames.
+
+    Every lerp here was tuned as "this much of the way per frame" at 60Hz. Per
+    frame is the trap: on a 120Hz display (most current Macs and iPhones) the
+    veil, the thread, the closing unwind and the door's parallax all ran at
+    twice the speed they were tuned at, and at half speed on a busy one.
+    settle() and damp() turn the 60Hz constant into the same curve in time.
+    """
+    js = read("script.js")
+    if re.search(r"function settle\(k\)\s*\{\s*return reduced \? 1 : 1 - Math\.pow\(1 - k, frames\);", js):
+        ok("smoothing: settle() raises the 60Hz constant to the frames elapsed")
+    else:
+        bad("smoothing: settle() is gone or no longer frame-rate independent")
+    if re.search(r"frames = frameAt \? Math\.min\(\(now - frameAt\) / 16\.667, 6\) : 1", js):
+        ok("smoothing: the loop measures frames from the frame clock, capped at six")
+    else:
+        bad("smoothing: loop() no longer measures elapsed frames, so settle() "
+            "is back to assuming 60Hz")
+    bare = re.findall(r"\+=\s*\([^;]*\)\s*\*\s*(?:\(reduced \? 1 : )?0\.\d+", js)
+    if bare:
+        bad(f"smoothing: {len(bare)} lerp(s) in script.js multiply by a bare "
+            f"per-frame constant again: {bare[0][:60]}")
+    else:
+        ok("smoothing: no lerp in script.js uses a bare per-frame constant")
+    uses = len(re.findall(r"settle\(0\.\d+\)", js))
+    if uses >= 4:
+        ok(f"smoothing: {uses} lerps settle per second (veil, thread, its shape, the unwind)")
+    else:
+        bad(f"smoothing: only {uses} lerps go through settle(); four should")
+    door = read("assets/door.js")
+    if (re.search(r"const damp = \(k60, now\) =>", door)
+            and re.search(r"Math\.pow\(1 - k60, frames\)", door)
+            and re.search(r"damp\(0\.055, now\)", door)):
+        ok("smoothing: the door's pointer parallax settles per second")
+    else:
+        bad("smoothing: door.js's parallax no longer goes through damp()")
+    if re.search(r"lerp\(p[xy], p[xy]Target, 0\.\d+\)", door):
+        bad("smoothing: door.js lerps the parallax by a bare per-frame constant again")
+    else:
+        ok("smoothing: no bare per-frame constant in the door's parallax")
+    # the arithmetic itself, independently: two 120Hz frames must land exactly
+    # where one 60Hz frame does, for every constant the page uses
+    for k in (0.055, 0.07, 0.08, 0.09):
+        half = 1 - (1 - k) ** 0.5
+        two = 1 - (1 - half) * (1 - half)
+        if abs(two - k) < 1e-12:
+            ok(f"smoothing: k={k} at 120Hz lands where it does at 60Hz")
+        else:
+            bad(f"smoothing: k={k} drifts between frame rates ({two} vs {k})")
+
+
+def check_the_hero_ground_has_no_edge():
+    """The hero's scrim fades out before its own box ends.
+
+    It used to be a radial on the headline itself, 150% of the box tall and
+    transparent at 78% — so it never reached transparent inside the box, and
+    stopped in a straight line at the headline's top and bottom, about .45
+    dark. On a desktop that line cut the door's slit of light, the brightest
+    thing on the page, into three pieces. On a pseudo-element that extends
+    past the type with a `closest-side` gradient, the transparent stop sits on
+    the pseudo-element's own edge, outside the headline.
+    """
+    rules = _css_rules(read("styles.css"))
+    head = [b for st, s, b in rules if not st and s == ".hero__head"]
+    if head and not any(re.search(r"(?:^|;)\s*background\s*:", b) for b in head):
+        ok("hero: the headline carries no ground of its own")
+    else:
+        bad("hero: the scrim is back on .hero__head itself, where a radial "
+            "cannot fade out inside the box and cuts the slit with a hard edge")
+    if any(re.search(r"isolation\s*:\s*isolate", b) for b in head):
+        ok("hero: the headline isolates, so its ground stays behind its own glyphs")
+    else:
+        bad("hero: .hero__head lost isolation:isolate; its z-index:-1 ground can "
+            "fall behind the door")
+    ground = [b for st, s, b in rules if not st and s == ".hero__head::before"]
+    g = ground[0] if ground else ""
+    if (re.search(r"radial-gradient\(\s*closest-side", g)
+            and re.search(r"rgba\(8,15,11,0\)\s+100%\s*\)", g)):
+        ok("hero: the ground's last stop is transparent, on its own edge")
+    else:
+        bad("hero: .hero__head::before does not fade to transparent at its edge "
+            "(closest-side, last stop rgba(8,15,11,0) 100%)")
+    if re.search(r"inset\s*:\s*-\d+%\s+-\d+%", g):
+        ok("hero: the ground extends past the type, so the fade happens outside it")
+    else:
+        bad("hero: the ground no longer extends past the headline; its fade "
+            "would run through the type")
+
+
+def check_the_far_side_of_the_door_is_dim():
+    """From the lit side of the door, the slit does not shine at the reader.
+
+    door.js's "out" mode, the closing beat on a desktop, turns off the shaft,
+    the pool and the slit's glow. The CSS poster, which is the door on every
+    phone, kept all three at full strength under the closing headline, and
+    glyph-masked at 390px a tenth of that line's italic measured under 3:1,
+    the worst at 1.46:1. These are the values that measured clear.
+    """
+    css = read("styles.css")
+    glow = re.search(r":is\(html\.closing\) \.poster__glow\{[^}]*opacity\s*:\s*([\d.]+)", css)
+    beam = re.search(r":is\(html\.closing\) \.poster__beam,:is\(html\.closing\) "
+                     r"\.poster__pool\{[^}]*opacity\s*:\s*([\d.]+)", css)
+    if glow and float(glow.group(1)) <= 0.3:
+        ok(f"closing: the poster's slit is dimmed to {glow.group(1)} from the lit side")
+    else:
+        bad("closing: the poster's slit is bright again under the closing line, "
+            "where it measured 1.46:1 behind the type")
+    if beam and float(beam.group(1)) <= 0.45:
+        ok(f"closing: the glare and the pool are held to {beam.group(1)}")
+    else:
+        bad("closing: the poster's glare and pool are at full strength under "
+            "the closing line again")
+
+
+def check_the_entrance_stays_off_the_phone():
+    """The hero's arrival is a desktop moment.
+
+    The headline, the lede and the buttons arrive in reading order on a desk.
+    A phone is where Speed Index is measured and where PERF.md's 84 was
+    earned, and the person on a phone is the likelier one to have a bill in
+    their hand, so it gets the finished frame at once. Reduced motion takes
+    the entrance away everywhere, through the sheet's global animation:none.
+    """
+    css = read("styles.css")
+    users = [(st, s) for st, s, b in _css_rules(css) if "hero-in" in b]
+    if not users:
+        bad("entrance: nothing runs hero-in any more; the hero arrives all at once")
+        return
+    for st, s in users:
+        if any(re.search(r"min-width\s*:\s*901px", x) for x in st):
+            ok(f"entrance: {s[:40]} arrives only on screens over 900px")
+        else:
+            bad(f"entrance: {s[:40]} runs hero-in outside the desktop query, so "
+                f"a phone pays for it in Speed Index")
+    if re.search(r"@media \(prefers-reduced-motion:reduce\)\{\s*\*\{ animation:none !important;", css):
+        ok("entrance: reduced motion removes it with every other animation")
+    else:
+        bad("entrance: the global reduced-motion animation:none is gone, so the "
+            "entrance runs for somebody who asked for no motion")
+
+def check_a_feed_cannot_break_the_cards():
+    """Third-party titles arrive at whatever length the feed likes.
+
+    Nothing upstream limits an event's title, venue or description: they are
+    whatever NYC Parks, NYLAG or the Food Bank typed. Rendered worst-case
+    through the real renderer (a break-ui pass, October 2026), one 140-
+    character title stretched every featured card to 551px, and at 320px the
+    events list left its location pin on a line by itself with real listings.
+    This feeds the renderer a hostile event and holds the fixes: escaping,
+    the trimmed description, the pin grouped with its place, and the title
+    clamp living on the link (where it cannot clip the link's focus ring).
+    """
+    import events
+    import build_help
+    worst = {"title": 'Know Your Rights: Q&A <Housing> "Court" 101' + " and more" * 12,
+             "start": "2026-10-09T10:00:00", "end": "2026-10-09T15:00:00",
+             "all_day": False, "borough": "Brooklyn", "address": "",
+             "venue": "Brooklyn Public Library, Central Library, Dweck Center "
+                      "for Contemporary Culture, Grand Army Plaza",
+             "description": "word " * 400, "url": "https://example.org/e?a=1&b=2",
+             "image": None, "kind": "Workshop", "format": "In person", "free": True,
+             "source": "Example", "source_key": "nylag",
+             "source_url": "https://example.org/", "need": "legal", "id": "worst"}
+    card = "\n".join(events.card(worst, build_help, lead=True))
+    if "<Housing>" not in card and "&lt;Housing&gt;" in card:
+        ok("feed: a title's markup is escaped on the featured card")
+    else:
+        bad("feed: a title's <markup> reaches the featured card unescaped")
+    m = re.search(r'<p class="fev__b">([^<]*)</p>', card)
+    if m and len(html.unescape(m.group(1))) <= 151 and m.group(1).endswith("…"):
+        ok("feed: a 2,000-character description is trimmed, and says so")
+    else:
+        bad("feed: the lead card's description is no longer trimmed with an ellipsis")
+    day = "\n".join(events.day_block("2026-10-09", [worst], build_help))
+    if re.search(r'<p class="ev__meta"><span class="ev__at"><svg', day):
+        ok("feed: the events list keeps the pin with its place")
+    else:
+        bad("feed: the pin and the place are separate items again; a long place "
+            "name wraps away and leaves the pin on a line of its own")
+    rules = _css_rules(read("help.css"))
+    link = " ".join(b for st, s_, b in rules if not st and s_ == ".fev__h a")
+    lead = " ".join(b for st, s_, b in rules if not st and s_ == ".fev__c--lead .fev__h a")
+    head = " ".join(b for st, s_, b in rules if not st and s_ == ".fev__h")
+    if re.search(r"-webkit-line-clamp\s*:\s*3", link) and re.search(r"overflow\s*:\s*hidden", link):
+        ok("feed: a featured title is clamped to three lines, on the link")
+    else:
+        bad("feed: featured titles are unclamped again, so one long title "
+            "stretches the whole row")
+    if re.search(r"-webkit-line-clamp\s*:\s*4", lead):
+        ok("feed: the lead card's title gets four")
+    else:
+        bad("feed: the lead card's title is no longer clamped at four lines")
+    if re.search(r"overflow\s*:", head):
+        bad("feed: .fev__h clips its own content, which crops the title "
+            "link's focus ring; clamp on the link instead")
+    else:
+        ok("feed: the heading does not clip, so the link's focus ring is whole")
+
+
+def check_keyframes_stay_on_the_compositor():
+    """Every keyframe animates transform, opacity or filter, and nothing loops
+    once its moment has passed.
+
+    The hero's scroll cue animated `left`: laid out on the main thread, every
+    frame, forever, including the whole time nobody could see it, on a page
+    whose scroll loops were rebuilt precisely so that nothing runs while the
+    reader reads. check_runtime.js asks the browser the same question.
+    """
+    seen = 0
+    for sheet in MOTION_SHEETS:
+        for stack, sel, body in _css_rules(read(sheet)):
+            frames = [x for x in stack if x.startswith("@keyframes")]
+            if not frames:
+                continue
+            seen += 1
+            props = set(re.findall(r"(?:^|;)\s*([a-z-]+)\s*:", body))
+            off = sorted(props - {"transform", "opacity", "filter", "translate",
+                                  "scale", "rotate"})
+            name = frames[-1].split()[1]
+            if off:
+                bad(f"keyframes: {sheet} {name} {sel} animates {off}, which is "
+                    f"laid out or painted on the main thread every frame")
+            else:
+                ok(f"keyframes: {sheet} {name} {sel} stays on the compositor")
+    if not seen:
+        bad("keyframes: found no keyframes at all, which means the rule walker "
+            "has stopped seeing them")
+    if re.search(r"html\.hasjs:not\(\.at-door\) \.hero__cue i::after\{\s*animation\s*:\s*none",
+                 read("styles.css")):
+        ok("keyframes: the scroll cue stops once the door is passed")
+    else:
+        bad("keyframes: the scroll cue loops for the life of the page again")
+
+
+def check_the_rail_says_where_it_goes():
+    """Each diamond in the progress rail is named for the scene it goes to.
+
+    They were "Go to part 1" to "Go to part 9": a screen reader heard nine
+    numbers and a pointer got nothing at all on hover. script.js now names
+    each one from its scene's own heading, so every scene has to keep one,
+    or its diamond falls back to a number.
+    """
+    js = read("script.js")
+    if (re.search(r'var h = sc\.querySelector\("h2, h3"\);', js)
+            and re.search(r'setAttribute\("aria-label", name \|\|', js)):
+        ok("rail: each diamond takes its scene's heading as its name")
+    else:
+        bad("rail: the diamonds are numbered again rather than named")
+    scenes = re.findall(r'<section class="scene[^"]*"[^>]*>(.*?)</section>', read("index.html"), re.S)
+    unnamed = [i + 1 for i, body in enumerate(scenes) if not re.search(r"<h[23][\s>]", body)]
+    if scenes and not unnamed:
+        ok(f"rail: all {len(scenes)} scenes have a heading to be named by")
+    else:
+        bad(f"rail: scene(s) {unnamed} have no h2 or h3, so their diamond says "
+            f"only a number")
+
+
+# Every transition longer than a quarter of a second, and every transition on
+# a property that lays the page out again, is here with its reason; anything
+# not listed has to stay at or under .25s and on composited properties.
+# MOTION.md's "Durations that are long on purpose" is this table in prose.
+LONG_MOTION = {
+    ("tokens.css", ".sitehead"): (0.4, "the bar fades out slowly over the clay emergency panel"),
+    ("tokens.css", ".nav-lamp"): (0.4, "on-screen travel between tabs, a few times a visit"),
+    ("styles.css", "#doorCanvas"): (0.5, "the canvas arriving over a finished poster"),
+    ("styles.css", ".rail"): (0.5, "the rail returning once the door is passed"),
+    ("styles.css", ".rail button::before"): (0.35, "a scroll-driven state, not a press"),
+    ("styles.css", ".focus-in"): (1.1, "the reveal: once per block, front-loaded"),
+    ("styles.css", ".ways__row"): (0.4, "the doors' hover affordance: rows give way"),
+    ("styles.css", ".ways__name"): (0.35, "the doors' hover affordance"),
+    ("styles.css", ".ways__sign"): (0.35, "the doors' hover affordance"),
+    ("styles.css", ".ways__sign::before,.ways__sign::after"): (0.5, "the + turning to a - as its row opens"),
+    ("styles.css", ".ways__body"): (0.55, "the swap invariant: two rows' heights always sum the same"),
+    ("styles.css", '.ways--js .ways__row[aria-expanded="true"] + .ways__body .ways__blurb'):
+        (0.42, "the description arriving once its row has begun to open"),
+}
+LAYOUT_MOTION = {("tokens.css", ".nav-lamp", "width"), ("styles.css", ".ways__row", "padding"),
+                 ("styles.css", ".ways__body", "grid-template-rows")}
+
+
+def _transitions():
+    """(sheet, selector, property, seconds) for every transition on the site."""
+    tok = {"var(--t-press)": 0.16, "var(--t-hover)": 0.2}
+
+    def secs(t):
+        if t in tok:
+            return tok[t]
+        m = re.fullmatch(r"(\d*\.?\d+)(ms|s)", t)
+        return float(m.group(1)) / (1000 if m.group(2) == "ms" else 1) if m else None
+    out = []
+    for sheet in MOTION_SHEETS:
+        for stack, sel, body in _css_rules(read(sheet)):
+            if any("prefers-reduced-motion" in s for s in stack):
+                continue
+            for m in re.finditer(r"(?:^|;)\s*transition\s*:\s*([^;]+)", body):
+                for item in re.split(r",(?![^(]*\))", m.group(1)):
+                    parts = re.findall(r"var\([^)]*\)|cubic-bezier\([^)]*\)|\S+", item.strip())
+                    if not parts:
+                        continue
+                    durs = [secs(p) for p in parts[1:] if secs(p) is not None]
+                    out.append((sheet, sel, parts[0], durs[0] if durs else 0.0))
+    return out
+
+
+def check_long_motion_has_a_reason():
+    """Nothing a reader triggers takes longer than .25s without a written reason.
+
+    "UI duration over 300ms with no stated reason" is the first thing a motion
+    review flags, and it is how a site drifts slow: one .3s here, one .35s
+    there, each fine on its own. LONG_MOTION is the complete list of what is
+    allowed to be longer and why; anything else over .25s is a finding.
+    """
+    seen = 0
+    for sheet, sel, prop, d in _transitions():
+        seen += 1
+        if d <= 0.25:
+            continue
+        allowed = LONG_MOTION.get((sheet, sel))
+        if allowed and d <= allowed[0]:
+            ok(f"duration: {sheet} {sel[:40]} {prop} {d}s ({allowed[1]})")
+        else:
+            bad(f"duration: {sheet} {sel[:50]} transitions {prop} over {d}s with no "
+                f"reason in LONG_MOTION; a reader-triggered change stays at or "
+                f"under .25s")
+    if seen > 50:
+        ok(f"duration: {seen} transitions read across the three sheets")
+    else:
+        bad(f"duration: only {seen} transitions found; the parser has stopped "
+            f"seeing the stylesheets")
+
+
+def check_transitions_stay_off_layout():
+    """Transitions move transform, opacity and colour, not the layout.
+
+    A transition on left, width, gap or padding lays the page out again on
+    every frame of it. Three are deliberate and documented: the lamp's width
+    (the tabs differ, and scaling would stretch its glow), the doors' padding
+    (the rows below giving way is the affordance) and the doors' 0fr-to-1fr
+    opening. The lamp's `left` and the text link's `gap` were not, and are gone.
+    """
+    layout = re.compile(r"^(?:left|top|right|bottom|inset|width|height|min-|max-|margin|"
+                        r"padding|gap|grid-|flex|border-width|font-size|line-height)")
+    hits = [(sh, s, p) for sh, s, p, _ in _transitions() if layout.match(p)]
+    for sh, s, p in hits:
+        if (sh, s, p) in LAYOUT_MOTION:
+            ok(f"layout: {sh} {s} transitions {p}, deliberately")
+        else:
+            bad(f"layout: {sh} {s[:50]} transitions {p}, which lays the page out "
+                f"again every frame; move it to transform or opacity")
+    if len([h for h in hits if h in LAYOUT_MOTION]) == len(LAYOUT_MOTION):
+        ok("layout: the three deliberate layout transitions are all still where MOTION.md says")
+    else:
+        bad("layout: a documented layout transition has moved or gone; update "
+            "LAYOUT_MOTION and MOTION.md together")
+
+
+def check_reduced_transparency_gets_solid_ground():
+    """Somebody who asked for less transparency gets opaque surfaces.
+
+    The stuck header is a translucent blur on both halves and the form panels
+    are one over the moving landscape. Under prefers-reduced-transparency the
+    header takes each half's --head-solid and the panels go to deep green,
+    both with the blur removed: without the blur a translucent surface is worse
+    than either, type showing through type.
+    """
+    tok = _css_rules(read("tokens.css"))
+    head = [b for st, s, b in tok if any("prefers-reduced-transparency" in x for x in st)
+            and s == ".sitehead.stuck"]
+    if head and re.search(r"--head-bg\s*:\s*var\(--head-solid\)", head[0]) \
+            and re.search(r"(?<!-)backdrop-filter\s*:\s*none", head[0]):
+        ok("transparency: the stuck header goes solid and drops its blur")
+    else:
+        bad("transparency: the stuck header stays translucent for a reader who "
+            "asked for less transparency")
+    for sheet in ("styles.css", "help.css"):
+        if re.search(r"--head-solid\s*:", read(sheet)):
+            ok(f"transparency: {sheet} names its solid header ground")
+        else:
+            bad(f"transparency: {sheet} sets no --head-solid, so its header has "
+                f"no ground at all under reduced transparency")
+    panel = [b for st, s, b in _css_rules(read("styles.css"))
+             if any("prefers-reduced-transparency" in x for x in st) and s == ".panel"]
+    if panel and re.search(r"(?<!-)backdrop-filter\s*:\s*none", panel[0]):
+        ok("transparency: the form panels go opaque")
+    else:
+        bad("transparency: the form panels keep the landscape moving through "
+            "them under reduced transparency")
+
+
+def check_find_help_opens_a_menu():
+    """The gold pill opens three ways into the directory, on every English page.
+
+    Straight into the search box with the cursor already in it, the list of
+    needs, and the featured events. FIND_MENU in build_help.py is the one copy;
+    the narrative pages carry it by hand, so every page is compared with it.
+    The ten language pages keep a plain link to their own front page on
+    purpose: none of the three places exists there. Search is not offered
+    without script, because there is no search to land in, and arriving at it
+    has to survive the browser clearing focus as it handles the fragment.
+    """
+    import build_help
+    menu = "\n".join(build_help.FIND_MENU)
+    links = re.findall(r'<a href="([^"]+)">([^<]+)</a>', menu)
+    want = [("help.html#search", "Search for help"),
+            ("help.html#needs", "What do you need help with?"),
+            ("help.html#featured", "Featured events")]
+    if (links == want and '<summary class="is-find">Find help</summary>' in menu
+            and '<li class="findmenu__search">' in menu and '<details class="findmenu">' in menu):
+        ok("find help: the menu is the pill over search, needs and featured events, in that order")
+    else:
+        bad(f"find help: FIND_MENU no longer offers {[w[1] for w in want]} under the gold pill")
+    pages = [p for p in ENGLISH_PAGES + ["index.html", "students.html", "partners.html",
+                                         "privacy.html", "terms.html", "suggest.html"]
+             if (ROOT / p).is_file()]
+    drift = [p for p in pages if menu not in read(p)]
+    if drift:
+        bad(f"find help: {len(drift)} page(s) carry a different Find help (e.g. {drift[0]}); "
+            f"copy build_help.FIND_MENU, which is the one version")
+    else:
+        ok(f"find help: all {len(pages)} English pages carry the same menu")
+    spoken = [p for p in LANGUAGE_PAGES if 'class="findmenu"' in read(p)]
+    if spoken:
+        bad(f"find help: {spoken[0]} has the English menu; a language page keeps its "
+            f"plain link to its own front page")
+    else:
+        ok("find help: the ten language pages keep their own plain link")
+    h = read("help.html")
+    for id_ in ("search", "needs", "featured"):
+        if re.search(rf'\bid="{id_}"', h):
+            ok(f"find help: help.html has #{id_} to land on")
+        else:
+            bad(f"find help: help.html has no #{id_}, so the menu item for it goes nowhere")
+    if re.search(r"html:not\(\.hasjs\) \.findmenu__search\{\s*display\s*:\s*none", read("tokens.css")):
+        ok("find help: search is not offered when there is no script to search with")
+    else:
+        bad("find help: the search item shows with scripts off, a control that cannot work")
+    hj = read("help.js")
+    if (re.search(r'if \(location\.hash === "#search"\)', hj) and "setTimeout(land, 0);" in hj
+            and re.search(r"q\.focus\(\{ preventScroll: true \}\);", hj)):
+        ok("find help: arriving at #search leaves the cursor in the box")
+    else:
+        bad("find help: arriving at #search no longer puts the cursor back after the "
+            "browser clears it, so it lands on the page instead of the box")
+    for js in ("script.js", "help.js"):
+        src = read(js)
+        if (re.search(r'var findmenu = document\.querySelector\("\.findmenu"\);', src)
+                and 'if (e.key !== "Escape" || !findmenu.open) return;' in src
+                and 'findmenu.setAttribute("data-keyed", "")' in src):
+            ok(f"find help: {js} closes it on Escape and a click elsewhere, and opens it "
+               f"from the keyboard without an entrance")
+        else:
+            bad(f"find help: {js} no longer closes the menu on Escape, or animates it "
+                f"open from the keyboard")
+
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -6676,7 +7370,22 @@ def main():
                check_cache_headers,
                check_minified_is_generated,
                check_the_student_word_is_the_school_one,
-               check_the_footer_is_one_object]:
+               check_the_footer_is_one_object,
+               check_motion_speaks_one_language,
+               check_every_press_is_answered,
+               check_hover_motion_needs_a_hover,
+               check_scripted_scrolling_asks_first,
+               check_smoothing_is_per_second,
+               check_the_hero_ground_has_no_edge,
+               check_the_far_side_of_the_door_is_dim,
+               check_the_entrance_stays_off_the_phone,
+               check_a_feed_cannot_break_the_cards,
+               check_keyframes_stay_on_the_compositor,
+               check_the_rail_says_where_it_goes,
+               check_long_motion_has_a_reason,
+               check_transitions_stay_off_layout,
+               check_reduced_transparency_gets_solid_ground,
+               check_find_help_opens_a_menu]:
         before = len(passes) + len(failures)
         try:
             fn()

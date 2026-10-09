@@ -74,8 +74,27 @@
   --track-eyebrow:.22em;
 
   /* ---- motion ---------------------------------------------- */
+  /* Every curve on the site lives here and nowhere else; MOTION.md has the
+     reasoning behind each.
+       --ease         a change of colour or ground under a pointer. Nothing is
+                      going anywhere, so it starts and stops gently.
+       --ease-out     anything arriving, and anything answering a press: it
+                      does most of its moving in the first frames, while the
+                      eye is already there.
+       --ease-in-out  something already on screen travelling to a new place.
+     A press answers in --t-press and a hover invites in --t-hover. The press
+     is the quicker of the two because it is a reply, not an offer. */
   --ease:cubic-bezier(.22,.61,.36,1);
   --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+  --t-press:.16s;
+  --t-hover:.2s;
+  /* How far a pressed control gives: enough to feel under a thumb, never
+     enough to read as the control changing size. A wide surface (a card, an
+     emergency number) travels further at its edges for the same scale, so it
+     gives less. */
+  --press:.97;
+  --press-wide:.985;
 
   /* ---- shape ----------------------------------------------- */
   --focus:var(--green);
@@ -133,13 +152,53 @@
       opener, and every resident page title. */
 :where(h1,h2,h3,.phrase,.phero__title) em{ font-style:italic; }
 
-/* 3. The arrow that leans forward on hover. */
-.arr{ display:inline-block; transition:transform .3s var(--ease); }
-:where(a,button):hover > .arr,
-:where(a,button):hover .arr{ transform:translateX(4px); }
+/* 3. The arrow that leans forward on hover, where there is a hover. A touch
+      screen fires :hover on the tap and leaves it on until the next tap lands
+      somewhere else, so on a phone the arrow leaned after the choice was
+      already made, and stayed leaning. A pointer that can hover gets the
+      invitation; a finger gets the press below instead. */
+.arr{ display:inline-block; transition:transform var(--t-hover) var(--ease-out); }
+@media (hover:hover) and (pointer:fine){
+  :where(a,button):hover > .arr,
+  :where(a,button):hover .arr{ transform:translateX(4px); }
+}
 @media (prefers-reduced-motion:reduce){
   .arr{ transition:none; }
   :where(a,button):hover .arr{ transform:none; }
+}
+
+/* 4. The press. Every control a thumb or a cursor actually presses gives a
+      little the moment it is pressed (on pointer-down, not on release) and
+      springs back when it is let go. Nothing on the site did this, so a tap
+      on a phone number on a slow phone looked exactly like a tap that had
+      missed, for however long the dialer took to appear.
+
+      `scale`, the individual property, not `transform`: it composes with any
+      transform a control already has, so a card lifted on hover stays lifted
+      and gives under the press instead of dropping back first. Each control's
+      own transition list carries `scale var(--t-press) var(--ease-out)`, because a
+      transition is one list per element and a shared one here would erase
+      theirs. check.py holds every name below to that.
+
+      Leaf controls only. :active climbs to every ancestor, so a card that
+      holds buttons of its own (a cluster, a resource) would sink under every
+      press inside it. */
+:where(.btn,.tlink,.langcue a,.sitehead__links a,.sitehead__links summary,
+  .call,.pv__call,.printbtn,.jump a,.langbar__list a,
+  .rail__nav a,.chip,.fev__arw,.cal__arw,
+  .sos__list a,.sibs a,.fev__card){ -webkit-tap-highlight-color:transparent; }
+:where(.btn,.tlink,.langcue a,.sitehead__links a,.sitehead__links summary,
+  .call,.pv__call,.printbtn,.jump a,.langbar__list a,
+  .rail__nav a,.chip,.fev__arw,.cal__arw):active{ scale:var(--press); }
+:where(.sos__list a,.sibs a,.fev__card):active{ scale:var(--press-wide); }
+/* Reduced motion keeps the answer and drops the movement: the control dims
+   for as long as it is held, which says "heard you" without anything changing
+   size. */
+@media (prefers-reduced-motion:reduce){
+  :where(.btn,.tlink,.langcue a,.sitehead__links a,.sitehead__links summary,
+  .call,.pv__call,.printbtn,.jump a,.langbar__list a,
+  .rail__nav a,.chip,.fev__arw,.cal__arw,
+    .sos__list a,.sibs a,.fev__card):active{ scale:none; opacity:.78; }
 }
 
 /* Focus is a real object, not a hairline. Keyboard and switch users are a
@@ -187,6 +246,14 @@
      the safe direction to hurry. */
   transition-duration:.12s;
 }
+/* Somebody who has asked their system for less transparency gets the bar as a
+   solid ground: the blur goes, and each half's --head-solid stands in for its
+   translucent --head-bg. Without the blur a translucent bar is worse than
+   either, type over type, so the two go together or not at all. */
+@media (prefers-reduced-transparency:reduce){
+  .sitehead.stuck{ --head-bg:var(--head-solid); backdrop-filter:none;
+    -webkit-backdrop-filter:none; }
+}
 .sitehead__in{
   max-width:var(--head-wrap); margin-inline:auto;
   padding:var(--head-pad) var(--head-gutter);
@@ -215,24 +282,70 @@
    thing that has nothing to slide between there, so it simply never lights. */
 .sitehead__links{ display:flex; gap:6px; align-items:center; position:relative;
   flex-wrap:wrap; justify-content:flex-end; }
-.sitehead__links a{ position:relative; z-index:1; text-decoration:none;
+.sitehead__links summary,.sitehead__links a{ position:relative; z-index:1; text-decoration:none;
   display:inline-flex; align-items:center; min-height:44px;
   font-weight:600; font-size:.9rem; letter-spacing:.005em;
   padding:10px 16px; border-radius:var(--r-pill);
   color:var(--head-ink-2); text-shadow:var(--head-shadow);
-  transition:background .18s var(--ease), color .18s var(--ease); }
-.sitehead__links a:hover{ background:var(--head-hover); color:var(--head-ink); }
+  transition:background .18s var(--ease), color .18s var(--ease),
+    scale var(--t-press) var(--ease-out); }
+.sitehead__links summary:hover,.sitehead__links a:hover{ background:var(--head-hover); color:var(--head-ink); }
 /* Gold means "the resident side" in both places: on the narrative page it is
    the one link out of the story, on the directory it is the page you are
    standing on. */
-.sitehead__links a.is-find{ background:var(--gold); color:var(--green-deep);
+.sitehead__links summary.is-find,.sitehead__links a.is-find{ background:var(--gold); color:var(--green-deep);
   text-shadow:none; }
 /* the section you are reading, on a page long enough to have sections. The
    directory has none, so nothing ever sets it there — but the rule is shared,
    because a second stylesheet reaching into this component is exactly how the
    two headers drifted apart the first time. */
 .sitehead__links a.current{ color:var(--gold); }
-.sitehead__links a.is-find:hover{ background:var(--gold-lit); color:var(--green-deep); }
+.sitehead__links summary.is-find:hover,.sitehead__links a.is-find:hover{ background:var(--gold-lit); color:var(--green-deep); }
+
+/* The Find help menu.
+
+   The gold pill opens three ways into the directory instead of one: straight
+   into the search box with the cursor already in it, the list of needs, and
+   the featured events. A <details>, so it opens and shuts with no script at
+   all, which the directory's no-JavaScript contract asks of every control;
+   script only adds what a disclosure does not do by itself (Escape, a click
+   anywhere else, choosing a link), exactly as the filter dropdowns do.
+
+   The panel is daylight on both halves: the directory's own ground, dropped
+   from the pill that means "the resident side", so on the dark narrative page
+   it is a glimpse of where it leads. That is also why it sets --focus: a ring
+   on this panel lands on cream, even inside the dark room. */
+.findmenu{ position:relative; z-index:2; }
+.findmenu > summary{ list-style:none; cursor:pointer; gap:9px; }
+.findmenu > summary::-webkit-details-marker{ display:none; }
+/* the chevron says it opens, and turns over when it has */
+.findmenu > summary::after{ content:""; width:7px; height:7px; flex:none;
+  border-right:1.6px solid currentColor; border-bottom:1.6px solid currentColor;
+  transform:translateY(-2px) rotate(45deg);
+  transition:transform var(--t-hover) var(--ease-out); }
+.findmenu[open] > summary::after{ transform:translateY(1px) rotate(-135deg); }
+.findmenu[open] > summary.is-find{ background:var(--gold-lit); }
+.findmenu__list{ position:absolute; inset-block-start:calc(100% + 8px); inset-inline-start:0;
+  margin:0; padding:6px; list-style:none; --focus:var(--green);
+  /* max-content, or it would size against the pill it hangs from and wrap
+     "What do you need help with?" onto two lines; capped at the screen. */
+  width:max-content; min-width:100%; max-width:calc(100vw - 2 * var(--head-gutter));
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s);
+  box-shadow:0 18px 44px -20px rgba(19,35,26,.5), 0 2px 8px rgba(19,35,26,.1);
+  transform-origin:top left; animation:menu-in .18s var(--ease-out); }
+/* Opened from the keyboard it simply appears: a keyboard action does not wait
+   on an animation (MOTION.md). The scripts set data-keyed on the key that
+   opens it; with no script it animates, which is the smaller harm. */
+.findmenu[data-keyed] > .findmenu__list{ animation:none; }
+@keyframes menu-in{ from{ opacity:0; transform:translateY(-4px) scale(.97); } }
+.sitehead .findmenu__list a{ display:flex; min-height:44px; padding:10px 14px;
+  border-radius:6px; background:none; color:var(--green-deep); text-shadow:none;
+  font-size:.95rem; font-weight:600;
+  transition:background var(--t-hover) var(--ease), scale var(--t-press) var(--ease-out); }
+.sitehead .findmenu__list a:hover{ background:var(--line-2); color:var(--green-deep); }
+/* With no script there is no search to land in, so it is not offered: the
+   rule this directory holds every control to. */
+html:not(.hasjs) .findmenu__search{ display:none; }
 
 /* a phone on its side has about 560px of height and the bar should not eat it */
 @media (max-height:560px) and (max-width:900px){
@@ -256,10 +369,17 @@
    identical above 1080px, where the row is right-aligned and the phantom
    fell off the end, and four pixels apart below it, where they wrap. At
    375px it changed where the row broke. Shared component, shared sheet. */
-/* tubelight active indicator (slides between sections) */
+/* tubelight active indicator (slides between sections)
+
+   It travels on transform, not on `left`: script.js writes its position as a
+   translate, which the compositor moves at sub-pixel precision without laying
+   anything out. Width still has to change (the tabs are different widths, and
+   scaling the lamp would stretch its bar and its glow), but a width change on
+   an absolutely positioned span lays out that span and nothing else. It is
+   something already on screen moving to a new place, so it eases in and out. */
 .nav-lamp{ position:absolute; top:50%; left:0; width:0; height:36px; transform:translateY(-50%); border-radius:100px;
   background:rgba(231,197,126,.12); opacity:0; pointer-events:none; z-index:0;
-  transition:left .45s var(--ease), width .45s var(--ease), opacity .35s var(--ease); }
+  transition:transform .4s var(--ease-in-out), width .4s var(--ease-in-out), opacity .35s var(--ease); }
 .nav-lamp.on{ opacity:1; }
 .nav-lamp__bar{ position:absolute; top:-2px; left:50%; transform:translateX(-50%); width:26px; height:3px; border-radius:0 0 6px 6px; background:var(--gold); }
 .nav-lamp__bar::before{ content:""; position:absolute; left:50%; top:-10px; transform:translateX(-50%); width:46px; height:20px; border-radius:50%; background:rgba(231,197,126,.55); filter:blur(11px); }
@@ -299,7 +419,7 @@
   .sitehead__in{ flex-wrap:wrap; gap:var(--head-gap); }
   .sitehead__links{ width:100%; flex-wrap:wrap; gap:4px; justify-content:flex-start;
     margin-inline-start:-13px; }   /* the pill's padding, so labels line up with the wordmark */
-  .sitehead__links a{ padding:10px 13px; }
+  .sitehead__links summary,.sitehead__links a{ padding:10px 13px; }
 }
 @media (max-width:767px){ :root{ --head-h:160px; } }
 @media (max-width:359px){ :root{ --head-h:210px; } }

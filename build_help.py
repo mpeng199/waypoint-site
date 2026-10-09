@@ -2058,6 +2058,24 @@ def head(title, desc, skip_href, skip_label, alts=None):
     ]
 
 
+# The gold pill is a menu on every English page: three ways into the directory
+# rather than one. The narrative pages carry the same block by hand, and
+# check_find_help_opens_a_menu compares every copy with this one. The ten
+# language pages keep a plain link to their own front page: none of the three
+# destinations exists there, and a menu of English labels on a Bengali page
+# would be the wrong first thing to put in front of its reader.
+FIND_MENU = [
+    '      <details class="findmenu">',
+    '        <summary class="is-find">Find help</summary>',
+    '        <ul class="findmenu__list">',
+    '          <li class="findmenu__search"><a href="help.html#search">Search for help</a></li>',
+    '          <li><a href="help.html#needs">What do you need help with?</a></li>',
+    '          <li><a href="help.html#featured">Featured events</a></li>',
+    '        </ul>',
+    '      </details>',
+]
+
+
 def header_frag():
     """The same bar as the narrative side: same lockup, same five tabs, same
     order, same lamp. It used to be a second header that had drifted — three
@@ -2081,7 +2099,7 @@ def header_frag():
         '      <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>',
         '    </a>',
         '    <nav class="sitehead__links" aria-label="Primary">',
-        '      <a href="help.html" class="is-find" aria-current="page">Find help</a>',
+        *FIND_MENU,
         '      <a href="index.html#bills">Bills &amp; denials</a>',
         '      <a href="index.html#work">How it works</a>',
         '      <a href="index.html#students">Students</a>',
@@ -2295,7 +2313,7 @@ def search_frag(placeholder, scope_note):
     draws the single edge around the lot.
     """
     return [
-        '<section class="find" aria-labelledby="find-h" hidden>',
+        '<section class="find" id="search" aria-labelledby="find-h" hidden>',
         '  <h2 id="find-h" class="sr-only">Search and narrow the list</h2>',
         '  <div class="find__top">',
         '    <label for="q" class="sr-only">Search for what you need</label>',
