@@ -219,13 +219,14 @@ async function motion(cdp) {
        is not already (scrolling the hero would scroll it away; the directory
        centres instead, or the sticky bar takes the press), and released
        where it was pressed: dragging off a link starts a native drag that
-       swallows every press after it. Clicks are cancelled so nothing is
-       followed. */
+       swallows every press after it. Clicks are cancelled and stopped, so
+       neither the browser nor the page's own handlers (script.js glides to
+       any #anchor it sees clicked) act on a test press. */
     const press = async (sel, block = 'nearest') => {
       const at = await evaluate(`(() => { const e = [...document.querySelectorAll(${JSON.stringify(sel)})]
           .find((n) => n.getClientRects().length); if (!e) return null;
         if (!window.__noFollow) { window.__noFollow = 1;
-          document.addEventListener('click', (ev) => ev.preventDefault(), true); }
+          document.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopImmediatePropagation(); }, true); }
         e.scrollIntoView({ block: ${JSON.stringify(block)}, behavior: 'instant' }); const r = e.getBoundingClientRect();
         return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
       if (!at) return null;
@@ -256,10 +257,21 @@ async function motion(cdp) {
   // the first frame arrives on a desk, and the lamp travels on transform
   const deskState = await desk.evaluate(`(() => {
     const names = document.getAnimations().map((a) => a.animationName).filter(Boolean);
+    const META = ['offset', 'easing', 'composite', 'computedOffset'];
+    const looping = document.getAnimations().filter((a) => a.playState === 'running' && a.animationName);
+    const offMain = looping.flatMap((a) => a.effect.getKeyframes().flatMap((k) => Object.keys(k)))
+      .filter((k) => !META.includes(k) && !['transform', 'opacity', 'filter', 'translate', 'scale', 'rotate'].includes(k));
     const h = document.getElementById('work'); scrollTo(0, h.offsetTop); window.__waypointTick && window.__waypointTick();
     const lamp = document.getElementById('navLamp');
-    return { entrance: names.filter((n) => n === 'hero-in').length,
-             lampLeft: lamp.style.left, lampTransform: lamp.style.transform }; })()`);
+    const stillLooping = document.getAnimations()
+      .filter((a) => a.playState === 'running' && a.effect.getTiming().iterations === Infinity)
+      .map((a) => a.animationName);
+    return { entrance: names.filter((n) => n === 'hero-in').length, running: looping.length, offMain,
+             stillLooping, lampLeft: lamp.style.left, lampTransform: lamp.style.transform }; })()`);
+  if (deskState.running && !deskState.offMain.length) ok(`desktop: the ${deskState.running} keyframe animation(s) running at the door are compositor-only`);
+  else bad(`desktop: a running animation animates ${deskState.offMain.join(', ') || 'nothing measurable'} on the main thread`);
+  if (!deskState.stillLooping.length) ok('desktop: past the door, nothing loops');
+  else bad(`desktop: still looping past the door: ${deskState.stillLooping.join(', ')}`);
   if (deskState.entrance === 5) ok('desktop: the hero arrives in reading order (5 staggered entrances)');
   else bad(`desktop: expected 5 hero-in entrances, found ${deskState.entrance}`);
   if (/translate\(/.test(deskState.lampTransform) && !deskState.lampLeft) ok('the nav lamp travels on transform, not left');

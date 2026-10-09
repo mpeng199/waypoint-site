@@ -7052,6 +7052,41 @@ def check_a_feed_cannot_break_the_cards():
         ok("feed: the heading does not clip, so the link's focus ring is whole")
 
 
+def check_keyframes_stay_on_the_compositor():
+    """Every keyframe animates transform, opacity or filter, and nothing loops
+    once its moment has passed.
+
+    The hero's scroll cue animated `left`: laid out on the main thread, every
+    frame, forever, including the whole time nobody could see it, on a page
+    whose scroll loops were rebuilt precisely so that nothing runs while the
+    reader reads. check_runtime.js asks the browser the same question.
+    """
+    seen = 0
+    for sheet in MOTION_SHEETS:
+        for stack, sel, body in _css_rules(read(sheet)):
+            frames = [x for x in stack if x.startswith("@keyframes")]
+            if not frames:
+                continue
+            seen += 1
+            props = set(re.findall(r"(?:^|;)\s*([a-z-]+)\s*:", body))
+            off = sorted(props - {"transform", "opacity", "filter", "translate",
+                                  "scale", "rotate"})
+            name = frames[-1].split()[1]
+            if off:
+                bad(f"keyframes: {sheet} {name} {sel} animates {off}, which is "
+                    f"laid out or painted on the main thread every frame")
+            else:
+                ok(f"keyframes: {sheet} {name} {sel} stays on the compositor")
+    if not seen:
+        bad("keyframes: found no keyframes at all, which means the rule walker "
+            "has stopped seeing them")
+    if re.search(r"html\.hasjs:not\(\.at-door\) \.hero__cue i::after\{\s*animation\s*:\s*none",
+                 read("styles.css")):
+        ok("keyframes: the scroll cue stops once the door is passed")
+    else:
+        bad("keyframes: the scroll cue loops for the life of the page again")
+
+
 
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
@@ -7123,7 +7158,8 @@ def main():
                check_the_hero_ground_has_no_edge,
                check_the_far_side_of_the_door_is_dim,
                check_the_entrance_stays_off_the_phone,
-               check_a_feed_cannot_break_the_cards]:
+               check_a_feed_cannot_break_the_cards,
+               check_keyframes_stay_on_the_compositor]:
         before = len(passes) + len(failures)
         try:
             fn()

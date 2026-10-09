@@ -27,10 +27,11 @@ Ordered by leverage. Every one is fixed in this change, and each has a guard
 | 4 | MEDIUM | accessibility | `help.js:167`, `:317` | two scripted smooth scrolls ignore reduced motion | `glide()`, §3 |
 | 5 | MEDIUM | accessibility | six rules, §2 | hover motion with no hover gate sticks after a tap | §2 |
 | 6 | MEDIUM | timing | `script.js:396–453`, `door.js:479` | five lerps per frame, so twice as fast at 120Hz | `settle()`, `damp()`, §4 |
-| 7 | LOW | performance | `tokens.css:260`, `styles.css:337` | the lamp animates `left`; `.tlink` animates `gap` | §5, §8 |
-| 8 | LOW | timing | `styles.css:328`, `:1097` | hover at .3s; a disclosure leaves as slowly as it arrives | §8 |
-| 9 | LOW | accessibility | — | no `prefers-reduced-transparency` | §8 |
-| 10 | LOW | tokens | `styles.css`, `script.js` | four dead motion hooks | deleted, §9 |
+| 7 | MEDIUM | performance | `styles.css:716–717` | the hero's scroll cue animated `left` in an infinite loop: main-thread layout every frame for the life of the page, long after the hero faded | on transform, and stops past the door, §5 |
+| 8 | LOW | performance | `tokens.css:260`, `styles.css:337` | the lamp animates `left`; `.tlink` animates `gap` | §5, §8 |
+| 9 | LOW | timing | `styles.css:328`, `:1097` | hover at .3s; a disclosure leaves as slowly as it arrives | §8 |
+| 10 | LOW | accessibility | — | no `prefers-reduced-transparency` | §8 |
+| 11 | LOW | tokens | `styles.css`, `script.js` | four dead motion hooks | deleted, §9 |
 
 **Verdict, under review-animations' bar:** at `89470c0`, *block* (no press
 feedback anywhere, ungated hover motion, reduced motion not honoured by two
@@ -159,7 +160,7 @@ busy one. `settle(k)` is `1 - (1 - k)^frames`, where `frames` is measured
 from the frame clock and capped at six. It is identical at 60Hz by
 construction, and two 120Hz frames land exactly where one 60Hz frame does.
 
-### 5. The nav lamp travels on transform
+### 5. The lamp and the scroll cue move on the compositor
 
 It animated `left` and `width` (`tokens.css`, was :260). It now moves on a
 `translate` written by `script.js`, which the compositor moves at sub-pixel
@@ -167,6 +168,14 @@ precision without laying anything out, and eases in and out because it is
 something already on screen moving to a new place. Width still transitions:
 the tabs are different widths, and scaling the lamp would stretch its bar
 and glow.
+
+The hero's "scroll to step through" cue animated `left` in an infinite loop
+(`styles.css`, was :716). That is layout on the main thread, every frame,
+for the life of the page, including the whole time nobody could see it,
+on a page whose scroll loops were rebuilt so that nothing runs while the
+reader reads. It is a transform now, and once the door is passed it stops
+(`html.hasjs:not(.at-door)`). Without script nothing can say where the door
+is, so the cue keeps on there, now off the main thread.
 
 ### 6. The hero's ground stopped cutting the door
 
@@ -313,23 +322,24 @@ documented decisions. They were not changed.
 
 ## How it is checked
 
-**`check.py`, nine guards**, each with its reasoning in its docstring:
+**`check.py`, ten guards**, each with its reasoning in its docstring:
 `check_motion_speaks_one_language`, `check_every_press_is_answered`,
 `check_hover_motion_needs_a_hover`, `check_scripted_scrolling_asks_first`,
 `check_smoothing_is_per_second`, `check_the_hero_ground_has_no_edge`,
 `check_the_far_side_of_the_door_is_dim`,
 `check_the_entrance_stays_off_the_phone`, and
-`check_a_feed_cannot_break_the_cards` (below). They read CSS through a small
+`check_a_feed_cannot_break_the_cards` (below), and
+`check_keyframes_stay_on_the_compositor`. They read CSS through a small
 rule walker (`_css_rules`) that knows which `@media` block a rule sits in,
 which the flat regex the older guards use cannot tell.
 
-**`mutate.py`, sixteen new mutations**, one per way the above could be
+**`mutate.py`, eighteen new mutations**, one per way the above could be
 undone without anything looking wrong on the machine it was done on. All
-sixteen are caught. Run them alone:
+eighteen are caught. Run them alone:
 
 ```python
 import mutate
-mutate.MUTATIONS = mutate.MUTATIONS[-16:]
+mutate.MUTATIONS = mutate.MUTATIONS[-18:]
 mutate.main()
 ```
 
@@ -344,6 +354,8 @@ mutate.main()
   does not lift under a hover it cannot have
 - the hero's five entrances run on a desk and none run on a phone
 - the nav lamp is positioned by transform, not `left`
+- every keyframe animation running at the door is compositor-only, and once
+  the door is passed nothing loops
 - the closing slit is dimmed when the closing beat owns the stage
 - under reduced motion the carousel arrow jumps; without it, it glides
 - **contrast against the ground that is actually there**: the hero and the
