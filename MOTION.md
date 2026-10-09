@@ -29,7 +29,7 @@ Ordered by leverage. Every one is fixed in this change, and each has a guard
 | 6 | MEDIUM | timing | `script.js:396–453`, `door.js:479` | five lerps per frame, so twice as fast at 120Hz | `settle()`, `damp()`, §4 |
 | 7 | MEDIUM | performance | `styles.css:716–717` | the hero's scroll cue animated `left` in an infinite loop: main-thread layout every frame for the life of the page, long after the hero faded | on transform, and stops past the door, §5 |
 | 8 | LOW | performance | `tokens.css:260`, `styles.css:337` | the lamp animates `left`; `.tlink` animates `gap` | §5, §8 |
-| 9 | LOW | timing | `styles.css:328`, `:1097` | hover at .3s; a disclosure leaves as slowly as it arrives | §8 |
+| 9 | LOW | timing | `styles.css:328`, `:762`, `:1097` | buttons hover at .3s and the statement-in-full toggle at .35s; a disclosure leaves as slowly as it arrives | §8 |
 | 10 | LOW | accessibility | — | no `prefers-reduced-transparency` | §8 |
 | 11 | LOW | tokens | `styles.css`, `script.js` | four dead motion hooks | deleted, §9 |
 
@@ -44,7 +44,7 @@ and reduced motion respected in CSS and script alike.
 
 | Principle | Here |
 | --- | --- |
-| Response (§1) | the press, on pointer-down, on every control (§1) |
+| Response (§1) | the press, on pointer-down, on every button, pill and card (§1) |
 | Direct manipulation, momentum, rubber-banding (§2, §5, §6, §9) | nothing on the site is dragged; Lenis owns scroll inertia. Not applicable, and no gesture was invented to apply it to |
 | Interruptibility (§3) | every UI state change is a CSS transition, which retargets from where it is; the one-shot entrances are keyframes because they happen once |
 | Springs (§4) | considered for the four doors and rejected: a click carries no velocity |
@@ -162,7 +162,7 @@ construction, and two 120Hz frames land exactly where one 60Hz frame does.
 
 ### 5. The lamp and the scroll cue move on the compositor
 
-It animated `left` and `width` (`tokens.css`, was :260). It now moves on a
+The nav lamp animated `left` and `width` (`tokens.css`, was :260). It now moves on a
 `translate` written by `script.js`, which the compositor moves at sub-pixel
 precision without laying anything out, and eases in and out because it is
 something already on screen moving to a new place. Width still transitions:
@@ -188,8 +188,8 @@ reached transparent inside its own box, and stopped in a straight line about
 slit of light, the brightest thing on the page, and cut it into three pieces
 with a hard step at each edge. The ground is now a pseudo-element that
 extends past the type with a `closest-side` gradient, so it fades to nothing
-on its own edge, outside the headline. The stops are the same; the contrast
-under the type is within measurement noise of before (table below).
+on its own edge, outside the headline. The stops are the same, and every
+width still clears 3:1 under the type (table below).
 
 ### 7. The far side of the door stopped shining through the last line
 
@@ -215,6 +215,7 @@ under 3:1 from 320px up.
 | `.tlink:hover{ gap:13px }` (was :337) | deleted | it moved the arrow a second time, on top of the shared lean, by re-laying out the link every frame |
 | `.ways__blurb` left as slowly as it arrived (.42s + 60ms) | leaves in `--t-press`, arrives as before | exit faster than enter; on a swap the old words are gone before the new ones start, instead of two paragraphs half-visible in one place |
 | `.arr` `transition: transform .3s var(--ease)` | `var(--t-hover) var(--ease-out)` | a movement answering a hover; ease-out, at hover speed |
+| the honesty statement's "in full" toggle: colour .3s, chevron .35s (was `styles.css:762–766`) | both in `--t-hover`, the chevron `--ease-out` | a disclosure a reader clicks answers at UI speed |
 | no `prefers-reduced-transparency` | the stuck header (`--head-solid`) and form panels go opaque | apple-design §14 |
 | display headings wrap however they fall | `text-wrap: balance` on display lines, `pretty` on prose | a two-line phrase never leaves one word under a full line; degrades to ordinary wrapping. Not on `.ways__blurb`, whose three-line reserve `pretty` could break |
 
@@ -298,8 +299,8 @@ pin ungrouped).
 
 ## What it cost
 
-About 460 bytes gzipped across every stylesheet and script, most of it the
-press lists in `tokens.css`. The narrative page's own stylesheet and script
+About 610 bytes gzipped across every stylesheet and script, most of
+it the press lists in `tokens.css`. The narrative page's own stylesheet and script
 came out slightly smaller after the dead code went.
 
 Paint timing, `89470c0` against this branch, the median of five cold loads
@@ -345,26 +346,40 @@ documented decisions. They were not changed.
 
 ## How it is checked
 
-**`check.py`, eleven guards**, each with its reasoning in its docstring:
-`check_motion_speaks_one_language`, `check_every_press_is_answered`,
-`check_hover_motion_needs_a_hover`, `check_scripted_scrolling_asks_first`,
-`check_smoothing_is_per_second`, `check_the_hero_ground_has_no_edge`,
-`check_the_far_side_of_the_door_is_dim`,
-`check_the_entrance_stays_off_the_phone`, and
-`check_a_feed_cannot_break_the_cards` (below), and
-`check_keyframes_stay_on_the_compositor` and `check_the_rail_says_where_it_goes`.
-They read CSS through a small
-rule walker (`_css_rules`) that knows which `@media` block a rule sits in,
-which the flat regex the older guards use cannot tell.
+**`check.py`, fourteen guards**, each with its reasoning in its docstring:
 
-**`mutate.py`, nineteen new mutations**, one per way the above could be
-undone without anything looking wrong on the machine it was done on. All
-nineteen are caught (and two older ones that had silently stopped
+- `check_motion_speaks_one_language`: curves only in tokens.css; no
+  `transition: all`, no `ease-in`, no `scale(0)`; the dead hooks stay dead
+- `check_every_press_is_answered`: every pressable is in the `:active` list,
+  its own transition carries `scale`, it dims under reduced motion, and both
+  scripts register the touch listener
+- `check_hover_motion_needs_a_hover`
+- `check_scripted_scrolling_asks_first`
+- `check_smoothing_is_per_second`
+- `check_keyframes_stay_on_the_compositor`
+- `check_long_motion_has_a_reason`: anything over .25s must be in
+  `LONG_MOTION`, which is the table at the end of this file
+- `check_transitions_stay_off_layout`: only the three documented layout
+  transitions
+- `check_reduced_transparency_gets_solid_ground`
+- `check_the_hero_ground_has_no_edge`
+- `check_the_far_side_of_the_door_is_dim`
+- `check_the_entrance_stays_off_the_phone`
+- `check_a_feed_cannot_break_the_cards`
+- `check_the_rail_says_where_it_goes`
+
+They read CSS through a small rule walker (`_css_rules`) that knows which
+`@media` block a rule sits in, which the flat regex the older guards use
+cannot tell.
+
+**`mutate.py`, twenty-three new mutations**, one per way the above could
+be undone without anything looking wrong on the machine it was done on. All
+twenty-three are caught (and two older ones that had silently stopped
 applying point at today's code again). Run the new ones alone:
 
 ```python
 import mutate
-mutate.MUTATIONS = mutate.MUTATIONS[-19:]
+mutate.MUTATIONS = mutate.MUTATIONS[-23:]
 mutate.main()
 ```
 
@@ -416,15 +431,24 @@ exactly that much.
 
 ## Durations that are long on purpose
 
+This table is `LONG_MOTION` in check.py: a transition longer than .25s that
+is not on it fails the build.
+
 | What | Duration | Why it is allowed |
 |---|---|---|
 | `.focus-in` reveal | 1.1s | marketing reveal, once per block, `--ease-out` front-loads it |
-| `hero-in` | .9s, staggered to 1.52s | once a visit, desktop only, never blocks a control |
 | `.ways__body` | .55s | the swap invariant above |
-| `.ways__row` padding | .4s | the affordance itself |
+| `.ways__sign` + turning to − | .5s | paired with its row opening |
+| `.ways__blurb`, arriving | .42s | the words arrive once their row has begun to open (leaving is `--t-press`) |
+| `.ways__row` padding, `.ways__name` and `.ways__sign` colour | .35–.4s | the doors' hover affordance itself |
 | `.nav-lamp` | .4s | on-screen travel between tabs, a few times a visit |
-| `.sitehead` fade out | .4s | slow out, quick in, over the emergency panel |
-| `#doorCanvas` fade | .5s | the canvas arriving over a finished poster |
-| `.hero__cue` | 2.4s, looping | a 1px line; stops under reduced motion |
+| `.sitehead` | .4s | slow out, quick in, over the emergency panel |
+| `#doorCanvas` | .5s | the canvas arriving over a finished poster |
+| `.rail`, `.rail button::before` | .5s, .35s | scroll-driven state, not a press |
 
-Everything a reader triggers directly stays at or under .25s.
+Two animations are not transitions and are not in that table: `hero-in` (.9s,
+staggered to 1.52s; once a visit, desktop only, never blocks a control) and
+the scroll cue (2.4s, looping, a 1px line that stops past the door and under
+reduced motion).
+
+Everything else stays at or under .25s.

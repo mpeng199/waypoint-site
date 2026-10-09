@@ -279,6 +279,18 @@ MUTATIONS = [
   "events.py", "<span class=\"ev__at\">{PIN}<span>{esc(where(e))}</span></span>'", "{PIN}<span>{esc(where(e))}</span>'"),
  ("the rail goes back to numbering its parts",
   "script.js", 'var h = sc.querySelector("h2, h3");', 'var h = null;'),
+ ("the lamp goes back to animating left",
+  "tokens.css", "transition:transform .4s var(--ease-in-out), width .4s var(--ease-in-out), opacity .35s var(--ease); }",
+  "transition:left .4s var(--ease-in-out), width .4s var(--ease-in-out), opacity .35s var(--ease); }"),
+ ("a disclosure leaves as slowly as it arrives",
+  "styles.css", "  transition:opacity var(--t-press) var(--ease), transform var(--t-press) var(--ease); }\n.ways--js .ways__blurb",
+  "  transition:opacity .42s var(--ease-out) .06s, transform .42s var(--ease-out) .06s; }\n.ways--js .ways__blurb"),
+ ("a button's hover slows back to .3s",
+  "styles.css", "  transition:background var(--t-hover) var(--ease), border-color var(--t-hover) var(--ease),",
+  "  transition:background .3s var(--ease), border-color .3s var(--ease),"),
+ ("the header stays translucent for a reader who asked for solid ground",
+  "tokens.css", "  .sitehead.stuck{ --head-bg:var(--head-solid); backdrop-filter:none;",
+  "  .sitehead.stuck{ backdrop-filter:none;"),
 ]
 
 

@@ -7110,6 +7110,138 @@ def check_the_rail_says_where_it_goes():
             f"only a number")
 
 
+# Every transition longer than a quarter of a second, and every transition on
+# a property that lays the page out again, is here with its reason; anything
+# not listed has to stay at or under .25s and on composited properties.
+# MOTION.md's "Durations that are long on purpose" is this table in prose.
+LONG_MOTION = {
+    ("tokens.css", ".sitehead"): (0.4, "the bar fades out slowly over the clay emergency panel"),
+    ("tokens.css", ".nav-lamp"): (0.4, "on-screen travel between tabs, a few times a visit"),
+    ("styles.css", "#doorCanvas"): (0.5, "the canvas arriving over a finished poster"),
+    ("styles.css", ".rail"): (0.5, "the rail returning once the door is passed"),
+    ("styles.css", ".rail button::before"): (0.35, "a scroll-driven state, not a press"),
+    ("styles.css", ".focus-in"): (1.1, "the reveal: once per block, front-loaded"),
+    ("styles.css", ".ways__row"): (0.4, "the doors' hover affordance: rows give way"),
+    ("styles.css", ".ways__name"): (0.35, "the doors' hover affordance"),
+    ("styles.css", ".ways__sign"): (0.35, "the doors' hover affordance"),
+    ("styles.css", ".ways__sign::before,.ways__sign::after"): (0.5, "the + turning to a - as its row opens"),
+    ("styles.css", ".ways__body"): (0.55, "the swap invariant: two rows' heights always sum the same"),
+    ("styles.css", '.ways--js .ways__row[aria-expanded="true"] + .ways__body .ways__blurb'):
+        (0.42, "the description arriving once its row has begun to open"),
+}
+LAYOUT_MOTION = {("tokens.css", ".nav-lamp", "width"), ("styles.css", ".ways__row", "padding"),
+                 ("styles.css", ".ways__body", "grid-template-rows")}
+
+
+def _transitions():
+    """(sheet, selector, property, seconds) for every transition on the site."""
+    tok = {"var(--t-press)": 0.16, "var(--t-hover)": 0.2}
+
+    def secs(t):
+        if t in tok:
+            return tok[t]
+        m = re.fullmatch(r"(\d*\.?\d+)(ms|s)", t)
+        return float(m.group(1)) / (1000 if m.group(2) == "ms" else 1) if m else None
+    out = []
+    for sheet in MOTION_SHEETS:
+        for stack, sel, body in _css_rules(read(sheet)):
+            if any("prefers-reduced-motion" in s for s in stack):
+                continue
+            for m in re.finditer(r"(?:^|;)\s*transition\s*:\s*([^;]+)", body):
+                for item in re.split(r",(?![^(]*\))", m.group(1)):
+                    parts = re.findall(r"var\([^)]*\)|cubic-bezier\([^)]*\)|\S+", item.strip())
+                    if not parts:
+                        continue
+                    durs = [secs(p) for p in parts[1:] if secs(p) is not None]
+                    out.append((sheet, sel, parts[0], durs[0] if durs else 0.0))
+    return out
+
+
+def check_long_motion_has_a_reason():
+    """Nothing a reader triggers takes longer than .25s without a written reason.
+
+    "UI duration over 300ms with no stated reason" is the first thing a motion
+    review flags, and it is how a site drifts slow: one .3s here, one .35s
+    there, each fine on its own. LONG_MOTION is the complete list of what is
+    allowed to be longer and why; anything else over .25s is a finding.
+    """
+    seen = 0
+    for sheet, sel, prop, d in _transitions():
+        seen += 1
+        if d <= 0.25:
+            continue
+        allowed = LONG_MOTION.get((sheet, sel))
+        if allowed and d <= allowed[0]:
+            ok(f"duration: {sheet} {sel[:40]} {prop} {d}s ({allowed[1]})")
+        else:
+            bad(f"duration: {sheet} {sel[:50]} transitions {prop} over {d}s with no "
+                f"reason in LONG_MOTION; a reader-triggered change stays at or "
+                f"under .25s")
+    if seen > 50:
+        ok(f"duration: {seen} transitions read across the three sheets")
+    else:
+        bad(f"duration: only {seen} transitions found; the parser has stopped "
+            f"seeing the stylesheets")
+
+
+def check_transitions_stay_off_layout():
+    """Transitions move transform, opacity and colour, not the layout.
+
+    A transition on left, width, gap or padding lays the page out again on
+    every frame of it. Three are deliberate and documented: the lamp's width
+    (the tabs differ, and scaling would stretch its glow), the doors' padding
+    (the rows below giving way is the affordance) and the doors' 0fr-to-1fr
+    opening. The lamp's `left` and the text link's `gap` were not, and are gone.
+    """
+    layout = re.compile(r"^(?:left|top|right|bottom|inset|width|height|min-|max-|margin|"
+                        r"padding|gap|grid-|flex|border-width|font-size|line-height)")
+    hits = [(sh, s, p) for sh, s, p, _ in _transitions() if layout.match(p)]
+    for sh, s, p in hits:
+        if (sh, s, p) in LAYOUT_MOTION:
+            ok(f"layout: {sh} {s} transitions {p}, deliberately")
+        else:
+            bad(f"layout: {sh} {s[:50]} transitions {p}, which lays the page out "
+                f"again every frame; move it to transform or opacity")
+    if len([h for h in hits if h in LAYOUT_MOTION]) == len(LAYOUT_MOTION):
+        ok("layout: the three deliberate layout transitions are all still where MOTION.md says")
+    else:
+        bad("layout: a documented layout transition has moved or gone; update "
+            "LAYOUT_MOTION and MOTION.md together")
+
+
+def check_reduced_transparency_gets_solid_ground():
+    """Somebody who asked for less transparency gets opaque surfaces.
+
+    The stuck header is a translucent blur on both halves and the form panels
+    are one over the moving landscape. Under prefers-reduced-transparency the
+    header takes each half's --head-solid and the panels go to deep green,
+    both with the blur removed: without the blur a translucent surface is worse
+    than either, type showing through type.
+    """
+    tok = _css_rules(read("tokens.css"))
+    head = [b for st, s, b in tok if any("prefers-reduced-transparency" in x for x in st)
+            and s == ".sitehead.stuck"]
+    if head and re.search(r"--head-bg\s*:\s*var\(--head-solid\)", head[0]) \
+            and re.search(r"(?<!-)backdrop-filter\s*:\s*none", head[0]):
+        ok("transparency: the stuck header goes solid and drops its blur")
+    else:
+        bad("transparency: the stuck header stays translucent for a reader who "
+            "asked for less transparency")
+    for sheet in ("styles.css", "help.css"):
+        if re.search(r"--head-solid\s*:", read(sheet)):
+            ok(f"transparency: {sheet} names its solid header ground")
+        else:
+            bad(f"transparency: {sheet} sets no --head-solid, so its header has "
+                f"no ground at all under reduced transparency")
+    panel = [b for st, s, b in _css_rules(read("styles.css"))
+             if any("prefers-reduced-transparency" in x for x in st) and s == ".panel"]
+    if panel and re.search(r"(?<!-)backdrop-filter\s*:\s*none", panel[0]):
+        ok("transparency: the form panels go opaque")
+    else:
+        bad("transparency: the form panels keep the landscape moving through "
+            "them under reduced transparency")
+
+
 
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
@@ -7183,7 +7315,10 @@ def main():
                check_the_entrance_stays_off_the_phone,
                check_a_feed_cannot_break_the_cards,
                check_keyframes_stay_on_the_compositor,
-               check_the_rail_says_where_it_goes]:
+               check_the_rail_says_where_it_goes,
+               check_long_motion_has_a_reason,
+               check_transitions_stay_off_layout,
+               check_reduced_transparency_gets_solid_ground]:
         before = len(passes) + len(failures)
         try:
             fn()
