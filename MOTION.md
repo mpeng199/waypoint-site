@@ -329,6 +329,9 @@ documented decisions. They were not changed.
 
 - `.ways__row` animates `padding` (a layout property) on hover. That is the
   whole affordance: the rows below give way (`styles.css`, "THE DOORS").
+  It breathes on `:focus-within` as well, which is motion on a keyboard
+  action. That would normally be a finding, but it is the same invitation
+  for somebody who cannot hover, on four rows a reader tabs through once.
 - `.ways__body` opens over .55s, 0fr to 1fr. The opening and closing rows
   share one curve so their heights always sum to the same total, and the
   section never wobbles on a swap.
