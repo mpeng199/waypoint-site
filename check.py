@@ -7087,6 +7087,29 @@ def check_keyframes_stay_on_the_compositor():
         bad("keyframes: the scroll cue loops for the life of the page again")
 
 
+def check_the_rail_says_where_it_goes():
+    """Each diamond in the progress rail is named for the scene it goes to.
+
+    They were "Go to part 1" to "Go to part 9": a screen reader heard nine
+    numbers and a pointer got nothing at all on hover. script.js now names
+    each one from its scene's own heading, so every scene has to keep one,
+    or its diamond falls back to a number.
+    """
+    js = read("script.js")
+    if (re.search(r'var h = sc\.querySelector\("h2, h3"\);', js)
+            and re.search(r'setAttribute\("aria-label", name \|\|', js)):
+        ok("rail: each diamond takes its scene's heading as its name")
+    else:
+        bad("rail: the diamonds are numbered again rather than named")
+    scenes = re.findall(r'<section class="scene[^"]*"[^>]*>(.*?)</section>', read("index.html"), re.S)
+    unnamed = [i + 1 for i, body in enumerate(scenes) if not re.search(r"<h[23][\s>]", body)]
+    if scenes and not unnamed:
+        ok(f"rail: all {len(scenes)} scenes have a heading to be named by")
+    else:
+        bad(f"rail: scene(s) {unnamed} have no h2 or h3, so their diamond says "
+            f"only a number")
+
+
 
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
@@ -7159,7 +7182,8 @@ def main():
                check_the_far_side_of_the_door_is_dim,
                check_the_entrance_stays_off_the_phone,
                check_a_feed_cannot_break_the_cards,
-               check_keyframes_stay_on_the_compositor]:
+               check_keyframes_stay_on_the_compositor,
+               check_the_rail_says_where_it_goes]:
         before = len(passes) + len(failures)
         try:
             fn()

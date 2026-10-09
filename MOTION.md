@@ -53,7 +53,7 @@ and reduced motion respected in CSS and script alike.
 | Materials (§12) | the translucent header and form panels go solid under reduced transparency (§8) |
 | Reduced motion, transparency, contrast (§14) | press dims instead of scaling; scripted scrolls ask; solid ground. `prefers-contrast` was already handled on the directory |
 | Typography (§15) | tracking was already size-specific (-.032em display, .22em eyebrows, 0 body) and Fraunces' optical size axis is loaded; balanced display lines and pretty prose added |
-| Feedback, wayfinding (§16) | the form's answer arrives rather than appears (§10); the lamp, the current tab and the rail already answer "where am I" |
+| Feedback, wayfinding (§16) | the form's answer arrives rather than appears (§10); the lamp and the current tab answer "where am I", and the progress rail's diamonds, which were "Go to part 1" to "Go to part 9", are named for their scenes' headings now, aloud and on hover |
 
 ## The rules
 
@@ -302,6 +302,26 @@ About 460 bytes gzipped across every stylesheet and script, most of it the
 press lists in `tokens.css`. The narrative page's own stylesheet and script
 came out slightly smaller after the dead code went.
 
+Paint timing, `89470c0` against this branch, the median of five cold loads
+each, measured over CDP. Mobile is 412px at 4× CPU and 1.6Mbps/150ms; desktop
+is unthrottled CPU on a 10Mbps line:
+
+| | FCP before → after | LCP before → after | blocking time |
+|---|---|---|---|
+| index.html, mobile | 1168 → 1176ms | 1168 → 1176ms | 0 → 0 |
+| help.html, mobile | 1024 → 1036ms | 1760 → 1780ms | 0 → 0 |
+| index.html, desktop | 272 → 264ms | **272 → 584ms** | 0 → 0 |
+| help.html, desktop | 240 → 252ms | 336 → 340ms | 0 → 0 |
+
+Mobile is unchanged within the noise of the measurement. The desktop index's
+LCP is the one real cost, and it is the entrance's: the headline's halves are
+the largest paint, and they arrive in reading order instead of all at once.
+At 584ms it is still a quarter of the 2.5s that counts as good. If the raw
+number matters more than the arrival, delete the `@media (min-width:901px)`
+block above `@keyframes hero-in` in styles.css and the guard that holds it
+(`check_the_entrance_stays_off_the_phone` will then say nothing runs it,
+which is the point at which to delete that guard too).
+
 ## Settled, and left alone
 
 These looked like findings under the standards and are deliberate,
@@ -322,24 +342,26 @@ documented decisions. They were not changed.
 
 ## How it is checked
 
-**`check.py`, ten guards**, each with its reasoning in its docstring:
+**`check.py`, eleven guards**, each with its reasoning in its docstring:
 `check_motion_speaks_one_language`, `check_every_press_is_answered`,
 `check_hover_motion_needs_a_hover`, `check_scripted_scrolling_asks_first`,
 `check_smoothing_is_per_second`, `check_the_hero_ground_has_no_edge`,
 `check_the_far_side_of_the_door_is_dim`,
 `check_the_entrance_stays_off_the_phone`, and
 `check_a_feed_cannot_break_the_cards` (below), and
-`check_keyframes_stay_on_the_compositor`. They read CSS through a small
+`check_keyframes_stay_on_the_compositor` and `check_the_rail_says_where_it_goes`.
+They read CSS through a small
 rule walker (`_css_rules`) that knows which `@media` block a rule sits in,
 which the flat regex the older guards use cannot tell.
 
-**`mutate.py`, eighteen new mutations**, one per way the above could be
+**`mutate.py`, nineteen new mutations**, one per way the above could be
 undone without anything looking wrong on the machine it was done on. All
-eighteen are caught. Run them alone:
+nineteen are caught (and two older ones that had silently stopped
+applying point at today's code again). Run the new ones alone:
 
 ```python
 import mutate
-mutate.MUTATIONS = mutate.MUTATIONS[-18:]
+mutate.MUTATIONS = mutate.MUTATIONS[-19:]
 mutate.main()
 ```
 
@@ -356,6 +378,7 @@ mutate.main()
 - the nav lamp is positioned by transform, not `left`
 - every keyframe animation running at the door is compositor-only, and once
   the door is passed nothing loops
+- all nine progress-rail diamonds are named for their scenes
 - the closing slit is dimmed when the closing beat owns the stage
 - under reduced motion the carousel arrow jumps; without it, it glides
 - **contrast against the ground that is actually there**: the hero and the

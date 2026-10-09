@@ -620,7 +620,14 @@
     rail.innerHTML = "";
     var dots = scenes.map(function (sc, i) {
       var b = document.createElement("button");
-      b.setAttribute("aria-label", "Go to part " + (i + 1));
+      /* Named for where it goes. "Go to part 4" told a screen reader nothing
+         and a pointer less; each scene already has a heading, and that is its
+         name. The same words show on hover, and because they are the same
+         words the name is not read twice. */
+      var h = sc.querySelector("h2, h3");
+      var name = h ? h.textContent.replace(/\s+/g, " ").trim() : "";
+      b.setAttribute("aria-label", name || "Go to part " + (i + 1));
+      if (name) b.title = name;
       b.addEventListener("click", function () { goTo(sc); });
       rail.appendChild(b);
       return b;

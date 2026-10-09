@@ -277,6 +277,8 @@ MUTATIONS = [
   "help.css", ".fev__h a{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3;\n  overflow:hidden; }", ""),
  ("the events list leaves its pin behind again",
   "events.py", "<span class=\"ev__at\">{PIN}<span>{esc(where(e))}</span></span>'", "{PIN}<span>{esc(where(e))}</span>'"),
+ ("the rail goes back to numbering its parts",
+  "script.js", 'var h = sc.querySelector("h2, h3");', 'var h = null;'),
 ]
 
 

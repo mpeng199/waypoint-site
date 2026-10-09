@@ -267,12 +267,15 @@ async function motion(cdp) {
       .map((a) => a.animationName);
     const entrance = ['.hero__eye', '.hero__l', '.hero__r', '.hero__foot', '.hero__cue']
       .filter((s) => getComputedStyle(document.querySelector(s)).animationName === 'hero-in').length;
-    return { entrance, running: looping.length, offMain,
+    const rail = [...document.querySelectorAll('.rail button')].map((b) => b.getAttribute('aria-label') || '');
+    return { entrance, rail, running: looping.length, offMain,
              stillLooping, lampLeft: lamp.style.left, lampTransform: lamp.style.transform }; })()`);
   if (deskState.running && !deskState.offMain.length) ok(`desktop: the ${deskState.running} keyframe animation(s) running at the door are compositor-only`);
   else bad(`desktop: a running animation animates ${deskState.offMain.join(', ') || 'nothing measurable'} on the main thread`);
   if (!deskState.stillLooping.length) ok('desktop: past the door, nothing loops');
   else bad(`desktop: still looping past the door: ${deskState.stillLooping.join(', ')}`);
+  if (deskState.rail.length && deskState.rail.every((n) => n && !/^Go to part/.test(n))) ok(`desktop: all ${deskState.rail.length} rail diamonds are named for their scenes`);
+  else bad(`desktop: rail diamonds without a scene name: ${deskState.rail.filter((n) => !n || /^Go to part/.test(n)).length} of ${deskState.rail.length}`);
   if (deskState.entrance === 5) ok('desktop: the hero arrives in reading order (5 staggered entrances)');
   else bad(`desktop: expected 5 hero-in entrances, found ${deskState.entrance}`);
   if (/translate\(/.test(deskState.lampTransform) && !deskState.lampLeft) ok('the nav lamp travels on transform, not left');
