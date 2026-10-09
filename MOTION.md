@@ -107,8 +107,8 @@ panels drop their blur and become opaque.
 There was not one `:active` rule on the site. A runtime inventory of eight
 pages at two widths found zero. On a slow phone, a tap on a phone number
 looked exactly like a tap that missed for however long the dialer took to
-open. Now sixteen kinds of control give under the press (`tokens.css`
-device 4), including the Call button, the emergency numbers, the language
+open. Now seventeen kinds of control give under the press (`tokens.css`
+device 4, the Find help pill among them), including the Call button, the emergency numbers, the language
 pills, the filter choices, the event cards and every button on the narrative
 pages. Two more answer in their own way: the four doors' `+` and the filter
 segments, below.
@@ -236,6 +236,7 @@ is no card grids, and `.ways` replaced it), the `--d` stagger delay on
 | 1 | every pressable control | nothing on press | Feedback | tens a visit | `scale` .97 / .985 on `:active`, `--t-press` `--ease-out`; dims under reduced motion |
 | 2 | `.hero__ui` children, **desktop only** | the whole frame appears at once | Orchestration: claim, then answer, then the way out | once a visit | `hero-in`: opacity, 14px rise, 8px blur to focus, .9s `--ease-out`, staggered 0 / 80 / 260 / 440 / 620ms |
 | 3 | `.form__ok`, `.form__err` | the panel jumps to a different, shorter panel | Preventing a jarring change, at the one moment somebody has done something | once | `arrive`: opacity and 6px rise, .32s `--ease-out` |
+| 4 | the Find help menu (added after the review) | — | Spatial consistency: the panel comes out of the pill that opened it | a few times a visit | `menu-in`: opacity, 4px drop and .97 scale from the top-left, the pill's corner, .18s `--ease-out`; **none when opened from the keyboard** (the scripts set `data-keyed` on the opening key and hold it until it shuts); closing is instant; the chevron turns over in `--t-hover` |
 
 The entrance uses the page's own blur-to-focus, shorter, so the page has one
 way of arriving rather than two. It is **desktop only on purpose.** PERF.md's
@@ -346,7 +347,7 @@ documented decisions. They were not changed.
 
 ## How it is checked
 
-**`check.py`, fourteen guards**, each with its reasoning in its docstring:
+**`check.py`, fifteen guards**, each with its reasoning in its docstring:
 
 - `check_motion_speaks_one_language`: curves only in tokens.css; no
   `transition: all`, no `ease-in`, no `scale(0)`; the dead hooks stay dead
@@ -367,19 +368,21 @@ documented decisions. They were not changed.
 - `check_the_entrance_stays_off_the_phone`
 - `check_a_feed_cannot_break_the_cards`
 - `check_the_rail_says_where_it_goes`
+- `check_find_help_opens_a_menu`: one copy of the menu on every English
+  page, its three places exist, no search offered without script
 
 They read CSS through a small rule walker (`_css_rules`) that knows which
 `@media` block a rule sits in, which the flat regex the older guards use
 cannot tell.
 
-**`mutate.py`, twenty-three new mutations**, one per way the above could
+**`mutate.py`, twenty-eight new mutations**, one per way the above could
 be undone without anything looking wrong on the machine it was done on. All
-twenty-three are caught (and two older ones that had silently stopped
+twenty-eight are caught (and two older ones that had silently stopped
 applying point at today's code again). Run the new ones alone:
 
 ```python
 import mutate
-mutate.MUTATIONS = mutate.MUTATIONS[-23:]
+mutate.MUTATIONS = mutate.MUTATIONS[-28:]
 mutate.main()
 ```
 
@@ -397,6 +400,12 @@ mutate.main()
 - every keyframe animation running at the door is compositor-only, and once
   the door is passed nothing loops
 - all nine progress-rail diamonds are named for their scenes
+- the Find help menu: opens with its three items; Escape closes it and keeps
+  focus on the pill; a click elsewhere closes it; from the keyboard it opens
+  with no entrance; "Search for help" leaves the cursor in the box from
+  another page and on the directory itself (no reload); the other two land
+  below the sticky bar; it fits at 320px; and with scripts off it still
+  opens, without the search item
 - the closing slit is dimmed when the closing beat owns the stage
 - under reduced motion the carousel arrow jumps; without it, it glides
 - **contrast against the ground that is actually there**: the hero and the

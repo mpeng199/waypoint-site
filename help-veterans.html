@@ -26,7 +26,14 @@
       <span class="brand__txt">Waypoint<small>Student Health Corps</small></span>
     </a>
     <nav class="sitehead__links" aria-label="Primary">
-      <a href="help.html" class="is-find" aria-current="page">Find help</a>
+      <details class="findmenu">
+        <summary class="is-find">Find help</summary>
+        <ul class="findmenu__list">
+          <li class="findmenu__search"><a href="help.html#search">Search for help</a></li>
+          <li><a href="help.html#needs">What do you need help with?</a></li>
+          <li><a href="help.html#featured">Featured events</a></li>
+        </ul>
+      </details>
       <a href="index.html#bills">Bills &amp; denials</a>
       <a href="index.html#work">How it works</a>
       <a href="index.html#students">Students</a>
@@ -81,7 +88,7 @@
 <aside class="enote enote--carry" data-lang="urdu" lang="ur" dir="rtl" hidden><p class="enote__p">ہر موضوع کے صفحات انگریزی میں ہیں۔ <a class="dialn" href="tel:311">311</a> پر فون کریں اور اردو مترجم مانگیں — یہ مفت ہے، کسی بھی وقت، اور مترجم پوری بات چیت میں آپ کے ساتھ رہتا ہے۔</p></aside>
 <aside class="enote enote--carry" data-lang="french" lang="fr" hidden><p class="enote__p">Les pages de chaque sujet sont en anglais. Appelez le <a class="dialn" href="tel:311">311</a> et demandez un interprète en français : c’est gratuit, à toute heure, et l’interprète reste en ligne avec vous.</p></aside>
 <aside class="enote enote--carry" data-lang="polish" lang="pl" hidden><p class="enote__p">Strony poszczególnych tematów są po angielsku. Zadzwoń pod <a class="dialn" href="tel:311">311</a> i poproś o tłumacza języka polskiego — to bezpłatne, o każdej porze, a tłumacz zostaje na linii przez całą rozmowę.</p></aside>
-<section class="find" aria-labelledby="find-h" hidden>
+<section class="find" id="search" aria-labelledby="find-h" hidden>
   <h2 id="find-h" class="sr-only">Search and narrow the list</h2>
   <div class="find__top">
     <label for="q" class="sr-only">Search for what you need</label>

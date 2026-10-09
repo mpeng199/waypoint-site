@@ -397,6 +397,7 @@ Body prose max-width: 42–54ch. Prevents lines from getting too long and hard t
 - **Fixed nav** with minimal styling (no pill backgrounds). Sticky on scroll with blur backdrop.
 - **Active indicator** ("nav-lamp"): Tubelight effect with glow, travels between the tabs on transform (`--ease-in-out`, .4s).
 - **No mobile menu.** Below 1080px the five tabs wrap onto a row of their own; there is no drawer and nothing to animate open.
+- **Find help is a menu** on every English page: the gold pill opens three ways into the directory, *Search for help* (lands in the search box with the cursor already in it), *What do you need help with?* (`help.html#needs`) and *Featured events* (`help.html#featured`). It is a `<details>`, so it opens with scripts off; script adds Escape, closing on a click elsewhere or on choosing a link, and opening without an entrance from the keyboard. Search is not offered without script, because there is no search to land in. The panel is daylight on both halves: the directory's ground, dropped from the pill that means "the resident side". `build_help.FIND_MENU` is the one copy, and `check_find_help_opens_a_menu` compares every English page with it. The ten language pages keep a plain link to their own front page, where none of the three places exists.
 
 ### Buttons
 

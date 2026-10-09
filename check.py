@@ -6630,7 +6630,7 @@ MOTION_SHEETS = ("tokens.css", "styles.css", "help.css")
 # the code under test what the right answer is.
 PRESSABLE = {
     ".btn": "styles.css", ".tlink": "styles.css", ".langcue a": "styles.css",
-    ".sitehead__links a": "tokens.css",
+    ".sitehead__links a": "tokens.css", ".sitehead__links summary": "tokens.css",
     ".call": "help.css", ".pv__call": "help.css", ".printbtn": "help.css",
     ".jump a": "help.css", ".langbar__list a": "help.css",
     ".rail__nav a": "help.css", ".chip": "help.css", ".fev__arw": "help.css",
@@ -7242,6 +7242,72 @@ def check_reduced_transparency_gets_solid_ground():
             "them under reduced transparency")
 
 
+def check_find_help_opens_a_menu():
+    """The gold pill opens three ways into the directory, on every English page.
+
+    Straight into the search box with the cursor already in it, the list of
+    needs, and the featured events. FIND_MENU in build_help.py is the one copy;
+    the narrative pages carry it by hand, so every page is compared with it.
+    The ten language pages keep a plain link to their own front page on
+    purpose: none of the three places exists there. Search is not offered
+    without script, because there is no search to land in, and arriving at it
+    has to survive the browser clearing focus as it handles the fragment.
+    """
+    import build_help
+    menu = "\n".join(build_help.FIND_MENU)
+    links = re.findall(r'<a href="([^"]+)">([^<]+)</a>', menu)
+    want = [("help.html#search", "Search for help"),
+            ("help.html#needs", "What do you need help with?"),
+            ("help.html#featured", "Featured events")]
+    if (links == want and '<summary class="is-find">Find help</summary>' in menu
+            and '<li class="findmenu__search">' in menu and '<details class="findmenu">' in menu):
+        ok("find help: the menu is the pill over search, needs and featured events, in that order")
+    else:
+        bad(f"find help: FIND_MENU no longer offers {[w[1] for w in want]} under the gold pill")
+    pages = [p for p in ENGLISH_PAGES + ["index.html", "students.html", "partners.html",
+                                         "privacy.html", "terms.html", "suggest.html"]
+             if (ROOT / p).is_file()]
+    drift = [p for p in pages if menu not in read(p)]
+    if drift:
+        bad(f"find help: {len(drift)} page(s) carry a different Find help (e.g. {drift[0]}); "
+            f"copy build_help.FIND_MENU, which is the one version")
+    else:
+        ok(f"find help: all {len(pages)} English pages carry the same menu")
+    spoken = [p for p in LANGUAGE_PAGES if 'class="findmenu"' in read(p)]
+    if spoken:
+        bad(f"find help: {spoken[0]} has the English menu; a language page keeps its "
+            f"plain link to its own front page")
+    else:
+        ok("find help: the ten language pages keep their own plain link")
+    h = read("help.html")
+    for id_ in ("search", "needs", "featured"):
+        if re.search(rf'\bid="{id_}"', h):
+            ok(f"find help: help.html has #{id_} to land on")
+        else:
+            bad(f"find help: help.html has no #{id_}, so the menu item for it goes nowhere")
+    if re.search(r"html:not\(\.hasjs\) \.findmenu__search\{\s*display\s*:\s*none", read("tokens.css")):
+        ok("find help: search is not offered when there is no script to search with")
+    else:
+        bad("find help: the search item shows with scripts off, a control that cannot work")
+    hj = read("help.js")
+    if (re.search(r'if \(location\.hash === "#search"\)', hj) and "setTimeout(land, 0);" in hj
+            and re.search(r"q\.focus\(\{ preventScroll: true \}\);", hj)):
+        ok("find help: arriving at #search leaves the cursor in the box")
+    else:
+        bad("find help: arriving at #search no longer puts the cursor back after the "
+            "browser clears it, so it lands on the page instead of the box")
+    for js in ("script.js", "help.js"):
+        src = read(js)
+        if (re.search(r'var findmenu = document\.querySelector\("\.findmenu"\);', src)
+                and 'if (e.key !== "Escape" || !findmenu.open) return;' in src
+                and 'findmenu.setAttribute("data-keyed", "")' in src):
+            ok(f"find help: {js} closes it on Escape and a click elsewhere, and opens it "
+               f"from the keyboard without an entrance")
+        else:
+            bad(f"find help: {js} no longer closes the menu on Escape, or animates it "
+                f"open from the keyboard")
+
+
 
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
@@ -7318,7 +7384,8 @@ def main():
                check_the_rail_says_where_it_goes,
                check_long_motion_has_a_reason,
                check_transitions_stay_off_layout,
-               check_reduced_transparency_gets_solid_ground]:
+               check_reduced_transparency_gets_solid_ground,
+               check_find_help_opens_a_menu]:
         before = len(passes) + len(failures)
         try:
             fn()

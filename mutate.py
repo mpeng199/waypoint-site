@@ -291,6 +291,19 @@ MUTATIONS = [
  ("the header stays translucent for a reader who asked for solid ground",
   "tokens.css", "  .sitehead.stuck{ --head-bg:var(--head-solid); backdrop-filter:none;",
   "  .sitehead.stuck{ backdrop-filter:none;"),
+ # ---- the Find help menu (October 2026)
+ ("a page's Find help menu drifts from the others",
+  "index.html", '<li><a href="help.html#featured">Featured events</a></li>',
+  '<li><a href="help.html#featured">Events</a></li>'),
+ ("search is offered with no script to run it",
+  "tokens.css", "html:not(.hasjs) .findmenu__search{ display:none; }", ""),
+ ("arriving at search leaves the cursor on the page",
+  "help.js", "      setTimeout(land, 0);\n", ""),
+ ("the featured events lose the anchor the menu points at",
+  "events.py", 'class="fev" id="featured"', 'class="fev"'),
+ ("Escape stops closing the menu",
+  "script.js", 'if (e.key !== "Escape" || !findmenu.open) return;',
+  'if (e.key !== "Esc" || !findmenu.open) return;'),
 ]
 
 

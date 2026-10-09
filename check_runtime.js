@@ -443,6 +443,127 @@ async function contrast(cdp) {
   }
 }
 
+/* The Find help menu, driven the way a reader drives it.
+ *
+ * check.py can read that every English header carries the same <details>; it
+ * cannot read whether the panel fits a 320px screen, whether Escape gives the
+ * keyboard its place back, or whether "Search for help" really leaves the
+ * cursor in the box, from another page and from this one. */
+async function findHelp(cdp) {
+  const open = async (page, { width = 1440, height = 900, mobile = false, noScript = false } = {}) => {
+    const { targetId } = await cdp.send('Target.createTarget', { url: 'about:blank' });
+    const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
+    await cdp.send('Page.enable', {}, sessionId);
+    await cdp.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile }, sessionId);
+    if (noScript) await cdp.send('Emulation.setScriptExecutionDisabled', { value: true }, sessionId);
+    await cdp.send('Page.navigate', { url: ORIGIN + '/' + page }, sessionId);
+    await sleep(2200);
+    const evaluate = async (expr) => (await cdp.send('Runtime.evaluate',
+      { expression: expr, returnByValue: true, awaitPromise: true }, sessionId)).result.value;
+    const click = async (x, y) => {
+      for (const type of ['mouseMoved', 'mousePressed', 'mouseReleased'])
+        await cdp.send('Input.dispatchMouseEvent', { type, x, y, button: 'left', clickCount: 1 }, sessionId);
+    };
+    const centre = (sel) => evaluate(`(() => { const e = document.querySelector(${JSON.stringify(sel)});
+      if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+    const press = async (sel) => { const c = await centre(sel); if (c) await click(c.x, c.y); await sleep(350); return !!c; };
+    const key = async (k) => {
+      for (const type of ['keyDown', 'keyUp'])
+        await cdp.send('Input.dispatchKeyEvent', { type, key: k, code: k, windowsVirtualKeyCode: k === 'Escape' ? 27 : 0 }, sessionId);
+      await sleep(200);
+    };
+    const state = () => evaluate(`(() => { const d = document.querySelector('.findmenu'), l = d && d.querySelector('.findmenu__list');
+      const r = l && d.open ? l.getBoundingClientRect() : null;
+      return { open: !!(d && d.open), right: r ? r.right : 0, left: r ? r.left : 0,
+               items: l ? [...l.querySelectorAll('a')].filter((a) => a.getClientRects().length).map((a) => a.textContent) : [],
+               active: document.activeElement && (document.activeElement.id || document.activeElement.tagName.toLowerCase()),
+               page: location.pathname + location.hash, sideways: document.documentElement.scrollWidth - innerWidth }; })()`);
+    return { evaluate, click, press, key, state, sessionId, close: () => cdp.send('Target.closeTarget', { targetId }) };
+  };
+
+  // 1. it opens, offers all three, and gives the keyboard its place back
+  let p = await open('index.html');
+  await p.press('.findmenu > summary');
+  let s = await p.state();
+  if (s.open && s.items.join('|') === 'Search for help|What do you need help with?|Featured events')
+    ok('find help: the pill opens a menu of the three ways in, in order');
+  else bad(`find help: open=${s.open}, items=${JSON.stringify(s.items)}`);
+  await p.key('Escape');
+  s = await p.state();
+  if (!s.open && s.active === 'summary') ok('find help: Escape closes it and leaves focus on the pill');
+  else bad(`find help: after Escape open=${s.open}, focus on ${s.active}`);
+  await p.press('.findmenu > summary');
+  await p.click(700, 600);
+  await sleep(250);
+  s = await p.state();
+  if (!s.open) ok('find help: a click anywhere else closes it');
+  else bad('find help: the menu stays open over the page after a click elsewhere');
+  // opened from the keyboard it appears without an entrance, and stays that
+  // way as Tab walks into the list
+  await p.evaluate("document.querySelector('.findmenu > summary').focus(); true");
+  for (const [k, code, vk, text] of [['Enter', 'Enter', 13, '\r'], ['Tab', 'Tab', 9], ['Tab', 'Tab', 9]]) {
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: k, code, windowsVirtualKeyCode: vk, text }, p.sessionId);
+    await cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: k, code, windowsVirtualKeyCode: vk }, p.sessionId);
+    await sleep(120);
+  }
+  const keyed = await p.evaluate(`({ open: document.querySelector('.findmenu').open,
+    anim: getComputedStyle(document.querySelector('.findmenu__list')).animationName,
+    at: document.activeElement.textContent.trim() })`);
+  if (keyed.open && keyed.anim === 'none' && keyed.at === 'What do you need help with?')
+    ok('find help: opened from the keyboard it appears without an entrance, and Tab walks the list');
+  else bad(`find help: keyboard open=${keyed.open}, animation=${keyed.anim}, focus on "${keyed.at}"`);
+  await p.key('Escape');
+  // 2. from another page, search arrives with the cursor in the box
+  await p.press('.findmenu > summary');
+  await p.press('.findmenu__search a');
+  await sleep(2400);
+  s = await p.state();
+  if (/^\/help(\.html)?#search$/.test(s.page) && s.active === 'q') ok('find help: from the narrative page, search arrives with the cursor in the box');
+  else bad(`find help: Search for help landed on ${s.page} with focus on ${s.active}`);
+  await p.close();
+
+  // 3. on the directory itself: no page load, focus in the box, menu closed
+  p = await open('help.html');
+  await p.evaluate('window.__samePage = 1');
+  await p.press('.findmenu > summary');
+  await p.press('.findmenu__search a');
+  s = await p.state();
+  const stayed = await p.evaluate('window.__samePage === 1');
+  if (stayed && s.active === 'q' && !s.open) ok('find help: on the directory, search focuses the box in place, with no page load');
+  else bad(`find help: on help.html stayed=${stayed}, focus=${s.active}, open=${s.open}`);
+  // 4. the other two land below the sticky bar, and the menu gets out of the way
+  for (const [item, id] of [['a[href="help.html#needs"]', 'needs'], ['a[href="help.html#featured"]', 'featured']]) {
+    await p.evaluate('scrollTo(0, 0); true');
+    await p.press('.findmenu > summary');
+    await p.press(`.findmenu__list ${item}`);
+    await sleep(900);
+    const land = await p.evaluate(`(() => { const t = document.getElementById('${id}'), h = document.querySelector('.sitehead');
+      return { top: Math.round(t.getBoundingClientRect().top), bar: Math.round(h.getBoundingClientRect().bottom),
+               open: document.querySelector('.findmenu').open }; })()`);
+    if (!land.open && land.top >= land.bar - 2 && land.top < land.bar + 120)
+      ok(`find help: "${id}" lands just below the bar (${land.top}px, bar ends ${land.bar}px)`);
+    else bad(`find help: "${id}" landed at ${land.top}px against a bar ending at ${land.bar}px, menu open=${land.open}`);
+  }
+  await p.close();
+
+  // 5. the narrowest screen: the panel fits, and nothing scrolls sideways
+  p = await open('help.html', { width: 320, height: 640, mobile: true });
+  await p.press('.findmenu > summary');
+  s = await p.state();
+  if (s.open && s.left >= 0 && s.right <= 320 && s.sideways <= 0) ok(`find help: at 320px the panel fits (${Math.round(s.left)} to ${Math.round(s.right)}px)`);
+  else bad(`find help: at 320px the panel runs ${Math.round(s.left)} to ${Math.round(s.right)}px, page ${s.sideways}px wider than the screen`);
+  await p.close();
+
+  // 6. no script: it still opens, and offers no search it cannot run
+  p = await open('help.html', { noScript: true });
+  await p.press('.findmenu > summary');
+  s = await p.state();
+  if (s.open && s.items.join('|') === 'What do you need help with?|Featured events')
+    ok('find help: with scripts off it still opens, without the search it could not run');
+  else bad(`find help: with scripts off open=${s.open}, items=${JSON.stringify(s.items)}`);
+  await p.close();
+}
+
 /* -------------------------------------------------------------------- main */
 (async () => {
   if (!CHROME) { console.error('No Chrome found; skipping browser checks.'); process.exit(0); }
@@ -528,6 +649,8 @@ async function contrast(cdp) {
     await motion(cdp);
     // 7. the two headlines that sit on light, measured against that light
     await contrast(cdp);
+    // 8. the header's Find help menu, driven by pointer and keyboard
+    await findHelp(cdp);
 
     console.log(`\n${pass} passed, ${fail} failed`);
   } finally {

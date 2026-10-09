@@ -18,6 +18,35 @@
      exactly when the press is the only feedback left. Empty and passive: it
      exists to exist. */
   document.addEventListener("touchstart", function () {}, { passive: true });
+  /* The Find help menu in the header. A <details> opens and shuts on its own;
+     this adds what a dropdown needs and a disclosure does not do. Escape
+     closes it and puts you back on the pill, and a click anywhere else closes
+     it. So does choosing one of its links: on the directory's front page the
+     jump happens without a page load, and the panel would sit open over the
+     place it just took you to. The directory's filter dropdowns do the same. */
+  var findmenu = document.querySelector(".findmenu");
+  if (findmenu) {
+    /* Opened from the keyboard, the panel simply appears: a keyboard action
+       does not wait on an animation (MOTION.md). Decided on the key that opens
+       it, before the panel exists, and held until it shuts. Keyed off the
+       pill's own focus ring instead, the entrance replayed the moment Tab
+       moved into the list, because the ring moves with it. */
+    var pill = findmenu.querySelector("summary");
+    pill.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") findmenu.setAttribute("data-keyed", "");
+    });
+    pill.addEventListener("pointerdown", function () { findmenu.removeAttribute("data-keyed"); });
+    document.addEventListener("click", function (e) {
+      if (!findmenu.open) return;
+      var inLink = e.target.closest && e.target.closest(".findmenu__list a");
+      if (inLink || !findmenu.contains(e.target)) findmenu.open = false;
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape" || !findmenu.open) return;
+      findmenu.open = false;
+      pill.focus();
+    });
+  }
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   /* Phones pay for this page in compositing, not in script: the tick itself

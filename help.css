@@ -599,6 +599,8 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    a page built for that one kind of help. Nobody has to read past the cluster
    that matches their sentence. */
 .clusters{ margin-bottom:clamp(34px,6vw,60px); scroll-margin-top:calc(var(--head-h) + 14px); }
+/* the other two places the header's Find help menu jumps to */
+.find,.fev{ scroll-margin-top:calc(var(--head-h) + 14px); }
 .clusters__head h2{ font-size:clamp(1.7rem,1.3rem + 1.6vw,2.4rem); }
 .clusters__say{ margin-top:.55em; color:var(--ink-2); max-width:56ch; }
 
@@ -1667,7 +1669,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
    on order. Below 900px the bar does not follow the page, so 14px is the
    whole clearance a jump needs. */
 @media (max-width:900px){
-  .clusters,.cl,.results,.dir,.grp,.r,.days,.day,.tellus{ scroll-margin-top:14px; }
+  .clusters,.cl,.results,.dir,.grp,.r,.days,.day,.tellus,.find,.fev{ scroll-margin-top:14px; }
 }
 
 /* The featured-events carousel on a phone — and, like the scroll-margins

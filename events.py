@@ -214,7 +214,7 @@ def featured_frag(doc, build_help):
         return []
 
     n = len(doc.get("events", []))
-    a = ['<section class="fev" aria-labelledby="fev-h">',
+    a = ['<section class="fev" id="featured" aria-labelledby="fev-h">',
          '  <div class="fev__top">',
          '    <div>',
          '      <h2 id="fev-h">Featured events</h2>',
