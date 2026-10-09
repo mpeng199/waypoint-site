@@ -20,7 +20,7 @@ import shutil, subprocess, sys, os, tempfile
 ROOT = os.getcwd()
 FILES = ["data/resources.csv","help.css","styles.css","tokens.css","help.js",
          "build_help.py","index.html","i18n.py","script.js","check.py",
-         "assets/door.js"]
+         "assets/door.js","events.py"]
 # A fresh directory per run. A reused one can hold a snapshot from a run
 # that died half way, and restoring from it puts the damage back.
 BAK = tempfile.mkdtemp(prefix="mutate-")
@@ -263,6 +263,10 @@ MUTATIONS = [
  ("a dead scroll cue comes back",
   "styles.css", "@keyframes cue-x{ to{ left:100%; } }\n",
   "@keyframes cue-x{ to{ left:100%; } }\n@keyframes cue{ to{ top:100%; } }\n"),
+ ("a long feed title stretches the featured row again",
+  "help.css", ".fev__h a{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3;\n  overflow:hidden; }", ""),
+ ("the events list leaves its pin behind again",
+  "events.py", "<span class=\"ev__at\">{PIN}<span>{esc(where(e))}</span></span>'", "{PIN}<span>{esc(where(e))}</span>'"),
 ]
 
 

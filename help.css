@@ -1375,6 +1375,19 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   padding:clamp(15px,1.9vw,22px); }
 .fev__h{ font-family:var(--display); font-size:clamp(1.05rem,2.1vw,1.35rem);
   line-height:1.2; margin:0; color:var(--green-deep); }
+/* A feed decides how long a title is, and nothing upstream limits it. One
+   140-character canoe tour made every card in the row 551px tall, the "Yoga"
+   beside it mostly blank. Three lines on a card and four on the lead keep the
+   row the height of what most titles need; the full title stays the link's own
+   text, so its accessible name is whole, and events.html prints it in full.
+   The clamp sits on the link, not the heading: an element's overflow never
+   clips its own outline, so the focus ring survives, and the stretched hit
+   area is positioned against the card, outside the clip, so it survives too.
+   On the heading the clamp cut the ring, and padding it clear of the ring
+   showed the top of the hidden line under the ellipsis. */
+.fev__h a{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3;
+  overflow:hidden; }
+.fev__c--lead .fev__h a{ -webkit-line-clamp:4; }
 .fev__c--lead .fev__h{ font-size:clamp(1.25rem,2.7vw,1.7rem); }
 .fev__h a{ color:inherit; text-decoration:none; }
 /* One stretched hit area over the whole card, so the card is clickable while
@@ -1391,8 +1404,9 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .fev__c--lead .fev__meta{ margin-top:.9em; }
 .fev__meta{ margin:auto 0 0; padding-top:.85em; display:flex; flex-wrap:wrap;
   align-items:center; gap:6px 9px; color:var(--green-4); font-size:.88rem; }
-.fev__m{ display:inline-flex; align-items:center; gap:6px; min-width:0; }
-.fev__m .ico{ width:15px; height:15px; flex:none; color:var(--gold-deep); }
+.fev__m{ display:inline-flex; align-items:flex-start; gap:6px; min-width:0; }
+.fev__m .ico{ width:15px; height:15px; flex:none; color:var(--gold-deep);
+  margin-top:calc((1lh - 15px) / 2); }
 .fev__sep{ color:var(--line); }
 .fev__go{ margin-top:.9em; display:inline-flex; align-items:center; gap:8px;
   font-weight:600; font-size:.95rem; color:var(--green); }
@@ -1559,6 +1573,16 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .ev__meta{ margin:.5em 0 0; display:flex; align-items:center; flex-wrap:wrap;
   gap:4px 8px; color:var(--green-4); font-size:.86rem; }
 .ev__meta .ico{ width:14px; height:14px; flex:none; color:var(--gold-deep); }
+/* The pin and the place travel together. As separate items in a wrapping row,
+   a place name too long for what was left of the line went down to the next
+   one on its own and left the pin behind on a line by itself, which at 320px
+   happened with real listings ("Chinatown YMCA Beacon, Manhattan"). Grouped,
+   the place wraps beside its pin. */
+.ev__at{ display:inline-flex; align-items:flex-start; gap:6px; min-width:0; }
+/* and once it can wrap, the pin belongs to the first line of the place, not
+   the middle of three. 1lh where it is understood; elsewhere the pin sits at
+   the top of the line, which is still the right line. */
+.ev__at .ico{ margin-top:calc((1lh - 14px) / 2); }
 .ev__dot{ color:var(--line); }
 .ev__by{ font-weight:600; }
 .ev__tags{ grid-column:2; display:flex; flex-wrap:wrap; gap:5px;

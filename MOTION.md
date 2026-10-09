@@ -252,6 +252,47 @@ and reduced motion removes it.
 - **A shake on a failed send.** Rejected on register: this is serious work
   with vulnerable adults, and the brand is warm and grounded, not playful.
 
+## Worst-case data: the event cards
+
+*break-ui.* The event cards are the one place on the site where text nobody
+here wrote reaches the page unedited: titles, venues and descriptions come
+straight from NYC Parks, NYLAG and the Food Bank. So they got a worst-case
+pass. A fixture of eight plausible events went through the real renderer
+(`events.py`, then `build_help.py`) in a scratch copy of the site: the data
+changed, the component did not. It was rendered against the live data at
+1440, 390 and 320px. The fixture had a 140-character title, a URL as a
+title, a one-word title, an all-caps title, emoji and Chinese, markup and
+quotes, a 30-letter German compound, a three-clause venue, an all-day event
+and a 2,000-character description.
+
+| # | Severity | Field | Worst case | What happened | Fix |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Ugly | `.ev__meta` location | real data, at 320px: "Chinatown YMCA Beacon, Manhattan" | the pin sat on a line by itself and the place wrapped below it, because pin and place were separate items in a wrapping row | `events.py` groups them in `.ev__at`, the way the featured card already did; the pin aligns to the first line (`1lh`) |
+| 2 | Ugly | `.fev__h` title | "Bronx River Alliance Presents: Free Family-Friendly Guided Canoe Tour and Ecology Walk Along the Bronx River Greenway (Registration Required)" | every card in the row stretched to the tallest: 551px against 415, with "Yoga" beside it mostly blank | the title link clamps at three lines, four on the lead card. Row back to 460px; the real data's 415 is untouched |
+| 3 | Fragile | title | — | no limit anywhere upstream; the feed decides | the clamp is the limit; the full title is the link's text (whole accessible name) and is printed in full on events.html |
+| 4 | Ugly, introduced and fixed | focus ring | a clamped title, tabbed to | clamping the heading cropped the link's ring, and padding it clear showed the top of the hidden line under the ellipsis | the clamp sits on the link: an element's overflow never clips its own outline |
+| 5 | Ugly | `.fev__m` place, two lines | the three-clause venue | the pin centred between the two lines | top-aligned, like #1 |
+
+**Held up:** markup in a title renders as text (`esc()`), a URL as a title
+breaks inside the card rather than out of it, an empty venue says "See the
+listing" instead of leaving a bare pin, an all-day event shows its date
+alone, a long description is cut at a word and says so with an ellipsis,
+emoji and CJK render whole, and no page scrolls sideways at any width.
+
+**Decided, not fixed:** the lead card on a phone grows to fit a long
+venue (404px at 390 for the worst case, 234 for the live data). A place
+somebody has to find is not something to truncate.
+
+`check_a_feed_cannot_break_the_cards` pushes a hostile event through the
+renderer on every run, and two mutations prove it notices (clamp removed,
+pin ungrouped).
+
+## What it cost
+
+About 460 bytes gzipped across every stylesheet and script, most of it the
+press lists in `tokens.css`. The narrative page's own stylesheet and script
+came out slightly smaller after the dead code went.
+
 ## Settled, and left alone
 
 These looked like findings under the standards and are deliberate,
@@ -272,22 +313,23 @@ documented decisions. They were not changed.
 
 ## How it is checked
 
-**`check.py`, eight guards**, each with its reasoning in its docstring:
+**`check.py`, nine guards**, each with its reasoning in its docstring:
 `check_motion_speaks_one_language`, `check_every_press_is_answered`,
 `check_hover_motion_needs_a_hover`, `check_scripted_scrolling_asks_first`,
 `check_smoothing_is_per_second`, `check_the_hero_ground_has_no_edge`,
 `check_the_far_side_of_the_door_is_dim`,
-`check_the_entrance_stays_off_the_phone`. They read CSS through a small
+`check_the_entrance_stays_off_the_phone`, and
+`check_a_feed_cannot_break_the_cards` (below). They read CSS through a small
 rule walker (`_css_rules`) that knows which `@media` block a rule sits in,
 which the flat regex the older guards use cannot tell.
 
-**`mutate.py`, fourteen new mutations**, one per way the above could be
+**`mutate.py`, sixteen new mutations**, one per way the above could be
 undone without anything looking wrong on the machine it was done on. All
-fourteen are caught. Run them alone:
+sixteen are caught. Run them alone:
 
 ```python
 import mutate
-mutate.MUTATIONS = mutate.MUTATIONS[-14:]
+mutate.MUTATIONS = mutate.MUTATIONS[-16:]
 mutate.main()
 ```
 

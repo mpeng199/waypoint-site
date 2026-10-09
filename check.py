@@ -6993,6 +6993,65 @@ def check_the_entrance_stays_off_the_phone():
         bad("entrance: the global reduced-motion animation:none is gone, so the "
             "entrance runs for somebody who asked for no motion")
 
+def check_a_feed_cannot_break_the_cards():
+    """Third-party titles arrive at whatever length the feed likes.
+
+    Nothing upstream limits an event's title, venue or description: they are
+    whatever NYC Parks, NYLAG or the Food Bank typed. Rendered worst-case
+    through the real renderer (a break-ui pass, October 2026), one 140-
+    character title stretched every featured card to 551px, and at 320px the
+    events list left its location pin on a line by itself with real listings.
+    This feeds the renderer a hostile event and holds the fixes: escaping,
+    the trimmed description, the pin grouped with its place, and the title
+    clamp living on the link (where it cannot clip the link's focus ring).
+    """
+    import events
+    import build_help
+    worst = {"title": 'Know Your Rights: Q&A <Housing> "Court" 101' + " and more" * 12,
+             "start": "2026-10-09T10:00:00", "end": "2026-10-09T15:00:00",
+             "all_day": False, "borough": "Brooklyn", "address": "",
+             "venue": "Brooklyn Public Library, Central Library, Dweck Center "
+                      "for Contemporary Culture, Grand Army Plaza",
+             "description": "word " * 400, "url": "https://example.org/e?a=1&b=2",
+             "image": None, "kind": "Workshop", "format": "In person", "free": True,
+             "source": "Example", "source_key": "nylag",
+             "source_url": "https://example.org/", "need": "legal", "id": "worst"}
+    card = "\n".join(events.card(worst, build_help, lead=True))
+    if "<Housing>" not in card and "&lt;Housing&gt;" in card:
+        ok("feed: a title's markup is escaped on the featured card")
+    else:
+        bad("feed: a title's <markup> reaches the featured card unescaped")
+    m = re.search(r'<p class="fev__b">([^<]*)</p>', card)
+    if m and len(html.unescape(m.group(1))) <= 151 and m.group(1).endswith("…"):
+        ok("feed: a 2,000-character description is trimmed, and says so")
+    else:
+        bad("feed: the lead card's description is no longer trimmed with an ellipsis")
+    day = "\n".join(events.day_block("2026-10-09", [worst], build_help))
+    if re.search(r'<p class="ev__meta"><span class="ev__at"><svg', day):
+        ok("feed: the events list keeps the pin with its place")
+    else:
+        bad("feed: the pin and the place are separate items again; a long place "
+            "name wraps away and leaves the pin on a line of its own")
+    rules = _css_rules(read("help.css"))
+    link = " ".join(b for st, s_, b in rules if not st and s_ == ".fev__h a")
+    lead = " ".join(b for st, s_, b in rules if not st and s_ == ".fev__c--lead .fev__h a")
+    head = " ".join(b for st, s_, b in rules if not st and s_ == ".fev__h")
+    if re.search(r"-webkit-line-clamp\s*:\s*3", link) and re.search(r"overflow\s*:\s*hidden", link):
+        ok("feed: a featured title is clamped to three lines, on the link")
+    else:
+        bad("feed: featured titles are unclamped again, so one long title "
+            "stretches the whole row")
+    if re.search(r"-webkit-line-clamp\s*:\s*4", lead):
+        ok("feed: the lead card's title gets four")
+    else:
+        bad("feed: the lead card's title is no longer clamped at four lines")
+    if re.search(r"overflow\s*:", head):
+        bad("feed: .fev__h clips its own content, which crops the title "
+            "link's focus ring; clamp on the link instead")
+    else:
+        ok("feed: the heading does not clip, so the link's focus ring is whole")
+
+
 
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
@@ -7063,7 +7122,8 @@ def main():
                check_smoothing_is_per_second,
                check_the_hero_ground_has_no_edge,
                check_the_far_side_of_the_door_is_dim,
-               check_the_entrance_stays_off_the_phone]:
+               check_the_entrance_stays_off_the_phone,
+               check_a_feed_cannot_break_the_cards]:
         before = len(passes) + len(failures)
         try:
             fn()
