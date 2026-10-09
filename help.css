@@ -443,7 +443,7 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 @media (hover:hover) and (pointer:fine){ .facet__btn:hover::after{ transform:scaleX(1); } }
 /* A segment of the bar does not shrink under a press: it would come away from
    the bar's own edges. It darkens instead, for as long as it is held. */
-.facet__btn:active{ background:var(--line); }
+.facet__btn:active,.facet[open] > .facet__btn:active{ background:var(--line); }
 
 /* A facet icon is read as a shape before the label is read as a word. */
 .facet__ico{ width:19px; height:19px; flex:none; color:var(--ink-3);

@@ -256,7 +256,6 @@ async function motion(cdp) {
   }
   // the first frame arrives on a desk, and the lamp travels on transform
   const deskState = await desk.evaluate(`(() => {
-    const names = document.getAnimations().map((a) => a.animationName).filter(Boolean);
     const META = ['offset', 'easing', 'composite', 'computedOffset'];
     const looping = document.getAnimations().filter((a) => a.playState === 'running' && a.animationName);
     const offMain = looping.flatMap((a) => a.effect.getKeyframes().flatMap((k) => Object.keys(k)))
@@ -266,7 +265,9 @@ async function motion(cdp) {
     const stillLooping = document.getAnimations()
       .filter((a) => a.playState === 'running' && a.effect.getTiming().iterations === Infinity)
       .map((a) => a.animationName);
-    return { entrance: names.filter((n) => n === 'hero-in').length, running: looping.length, offMain,
+    const entrance = ['.hero__eye', '.hero__l', '.hero__r', '.hero__foot', '.hero__cue']
+      .filter((s) => getComputedStyle(document.querySelector(s)).animationName === 'hero-in').length;
+    return { entrance, running: looping.length, offMain,
              stillLooping, lampLeft: lamp.style.left, lampTransform: lamp.style.transform }; })()`);
   if (deskState.running && !deskState.offMain.length) ok(`desktop: the ${deskState.running} keyframe animation(s) running at the door are compositor-only`);
   else bad(`desktop: a running animation animates ${deskState.offMain.join(', ') || 'nothing measurable'} on the main thread`);
@@ -322,7 +323,8 @@ async function motion(cdp) {
     for (let i = 0; i < 8; i++) { window.__waypointTick && window.__waypointTick(); await new Promise((r) => setTimeout(r, 30)); }
     return { closing: document.documentElement.classList.contains('closing'),
              glow: +getComputedStyle(document.querySelector('.poster__glow')).opacity,
-             entrance: document.getAnimations().filter((a) => a.animationName === 'hero-in').length }; })()`);
+             entrance: ['.hero__eye', '.hero__l', '.hero__r', '.hero__foot', '.hero__cue']
+               .filter((s) => getComputedStyle(document.querySelector(s)).animationName === 'hero-in').length }; })()`);
   if (glow.closing && glow.glow <= 0.3) ok(`phone: the closing door's slit is dimmed (${glow.glow}) behind the last line`);
   else bad(`phone: closing=${glow.closing}, slit opacity ${glow.glow}; the closing line sits on a bright slit again`);
   if (glow.entrance === 0) ok('phone: no hero entrance (Speed Index is the phone\'s budget)');

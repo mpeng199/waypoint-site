@@ -540,9 +540,9 @@ main > section{ scroll-margin-top:calc(var(--head-h) + 14px); }
    the panel simply became a different, shorter panel. It is the one moment on
    the page where somebody has done something, and it should land like it.
    Keyframes, not a transition: it comes out of display:none, once. */
-.form__ok.show{ display:block; animation:arrive .32s var(--ease-out) both; }
+.form__ok.show{ display:block; animation:arrive .32s var(--ease-out); }
 .form__err{ grid-column:1/13; display:none; padding:14px 18px; border:1px solid rgba(224,134,88,.55); border-radius:8px; background:rgba(224,134,88,.12); color:#f6e3d7; font-size:.875rem; }
-.form__err.show{ display:block; animation:arrive .32s var(--ease-out) both; }
+.form__err.show{ display:block; animation:arrive .32s var(--ease-out); }
 @keyframes arrive{ from{ opacity:0; transform:translateY(6px); } }
 /* The spam honeypot. Clipped rather than parked at -9999px for the same
    reason the skip link is: a physical offset is off the end of the
@@ -778,10 +778,13 @@ html.hasjs:not(.at-door) .hero__cue i::after{ animation:none; }
    of the two to have a bill in their hand rather than a volunteer programme
    to compare. They get the finished frame at once, as they always did.
    Nothing waits on this: every control is live from the first frame, and
-   reduced motion removes it along with every other animation. */
+   reduced motion removes it along with every other animation. `backwards`,
+   not `both`: the last frame is each element's own resting style, so once it
+   has played nothing needs to stay applied, and five finished animations do
+   not go on holding a filter for the life of the page. */
 @media (min-width:901px){
   .hero__eye,.hero__l,.hero__r,.hero__foot,.hero__cue{
-    animation:hero-in .9s var(--ease-out) both; }
+    animation:hero-in .9s var(--ease-out) backwards; }
   .hero__l{ animation-delay:.08s; }
   .hero__r{ animation-delay:.26s; }
   .hero__foot{ animation-delay:.44s; }
