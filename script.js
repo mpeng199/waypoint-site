@@ -12,6 +12,12 @@
      half of that, can only ever be added from here. A page without this
      script keeps a solid bar. */
   document.documentElement.classList.add("hasjs");
+  /* WebKit on iOS shows :active only while some touch listener exists on the
+     page, so without one every press state in tokens.css is invisible on an
+     iPhone. Lenis registers one, but not under reduced motion, which is
+     exactly when the press is the only feedback left. Empty and passive: it
+     exists to exist. */
+  document.addEventListener("touchstart", function () {}, { passive: true });
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   /* Phones pay for this page in compositing, not in script: the tick itself
@@ -393,13 +399,13 @@
   function spiralFade() {
     var y = window.scrollY || 0;
     if (Math.abs(y - lastY) > 0.5) { lastMoveAt = performance.now(); lastY = y; }
-    openNow += (closingRoom() - openNow) * (reduced ? 1 : 0.08);
+    openNow += (closingRoom() - openNow) * settle(0.08);
     var leaving = 1 - ramp(openNow, 0.10, 0.62);
     if (reduced) { spiralWant = spiralAlpha = leaving; }
     else {
       var want = (performance.now() - lastMoveAt < 700 ? 1 : 0) * leaving;
       spiralWant = want;
-      spiralAlpha += (want - spiralAlpha) * 0.07;
+      spiralAlpha += (want - spiralAlpha) * settle(0.07);
     }
     root.style.setProperty("--spiralShow", spiralAlpha.toFixed(3));
   }
@@ -411,7 +417,7 @@
     if (spiralAlpha < 0.02) return;
     if (parseFloat(root.style.getPropertyValue("--worldShow") || "1") < 0.02) return;
 
-    var want = spiralTarget(), k = reduced ? 1 : 0.055;
+    var want = spiralTarget(), k = settle(0.055);
     spiralNow.cx += (want.cx - spiralNow.cx) * k;
     spiralNow.amp += (want.amp - spiralNow.amp) * k;
     spiralNow.turn += (want.turn - spiralNow.turn) * k;
@@ -450,7 +456,7 @@
       want = Math.max(want, clamp(seen / (vh * 0.55), 0, 1));
     }
     veilTarget = want;
-    veilNow += (want - veilNow) * (reduced ? 1 : 0.09);
+    veilNow += (want - veilNow) * settle(0.09);
     root.style.setProperty("--readVeil", veilNow.toFixed(3));
   }
 
@@ -505,7 +511,7 @@
     navSections.forEach(function (s) { s.link.classList.toggle("current", !!active && s.id === active.id); });
     if (active) {
       var L = active.link, pad = 6;
-      lamp.style.left = (L.offsetLeft - pad) + "px";
+      lamp.style.transform = "translate(" + (L.offsetLeft - pad) + "px,-50%)";
       lamp.style.width = (L.offsetWidth + pad * 2) + "px";
       lamp.classList.add("on");
     } else {
@@ -547,10 +553,20 @@
              spiral: spiralAlpha, spiralWant: spiralWant, sinceMove: performance.now() - lastMoveAt };
   };
 
-  function loop() {
+  /* Every lerp above is tuned as "this much of the way per frame", and per
+     frame is a trap: tuned at 60Hz, the veil, the thread and the closing
+     unwind all ran twice as fast on a 120Hz display (most current Macs and
+     iPhones) and half as fast on a busy one. settle() turns a 60Hz constant
+     into the same curve in time at any frame rate: identical at 60Hz by
+     construction, and capped at six frames so a stall cannot make it leap. */
+  var frameAt = 0, frames = 1;
+  function settle(k) { return reduced ? 1 : 1 - Math.pow(1 - k, frames); }
+  function loop(now) {
+    frames = frameAt ? Math.min((now - frameAt) / 16.667, 6) : 1;
+    frameAt = now;
     tick();
     if (busy()) requestAnimationFrame(loop);
-    else { looping = false; tick(); }   // one last frame on the settled values
+    else { looping = false; frameAt = 0; frames = 1; tick(); }   // one last frame on the settled values
   }
   function wake() {
     if (reduced) { tick(); return; }
@@ -621,26 +637,6 @@
       scenes.forEach(function (s) { ro.observe(s); });
     }
   }
-
-  /* ---------- count up (used by the pitch pages) ---------- */
-  $$("[data-count]").forEach(function (el) {
-    var t = parseFloat(el.getAttribute("data-count")) || 0;
-    if (reduced) { el.textContent = t; return; }
-    var done = false;
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (e.isIntersecting && !done) {
-          done = true; var s = performance.now();
-          (function step(now) {
-            var p = clamp((now - s) / 1300, 0, 1), k = 1 - Math.pow(1 - p, 3);
-            el.textContent = Math.round(t * k);
-            if (p < 1) requestAnimationFrame(step);
-          })(s);
-        }
-      });
-    }, { threshold: 0.6 });
-    io.observe(el);
-  });
 
   /* ---------- forms → Waypoint submit edge function ---------- */
   var SUBMIT_URL = "https://zzsqvztwbhdgrdvjpbrr.supabase.co/functions/v1/submit";

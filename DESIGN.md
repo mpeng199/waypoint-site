@@ -395,17 +395,17 @@ Body prose max-width: 42–54ch. Prevents lines from getting too long and hard t
 ### Navigation
 
 - **Fixed nav** with minimal styling (no pill backgrounds). Sticky on scroll with blur backdrop.
-- **Active indicator** ("nav-lamp"): Tubelight effect with glow, slides between sections.
-- **Mobile toggle**: Hamburger → × animation, slides in full-height drawer menu.
+- **Active indicator** ("nav-lamp"): Tubelight effect with glow, travels between the tabs on transform (`--ease-in-out`, .4s).
+- **No mobile menu.** Below 1080px the five tabs wrap onto a row of their own; there is no drawer and nothing to animate open.
 
 ### Buttons
 
-| Variant | Style | Hover |
-|---------|-------|-------|
-| `.btn` (default) | Outlined, semi-transparent bg, cream text | Bg lightens, border brightens |
-| `.btn--solid` | Solid cream bg, green text | Transitions to gold bg on hover |
+| Variant | Style | Hover | Press |
+|---------|-------|-------|-------|
+| `.btn` (default) | Outlined, semi-transparent bg, cream text | Bg lightens, border brightens | gives to `scale(.97)` |
+| `.btn--solid` | Solid cream bg, green text | Transitions to gold bg on hover | gives to `scale(.97)` |
 
-Both support icon placement with `.arr` (arrow) that translates on hover.
+Both support icon placement with `.arr` (arrow), which leans forward on hover where a pointer can hover (the shared device in `tokens.css`). Every pressable control on both halves gives under the press; see MOTION.md.
 
 ### Forms
 
@@ -419,40 +419,44 @@ All form inputs:
 
 ### Cards / Doors
 
-`.door` cards: Semi-transparent green bg with blur, bordered. Hover lifts (+5px translateY) and brightens border to gold.
+There are none on the narrative pages. The three `.door` cards were replaced by the four `.ways` rows you open one at a time (see "The doors" above), and their CSS was deleted in October 2026; the journey has no card grids.
 
 ## Motion
 
-### Keyframe Animations
+**MOTION.md is the full account**: the rules, the October 2026 review against
+the apple-design and Emil Kowalski standards, every finding and what was done
+about it, what was deliberately left alone, and how each part is checked. The
+short version:
 
-| Name | Effect | Duration | Easing | Use |
-|------|--------|----------|--------|-----|
-| `cue` | Golden scrollbar animation (0% → 100% top) | 2s | `var(--ease)` | Scroll indicator at bottom of opening scene |
-| `reveal` (blur-to-focus) | Blur 16px → 0, opacity 0 → 1, scale .99 → 1 | 1.1s | `var(--ease-out)` | Section entrance animations (staggered via `--d` var) |
+- **Curves are tokens.** `--ease` for colour and ground, `--ease-out` for
+  anything arriving or answering a press, `--ease-in-out` for something
+  already on screen moving somewhere new. No stylesheet types its own
+  `cubic-bezier`. `--t-press` (.16s) and `--t-hover` (.2s) are the two UI
+  timings.
+- **Every control gives under the press**, `scale(.97)`, `.985` for cards, on
+  pointer-down. The `:active` lists are device 4 in `tokens.css`.
+- **Hover moves things only where a pointer can hover**:
+  `@media (hover:hover) and (pointer:fine)`.
+- **Smoothing is per second**, not per frame (`settle()` in script.js,
+  `damp()` in door.js), so 120Hz screens get the motion that was tuned.
+- **The hero arrives in reading order on a desktop** (`hero-in`, .9s,
+  staggered); a phone gets the finished frame at once, for Speed Index.
 
-### Easing Functions
-
-| Token | Curve | Usage |
-|-------|-------|-------|
-| `--ease` | `cubic-bezier(.22, .61, .36, 1)` | General transitions, UI movements |
-| `--ease-out` | `cubic-bezier(.16, 1, .3, 1)` | Reveal animations, focus-in effects |
-
-### Parallax & Scroll Interactions
+### Scroll interactions
 
 - **Inertial scrolling**: Lenis (vendored) with `lerp: 0.085`. Anchor clicks and the progress rail route through `lenis.scrollTo`. Disabled entirely under reduced motion.
-- **The thread** (`#spiral`) reshapes itself for the scene at the viewport center and only exists while you are moving. It swings wide *opposite* the text on the alternating scenes (center 26% against a right-aligned scene, 74% against a left-aligned one), and narrows to a quiet line down the gutter on hold scenes (center 50%, about 4% of the viewport wide). Parameters lerp toward their target so the reshape is continuous, never a cut. It fades in on scroll and fades out about 700ms after movement stops, so a still page is never cluttered by it. As the closing scene arrives the coil **opens out and unwinds** (amplitude roughly doubles, from about 17% of the viewport to 31%) while its opacity falls to zero, so it reads as making way rather than switching off. It is fully gone before the door appears: the last frame of the page is the door, one line and one button, nothing else. Under reduced motion it is static and follows the same closing fade.
+- **The thread** (`#spiral`) reshapes itself for the scene at the viewport center and only exists while you are moving. It swings wide *opposite* the text on the alternating scenes (center 26% against a right-aligned scene, 74% against a left-aligned one), and narrows to a quiet line down the gutter on hold scenes (center 50%, about 4% of the viewport wide). Parameters settle toward their target so the reshape is continuous, never a cut. It fades in on scroll and fades out about 700ms after movement stops, so a still page is never cluttered by it. As the closing scene arrives the coil **opens out and unwinds** (amplitude roughly doubles, from about 17% of the viewport to 31%) while its opacity falls to zero, so it reads as making way rather than switching off. It is fully gone before the door appears: the last frame of the page is the door, one line and one button, nothing else. Under reduced motion it is static and follows the same closing fade.
 - **Reading veil** (`.readveil`): one fixed full-viewport layer whose opacity follows how much dense text is on screen. It replaced per-section scrims, which were the cause of the horizontal banding: two adjacent sections each faded their gradient to transparent at the shared edge, leaving a bright stripe at every seam. A single fixed element cannot produce a seam.
 - **Journey progress** is measured from the *end of the hero* to the end of the document, so adding the 240vh door section does not compress the landscape crossfade.
 - **Landscape layers** (`.stage__layer`): Scale (1.05 + parallax) and opacity crossfade based on scroll position. Four-layer progression.
-- **Focus-in reveals**: Applied to `.focus-in` elements; staggered via `--d` custom property (multiply by 90ms).
-- **Reduced motion**: All animations disabled via `@media (prefers-reduced-motion: reduce)`. Blur → instant; opacity → instant; scale → none.
+- **Focus-in reveals**: `.focus-in` blurs from 16px to focus, rises 26px and fades in over 1.1s `--ease-out` when it scrolls into view, once, and never un-reveals. Phones keep the rise and the fade and lose the blur.
+- **Reduced motion**: every transition goes to near-zero and every animation stops; the door is a still and the pass-through a cut; a press dims instead of scaling; scripted smooth scrolls ask first. Opacity changes that carry meaning still happen, instantly.
 
-### Navigation Transitions
+### Navigation transitions
 
-- **Nav lamp slide**: 0.45s `--ease` for left/width positioning.
-- **Mobile menu slide**: 0.45s `--ease` for translateX.
-- **Scroll cue animation**: 2s infinite, smooth flow-down effect.
-
+- **Nav lamp**: transform and width, .4s `--ease-in-out`.
+- **Header ground**: fades in over .12s on scroll and out over .4s (quick in, slow out, over the clay emergency panel).
+- **Scroll cue**: the hero's 1px gold line, 2.4s, looping; stops under reduced motion.
 ## Accessibility
 
 ### Color Contrast
@@ -463,8 +467,10 @@ All form inputs:
 
 ### Motion
 
-- All animations disabled under `@media (prefers-reduced-motion: reduce)`
-- Entrance reveals use crossfade as fallback (no blur or scale)
+- Under `@media (prefers-reduced-motion: reduce)` every transition goes to near-zero and every animation stops; reveals show their finished state and the door is a single still.
+- A press dims (`opacity:.78`) instead of scaling, so it still answers.
+- A smooth scroll requested in script asks first (`glide()` in help.js; `goTo` in script.js).
+- Under `prefers-reduced-transparency: reduce` the stuck header and the form panels lose their blur and go opaque.
 
 ### The header
 

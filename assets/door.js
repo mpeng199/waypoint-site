@@ -378,6 +378,17 @@ let px = 0, py = 0, pxTarget = 0, pyTarget = 0;
 let running = false, visible = true;
 
 const lerp = (a, b, k) => a + (b - a) * k;
+/* A smoothing constant applied once per frame is a constant per frame RATE:
+   tuned at 60Hz, the pointer parallax settled twice as fast on a 120Hz display
+   and half as fast on a busy one. damp() turns the 60Hz constant into the same
+   curve in time at any rate (identical at 60Hz by construction), capped at six
+   frames so a stalled tab does not snap the camera on its first frame back. */
+let lastNow = 0;
+const damp = (k60, now) => {
+  const frames = lastNow ? Math.min((now - lastNow) / 16.667, 6) : 1;
+  lastNow = now;
+  return 1 - Math.pow(1 - k60, frames);
+};
 const clamp01 = (v) => v < 0 ? 0 : v > 1 ? 1 : v;
 const ramp = (v, a, b) => { const x = clamp01((v - a) / (b - a)); return x * x * (3 - 2 * x); };
 /* the walk toward a door: unhurried at first, then the threshold arrives fast */
@@ -476,7 +487,8 @@ function renderOnce(now) {
   }
 
   // pointer parallax, damped
-  px = lerp(px, pxTarget, 0.055); py = lerp(py, pyTarget, 0.055);
+  const k = damp(0.055, now);
+  px = lerp(px, pxTarget, k); py = lerp(py, pyTarget, k);
 
   if (inMode) {
     camera.position.set(px * 0.42 * (1 - e), EYE_Y + py * 0.26 * (1 - e) + e * 0.16, camZ);
@@ -535,6 +547,7 @@ function resize() {
 function start() {
   if (running) return;
   running = true;
+  lastNow = 0;
   requestAnimationFrame(frame);
 }
 function stop() { running = false; }

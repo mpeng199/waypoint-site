@@ -138,7 +138,7 @@ assertions, and ship the stylesheet from before your edit.
 Two suites, both of which must be green:
 
     python3 check.py        # 3846 assertions, reads the source
-    node check_runtime.js   # 18 assertions, drives a real Chrome
+    node check_runtime.js   # drives a real Chrome: budget, idle loops, motion, contrast
 
 They cover different things, and the split is the point. `check.py` cannot see
 what the browser fetches, so it cannot tell you that a re-added

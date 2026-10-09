@@ -19,7 +19,8 @@ import re
 import shutil, subprocess, sys, os, tempfile
 ROOT = os.getcwd()
 FILES = ["data/resources.csv","help.css","styles.css","tokens.css","help.js",
-         "build_help.py","index.html","i18n.py","script.js","check.py"]
+         "build_help.py","index.html","i18n.py","script.js","check.py",
+         "assets/door.js"]
 # A fresh directory per run. A reused one can hold a snapshot from a run
 # that died half way, and restoring from it puts the damage back.
 BAK = tempfile.mkdtemp(prefix="mutate-")
@@ -218,6 +219,50 @@ MUTATIONS = [
  ("the student word goes back to meaning undergraduate",
   "i18n.py", '            "Uczniowie", "Organizacje"],',
   '            "Studenci", "Organizacje"],'),
+ # ---- round five: motion (October 2026). Every one of these looks fine on
+ #      the laptop it was made on: a hover lift only sticks under a thumb,
+ #      per-frame smoothing only runs fast at 120Hz, a missing press only
+ #      shows on a slow phone, and a hard-edged scrim only on a desktop door.
+ ("a control stops answering a press",
+  "tokens.css", "  .rail__nav a,.chip,.fev__arw,.cal__arw):active{ scale:var(--press); }",
+  "  .rail__nav a,.fev__arw,.cal__arw):active{ scale:var(--press); }"),
+ ("the Call button's press snaps instead of giving",
+  "help.css", "  transition:background .16s var(--ease),\n    scale var(--t-press) var(--ease-out); }\n.call:hover",
+  "  transition:background .16s var(--ease); }\n.call:hover"),
+ ("the iPhone loses every press on the directory",
+  "help.js", '  document.addEventListener("touchstart", function () {}, { passive: true });\n', ""),
+ ("an emergency number lifts under a thumb again",
+  "help.css", "@media (hover:hover) and (pointer:fine){ .sos__list a:hover{ transform:translateY(-2px); } }",
+  ".sos__list a:hover{ transform:translateY(-2px); }"),
+ ("the shared arrow leans on touch again",
+  "tokens.css", "@media (hover:hover) and (pointer:fine){\n  :where(a,button):hover > .arr,",
+  "@media all{\n  :where(a,button):hover > .arr,"),
+ ("the carousel glides whatever the reader asked for",
+  "help.js", "track.scrollBy({ left: dir * step(), behavior: glide() });",
+  'track.scrollBy({ left: dir * step(), behavior: "smooth" });'),
+ ("the reading veil settles per frame again",
+  "script.js", "veilNow += (want - veilNow) * settle(0.09);",
+  "veilNow += (want - veilNow) * (reduced ? 1 : 0.09);"),
+ ("the door's parallax settles per frame again",
+  "assets/door.js", "px = lerp(px, pxTarget, k); py = lerp(py, pyTarget, k);",
+  "px = lerp(px, pxTarget, 0.055); py = lerp(py, pyTarget, 0.055);"),
+ ("a stylesheet types its own curve",
+  "help.css", ".call:hover{ background:var(--green-2); }",
+  ".call:hover{ background:var(--green-2); transition-timing-function:cubic-bezier(.4,0,.2,1); }"),
+ ("transition: all comes back",
+  "styles.css", ".tlink:hover{ border-color:var(--gold); }",
+  ".tlink:hover{ border-color:var(--gold); transition:all .3s; }"),
+ ("the hero's ground gets its hard edge back",
+  "styles.css", "radial-gradient(closest-side, rgba(8,15,11,.55) 0%, rgba(8,15,11,.4) 52%, rgba(8,15,11,0) 100%)",
+  "radial-gradient(75% 150% at 50% 50%, rgba(8,15,11,.55) 0%, rgba(8,15,11,.4) 52%, rgba(8,15,11,0) 78%)"),
+ ("the closing slit shines through the last line again",
+  "styles.css", ":is(html.closing) .poster__glow{ transform:translate(-50%,-50%); opacity:.2; }",
+  ":is(html.closing) .poster__glow{ transform:translate(-50%,-50%); opacity:1; }"),
+ ("the hero entrance reaches the phone",
+  "styles.css", "@media (min-width:901px){\n  .hero__eye,.hero__l", "@media all{\n  .hero__eye,.hero__l"),
+ ("a dead scroll cue comes back",
+  "styles.css", "@keyframes cue-x{ to{ left:100%; } }\n",
+  "@keyframes cue-x{ to{ left:100%; } }\n@keyframes cue{ to{ top:100%; } }\n"),
 ]
 
 

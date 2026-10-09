@@ -38,6 +38,18 @@
      half of that, can only ever be added from here. A page without this
      script keeps a solid bar. */
   document.documentElement.classList.add("hasjs");
+  /* WebKit on iOS shows :active only while a touch listener exists somewhere
+     on the page (see script.js), and this page has none of its own. */
+  document.addEventListener("touchstart", function () {}, { passive: true });
+  /* Scrolling this file asks for by hand has to ask the reader first. An
+     explicit behavior:"smooth" overrides the stylesheet, so the CSS that turns
+     smooth scrolling off under reduced motion never reached the carousel's
+     arrows or the calendar's jump to a day. Asked at the moment of scrolling,
+     so a setting changed with the page open is honoured. */
+  function glide() {
+    return window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  }
 
   /* The header is the same object as the narrative side's, and it follows the
      same rule: transparent at the top of the page, the page's own ground once
@@ -164,7 +176,7 @@
       Array.prototype.forEach.call(arws, function (b) {
         b.addEventListener("click", function () {
           var dir = b.getAttribute("data-fev") === "prev" ? -1 : 1;
-          track.scrollBy({ left: dir * step(), behavior: "smooth" });
+          track.scrollBy({ left: dir * step(), behavior: glide() });
         });
       });
       track.addEventListener("scroll", sync, { passive: true });
@@ -314,7 +326,7 @@
             e.preventDefault();
             apply();
             var b = document.getElementById("d-" + picked);
-            if (b) { b.scrollIntoView({ behavior: "smooth", block: "start" }); }
+            if (b) { b.scrollIntoView({ behavior: glide(), block: "start" }); }
           } else {
             e.preventDefault();
             apply();
