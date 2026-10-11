@@ -477,6 +477,60 @@ SOURCES = [
         "file_by_words": False, "place": ("The Clemente", "Manhattan"),
         "note": "Music, art and record swaps at the Lower East Side's Puerto Rican and Latino cultural center.",
     },
+    # From the directory's own resources: the websites in data/resources.csv
+    # probed for the same two feed types, 11 Oct 2026.
+    {
+        "key": "chasi", "name": "Community Health Action of Staten Island", "kind": "tribe",
+        "url": "https://chasiny.org/wp-json/tribe/events/v1/events",
+        "site": "https://chasiny.org/", "need": "other", "trust_free": False,
+        "note": "Health, recovery and job support on Staten Island.",
+    },
+    {
+        "key": "copo", "name": "COPO", "kind": "tribe",
+        "url": "https://copo.org/wp-json/tribe/events/v1/events",
+        "site": "https://copo.org/", "need": "other", "trust_free": False,
+        "note": "Free nurse hours, tech help and classes in Midwood, Brooklyn.",
+    },
+    {
+        "key": "samaritans", "name": "Samaritans of New York", "kind": "tribe",
+        "url": "https://samaritansnyc.org/wp-json/tribe/events/v1/events",
+        "site": "https://samaritansnyc.org/", "need": "crisis", "trust_free": False,
+        "file_by_words": False,
+        "note": "Suicide prevention, and healing workshops for people who have lost someone.",
+    },
+    {
+        "key": "betances", "name": "Betances Health Center", "kind": "tribe",
+        "url": "https://www.betances.org/wp-json/tribe/events/v1/events",
+        "site": "https://www.betances.org/", "need": "doctor", "trust_free": False,
+        "note": "Health screenings and community health days on the Lower East Side and in Brooklyn.",
+    },
+    {
+        "key": "cidny", "name": "Center for Independence of the Disabled, New York", "kind": "tribe",
+        "url": "https://www.cidny.org/wp-json/tribe/events/v1/events",
+        "site": "https://www.cidny.org/", "need": "disability", "trust_free": False,
+        "file_by_words": False,
+        "note": "Workshops on disability rights, benefits and services.",
+    },
+    {
+        "key": "bottomlesscloset", "name": "Bottomless Closet", "kind": "tribe",
+        "url": "https://bottomlesscloset.org/wp-json/tribe/events/v1/events",
+        "site": "https://bottomlesscloset.org/", "need": "work", "trust_free": False,
+        "file_by_words": False,
+        "note": "Free resume and job-search workshops for women.",
+    },
+    {
+        "key": "damayan", "name": "Damayan Migrant Workers Association", "kind": "squarespace",
+        "url": "https://www.damayanmigrants.org/events",
+        "site": "https://www.damayanmigrants.org/", "need": "other", "trust_free": False,
+        "note": "Labor rights updates and free health days for migrant workers.",
+    },
+    {
+        "key": "sijcc", "name": "Staten Island JCC", "kind": "squarespace",
+        "url": "https://www.sijcc.org/calendar",
+        "site": "https://www.sijcc.org/", "need": "family", "trust_free": False,
+        "file_by_words": False,
+        "note": "Family programs and holiday days on Staten Island.",
+    },
     {
         "key": "curated", "name": "Checked by hand", "kind": "curated",
         "url": "", "site": "", "need": "other", "trust_free": False, "note": "",
@@ -654,7 +708,7 @@ NEED_BY_WORD = [
     (r"(?i)\b(mental health|suicide prevention|support group)\b", "crisis"),
     (r"(?i)\b(health (screening|clinic|fair|insurance)|medical clinic|free clinic|"
      r"vaccin|immuniz|dental|dentist|blood pressure|flu shot|"
-     r"covid test)\b", "doctor"),
+     r"covid test|nurse|mammogram|cancer screening)\b", "doctor"),
     (r"(?i)\b(housing|shelter|homeless|rent(al)? assistance)\b", "housing"),
     (r"(?i)\b(job fair|career|employment|resume|hiring|workforce|"
      r"english class|esol|ged|high school equivalency)\b", "work"),
@@ -1374,6 +1428,8 @@ def selfcheck():
                     "Help Center", "") == "legal"
     assert need_for(parks, "Mobile Pantry", "Food", "") == "food"
     assert need_for(parks, "Mental Health First Aid", "Wellness", "") == "crisis"
+    assert need_for(parks, "Outdoor No-Cost Mammogram", "", "") == "doctor"
+    assert need_for(parks, "Nurse hours", "", "") == "doctor"
     # the fallback is the source's own, and for parks that is deliberately
     # not one of the directory's needs
     assert need_for(parks, "Kayaking", "Waterfront", "") == "other"
