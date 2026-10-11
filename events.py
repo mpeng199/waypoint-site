@@ -117,6 +117,21 @@ def fmt_icon(e):
     return SCREEN if e.get("format") == "Virtual" else PERSON
 
 
+# "Hybrid" is the data's word; a reader is told what it means.
+FORMAT_LABEL = {"Hybrid": "In person or online"}
+
+
+def fmt_label(e):
+    f = e.get("format") or "In person"
+    return FORMAT_LABEL.get(f, f)
+
+
+def fmt_tokens(e):
+    """What the How filter matches: a hybrid event is both."""
+    f = e.get("format") or ""
+    return "In person|Virtual" if f == "Hybrid" else f
+
+
 # Buckets that are not one of the directory's needs. An event is filed here
 # when it is a real, free, public thing that simply is not what this site
 # exists to help with — a park concert is not a category of help.
@@ -177,7 +192,7 @@ def card_art(e, build_help, lead=False):
 def pills(e, build_help):
     esc = build_help.esc
     out = [f'<span class="bdg bdg--need">{esc(need_label(e["need"], build_help))}</span>',
-           f'<span class="bdg bdg--fmt">{fmt_icon(e)}{esc(e.get("format") or "In person")}</span>']
+           f'<span class="bdg bdg--fmt">{fmt_icon(e)}{esc(fmt_label(e))}</span>']
     if e.get("free"):
         out.append('<span class="bdg bdg--free">Free</span>')
     return '<span class="fev__pills">' + "".join(out) + "</span>"
@@ -377,7 +392,7 @@ def day_block(key, evs, build_help):
         a += [
             f'    <li class="ev" data-need="{esc(e["need"])}" '
             f'data-boro="{esc(e.get("borough") or "")}" '
-            f'data-fmt="{esc(e.get("format") or "")}" '
+            f'data-fmt="{esc(fmt_tokens(e))}" '
             f'data-cost="{"free" if e.get("free") else "paid"}">',
             f'      <span class="ev__t">{esc(t)}</span>',
             '      <span class="ev__main">',
@@ -393,7 +408,7 @@ def day_block(key, evs, build_help):
         a.append('      <span class="ev__tags">'
                  f'<span class="bdg bdg--need">{esc(need_label(e["need"], build_help))}</span>'
                  f'<span class="bdg bdg--fmt">{fmt_icon(e)}'
-                 f'{esc(e.get("format") or "In person")}</span>'
+                 f'{esc(fmt_label(e))}</span>'
                  + (f'<span class="bdg bdg--free">Free</span>' if e.get("free") else "")
                  + '</span>')
         a.append('    </li>')

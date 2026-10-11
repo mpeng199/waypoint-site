@@ -533,9 +533,16 @@ VIRTUAL = re.compile(
     r"remote|telephonic|by phone|web-based)\b")
 
 
-def fmt_of(*blobs):
+def fmt_of(*blobs, place=""):
     joined = " ".join(b for b in blobs if b)
-    return "Virtual" if VIRTUAL.search(joined) else "In person"
+    if not VIRTUAL.search(joined):
+        return "In person"
+    # A real room as well as a stream. Brooklyn 6 meets at the Van Alen
+    # Institute and on Zoom, and its card said "Virtual" — which told
+    # somebody who wanted to walk in that there was nowhere to go.
+    if place and not VIRTUAL.search(place):
+        return "Hybrid"
+    return "Virtual"
 
 
 FREE = re.compile(r"(?i)\b(free|no cost|no charge|at no cost|complimentary)\b")
@@ -673,7 +680,7 @@ def from_tribe(src, today, horizon):
                 "image": own or flyer,
                 "fit": "contain" if flyer else None,
                 "kind": text(cats, 60) or src["name"],
-                "format": fmt_of(place, blurb, cats, e.get("title")),
+                "format": fmt_of(place, blurb, cats, e.get("title"), place=place),
                 "free": is_free(src, cats, blurb, e.get("cost")),
                 "alt_url": e.get("website") or None,
             })
@@ -872,7 +879,7 @@ def from_squarespace(src, today, horizon):
             # The original upload can be a 6000px camera file; ask for less.
             "image": (img + "?format=1500w") if img and "?" not in img else img,
             "kind": src["name"],
-            "format": fmt_of(place, blurb, title),
+            "format": fmt_of(place, blurb, title, place=place),
             "free": is_free(src, "", blurb, title),
         })
     return out
@@ -1087,7 +1094,12 @@ def collect(today, horizon):
                 continue
             # A hand-checked row names its own host; a feed's rows are the feed's.
             if not r.get("venue") and src.get("place"):
-                r["venue"], r["borough"] = src["place"]
+                # Not for a call or a webinar: the Wyckoff museum's cousin
+                # calls are on Zoom, and the default put them in the house.
+                if r.get("format") == "Virtual":
+                    r["venue"] = "Online"
+                else:
+                    r["venue"], r["borough"] = src["place"]
             for rx, tpl in src.get("retitle", ()):
                 if re.search(rx, r["kind"]) and ":" not in r["title"]:
                     r["title"] = tpl.format(title=r["title"])
@@ -1275,6 +1287,9 @@ def selfcheck():
     # --- format
     assert fmt_of("Zoom", "", "") == "Virtual"
     assert fmt_of("Riverside Park", "wear sunscreen", "") == "In person"
+    assert fmt_of("Van Alen Institute", "Register for Zoom", place="Van Alen Institute") == "Hybrid"
+    assert fmt_of("", "Join on Zoom", place="") == "Virtual"
+    assert fmt_of("Zoom", "Join on Zoom", place="Zoom") == "Virtual"
 
     # --- third-party HTML down to one line, cut on a word boundary
     assert text("<p>Hello&nbsp;<b>there</b></p>") == "Hello there"

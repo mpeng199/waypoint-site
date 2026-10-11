@@ -247,7 +247,10 @@
         var ok =
           (!need.length || need.indexOf(el.getAttribute("data-need")) > -1) &&
           (!boro.length || boro.indexOf(el.getAttribute("data-boro")) > -1) &&
-          (!fmt.length || fmt.indexOf(el.getAttribute("data-fmt")) > -1) &&
+          /* a hybrid event carries "In person|Virtual" and matches either */
+          (!fmt.length || fmt.some(function (f) {
+            return (el.getAttribute("data-fmt") || "").split("|").indexOf(f) > -1;
+          })) &&
           (!cost.length || cost.indexOf(el.getAttribute("data-cost")) > -1);
         el.hidden = !ok;
         if (ok) shown++;
