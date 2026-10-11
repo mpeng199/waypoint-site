@@ -116,9 +116,10 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
 # says nothing more specific. `trust_free` marks a source whose events are all
 # free — the two mobile programs are, by their own description; a park event
 # may carry a materials fee, so it is not claimed to be free unless it says so.
-# What makes a community board's calendar entry civic rather than a
-# neighborhood event (see the boards below).
-MEETINGS = [(r"(?i)\b(meeting|hearing|committee|town hall)\b", "civic")]
+# What a community board itself holds, as against what it lists (see the
+# boards below).
+# Not "town hall": the one that matched was a senator's, listed by a board.
+MEETINGS = r"(?i)\b(meeting|hearing|committee)\b"
 
 SOURCES = [
     {
@@ -271,27 +272,28 @@ SOURCES = [
     # Community boards are the city's most local public meeting, and three of
     # the fifty-nine run this calendar (probed 10 Oct 2026; the rest answer
     # nothing at the same path). Anyone may attend and speak. Their calendars
-    # carry neighborhood events too — Brooklyn 6 lists poetry readings and the
-    # farmers market — so only a meeting or hearing is "Voting & civic life".
+    # list the neighborhood's events too — Brooklyn 6 carries a Nitehawk film
+    # screening — and a card saying "Hosted by Brooklyn Community Board 6"
+    # over a cinema's show would be false, so only their own meetings are kept.
     {
         "key": "brooklyncb6", "name": "Brooklyn Community Board 6", "kind": "tribe",
         "url": "https://brooklyncb6.cityofnewyork.us/wp-json/tribe/events/v1/events",
-        "site": "https://brooklyncb6.cityofnewyork.us/", "need": "other", "trust_free": True,
-        "file_by_words": False, "need_by_title": MEETINGS,
+        "site": "https://brooklyncb6.cityofnewyork.us/", "need": "civic", "trust_free": True,
+        "file_by_words": False, "keep_if": MEETINGS,
         "note": "Public meetings about Park Slope, Carroll Gardens, Red Hook and nearby, and local events.",
     },
     {
         "key": "manhattancb1", "name": "Manhattan Community Board 1", "kind": "tribe",
         "url": "https://manhattancb1.cityofnewyork.us/wp-json/tribe/events/v1/events",
-        "site": "https://manhattancb1.cityofnewyork.us/", "need": "other", "trust_free": True,
-        "file_by_words": False, "need_by_title": MEETINGS,
+        "site": "https://manhattancb1.cityofnewyork.us/", "need": "civic", "trust_free": True,
+        "file_by_words": False, "keep_if": MEETINGS,
         "note": "Public meetings about Lower Manhattan.",
     },
     {
         "key": "queenscb3", "name": "Queens Community Board 3", "kind": "tribe",
         "url": "https://queenscb3.cityofnewyork.us/wp-json/tribe/events/v1/events",
-        "site": "https://queenscb3.cityofnewyork.us/", "need": "other", "trust_free": True,
-        "file_by_words": False, "need_by_title": MEETINGS,
+        "site": "https://queenscb3.cityofnewyork.us/", "need": "civic", "trust_free": True,
+        "file_by_words": False, "keep_if": MEETINGS,
         "note": "Public meetings about Jackson Heights, East Elmhurst and North Corona.",
     },
     {
@@ -901,11 +903,11 @@ def collect(today, horizon):
             r.setdefault("source", src["name"])
             r.setdefault("source_key", src["key"])
             r.setdefault("source_url", src["site"])
+            if src.get("keep_if") and not re.search(src["keep_if"], r["title"]):
+                continue
             r["need"] = r.get("need") or (
                 need_for(src, r["title"], r["kind"], r["description"])
-                if src.get("file_by_words", True) else
-                next((nd for rx, nd in src.get("need_by_title", ())
-                      if re.search(rx, r["title"])), src["need"]))
+                if src.get("file_by_words", True) else src["need"])
             kept.append(r)
         kept.sort(key=lambda r: r["start"])
         per_day, per_org, spread = {}, {}, []
