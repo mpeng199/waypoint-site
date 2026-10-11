@@ -120,7 +120,10 @@ def fmt_icon(e):
 # Buckets that are not one of the directory's needs. An event is filed here
 # when it is a real, free, public thing that simply is not what this site
 # exists to help with — a park concert is not a category of help.
-EXTRA = {"other": "Community & recreation"}
+EXTRA = {"other": "Community & recreation",
+         # Voting is not help with a problem and not recreation either, and
+         # calling Election Day "Community & recreation" would be a small lie.
+         "civic": "Voting & civic life"}
 
 
 def trim(s, n):
