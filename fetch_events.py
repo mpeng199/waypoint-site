@@ -348,6 +348,27 @@ SOURCES = [
         "file_by_words": False,
         "note": "Park volunteer days and neighborhood events in Cobble Hill.",
     },
+    {
+        "key": "sichildrens", "name": "Staten Island Children's Museum", "kind": "tribe",
+        "url": "https://sichildrensmuseum.org/wp-json/tribe/events/v1/events",
+        "site": "https://sichildrensmuseum.org/", "need": "family", "trust_free": False,
+        "file_by_words": False, "place": ("Staten Island Children's Museum", "Staten Island"),
+        "note": "Workshops and play for young children at Snug Harbor.",
+    },
+    {
+        "key": "wyckoff", "name": "Wyckoff Farmhouse Museum", "kind": "tribe",
+        "url": "https://wyckoffmuseum.org/wp-json/tribe/events/v1/events",
+        "site": "https://wyckoffmuseum.org/", "need": "other", "trust_free": False,
+        "file_by_words": False, "place": ("Wyckoff Farmhouse Museum", "Brooklyn"),
+        "note": "A weekly farmstand and family days at Brooklyn's oldest house.",
+    },
+    {
+        "key": "dyckman", "name": "Dyckman Farmhouse Museum", "kind": "tribe",
+        "url": "https://www.dyckmanfarmhouse.org/wp-json/tribe/events/v1/events",
+        "site": "https://www.dyckmanfarmhouse.org/", "need": "other", "trust_free": False,
+        "file_by_words": False, "place": ("Dyckman Farmhouse Museum", "Manhattan"),
+        "note": "Festivals and history days in Inwood, in English and Spanish.",
+    },
     # Squarespace sites answer ?format=json on an events page with the same
     # list the page shows. Three of the hosts checked by hand run on it.
     {
