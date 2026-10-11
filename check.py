@@ -7367,6 +7367,31 @@ def check_the_featured_photos_are_ours():
         bad("featured: a card links over plain http")
 
 
+def check_every_event_filter_is_applied_and_announced():
+    """Each checkbox on events.html is read by help.js, and counted aloud.
+
+    The Cost filter was added in October 2026 and first shipped half-wired:
+    it hid the paid events, and the status line a screen reader announces
+    stayed silent, because apply() only counted the three filters that came
+    before it. A filter the page draws and the script ignores, or applies
+    without saying so, is the same bug in two sizes.
+    """
+    page = read("events.html")
+    js = read("help.js")
+    kinds = sorted(set(re.findall(r'data-f="(\w+)"', page)))
+    if not kinds:
+        ok("filters: events.html has no filters to check")
+        return
+    m = re.search(r"var filtered = ([^;]+);", js)
+    announced = m.group(1) if m else ""
+    for k in kinds:
+        if f'chosen("{k}")' not in js:
+            bad(f"filters: events.html draws a {k} filter that help.js never reads")
+        elif f"{k}.length" not in announced:
+            bad(f"filters: the {k} filter hides events without the status line saying how many are left")
+    ok(f"filters: {', '.join(kinds)} are each applied and announced")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -7437,7 +7462,7 @@ def main():
                check_the_hero_ground_has_no_edge,
                check_the_far_side_of_the_door_is_dim,
                check_the_entrance_stays_off_the_phone,
-               check_a_feed_cannot_break_the_cards, check_the_featured_photos_are_ours,
+               check_a_feed_cannot_break_the_cards, check_the_featured_photos_are_ours, check_every_event_filter_is_applied_and_announced,
                check_keyframes_stay_on_the_compositor,
                check_the_rail_says_where_it_goes,
                check_long_motion_has_a_reason,

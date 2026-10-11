@@ -377,7 +377,8 @@ def day_block(key, evs, build_help):
         a += [
             f'    <li class="ev" data-need="{esc(e["need"])}" '
             f'data-boro="{esc(e.get("borough") or "")}" '
-            f'data-fmt="{esc(e.get("format") or "")}">',
+            f'data-fmt="{esc(e.get("format") or "")}" '
+            f'data-cost="{"free" if e.get("free") else "paid"}">',
             f'      <span class="ev__t">{esc(t)}</span>',
             '      <span class="ev__main">',
             f'        <h4 class="ev__h"><a href="{esc(e["url"])}" target="_blank" '
@@ -514,6 +515,13 @@ def render_page(doc, build_help, rows):
             if any(e.get("format") == f for e in events):
                 opt("fmt", f, f)
         A('    </fieldset>')
+        # The page carries fundraising walks and ticketed shows beside free
+        # pantries and legal vans, so "only what costs nothing" is a filter
+        # somebody here needs. "paid" means only "not known to be free".
+        if any(e.get("free") for e in events) and not all(e.get("free") for e in events):
+            A('    <fieldset class="evf__set"><legend>Cost</legend>')
+            opt("cost", "free", "Free only")
+            A('    </fieldset>')
         A('  </div>')
         A('  <p class="evf__state" role="status"></p>')
         A('</section>')
