@@ -1663,6 +1663,9 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 .src__h{ font-size:1rem; margin:0 0 12px; color:var(--green-deep); }
 .src__l{ margin:0; padding:0 0 0 1.1em; color:var(--green-3);
   font-size:.93rem; display:grid; gap:7px; }
+/* Sixty-odd hosts now, each a link 18px tall where a finger needs 24. The
+   padding makes the target without moving the text. */
+.src__l a{ display:inline-block; padding:3px 0; }
 
 /* The other half of un-sticking the bar, and it has to be last in the file.
 
