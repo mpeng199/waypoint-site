@@ -2403,8 +2403,9 @@ def check_page_weight():
     # connection here — so a step change on those is the one most worth
     # catching.
     # events.html carries every event from thirty-odd hosts, and the daily
-    # job rewrites it with nobody reading the diff: 76 KB at 571 events in
-    # October 2026. A feed that starts sending thousands of rows stops here.
+    # job rewrites it with nobody reading the diff. It reached 99 KB at 708
+    # events in October 2026, and fetch_events.PER_SOURCE came down to 40.
+    # A feed that starts sending thousands of rows stops here.
     budgets = [("help.html", 90), ("events.html", 110), *[(p, 40) for p in CATEGORY_PAGES],
                *[(p, 14) for p in LANGUAGE_PAGES]]
     worst = 0

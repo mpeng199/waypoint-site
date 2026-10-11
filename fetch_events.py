@@ -93,7 +93,10 @@ HORIZON_DAYS = 120
 
 # Per source, so one prolific publisher cannot crowd out the rest. NYC Parks
 # alone returns over a thousand.
-PER_SOURCE = 60
+# Forty, not sixty: with thirty-odd sources sixty made events.html 1 MB of
+# HTML (99 KB gzipped) for a reader on a cheap phone. A prolific feed still
+# shows two weeks ahead, and the daily run moves the window.
+PER_SOURCE = 40
 
 # And per source per day. Without this the cap above is spent chronologically:
 # NYC Parks filled all 220 slots with the next three days and the rest of the
