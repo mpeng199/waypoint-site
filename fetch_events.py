@@ -87,6 +87,10 @@ PHOTOS = Path("assets/events")
 # also the most organizations it can show.
 FEATURED = 24
 
+# The most featured cards any one need may take. Only civic needs one: there
+# are many boards and each meets most weeks.
+NEED_CAP = {"civic": 2}
+
 # Under check.py's 120 KB per card photo, with room to spare.
 PHOTO_MAX = 100_000
 
@@ -1257,16 +1261,26 @@ def pick(events, offline=False):
         for e, g in zip(cands, good):
             if g:
                 e["verified"] = True
-    out, orgs, gists = [], set(), []
+    out, orgs, gists, per_need = [], set(), [], {}
     for e, g in zip(cands, good):
         if not g or org(e) in orgs:
+            continue
+        # Public meetings count as a need the row serves, and five boards
+        # each with a meeting this week took six cards; two is the row's
+        # share. A host held back here falls to its own next event.
+        if per_need.get(e["need"], 0) >= NEED_CAP.get(e["need"], FEATURED):
             continue
         # Two hosts, one event: the Fortune Society lists its marathon team
         # as "The 2026 TCS New York City Marathon". The row names it once.
         day, gist = e["start"][:10], re.sub(r"\d+|\bthe\b|\W+", "", e["title"].lower())
-        if any(d == day and (gist in o or o in gist) for d, o in gists):
+        # Both sides need some letters left: a title of only digits reduces
+        # to "", which is "in" every other title, and would have kept every
+        # other event that day off the row.
+        if len(gist) >= 8 and any(d == day and len(o) >= 8 and (gist in o or o in gist)
+                                  for d, o in gists):
             continue
         orgs.add(org(e))
+        per_need[e["need"]] = per_need.get(e["need"], 0) + 1
         gists.append((day, gist))
         out.append(e)
     return out[:FEATURED]
@@ -1283,7 +1297,21 @@ def rank(e):
     s = 100 - min(days, 60)
     if e.get("image"):
         s += 22
-    if e["need"] in ("food", "legal", "doctor", "housing", "money"):
+    # The needs this site exists for. Mental health and work joined in
+    # October 2026: NAMI-NYC's free support groups and the city's hiring
+    # halls had lost their cards to whatever was soonest.
+    if e["need"] in ("food", "legal", "doctor", "housing", "money", "crisis", "work"):
+        s += 30
+    # A public meeting is worth a place on the row — a meeting was one of the
+    # kinds of event it was asked to carry — but not more than legal help:
+    # at +30 the Borough President's zoning hearing beat its own habeas
+    # session for the card by one day.
+    elif e["need"] == "civic":
+        s += 15
+    # A person opened this page and wrote its description. Without this the
+    # row was all this week's feed events, and the walk, the race, the
+    # night market and the picnic — the range the row is for — fell off it.
+    if e.get("checked"):
         s += 30
     if e.get("free"):
         s += 8
@@ -1419,11 +1447,14 @@ def selfcheck():
     assert got == [], "offline, nothing unchecked is featured"
     got = pick([dict(fe("1", "a", "2026-10-12"), verified=True), fe("2", "a", "2026-10-13"),
                 dict(fe("3", "b", "2026-10-14"), checked="2026-10-10")], offline=True)
-    assert [e["id"] for e in got] == ["1", "3"], got
+    assert sorted(e["id"] for e in got) == ["1", "3"], got
     got = pick([dict(fe("TCS New York City Marathon", "a", "2026-11-01"), verified=True),
                 dict(fe("The 2026 TCS New York City Marathon", "b", "2026-11-01"), verified=True)],
                offline=True)
     assert len(got) == 1, "one event listed by two hosts gets one card"
+    got = pick([dict(fe("2026", "a", "2026-10-13"), verified=True),
+                dict(fe("Harvest Festival", "b", "2026-10-13"), verified=True)], offline=True)
+    assert len(got) == 2, "a title of only digits is not every event that day"
 
     # --- prune: a picture nothing uses is deleted, a used one is kept
     global PHOTOS
@@ -1455,6 +1486,9 @@ def selfcheck():
     got = pick([dict(fe("1", "a", "2026-10-12"), verified=True, source="Same Org"),
                 dict(fe("2", "b", "2026-10-13"), verified=True, source="Same Org")], offline=True)
     assert len(got) == 1, "the same host under two keys still gets one card"
+    boards = [dict(fe(f"Board {c} meeting", f"b{c}", "2026-10-13"), verified=True, need="civic")
+              for c in "ABCDE"]
+    assert len(pick(boards, offline=True)) == NEED_CAP["civic"], "two meetings at most"
 
     # --- a flyer in the description, when the feed has no picture
     assert flyer_in('<p>x</p><img src="https://h/wp-content/emoji/1f600.png">'

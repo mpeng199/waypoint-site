@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-11T01:06:03",
+ "generated": "2026-10-11T02:14:42",
  "horizon": "2027-02-08",
  "sources": [
   {
@@ -382,27 +382,27 @@
   "brooklyn-museum-2026-10-13-0053",
   "lesec-2026-10-11-0002",
   "cityparks-2026-10-11-0007",
-  "sichildrens-2026-10-11-0015",
   "riverside-2026-10-11-0019",
   "essexmarket-2026-10-11-0020",
   "prospect-2026-10-12-0035",
-  "parks-2026-10-13-0047",
-  "82ndstreet-2026-10-13-0052",
-  "jbrpc-2026-10-13-0057",
-  "fortgreenepark-2026-10-13-0061",
   "new-york-public-library-2026-10-14-0086",
   "brooklyncb6-2026-10-14-0091",
   "brooklynbp-2026-10-15-0101",
-  "queenscb3-2026-10-15-0118",
   "open-house-new-york-2026-10-16-0130",
-  "dyckman-2026-10-17-0158",
-  "randalls-2026-10-17-0153",
-  "wyckoff-2026-10-17-0166",
+  "cake-picnic-2026-10-17-0146",
   "brooklyn-bridge-park-2026-10-17-0168",
-  "simuseum-2026-10-17-0182",
-  "qbg-2026-10-18-0206",
-  "noblemaritime-2026-10-18-0213",
-  "nylag-2026-10-15-0107"
+  "queens-night-market-2026-10-17-0185",
+  "nyc-votes-2026-10-24-0322",
+  "the-high-line-2026-10-24-0334",
+  "american-foundation-for-suicide-preventi-2026-10-25-0353",
+  "friends-of-washington-market-park-2026-10-25-0359",
+  "bryant-park-2026-10-28-0380",
+  "village-halloween-parade-2026-10-31-0428",
+  "new-york-road-runners-2026-11-01-0431",
+  "united-war-veterans-council-2026-11-11-0482",
+  "nami-2026-10-14-0079",
+  "nylag-2026-10-15-0107",
+  "jobs-nyc-2026-10-20-0238"
  ],
  "events": [
   {
@@ -772,10 +772,7 @@
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
    "id": "sichildrens-2026-10-11-0015",
-   "verified": true,
-   "photo": "assets/events/452f4a806ffb917e.webp",
-   "photo_w": 640,
-   "photo_h": 643
+   "verified": true
   },
   {
    "title": "Type-In: Typewriting in the Neo-Analog Age",
@@ -1495,10 +1492,7 @@
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
    "id": "parks-2026-10-13-0047",
-   "verified": true,
-   "photo": "assets/events/58a7d8eba8ac1622.webp",
-   "photo_w": 640,
-   "photo_h": 830
+   "verified": true
   },
   {
    "title": "It’s My Park Day",
@@ -1610,10 +1604,7 @@
    "source_url": "https://www.82ndstreet.org/",
    "need": "other",
    "id": "82ndstreet-2026-10-13-0052",
-   "verified": true,
-   "photo": "assets/events/ec66ccba31a645f1.webp",
-   "photo_w": 640,
-   "photo_h": 800
+   "verified": true
   },
   {
    "title": "A Close Look (Ages 65+): Iris van Herpen",
@@ -1727,10 +1718,7 @@
    "source_url": "https://www.jbrpc.org/",
    "need": "other",
    "id": "jbrpc-2026-10-13-0057",
-   "verified": true,
-   "photo": "assets/events/36cec97907c8c176.webp",
-   "photo_w": 640,
-   "photo_h": 640
+   "verified": true
   },
   {
    "title": "Dishoom x Elder with Arun Kumar & Sujan Sarkar",
@@ -1820,10 +1808,7 @@
    "source_url": "https://www.fortgreenepark.org/",
    "need": "other",
    "id": "fortgreenepark-2026-10-13-0061",
-   "verified": true,
-   "photo": "assets/events/3ea75ad32a85c624.webp",
-   "photo_w": 640,
-   "photo_h": 361
+   "verified": true
   },
   {
    "title": "NYC Parks’ 44th Annual Wreath Interpretations Open Call",
@@ -3110,10 +3095,7 @@
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
    "id": "queenscb3-2026-10-15-0118",
-   "verified": true,
-   "photo": "assets/events/e54b58994353c8cf.webp",
-   "photo_w": 640,
-   "photo_h": 640
+   "verified": true
   },
   {
    "title": "October 2026 Monthly Meeting",
@@ -3889,10 +3871,7 @@
    "source_url": "https://randallsisland.org/",
    "need": "other",
    "id": "randalls-2026-10-17-0153",
-   "verified": true,
-   "photo": "assets/events/17ff67058fa6438a.webp",
-   "photo_w": 640,
-   "photo_h": 640
+   "verified": true
   },
   {
    "title": "APA Volunteer Day - Daffodil Bulb Planting!",
@@ -4004,10 +3983,7 @@
    "source_url": "https://www.dyckmanfarmhouse.org/",
    "need": "other",
    "id": "dyckman-2026-10-17-0158",
-   "verified": true,
-   "photo": "assets/events/f75ca5e07444c515.webp",
-   "photo_w": 640,
-   "photo_h": 829
+   "verified": true
   },
   {
    "title": "It’s My Park at Andrew Haswell Green Park",
@@ -4184,10 +4160,7 @@
    "source_url": "https://wyckoffmuseum.org/",
    "need": "other",
    "id": "wyckoff-2026-10-17-0166",
-   "verified": true,
-   "photo": "assets/events/b5ec69a44d90e751.webp",
-   "photo_w": 640,
-   "photo_h": 476
+   "verified": true
   },
   {
    "title": "Food Demos on the Urban Farm",
@@ -4546,10 +4519,7 @@
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
    "id": "simuseum-2026-10-17-0182",
-   "verified": true,
-   "photo": "assets/events/c1001ae556326359.webp",
-   "photo_w": 640,
-   "photo_h": 577
+   "verified": true
   },
   {
    "title": "Workshop: Poncho Print Party with The Museum at FIT",
@@ -5084,10 +5054,7 @@
    "source_url": "https://queensbotanical.org/",
    "need": "other",
    "id": "qbg-2026-10-18-0206",
-   "verified": true,
-   "photo": "assets/events/82d9e5db54565a74.webp",
-   "photo_w": 640,
-   "photo_h": 396
+   "verified": true
   },
   {
    "title": "Mini Pumpkin Patch Sensory Bin",
@@ -5242,10 +5209,7 @@
    "source_url": "https://www.noblemaritime.org/",
    "need": "other",
    "id": "noblemaritime-2026-10-18-0213",
-   "verified": true,
-   "photo": "assets/events/e17fc07a04194960.webp",
-   "photo_w": 640,
-   "photo_h": 640
+   "verified": true
   },
   {
    "title": "Berto Reyes y Su Perico Ripiao - Traditional Dominican Merengue Music with a master accordionist",
@@ -12506,8 +12470,7 @@
    "source_key": "historic-richmond-town",
    "source_url": "https://www.historicrichmondtown.org/",
    "need": "other",
-   "id": "historic-richmond-town-2026-11-21-0542",
-   "verified": true
+   "id": "historic-richmond-town-2026-11-21-0542"
   },
   {
    "title": "Public Tours",
@@ -13087,7 +13050,8 @@
    "source_key": "historic-richmond-town",
    "source_url": "https://www.historicrichmondtown.org/",
    "checked": "2026-10-10",
-   "id": "historic-richmond-town-2026-12-04-0568"
+   "id": "historic-richmond-town-2026-12-04-0568",
+   "verified": true
   },
   {
    "title": "Fort Greene Tree Lighting",
