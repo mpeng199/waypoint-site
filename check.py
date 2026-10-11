@@ -7402,6 +7402,53 @@ def check_every_event_filter_is_applied_and_announced():
     ok(f"filters: {', '.join(kinds)} are each applied and announced")
 
 
+def check_the_hand_checked_events_keep_their_shape():
+    """data/events_curated.json is typed by a person, and the fetcher stops on it.
+
+    A malformed row stops fetch_events.py on purpose (riding it out would
+    publish a site with every hand-checked event quietly gone), which also
+    stops the daily refresh. So the file is held to its shape here, where a
+    person editing it runs the suite before pushing: every row says who,
+    what, when, where to check it and what the page said; its times parse;
+    its links are https; and it files under a need the site has.
+    """
+    import json
+    from datetime import datetime
+    import build_help
+    import events
+    f = ROOT / "data" / "events_curated.json"
+    if not f.is_file():
+        ok("hand-checked: no file, nothing to hold")
+        return
+    rows = json.loads(f.read_text("utf-8"))["events"]
+    needs = {n["key"] for n in build_help.NEEDS} | set(events.EXTRA)
+    problems = []
+    for i, r in enumerate(rows):
+        where = f"row {i} ({(r.get('title') or '?')[:30]})"
+        for k in ("org", "site", "title", "start", "url", "checked", "seen"):
+            if not r.get(k):
+                problems.append(f"{where} has no {k}")
+        for k in ("start", "end"):
+            if r.get(k):
+                try:
+                    datetime.strptime(r[k][:19], "%Y-%m-%dT%H:%M:%S")
+                except ValueError:
+                    problems.append(f"{where}: {k} is not YYYY-MM-DDTHH:MM:SS")
+        for k in ("url", "site", "image"):
+            if r.get(k) and not str(r[k]).startswith("https://"):
+                problems.append(f"{where}: {k} is not https")
+        if r.get("need") and r["need"] not in needs:
+            problems.append(f"{where}: {r['need']!r} is not one of the site's needs")
+        if r.get("format", "In person") not in ("In person", "Virtual", "Hybrid"):
+            problems.append(f"{where}: format {r.get('format')!r}")
+        if not isinstance(r.get("free", False), bool):
+            problems.append(f"{where}: free is not true or false")
+    for x in problems[:8]:
+        bad(f"hand-checked: {x}")
+    if not problems:
+        ok(f"hand-checked: {len(rows)} rows, each complete, dated, https and filed under a real need")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -7472,7 +7519,7 @@ def main():
                check_the_hero_ground_has_no_edge,
                check_the_far_side_of_the_door_is_dim,
                check_the_entrance_stays_off_the_phone,
-               check_a_feed_cannot_break_the_cards, check_the_featured_photos_are_ours, check_every_event_filter_is_applied_and_announced,
+               check_a_feed_cannot_break_the_cards, check_the_featured_photos_are_ours, check_every_event_filter_is_applied_and_announced, check_the_hand_checked_events_keep_their_shape,
                check_keyframes_stay_on_the_compositor,
                check_the_rail_says_where_it_goes,
                check_long_motion_has_a_reason,
