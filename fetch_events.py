@@ -147,6 +147,9 @@ SOURCES = [
         "kind": "tribe",
         "url": "https://nylag.org/wp-json/tribe/events/v1/events",
         "site": "https://nylag.org/",
+        # Its event pages have no pictures at all. This is the share image
+        # NYLAG chose for its own site: the people it serves.
+        "share_image": "https://nylag.org/wp-content/uploads/2022/06/nylag-featured-image.png",
         "need": "legal",
         "trust_free": True,
         "note": "Free legal help, including the Mobile Legal Help Center van.",
@@ -195,6 +198,8 @@ SOURCES = [
         "key": "nami", "name": "NAMI-NYC", "kind": "tribe",
         "url": "https://naminycmetro.org/wp-json/tribe/events/v1/events",
         "site": "https://naminycmetro.org/", "need": "crisis", "trust_free": True,
+        # No event has a picture; this is NAMI-NYC's own share image, its logo.
+        "share_image": "https://naminycmetro.org/wp-content/uploads/2022/01/nami-logo-placeholder-blue.png",
         "file_by_words": False,
         "note": "Free mental health support groups and talks, many on Zoom.",
     },
@@ -1167,6 +1172,11 @@ def collect(today, horizon):
             # Park's). The card says "Listed by" for those, not "Hosted by".
             if src.get("lists_others"):
                 r["listed"] = True
+            # The organization's own picture, when neither the feed nor the
+            # event's page has one. Asked for in so many words: "a relevant
+            # picture from the organization or event page hosting it".
+            if not r.get("image") and src.get("share_image"):
+                r["image"] = src["share_image"]
             r.setdefault("source", src["name"])
             r.setdefault("source_key", src["key"])
             r.setdefault("source_url", src["site"])
