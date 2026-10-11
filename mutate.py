@@ -26,6 +26,14 @@ FILES = ["data/resources.csv","help.css","styles.css","tokens.css","help.js",
 BAK = tempfile.mkdtemp(prefix="mutate-")
 
 MUTATIONS = [
+    # October 2026: the featured row's promises — host photos served from
+    # here, a host named on every card — and the events filters' status line.
+    ("a featured card hotlinks its host's photo", "events.py",
+     'src="{esc(e["photo"])}"', 'src="https://example.org/{esc(e["photo"])}"'),
+    ("a featured card stops naming its host", "events.py",
+     '<p class="fev__by">{by} ', '<p class="fev__note">{by} '),
+    ("the Free only filter hides events without saying how many are left", "help.js",
+     "|| cost.length || picked", "|| picked"),
  ("a phone number loses a digit",
   "data/resources.csv", "800-621-4673", "800-621-467"),
  ("the honesty statement is reworded",
