@@ -69,6 +69,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, date
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 OUT = Path("data/events.json")
@@ -331,6 +332,36 @@ SOURCES = [
         "site": "https://www.parkslopefifthavenuebid.com/", "need": "other", "trust_free": False,
         "file_by_words": False,
         "note": "Free advice for small businesses, and Fifth Avenue's street events.",
+    },
+    {
+        "key": "cobblehill", "name": "Cobble Hill Association", "kind": "tribe",
+        "url": "https://cobblehill.nyc/wp-json/tribe/events/v1/events",
+        "site": "https://cobblehill.nyc/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Park volunteer days and neighborhood events in Cobble Hill.",
+    },
+    # Squarespace sites answer ?format=json on an events page with the same
+    # list the page shows. Three of the hosts checked by hand run on it.
+    {
+        "key": "essexmarket", "name": "Essex Market", "kind": "squarespace",
+        "url": "https://www.essexmarket.nyc/events",
+        "site": "https://www.essexmarket.nyc/", "need": "other", "trust_free": False,
+        "file_by_words": False, "place": ("Essex Market", "Manhattan"),
+        "note": "Free classes, music and tours in the Lower East Side market hall.",
+    },
+    {
+        "key": "historic-richmond-town", "name": "Historic Richmond Town", "kind": "squarespace",
+        "url": "https://www.historicrichmondtown.org/events",
+        "site": "https://www.historicrichmondtown.org/", "need": "other", "trust_free": False,
+        "file_by_words": False, "place": ("Historic Richmond Town", "Staten Island"),
+        "note": "Tours, crafts and seasonal days at the living history village.",
+    },
+    {
+        "key": "fortgreenepark", "name": "Fort Greene Park Conservancy", "kind": "squarespace",
+        "url": "https://www.fortgreenepark.org/calendar",
+        "site": "https://www.fortgreenepark.org/", "need": "other", "trust_free": False,
+        "file_by_words": False, "place": ("Fort Greene Park", "Brooklyn"),
+        "note": "Yoga, run clubs, history walks and volunteer days in Fort Greene Park.",
     },
     {
         "key": "curated", "name": "Checked by hand", "kind": "curated",
@@ -739,8 +770,55 @@ def from_curated(src, today, horizon):
     return out
 
 
+NYC = ZoneInfo("America/New_York")
+
+
+def _ms(v):
+    """Squarespace's epoch milliseconds, as a New York wall-clock time.
+
+    Converted explicitly: GitHub's runners are on UTC, where a plain
+    fromtimestamp() puts every 3pm tango class at 7pm.
+    """
+    if not v:
+        return None
+    return datetime.fromtimestamp(v / 1000, NYC).replace(tzinfo=None)
+
+
+def from_squarespace(src, today, horizon):
+    """A Squarespace events page; it answers ?format=json with its upcoming list."""
+    d = json.loads(fetch(src["url"] + "?format=json"))
+    origin = "/".join(src["url"].split("/")[:3])
+    out = []
+    for it in d.get("upcoming") or []:
+        start = _ms(it.get("startDate"))
+        if not start or not it.get("fullUrl"):
+            continue
+        loc = it.get("location") or {}
+        place = text(loc.get("addressTitle"), 90)
+        blurb = text(it.get("excerpt") or it.get("body"))
+        title = text(it.get("title"), 120)
+        img = it.get("assetUrl")
+        out.append({
+            "title": title,
+            "start": iso(start),
+            "end": iso(_ms(it.get("endDate")) or start),
+            "all_day": False,
+            "venue": place,
+            "borough": borough(loc.get("addressLine2"), loc.get("addressLine1"), place),
+            "address": text(loc.get("addressLine1"), 90),
+            "description": blurb,
+            "url": origin + it["fullUrl"],
+            # The original upload can be a 6000px camera file; ask for less.
+            "image": (img + "?format=1500w") if img and "?" not in img else img,
+            "kind": src["name"],
+            "format": fmt_of(place, blurb, title),
+            "free": is_free(src, "", blurb, title),
+        })
+    return out
+
+
 ADAPTERS = {"tribe": from_tribe, "parks-rss": from_parks_rss, "ics": from_ics,
-            "curated": from_curated}
+            "curated": from_curated, "squarespace": from_squarespace}
 
 
 # ------------------------------------------------- is the link a real page?
@@ -900,7 +978,9 @@ def prune(events):
 # --------------------------------------------------------------------- driver
 
 def collect(today, horizon):
-    now = datetime.now()
+    # New York's clock, not the machine's: the daily job runs on UTC, where
+    # 5:20am in the city reads 9:20 and an 8am market would count as over.
+    now = datetime.now(NYC).replace(tzinfo=None)
     got, report = [], []
     for src in SOURCES:
         try:
@@ -1005,8 +1085,9 @@ def pick(events, offline=False):
     or to the next host, never to a dead link.
     """
     per, cands = {}, []
+    org = lambda e: e["source"].lower()          # noqa: E731
     for e in sorted(events, key=rank):
-        k = e["source_key"]
+        k = org(e)
         if per.get(k, 0) < 3:
             per[k] = per.get(k, 0) + 1
             cands.append(e)
@@ -1023,14 +1104,14 @@ def pick(events, offline=False):
                 e["verified"] = True
     out, orgs, gists = [], set(), []
     for e, g in zip(cands, good):
-        if not g or e["source_key"] in orgs:
+        if not g or org(e) in orgs:
             continue
         # Two hosts, one event: the Fortune Society lists its marathon team
         # as "The 2026 TCS New York City Marathon". The row names it once.
         day, gist = e["start"][:10], re.sub(r"\d+|\bthe\b|\W+", "", e["title"].lower())
         if any(d == day and (gist in o or o in gist) for d, o in gists):
             continue
-        orgs.add(e["source_key"])
+        orgs.add(org(e))
         gists.append((day, gist))
         out.append(e)
     return out[:FEATURED]
@@ -1165,7 +1246,7 @@ def selfcheck():
 
     # --- the featured row: one card per organization
     def fe(i, k, d):
-        return {"id": i, "source_key": k, "start": d + "T10:00:00",
+        return {"id": i, "source_key": k, "source": k.upper(), "start": d + "T10:00:00",
                 "need": "other", "title": i}
     got = pick([fe("1", "a", "2026-10-12"), fe("2", "a", "2026-10-13"),
                 fe("3", "b", "2026-10-14")], offline=True)
@@ -1189,6 +1270,26 @@ def selfcheck():
         assert sorted(f.name for f in PHOTOS.iterdir()) == ["used.webp"]
     PHOTOS = real_photos
 
+    # --- Squarespace: epoch milliseconds to New York time, whatever the
+    # machine's own zone is (GitHub's runners are on UTC)
+    sq = json.dumps({"upcoming": [{"title": "Intro to Tango", "fullUrl": "/events/tango",
+                                   "startDate": 1791745200000, "endDate": 1791752400000,
+                                   "location": {"addressTitle": "Essex Market Mezzanine"},
+                                   "assetUrl": "https://img.example/a.jpg"}]})
+    real, fetch = fetch, lambda _u: sq
+    try:
+        rows = from_squarespace({"key": "s", "name": "S", "url": "https://x.example/events",
+                                 "trust_free": False}, date(2026, 1, 1), date(2027, 1, 1))
+    finally:
+        fetch = real
+    assert rows[0]["start"] == "2026-10-11T15:00:00", rows[0]["start"]
+    assert rows[0]["url"] == "https://x.example/events/tango"
+    assert rows[0]["image"].endswith("?format=1500w")
+    # one card per organization even when a host has two keys
+    got = pick([dict(fe("1", "a", "2026-10-12"), verified=True, source="Same Org"),
+                dict(fe("2", "b", "2026-10-13"), verified=True, source="Same Org")], offline=True)
+    assert len(got) == 1, "the same host under two keys still gets one card"
+
     print("selfcheck ok")
 
 
@@ -1207,7 +1308,7 @@ def main():
         selfcheck()
         return
 
-    today = date.today()
+    today = datetime.now(NYC).date()
     horizon = today + timedelta(days=HORIZON_DAYS)
 
     if a.offline:
@@ -1271,6 +1372,19 @@ def main():
     print(f"  {len(events):5d}  kept after dedupe; {len(featured)} featured, "
           f"{sum(1 for e in picks if e.get('photo'))} with a photo",
           file=sys.stderr)
+    # The row is promised to draw on at least twenty organizations. Nothing
+    # here can fail the job over it — a thin row is better than a stale site —
+    # so it says so where somebody will see it: GitHub prints ::warning:: on
+    # the run's summary page. Hand-checked rows expire, and when they run out
+    # this is the line that asks for more.
+    left = sorted({e["start"][:10] for e in events if e.get("checked")})
+    print(f"  {len({e['source'] for e in picks}):5d}  organizations on the featured row; "
+          f"hand-checked events run through {left[-1] if left else 'nothing'}",
+          file=sys.stderr)
+    if len({e["source"] for e in picks}) < 20:
+        print(f"::warning::The featured row has only {len({e['source'] for e in picks})} "
+              f"organizations. Add hand-checked events to data/events_curated.json.",
+              file=sys.stderr)
 
     if a.dry_run:
         by = {}
