@@ -597,9 +597,18 @@ def render_page(doc, build_help, rows):
         A('<section class="src" aria-labelledby="src-h">')
         A('  <h2 id="src-h" class="src__h">Where these come from</h2>')
         A('  <ul class="src__l">')
-        for s in doc["sources"]:
-            A(f'    <li><a href="{esc(s["site"])}" target="_blank" rel="noopener">'
-              f'{esc(s["name"])}</a> &mdash; {esc(s["note"])}</li>')
+        # The hosts with no feed share one line: thirteen copies of "checked
+        # by hand" read as a form letter, and the names are the point.
+        by_hand = [x for x in doc["sources"] if x.get("by_hand")]
+        for x in doc["sources"]:
+            if not x.get("by_hand"):
+                A(f'    <li><a href="{esc(x["site"])}" target="_blank" rel="noopener">'
+                  f'{esc(x["name"])}</a> &mdash; {esc(x["note"])}</li>')
+        if by_hand:
+            names = ", ".join(f'<a href="{esc(x["site"])}" target="_blank" '
+                              f'rel="noopener">{esc(x["name"])}</a>' for x in by_hand)
+            A(f'    <li>Found on each host&rsquo;s own page and checked by hand: '
+              f'{names}.</li>')
         A('  </ul>')
         A('</section>')
 

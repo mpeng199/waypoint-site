@@ -1134,7 +1134,7 @@ def main():
         if e.get("checked") and all(x["key"] != e["source_key"] for x in sources):
             sources.append({"key": e["source_key"], "name": e["source"],
                             "site": e["source_url"],
-                            "note": "Found on its own page and checked by hand."})
+                            "note": "", "by_hand": True})
 
     doc = {
         "generated": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),

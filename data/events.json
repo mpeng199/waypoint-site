@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-10T22:22:55",
+ "generated": "2026-10-10T22:25:03",
  "horizon": "2027-02-07",
  "sources": [
   {
@@ -90,79 +90,92 @@
    "key": "brooklyn-museum",
    "name": "Brooklyn Museum",
    "site": "https://www.brooklynmuseum.org/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "new-york-public-library",
    "name": "New York Public Library",
    "site": "https://www.nypl.org/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "open-house-new-york",
    "name": "Open House New York",
    "site": "https://ohny.org/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "cake-picnic",
    "name": "Cake Picnic",
    "site": "https://www.govisland.com/things-to-do/events/cake-picnic",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "brooklyn-bridge-park",
    "name": "Brooklyn Bridge Park",
    "site": "https://brooklynbridgepark.org/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "queens-night-market",
    "name": "Queens Night Market",
    "site": "https://www.queensnightmarket.com/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "the-high-line",
    "name": "The High Line",
    "site": "https://www.thehighline.org/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "american-foundation-for-suicide-preventi",
    "name": "American Foundation for Suicide Prevention",
    "site": "https://afsp.org/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "bryant-park",
    "name": "Bryant Park",
    "site": "https://bryantpark.org/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "village-halloween-parade",
    "name": "Village Halloween Parade",
    "site": "https://halloween-nyc.com/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "new-york-road-runners",
    "name": "New York Road Runners",
    "site": "https://www.nyrr.org/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "united-war-veterans-council",
    "name": "United War Veterans Council",
    "site": "https://www.uwvc.org/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   },
   {
    "key": "god-s-love-we-deliver",
    "name": "God's Love We Deliver",
    "site": "https://www.glwd.org/",
-   "note": "Found on its own page and checked by hand."
+   "note": "",
+   "by_hand": true
   }
  ],
  "featured": [
