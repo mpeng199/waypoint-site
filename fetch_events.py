@@ -87,6 +87,15 @@ PHOTOS = Path("assets/events")
 # also the most organizations it can show.
 FEATURED = 24
 
+# Under check.py's 120 KB per card photo, with room to spare.
+PHOTO_MAX = 100_000
+
+# The whole page. events.html is held to 110 KB gzipped by check.py, and a
+# check that fails stops the daily job from committing anything; forty per
+# source across thirty-one sources could reach twice that. The fetcher keeps
+# the page inside the budget rather than letting a busy week stale the site.
+MAX_EVENTS = 650
+
 # How far ahead to keep. Past today is dropped on every run, so the file is
 # self-cleaning: nothing has to remember to delete last week.
 HORIZON_DAYS = 120
@@ -993,13 +1002,20 @@ def photo(e, offline=False):
         with tempfile.TemporaryDirectory() as d:
             tmp = Path(d) / "in"
             tmp.write_bytes(raw)
-            # ponytail: -resize also enlarges a picture narrower than 640px.
-            # Hosts' share images are 1200px and up; measure before adding a
-            # width probe.
-            r = subprocess.run(["cwebp", "-quiet", "-metadata", "none", "-q", "62",
-                                "-resize", "640", "0", str(tmp), "-o", str(out)],
-                               capture_output=True)
-        if r.returncode or not out.exists() or out.stat().st_size < 2000:
+            # A busy photograph at q62 came within 30 KB of the 120 KB that
+            # check.py allows a card, and one over it would stop the daily
+            # job from committing anything. So: q62, then q40, then no photo.
+            for q in ("62", "40"):
+                # ponytail: -resize also enlarges a picture narrower than
+                # 640px. Hosts' share images are 1200px and up; measure
+                # before adding a width probe.
+                r = subprocess.run(["cwebp", "-quiet", "-metadata", "none", "-q", q,
+                                    "-resize", "640", "0", str(tmp), "-o", str(out)],
+                                   capture_output=True)
+                if r.returncode or not out.exists() or out.stat().st_size <= PHOTO_MAX:
+                    break
+        if (r.returncode or not out.exists() or out.stat().st_size < 2000
+                or out.stat().st_size > PHOTO_MAX):
             out.unlink(missing_ok=True)
             return
     e["photo"] = out.as_posix()
@@ -1120,6 +1136,14 @@ def dedupe(events):
         seen[k] = True
         out.append(e)
     return out
+
+
+def cap(events, n=MAX_EVENTS):
+    """The soonest n, keeping every hand-checked row: there are few, and each
+    is a host with no feed that would otherwise vanish from the page."""
+    keep = [e for e in events if e.get("checked")]
+    rest = [e for e in events if not e.get("checked")][:max(0, n - len(keep))]
+    return sorted(keep + rest, key=lambda e: (e["start"], e["title"]))
 
 
 def pick(events, offline=False):
@@ -1345,6 +1369,12 @@ def selfcheck():
                 dict(fe("2", "b", "2026-10-13"), verified=True, source="Same Org")], offline=True)
     assert len(got) == 1, "the same host under two keys still gets one card"
 
+    # --- the page cap keeps the soonest, and every hand-checked row
+    many = [{"start": f"2026-10-{d:02d}T10:00:00", "title": str(d)} for d in range(11, 31)]
+    many.append({"start": "2026-12-31T10:00:00", "title": "late, by hand", "checked": "2026-10-10"})
+    kept = cap(many, 5)
+    assert [e["title"] for e in kept] == ["11", "12", "13", "14", "late, by hand"], kept
+
     print("selfcheck ok")
 
 
@@ -1378,6 +1408,7 @@ def main():
 
     events = dedupe(events)
     events.sort(key=lambda e: (e["start"], e["title"]))
+    events = cap(events)
     for e in events:                 # recomputed below, never carried over
         for k in ("photo", "photo_w", "photo_h") + (() if a.offline else ("verified",)):
             e.pop(k, None)
