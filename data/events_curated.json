@@ -524,6 +524,25 @@
    "image": "https://www.washingtonmarketpark.org/wp-content/uploads/2022/10/events-new.webp",
    "checked": "2026-10-10",
    "seen": "CHRISTMAS PARTY DEC 5 | Santa will be making a stop in the park's gazebo!"
+  },
+  {
+   "org": "Bhakti Center",
+   "site": "https://bhakticenter.org/",
+   "title": "Diwali Festival NYC",
+   "start": "2026-11-08T16:00:00",
+   "end": "2026-11-08T21:00:00",
+   "venue": "Bhakti Center",
+   "borough": "Manhattan",
+   "address": "",
+   "format": "In person",
+   "free": true,
+   "need": "other",
+   "kind": "Festival",
+   "description": "A free Diwali evening in the East Village: Indian dance, street food stalls, henna, face painting and a lamp offering to close the night.",
+   "url": "https://bhakticenter.org/diwali-fest-2026/",
+   "image": "https://bhakticenter.org/testing2/wp-content/uploads/2023/06/Diwali_2023_web.jpg",
+   "checked": "2026-10-11",
+   "seen": "DIWALI FESTIVAL NYC date - sunday, november 8th time - 4pm - 9pm location - Bhakti Center admission - free"
   }
  ]
 }

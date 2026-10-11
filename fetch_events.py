@@ -470,6 +470,13 @@ SOURCES = [
         "note": "Music, writing nights and talks at Snug Harbor.",
     },
     {
+        "key": "clemente", "name": "The Clemente", "kind": "squarespace",
+        "url": "https://www.theclementecenter.org/calendar",
+        "site": "https://www.theclementecenter.org/", "need": "other", "trust_free": False,
+        "file_by_words": False, "place": ("The Clemente", "Manhattan"),
+        "note": "Music, art and record swaps at the Lower East Side's Puerto Rican and Latino cultural center.",
+    },
+    {
         "key": "curated", "name": "Checked by hand", "kind": "curated",
         "url": "", "site": "", "need": "other", "trust_free": False, "note": "",
     },
