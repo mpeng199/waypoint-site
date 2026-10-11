@@ -654,6 +654,12 @@ def from_tribe(src, today, horizon):
             blurb = text(e.get("description") or e.get("excerpt"))
             cats = " ".join(c.get("name", "") for c in (e.get("categories") or []))
             img = e.get("image") or {}
+            own = (img.get("url") if isinstance(img, dict) else None) or None
+            # No featured image, but the host put a flyer in the event's own
+            # description — the Brooklyn Borough President does for every
+            # clinic and hearing. A flyer is mostly words, so it is shown
+            # whole rather than cropped (fit=contain).
+            flyer = None if own else flyer_in(e.get("description"))
             out.append({
                 "title": text(e.get("title"), 120),
                 "start": iso(start),
@@ -664,7 +670,8 @@ def from_tribe(src, today, horizon):
                 "address": text(v.get("address"), 90),
                 "description": blurb,
                 "url": e.get("url") or src["site"],
-                "image": (img.get("url") if isinstance(img, dict) else None) or None,
+                "image": own or flyer,
+                "fit": "contain" if flyer else None,
                 "kind": text(cats, 60) or src["name"],
                 "format": fmt_of(place, blurb, cats, e.get("title")),
                 "free": is_free(src, cats, blurb, e.get("cost")),
@@ -673,6 +680,17 @@ def from_tribe(src, today, horizon):
         page += 1
         seen_pages += 1
     return out
+
+
+NOT_A_PICTURE = re.compile(r"(?i)emoji|icon|logo|avatar|spinner|pixel|badge|button|gravatar")
+
+
+def flyer_in(html):
+    """The first real picture in an event's description HTML, if any."""
+    for src in re.findall(r'<img[^>]+src="([^"]+)"', html or ""):
+        if re.search(r"(?i)\.(jpe?g|png|webp)(\?|$)", src) and not NOT_A_PICTURE.search(src):
+            return src
+    return None
 
 
 ITEM = re.compile(r"<item>(.*?)</item>", re.S)
@@ -1368,6 +1386,13 @@ def selfcheck():
     got = pick([dict(fe("1", "a", "2026-10-12"), verified=True, source="Same Org"),
                 dict(fe("2", "b", "2026-10-13"), verified=True, source="Same Org")], offline=True)
     assert len(got) == 1, "the same host under two keys still gets one card"
+
+    # --- a flyer in the description, when the feed has no picture
+    assert flyer_in('<p>x</p><img src="https://h/wp-content/emoji/1f600.png">'
+                    '<img class="a" src="https://h/up/Legal-Clinic-2.5-scaled.png" />') \
+        == "https://h/up/Legal-Clinic-2.5-scaled.png"
+    assert flyer_in('<img src="https://h/logo.svg"><img src="https://h/site-logo.png">') is None
+    assert flyer_in("") is None
 
     # --- the page cap keeps the soonest, and every hand-checked row
     many = [{"start": f"2026-10-{d:02d}T10:00:00", "title": str(d)} for d in range(11, 31)]

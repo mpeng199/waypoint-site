@@ -1369,8 +1369,9 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
   background:var(--green-deep); }
 .fev__c--lead .fev__img{ height:100%; min-height:236px; }
 /* A flyer is mostly words, and cropping it to a band cut them in half. It is
-   shown whole instead, on the panel's own green. */
-.fev__img--whole{ object-fit:contain; }
+   shown whole instead, on the panel's own green, below the badges — which
+   otherwise sat on its first line, the one with the date on it. */
+.fev__img--whole{ object-fit:contain; box-sizing:border-box; padding:46px 8px 8px; }
 
 .fev__pills{ position:absolute; inset:10px 10px auto 10px; display:flex;
   flex-wrap:wrap; gap:7px; }
@@ -1729,6 +1730,7 @@ The featured events stop being a carousel.
   .fev__pic:has(.fev__art){ display:none; }
   .fev__pills,.fev__go,.bdg--feat,.fev__c--lead .fev__b{ display:none; }
   .fev__img,.fev__c--lead .fev__img{ height:100%; min-height:0; }
+  .fev__img--whole{ padding:4px; }
   .fev__body{ padding:13px 15px; }
 }
 
