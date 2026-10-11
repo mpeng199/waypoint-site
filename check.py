@@ -272,11 +272,21 @@ def check_honesty_statement():
                     f"({n}x, expected {times}x): {fragment!r}")
 
 
+# Other organizations' words, as their calendars wrote them: event titles,
+# blurbs, places and hosts. FORBIDDEN polices Waypoint's own copy. A senior
+# center's "Companionship Club" or a clinic's "Medical Debt Relief" night is
+# not our claim, and matching it would stop the daily events refresh from
+# committing anything at all.
+THEIRS = re.compile(r'(?s)<(h3|h4) class="(?:fev|ev)__h">.*?</\1>'
+                    r'|<p class="(?:fev|ev)__(?:b|meta|by)">.*?</p>'
+                    r'|<span class="ev__by">.*?</span>')
+
+
 def check_forbidden():
     for page in PAGES:
         if not (ROOT / page).is_file():
             continue
-        src = read(page)
+        src = THEIRS.sub(" ", read(page))
         for pattern, why in FORBIDDEN:
             hits = re.findall(pattern, src)
             if hits:
@@ -2402,7 +2412,11 @@ def check_page_weight():
     # and no search index, and the reader they exist for is on the worst
     # connection here — so a step change on those is the one most worth
     # catching.
-    budgets = [("help.html", 90), *[(p, 40) for p in CATEGORY_PAGES],
+    # events.html carries every event from thirty-odd hosts, and the daily
+    # job rewrites it with nobody reading the diff. It reached 99 KB at 708
+    # events in October 2026, and fetch_events.PER_SOURCE came down to 40.
+    # A feed that starts sending thousands of rows stops here.
+    budgets = [("help.html", 90), ("events.html", 110), *[(p, 40) for p in CATEGORY_PAGES],
                *[(p, 14) for p in LANGUAGE_PAGES]]
     worst = 0
     for page, kb in budgets:
@@ -7309,6 +7323,85 @@ def check_find_help_opens_a_menu():
 
 
 
+def check_the_featured_photos_are_ours():
+    """Every picture on a featured card is a file here, and every card a host.
+
+    The photographs are the hosts' own, copied by fetch_events.py at fetch
+    time. Hotlinking one would hand every reader's IP address to that host,
+    and privacy.html promises exactly one third party; so a featured <img>
+    must point into assets/events, the file must exist, and it must be small
+    enough for the connection these pages are written for. One card per
+    organization is the rule the row exists for, so a host named twice is a
+    regression in the picker, not a matter of taste.
+    """
+    src = read("help.html")
+    m = re.search(r'<section class="fev".*?</section>', src, re.S)
+    if not m:
+        ok("featured: no featured row on help.html, so nothing to check")
+        return
+    row = m.group(0)
+    imgs = re.findall(r"<img\b[^>]*>", row)
+    total = 0
+    for tag in imgs:
+        at = dict(re.findall(r'([a-z-]+)="([^"]*)"', tag))
+        name = at.get("src", "")
+        if not name.startswith("assets/events/") or "//" in name:
+            bad(f"featured: a card's picture is not served from here: {name[:70]}")
+            continue
+        f = ROOT / name
+        if not f.is_file():
+            bad(f"featured: {name} is on a card and not on disk")
+            continue
+        kb = f.stat().st_size / 1024
+        total += kb
+        if kb > 120:
+            bad(f"featured: {name} is {kb:.0f}KB, over the 120KB a card photo gets")
+        if "alt" not in at or not at.get("width") or not at.get("height"):
+            bad(f"featured: {name} lacks alt, width or height; the row jumps as it loads")
+    if imgs:
+        ok(f"featured: {len(imgs)} card photos, all served from assets/events, "
+           f"{total:.0f}KB together")
+    hosts = re.findall(r'<p class="fev__by">(?:Hosted|Listed) by ([^<]+)</p>', row)
+    cards = row.count('<article class="fev__card">')
+    dup = sorted({h for h in hosts if hosts.count(h) > 1})
+    if len(hosts) != cards:
+        bad(f"featured: {cards} cards and {len(hosts)} hosts named; every card says who runs it")
+    elif dup:
+        bad(f"featured: {', '.join(dup)} has more than one card; the row is one per organization")
+    else:
+        ok(f"featured: {cards} cards from {len(set(hosts))} different organizations")
+    links = re.findall(r'<h3 class="fev__h"><a href="([^"]+)"', row)
+    if all(u.startswith("https://") for u in links):
+        ok("featured: every card links over https")
+    else:
+        bad("featured: a card links over plain http")
+
+
+def check_every_event_filter_is_applied_and_announced():
+    """Each checkbox on events.html is read by help.js, and counted aloud.
+
+    The Cost filter was added in October 2026 and first shipped half-wired:
+    it hid the paid events, and the status line a screen reader announces
+    stayed silent, because apply() only counted the three filters that came
+    before it. A filter the page draws and the script ignores, or applies
+    without saying so, is the same bug in two sizes.
+    """
+    page = read("events.html")
+    js = read("help.js")
+    kinds = sorted(set(re.findall(r'data-f="(\w+)"', page)))
+    if not kinds:
+        ok("filters: events.html has no filters to check")
+        return
+    m = re.search(r"var filtered = ([^;]+);", js)
+    announced = m.group(1) if m else ""
+    for k in kinds:
+        if f'chosen("{k}")' not in js:
+            bad(f"filters: events.html draws a {k} filter that help.js never reads")
+        elif f"{k}.length" not in announced:
+            bad(f"filters: the {k} filter hides events without the status line saying how many are left")
+    ok(f"filters: {', '.join(kinds)} are each applied and announced")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -7379,7 +7472,7 @@ def main():
                check_the_hero_ground_has_no_edge,
                check_the_far_side_of_the_door_is_dim,
                check_the_entrance_stays_off_the_phone,
-               check_a_feed_cannot_break_the_cards,
+               check_a_feed_cannot_break_the_cards, check_the_featured_photos_are_ours, check_every_event_filter_is_applied_and_announced,
                check_keyframes_stay_on_the_compositor,
                check_the_rail_says_where_it_goes,
                check_long_motion_has_a_reason,
