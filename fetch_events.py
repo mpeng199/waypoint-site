@@ -869,6 +869,11 @@ def collect(today, horizon):
             rows = ADAPTERS[src["kind"]](src, today, horizon)
             err = ""
         except Exception as e:                       # noqa: BLE001
+            # The hand-checked file is ours, not a server's: a typo in it is a
+            # bug to stop on, not a bad day to ride out. Riding it out would
+            # commit a site with every hand-checked event quietly gone.
+            if src["kind"] == "curated":
+                raise
             # One source having a bad day must not empty the page. The old
             # file stays on disk and yesterday's events are still better than
             # none — but the run says so, loudly, and --dry-run shows it.
@@ -968,10 +973,16 @@ def pick(events, offline=False):
             per[k] = per.get(k, 0) + 1
             cands.append(e)
     if offline:
-        good = [True] * len(cands)
+        # No network, so no new checks: only what a run with the network
+        # already passed, or a person opened. --offline once featured every
+        # host unchecked, the Food Bank's empty pages included.
+        good = [bool(e.get("verified") or e.get("checked")) for e in cands]
     else:
         with concurrent.futures.ThreadPoolExecutor(12) as ex:
             good = list(ex.map(verify, cands))
+        for e, g in zip(cands, good):
+            if g:
+                e["verified"] = True
     out, orgs, gists = [], set(), []
     for e, g in zip(cands, good):
         if not g or e["source_key"] in orgs:
@@ -1120,11 +1131,25 @@ def selfcheck():
                 "need": "other", "title": i}
     got = pick([fe("1", "a", "2026-10-12"), fe("2", "a", "2026-10-13"),
                 fe("3", "b", "2026-10-14")], offline=True)
+    assert got == [], "offline, nothing unchecked is featured"
+    got = pick([dict(fe("1", "a", "2026-10-12"), verified=True), fe("2", "a", "2026-10-13"),
+                dict(fe("3", "b", "2026-10-14"), checked="2026-10-10")], offline=True)
     assert [e["id"] for e in got] == ["1", "3"], got
-    got = pick([fe("TCS New York City Marathon", "a", "2026-11-01"),
-                fe("The 2026 TCS New York City Marathon", "b", "2026-11-01")],
+    got = pick([dict(fe("TCS New York City Marathon", "a", "2026-11-01"), verified=True),
+                dict(fe("The 2026 TCS New York City Marathon", "b", "2026-11-01"), verified=True)],
                offline=True)
     assert len(got) == 1, "one event listed by two hosts gets one card"
+
+    # --- prune: a picture nothing uses is deleted, a used one is kept
+    global PHOTOS
+    real_photos = PHOTOS
+    with tempfile.TemporaryDirectory() as d:
+        PHOTOS = Path(d)
+        (PHOTOS / "used.webp").write_bytes(b"x")
+        (PHOTOS / "orphan.webp").write_bytes(b"x")
+        prune([{"photo": f"{d}/used.webp"}, {"title": "no photo"}])
+        assert sorted(f.name for f in PHOTOS.iterdir()) == ["used.webp"]
+    PHOTOS = real_photos
 
     print("selfcheck ok")
 
@@ -1160,7 +1185,7 @@ def main():
     events = dedupe(events)
     events.sort(key=lambda e: (e["start"], e["title"]))
     for e in events:                 # recomputed below, never carried over
-        for k in ("photo", "photo_w", "photo_h"):
+        for k in ("photo", "photo_w", "photo_h") + (() if a.offline else ("verified",)):
             e.pop(k, None)
     for i, e in enumerate(events):
         e["id"] = f'{e["source_key"]}-{e["start"][:10]}-{i:04d}'
@@ -1226,6 +1251,8 @@ def main():
         sys.exit("no events from any source — leaving data/events.json alone")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
+    if PHOTOS.exists():
+        prune(events)
     OUT.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", "utf-8")
     print(f"  wrote {OUT}", file=sys.stderr)
 

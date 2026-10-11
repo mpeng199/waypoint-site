@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-10T22:42:51",
+ "generated": "2026-10-10T22:45:27",
  "horizon": "2027-02-07",
  "sources": [
   {
@@ -379,6 +379,7 @@
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
    "id": "lesec-2026-10-11-0004",
+   "verified": true,
    "photo": "assets/events/aa754843c3c6d9bc.webp",
    "photo_w": 640,
    "photo_h": 480
@@ -402,7 +403,8 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-10-11-0005"
+   "id": "lesec-2026-10-11-0005",
+   "verified": true
   },
   {
    "title": "NYRR Open Run: Conference House Park",
@@ -506,7 +508,8 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-10-11-0010"
+   "id": "lesec-2026-10-11-0010",
+   "verified": true
   },
   {
    "title": "October Weekend Nature Exploration",
@@ -569,7 +572,8 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-10-11-0013"
+   "id": "cmom-2026-10-11-0013",
+   "verified": true
   },
   {
    "title": "Colombian Inspired Gold Foil Art",
@@ -590,7 +594,8 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-10-11-0014"
+   "id": "cmom-2026-10-11-0014",
+   "verified": true
   },
   {
    "title": "David Rothenberg: Still Never Too Late",
@@ -612,6 +617,7 @@
    "source_url": "https://fortunesociety.org/",
    "need": "other",
    "id": "fortune-2026-10-11-0015",
+   "verified": true,
    "photo": "assets/events/2db2c10779d4c687.webp",
    "photo_w": 640,
    "photo_h": 360
@@ -635,7 +641,8 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-10-11-0016"
+   "id": "riverside-2026-10-11-0016",
+   "verified": true
   },
   {
    "title": "Jazz in the Park at Ralph Ellison",
@@ -657,6 +664,7 @@
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
    "id": "riverside-2026-10-11-0017",
+   "verified": true,
    "photo": "assets/events/c65eb51b74df7446.webp",
    "photo_w": 640,
    "photo_h": 480
@@ -867,7 +875,8 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-10-12-0027"
+   "id": "qbg-2026-10-12-0027",
+   "verified": true
   },
   {
    "title": "Indigenous People’s Day School Holiday in Prospect Park",
@@ -930,6 +939,7 @@
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
    "id": "prospect-2026-10-12-0030",
+   "verified": true,
    "photo": "assets/events/40b7aeb3475a9362.webp",
    "photo_w": 640,
    "photo_h": 236
@@ -953,7 +963,8 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-10-12-0031"
+   "id": "cmom-2026-10-12-0031",
+   "verified": true
   },
   {
    "title": "Trackers and Gatherers Sensory Bin",
@@ -1160,7 +1171,8 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-13-0041"
+   "id": "nylag-2026-10-13-0041",
+   "verified": true
   },
   {
    "title": "Potion Commotion Design",
@@ -1204,6 +1216,7 @@
    "source_url": "https://www.brooklynmuseum.org/",
    "checked": "2026-10-10",
    "id": "brooklyn-museum-2026-10-13-0043",
+   "verified": true,
    "photo": "assets/events/f218909030ef6c44.webp",
    "photo_w": 640,
    "photo_h": 854
@@ -1311,7 +1324,8 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-10-13-0048"
+   "id": "manhattancb1-2026-10-13-0048",
+   "verified": true
   },
   {
    "title": "Nitehawk: Devil and the Deep — Pre-Code Parade",
@@ -1333,6 +1347,7 @@
    "source_url": "https://brooklyncb6.cityofnewyork.us/",
    "need": "other",
    "id": "brooklyncb6-2026-10-13-0049",
+   "verified": true,
    "photo": "assets/events/00eab821e1097651.webp",
    "photo_w": 640,
    "photo_h": 961
@@ -1668,7 +1683,8 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-10-14-0065"
+   "id": "nami-2026-10-14-0065",
+   "verified": true
   },
   {
    "title": "Mobile Pantry 10/14/2026",
@@ -1775,6 +1791,7 @@
    "source_url": "https://www.nypl.org/",
    "checked": "2026-10-10",
    "id": "new-york-public-library-2026-10-14-0070",
+   "verified": true,
    "photo": "assets/events/6bd46594ac620e5a.webp",
    "photo_w": 640,
    "photo_h": 320
@@ -1819,7 +1836,8 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-10-14-0072"
+   "id": "nami-2026-10-14-0072",
+   "verified": true
   },
   {
    "title": "Licensing & Permits Committee",
@@ -1840,7 +1858,8 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-10-14-0073"
+   "id": "manhattancb1-2026-10-14-0073",
+   "verified": true
   },
   {
    "title": "CB6 Full Board Meeting",
@@ -1883,6 +1902,7 @@
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
    "id": "moca-2026-10-14-0075",
+   "verified": true,
    "photo": "assets/events/2523834ebba44058.webp",
    "photo_w": 640,
    "photo_h": 640
@@ -1906,7 +1926,8 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-10-14-0076"
+   "id": "nami-2026-10-14-0076",
+   "verified": true
   },
   {
    "title": "NYC Parks’ 44th Annual Wreath Interpretations Open Call",
@@ -1988,7 +2009,8 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-10-15-0080"
+   "id": "prospect-2026-10-15-0080",
+   "verified": true
   },
   {
    "title": "Grown-Up Bike Bus",
@@ -2050,7 +2072,8 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-10-15-0083"
+   "id": "qbg-2026-10-15-0083",
+   "verified": true
   },
   {
    "title": "PlacePartner Opportunity: Canopy Club at W 97th-120th St",
@@ -2134,7 +2157,8 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-10-15-0087"
+   "id": "prospect-2026-10-15-0087",
+   "verified": true
   },
   {
    "title": "Van at Council Member Rita Joseph Office",
@@ -2155,7 +2179,8 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-15-0088"
+   "id": "nylag-2026-10-15-0088",
+   "verified": true
   },
   {
    "title": "Potion Commotion Design",
@@ -2323,7 +2348,8 @@
    "source_key": "moca",
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
-   "id": "moca-2026-10-15-0096"
+   "id": "moca-2026-10-15-0096",
+   "verified": true
   },
   {
    "title": "Living With Bipolar II (Virtual)",
@@ -2365,7 +2391,8 @@
    "source_key": "brooklyncb6",
    "source_url": "https://brooklyncb6.cityofnewyork.us/",
    "need": "other",
-   "id": "brooklyncb6-2026-10-15-0098"
+   "id": "brooklyncb6-2026-10-15-0098",
+   "verified": true
   },
   {
    "title": "October 2026 Monthly Meeting",
@@ -2387,6 +2414,7 @@
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
    "id": "queenscb3-2026-10-15-0099",
+   "verified": true,
    "photo": "assets/events/e54b58994353c8cf.webp",
    "photo_w": 640,
    "photo_h": 640
@@ -2598,6 +2626,7 @@
    "source_url": "https://ohny.org/",
    "checked": "2026-10-10",
    "id": "open-house-new-york-2026-10-16-0109",
+   "verified": true,
    "photo": "assets/events/41d310b77002b476.webp",
    "photo_w": 640,
    "photo_h": 427
@@ -2663,7 +2692,8 @@
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-10-16-0112"
+   "id": "nylag-2026-10-16-0112",
+   "verified": true
   },
   {
    "title": "Potion Commotion Design",
@@ -2790,6 +2820,7 @@
    "source_url": "https://littleisland.org/",
    "need": "other",
    "id": "littleisland-2026-10-16-0118",
+   "verified": true,
    "photo": "assets/events/6258de0ecca38cd1.webp",
    "photo_w": 640,
    "photo_h": 420
@@ -2813,7 +2844,8 @@
    "source_key": "moca",
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
-   "id": "moca-2026-10-16-0119"
+   "id": "moca-2026-10-16-0119",
+   "verified": true
   },
   {
    "title": "NYC Parks’ 44th Annual Wreath Interpretations Open Call",
@@ -2898,6 +2930,7 @@
    "source_url": "https://www.govisland.com/things-to-do/events/cake-picnic",
    "checked": "2026-10-10",
    "id": "cake-picnic-2026-10-17-0123",
+   "verified": true,
    "photo": "assets/events/71b11a5c85e7c06d.webp",
    "photo_w": 640,
    "photo_h": 427
@@ -3025,6 +3058,7 @@
    "source_url": "https://randallsisland.org/",
    "need": "other",
    "id": "randalls-2026-10-17-0129",
+   "verified": true,
    "photo": "assets/events/17ff67058fa6438a.webp",
    "photo_w": 640,
    "photo_h": 640
@@ -3111,7 +3145,8 @@
    "source_key": "brooklyncb6",
    "source_url": "https://brooklyncb6.cityofnewyork.us/",
    "need": "other",
-   "id": "brooklyncb6-2026-10-17-0133"
+   "id": "brooklyncb6-2026-10-17-0133",
+   "verified": true
   },
   {
    "title": "Wellness at the Garden: Mindful Movement with UrbanYoga Foundation",
@@ -3174,7 +3209,8 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-10-17-0136"
+   "id": "randalls-2026-10-17-0136",
+   "verified": true
   },
   {
    "title": "Gowanus Canal Conservancy: Growing on the Gowanus (11:00 AM Tour)",
@@ -3218,6 +3254,7 @@
    "source_url": "https://brooklynbridgepark.org/",
    "checked": "2026-10-10",
    "id": "brooklyn-bridge-park-2026-10-17-0138",
+   "verified": true,
    "photo": "assets/events/1af70a53ec46d861.webp",
    "photo_w": 640,
    "photo_h": 427
@@ -3306,6 +3343,7 @@
    "source_url": "https://www.govisland.com/things-to-do/events/cake-picnic",
    "checked": "2026-10-10",
    "id": "cake-picnic-2026-10-17-0142",
+   "verified": true,
    "photo": "assets/events/14f11fdb8b06c550.webp",
    "photo_w": 640,
    "photo_h": 427
@@ -3330,6 +3368,7 @@
    "source_url": "https://www.weeksvillesociety.org/",
    "need": "other",
    "id": "weeksville-2026-10-17-0143",
+   "verified": true,
    "photo": "assets/events/5b6934ef00b2632b.webp",
    "photo_w": 640,
    "photo_h": 514
@@ -3375,6 +3414,7 @@
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
    "id": "simuseum-2026-10-17-0145",
+   "verified": true,
    "photo": "assets/events/c1001ae556326359.webp",
    "photo_w": 640,
    "photo_h": 577
@@ -3442,6 +3482,7 @@
    "source_url": "https://www.queensnightmarket.com/",
    "checked": "2026-10-10",
    "id": "queens-night-market-2026-10-17-0148",
+   "verified": true,
    "photo": "assets/events/33e30c53c771656c.webp",
    "photo_w": 640,
    "photo_h": 480
@@ -3714,7 +3755,8 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-10-18-0161"
+   "id": "simuseum-2026-10-18-0161",
+   "verified": true
   },
   {
    "title": "Nitehawk: The Addams Family — Spooky Season at Nitehawk",
@@ -3757,6 +3799,7 @@
    "source_url": "https://queensbotanical.org/",
    "need": "other",
    "id": "qbg-2026-10-18-0163",
+   "verified": true,
    "photo": "assets/events/82d9e5db54565a74.webp",
    "photo_w": 640,
    "photo_h": 396
@@ -3864,7 +3907,8 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-10-18-0168"
+   "id": "riverside-2026-10-18-0168",
+   "verified": true
   },
   {
    "title": "OH NY: Little Island After Dark",
@@ -3885,7 +3929,8 @@
    "source_key": "littleisland",
    "source_url": "https://littleisland.org/",
    "need": "other",
-   "id": "littleisland-2026-10-18-0169"
+   "id": "littleisland-2026-10-18-0169",
+   "verified": true
   },
   {
    "title": "General: last day to update address",
@@ -4176,7 +4221,8 @@
    "source_key": "queenscb3",
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "other",
-   "id": "queenscb3-2026-10-19-0183"
+   "id": "queenscb3-2026-10-19-0183",
+   "verified": true
   },
   {
    "title": "Fall Festival at Lakeside",
@@ -4218,7 +4264,8 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-10-19-0185"
+   "id": "manhattancb1-2026-10-19-0185",
+   "verified": true
   },
   {
    "title": "Living with Anxiety (Virtual)",
@@ -4905,7 +4952,8 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-10-21-0218"
+   "id": "simuseum-2026-10-21-0218",
+   "verified": true
   },
   {
    "title": "Van at Assembly Member Manny De Los Santos’ Office",
@@ -6200,6 +6248,7 @@
    "source_url": "https://www.nycvotes.org/",
    "checked": "2026-10-10",
    "id": "nyc-votes-2026-10-24-0280",
+   "verified": true,
    "photo": "assets/events/898a51061491e496.webp",
    "photo_w": 640,
    "photo_h": 336
@@ -6244,7 +6293,8 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-10-24-0282"
+   "id": "randalls-2026-10-24-0282",
+   "verified": true
   },
   {
    "title": "Dance Fitness with Shape Up NYC at the Boathouse",
@@ -6393,6 +6443,7 @@
    "source_url": "https://www.thehighline.org/",
    "checked": "2026-10-10",
    "id": "the-high-line-2026-10-24-0289",
+   "verified": true,
    "photo": "assets/events/dd05783851aaa1ba.webp",
    "photo_w": 640,
    "photo_h": 315
@@ -6565,6 +6616,7 @@
    "source_url": "https://www.queensnightmarket.com/",
    "checked": "2026-10-10",
    "id": "queens-night-market-2026-10-24-0297",
+   "verified": true,
    "photo": "assets/events/33e30c53c771656c.webp",
    "photo_w": 640,
    "photo_h": 480
@@ -6737,6 +6789,7 @@
    "source_url": "https://afsp.org/",
    "checked": "2026-10-10",
    "id": "american-foundation-for-suicide-preventi-2026-10-25-0305",
+   "verified": true,
    "photo": "assets/events/617a34bb5fd19c76.webp",
    "photo_w": 640,
    "photo_h": 336
@@ -7539,6 +7592,7 @@
    "source_url": "https://bryantpark.org/",
    "checked": "2026-10-10",
    "id": "bryant-park-2026-10-28-0343",
+   "verified": true,
    "photo": "assets/events/e34fc54d5c482f0c.webp",
    "photo_w": 640,
    "photo_h": 335
@@ -8571,7 +8625,8 @@
    "source_key": "artbuilt-and-casa-cultural",
    "source_url": "https://www.nyctourism.com/events/dia-de-los-muertos-celebration/",
    "checked": "2026-10-10",
-   "id": "artbuilt-and-casa-cultural-2026-10-31-0392"
+   "id": "artbuilt-and-casa-cultural-2026-10-31-0392",
+   "verified": true
   },
   {
    "title": "Hippo Halloween Parade",
@@ -8615,6 +8670,7 @@
    "source_url": "https://www.queensnightmarket.com/",
    "checked": "2026-10-10",
    "id": "queens-night-market-2026-10-31-0394",
+   "verified": true,
    "photo": "assets/events/33e30c53c771656c.webp",
    "photo_w": 640,
    "photo_h": 480
@@ -8640,6 +8696,7 @@
    "source_url": "https://halloween-nyc.com/",
    "checked": "2026-10-10",
    "id": "village-halloween-parade-2026-10-31-0395",
+   "verified": true,
    "photo": "assets/events/fb26dcf96c914b8c.webp",
    "photo_w": 640,
    "photo_h": 359
@@ -8663,7 +8720,8 @@
    "source_key": "fortune",
    "source_url": "https://fortunesociety.org/",
    "need": "other",
-   "id": "fortune-2026-11-01-0396"
+   "id": "fortune-2026-11-01-0396",
+   "verified": true
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -8728,6 +8786,7 @@
    "source_url": "https://www.nyrr.org/",
    "checked": "2026-10-10",
    "id": "new-york-road-runners-2026-11-01-0399",
+   "verified": true,
    "photo": "assets/events/5e81352c43bb1ab8.webp",
    "photo_w": 640,
    "photo_h": 427
@@ -9068,6 +9127,7 @@
    "source_url": "https://www.nycvotes.org/",
    "checked": "2026-10-10",
    "id": "nyc-votes-2026-11-03-0415",
+   "verified": true,
    "photo": "assets/events/898a51061491e496.webp",
    "photo_w": 640,
    "photo_h": 336
@@ -9490,7 +9550,8 @@
    "source_key": "camba",
    "source_url": "https://camba.org/",
    "need": "other",
-   "id": "camba-2026-11-05-0435"
+   "id": "camba-2026-11-05-0435",
+   "verified": true
   },
   {
    "title": "Family-to-Family Grads (Virtual)",
@@ -10101,6 +10162,7 @@
    "source_url": "https://www.uwvc.org/",
    "checked": "2026-10-10",
    "id": "united-war-veterans-council-2026-11-11-0464",
+   "verified": true,
    "photo": "assets/events/55555b3bfcb670be.webp",
    "photo_w": 640,
    "photo_h": 426
@@ -10439,7 +10501,8 @@
    "source_key": "queenscb3",
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
-   "id": "queenscb3-2026-11-12-0480"
+   "id": "queenscb3-2026-11-12-0480",
+   "verified": true
   },
   {
    "title": "Van at Senator Roxanne Persaud’s Office",
@@ -10567,6 +10630,7 @@
    "source_url": "https://www.nybg.org/",
    "checked": "2026-10-10",
    "id": "new-york-botanical-garden-2026-11-14-0486",
+   "verified": true,
    "photo": "assets/events/fea488cc46b9a7c8.webp",
    "photo_w": 640,
    "photo_h": 361
@@ -11138,6 +11202,7 @@
    "source_url": "https://www.glwd.org/",
    "checked": "2026-10-10",
    "id": "god-s-love-we-deliver-2026-11-22-0513",
+   "verified": true,
    "photo": "assets/events/360971ba9e78f4a2.webp",
    "photo_w": 640,
    "photo_h": 427
@@ -11289,6 +11354,7 @@
    "source_url": "https://runsignup.com/Race/NY/Brooklyn/PPTCTurkeyTrotRaceforReconciliation5Miler",
    "checked": "2026-10-10",
    "id": "prospect-park-track-club-2026-11-26-0520",
+   "verified": true,
    "photo": "assets/events/eef3fec5dfe26cc0.webp",
    "photo_w": 640,
    "photo_h": 214
@@ -11439,7 +11505,8 @@
    "source_key": "rockefeller-center",
    "source_url": "https://www.rockefellercenter.com/",
    "checked": "2026-10-10",
-   "id": "rockefeller-center-2026-12-02-0527"
+   "id": "rockefeller-center-2026-12-02-0527",
+   "verified": true
   },
   {
    "title": "Horticulture Community Volunteer Days 2026",
@@ -11545,7 +11612,8 @@
    "source_key": "historic-richmond-town",
    "source_url": "https://www.historicrichmondtown.org/",
    "checked": "2026-10-10",
-   "id": "historic-richmond-town-2026-12-04-0532"
+   "id": "historic-richmond-town-2026-12-04-0532",
+   "verified": true
   },
   {
    "title": "Edible Island – part of the Holiday Hop!",
