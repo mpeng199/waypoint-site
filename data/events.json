@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-10T23:33:04",
+ "generated": "2026-10-11T03:37:32",
  "horizon": "2027-02-07",
  "sources": [
   {
@@ -326,11 +326,11 @@
   "riverside-2026-10-11-0017",
   "essexmarket-2026-10-11-0018",
   "prospect-2026-10-12-0032",
-  "parks-2026-10-13-0042",
   "fortgreenepark-2026-10-13-0054",
   "parkslope5th-2026-10-14-0068",
+  "flatironnomad-2026-10-14-0074",
   "new-york-public-library-2026-10-14-0078",
-  "queenscb3-2026-10-15-0110",
+  "moca-2026-10-14-0085",
   "open-house-new-york-2026-10-16-0120",
   "cake-picnic-2026-10-17-0134",
   "historic-richmond-town-2026-10-17-0141",
@@ -339,8 +339,8 @@
   "weeksville-2026-10-17-0159",
   "simuseum-2026-10-17-0161",
   "queens-night-market-2026-10-17-0164",
-  "qbg-2026-10-18-0181",
   "friends-of-washington-market-park-2026-10-25-0342",
+  "bryant-park-2026-10-28-0371",
   "brooklynbp-2026-10-15-0094",
   "nylag-2026-10-15-0100"
  ],
@@ -363,8 +363,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-10-11-0000",
-   "verified": true
+   "id": "parks-2026-10-11-0000"
   },
   {
    "title": "Proximity Exhibition",
@@ -932,8 +931,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-10-12-0026",
-   "verified": true
+   "id": "qbg-2026-10-12-0026"
   },
   {
    "title": "Indigenous People’s Day School Holiday in Prospect Park",
@@ -1270,11 +1268,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-10-13-0042",
-   "verified": true,
-   "photo": "assets/events/58a7d8eba8ac1622.webp",
-   "photo_w": 640,
-   "photo_h": 830
+   "id": "parks-2026-10-13-0042"
   },
   {
    "title": "It’s My Park Day",
@@ -1960,7 +1954,10 @@
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
    "id": "flatironnomad-2026-10-14-0074",
-   "verified": true
+   "verified": true,
+   "photo": "assets/events/9e7840c3fb7547ce.webp",
+   "photo_w": 640,
+   "photo_h": 396
   },
   {
    "title": "PlacePartner Opportunity: West Harlem Forest Tree Club",
@@ -2202,7 +2199,10 @@
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
    "id": "moca-2026-10-14-0085",
-   "verified": true
+   "verified": true,
+   "photo": "assets/events/2523834ebba44058.webp",
+   "photo_w": 640,
+   "photo_h": 640
   },
   {
    "title": "NAMI Connection (Virtual)",
@@ -2285,8 +2285,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-10-15-0089",
-   "verified": true
+   "id": "parks-2026-10-15-0089"
   },
   {
    "title": "Prospect Park Fall Migration Walks",
@@ -2349,8 +2348,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-10-15-0092",
-   "verified": true
+   "id": "qbg-2026-10-15-0092"
   },
   {
    "title": "PlacePartner Opportunity: Canopy Club at W 97th-120th St",
@@ -2733,11 +2731,7 @@
    "source_key": "queenscb3",
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
-   "id": "queenscb3-2026-10-15-0110",
-   "verified": true,
-   "photo": "assets/events/e54b58994353c8cf.webp",
-   "photo_w": 640,
-   "photo_h": 640
+   "id": "queenscb3-2026-10-15-0110"
   },
   {
    "title": "NYC Parks’ 44th Annual Wreath Interpretations Open Call",
@@ -4262,11 +4256,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-10-18-0181",
-   "verified": true,
-   "photo": "assets/events/82d9e5db54565a74.webp",
-   "photo_w": 640,
-   "photo_h": 396
+   "id": "qbg-2026-10-18-0181"
   },
   {
    "title": "Mini Pumpkin Patch Sensory Bin",
@@ -10461,8 +10451,7 @@
    "source_key": "camba",
    "source_url": "https://camba.org/",
    "need": "other",
-   "id": "camba-2026-11-05-0474",
-   "verified": true
+   "id": "camba-2026-11-05-0474"
   },
   {
    "title": "Family-to-Family Grads (Virtual)",
@@ -11517,8 +11506,7 @@
    "source_key": "queenscb3",
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
-   "id": "queenscb3-2026-11-12-0524",
-   "verified": true
+   "id": "queenscb3-2026-11-12-0524"
   },
   {
    "title": "Van at Senator Roxanne Persaud’s Office",
@@ -12298,8 +12286,7 @@
    "source_key": "queenscb3",
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
-   "id": "queenscb3-2026-11-19-0561",
-   "verified": true
+   "id": "queenscb3-2026-11-19-0561"
   },
   {
    "title": "Simons Foundation Presents: A Universe of Grief",
