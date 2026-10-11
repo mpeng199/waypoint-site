@@ -2402,7 +2402,10 @@ def check_page_weight():
     # and no search index, and the reader they exist for is on the worst
     # connection here — so a step change on those is the one most worth
     # catching.
-    budgets = [("help.html", 90), *[(p, 40) for p in CATEGORY_PAGES],
+    # events.html carries every event from thirty-odd hosts, and the daily
+    # job rewrites it with nobody reading the diff: 76 KB at 571 events in
+    # October 2026. A feed that starts sending thousands of rows stops here.
+    budgets = [("help.html", 90), ("events.html", 110), *[(p, 40) for p in CATEGORY_PAGES],
                *[(p, 14) for p in LANGUAGE_PAGES]]
     worst = 0
     for page, kb in budgets:

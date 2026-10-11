@@ -116,6 +116,10 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
 # says nothing more specific. `trust_free` marks a source whose events are all
 # free — the two mobile programs are, by their own description; a park event
 # may carry a materials fee, so it is not claimed to be free unless it says so.
+# What makes a community board's calendar entry civic rather than a
+# neighborhood event (see the boards below).
+MEETINGS = [(r"(?i)\b(meeting|hearing|committee|town hall)\b", "civic")]
+
 SOURCES = [
     {
         "key": "nylag",
@@ -245,6 +249,50 @@ SOURCES = [
         "site": "https://camba.org/", "need": "other", "trust_free": False,
         "file_by_words": False,
         "note": "Brooklyn help with housing, health, jobs and legal problems.",
+    },
+    {
+        "key": "lesec", "name": "Lower East Side Ecology Center", "kind": "tribe",
+        "url": "https://www.lesecologycenter.org/wp-json/tribe/events/v1/events",
+        "site": "https://www.lesecologycenter.org/", "need": "other", "trust_free": True,
+        "file_by_words": False,
+        # Its titles are only the place ("Cambria Heights"); the kind is what
+        # happens there, so the kind goes in front.
+        "retitle": [(r"(?i)recycling", "Electronics recycling: {title}"),
+                    (r"(?i)compost drop", "Food scrap drop-off: {title}")],
+        "note": "Free electronics recycling and food scrap drop-offs around the city.",
+    },
+    {
+        "key": "moca", "name": "Museum of Chinese in America", "kind": "tribe",
+        "url": "https://www.mocanyc.org/wp-json/tribe/events/v1/events",
+        "site": "https://www.mocanyc.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Walking tours, films and workshops about Chinese American history.",
+    },
+    # Community boards are the city's most local public meeting, and three of
+    # the fifty-nine run this calendar (probed 10 Oct 2026; the rest answer
+    # nothing at the same path). Anyone may attend and speak. Their calendars
+    # carry neighborhood events too — Brooklyn 6 lists poetry readings and the
+    # farmers market — so only a meeting or hearing is "Voting & civic life".
+    {
+        "key": "brooklyncb6", "name": "Brooklyn Community Board 6", "kind": "tribe",
+        "url": "https://brooklyncb6.cityofnewyork.us/wp-json/tribe/events/v1/events",
+        "site": "https://brooklyncb6.cityofnewyork.us/", "need": "other", "trust_free": True,
+        "file_by_words": False, "need_by_title": MEETINGS,
+        "note": "Public meetings about Park Slope, Carroll Gardens, Red Hook and nearby, and local events.",
+    },
+    {
+        "key": "manhattancb1", "name": "Manhattan Community Board 1", "kind": "tribe",
+        "url": "https://manhattancb1.cityofnewyork.us/wp-json/tribe/events/v1/events",
+        "site": "https://manhattancb1.cityofnewyork.us/", "need": "other", "trust_free": True,
+        "file_by_words": False, "need_by_title": MEETINGS,
+        "note": "Public meetings about Lower Manhattan.",
+    },
+    {
+        "key": "queenscb3", "name": "Queens Community Board 3", "kind": "tribe",
+        "url": "https://queenscb3.cityofnewyork.us/wp-json/tribe/events/v1/events",
+        "site": "https://queenscb3.cityofnewyork.us/", "need": "other", "trust_free": True,
+        "file_by_words": False, "need_by_title": MEETINGS,
+        "note": "Public meetings about Jackson Heights, East Elmhurst and North Corona.",
     },
     {
         "key": "curated", "name": "Checked by hand", "kind": "curated",
@@ -662,7 +710,9 @@ ADAPTERS = {"tribe": from_tribe, "parks-rss": from_parks_rss, "ics": from_ics,
 MONTHS = ["January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December"]
 
-CANCELLED = re.compile(r"(?i)\b(cancell?ed|postponed)\b")
+# Not events at all: Manhattan Community Board 1 puts its holiday closures on
+# the same calendar as its meetings.
+CANCELLED = re.compile(r"(?i)\b(cancell?ed|postponed)\b|^office closed\b")
 
 
 def page_words(url):
@@ -839,12 +889,18 @@ def collect(today, horizon):
             # A hand-checked row names its own host; a feed's rows are the feed's.
             if not r.get("venue") and src.get("place"):
                 r["venue"], r["borough"] = src["place"]
+            for rx, tpl in src.get("retitle", ()):
+                if re.search(rx, r["kind"]) and ":" not in r["title"]:
+                    r["title"] = tpl.format(title=r["title"])
+                    break
             r.setdefault("source", src["name"])
             r.setdefault("source_key", src["key"])
             r.setdefault("source_url", src["site"])
             r["need"] = r.get("need") or (
                 need_for(src, r["title"], r["kind"], r["description"])
-                if src.get("file_by_words", True) else src["need"])
+                if src.get("file_by_words", True) else
+                next((nd for rx, nd in src.get("need_by_title", ())
+                      if re.search(rx, r["title"])), src["need"]))
             kept.append(r)
         kept.sort(key=lambda r: r["start"])
         per_day, per_org, spread = {}, {}, []
@@ -1056,6 +1112,7 @@ def selfcheck():
     assert not is_free({"trust_free": True}, "Race", "Registration $35")
     assert CANCELLED.search("Living with Thoughts of Suicide CANCELLED")
     assert not CANCELLED.search("Cancellation policy")
+    assert CANCELLED.search("Office Closed – Columbus Day")
 
     # --- the featured row: one card per organization
     def fe(i, k, d):
