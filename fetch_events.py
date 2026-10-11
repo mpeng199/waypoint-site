@@ -40,16 +40,35 @@ no new code. Probe a candidate first:
 """
 
 import argparse
+import concurrent.futures
+import hashlib
 import html as _html
 import json
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, date
 from pathlib import Path
 
 OUT = Path("data/events.json")
+
+# Events a person found and opened by hand, one organization each — the
+# walks, parades, races and fairs that publish no feed. See from_curated().
+CURATED = Path("data/events_curated.json")
+
+# Photographs for the featured cards, downloaded here at fetch time and
+# served from this origin. Hotlinking them would hand every reader's IP
+# address to every host; privacy.html names exactly one third party.
+PHOTOS = Path("assets/events")
+
+# How many cards the featured row carries: one per organization, so this is
+# also the most organizations it can show.
+FEATURED = 24
 
 # How far ahead to keep. Past today is dropped on every run, so the file is
 # self-cleaning: nothing has to remember to delete last week.
@@ -57,16 +76,22 @@ HORIZON_DAYS = 120
 
 # Per source, so one prolific publisher cannot crowd out the rest. NYC Parks
 # alone returns over a thousand.
-PER_SOURCE = 260
+PER_SOURCE = 60
 
 # And per source per day. Without this the cap above is spent chronologically:
 # NYC Parks filled all 220 slots with the next three days and the rest of the
 # calendar was empty from the fourth day on. A calendar is judged by its thin
 # days, not its thick ones.
-PER_SOURCE_DAY = 8
+PER_SOURCE_DAY = 3
 
 TIMEOUT = 30
-UA = "WaypointNYC/1.0 (+https://waypointnyc.org) free-event-directory"
+# A browser's string with our name and address on the end. The bare
+# "WaypointNYC/1.0" was refused (403) by Queens Botanical Garden's and
+# CAMBA's firewalls, which turn away anything that does not look like a
+# browser; this still says who is asking and where to find us.
+UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/141.0 Safari/537.36 "
+      "WaypointNYC/1.0 (+https://waypointnyc.org)")
 
 
 # --------------------------------------------------------------- the sources
@@ -93,7 +118,12 @@ SOURCES = [
         "url": "https://www.foodbanknyc.org/wp-json/tribe/events/v1/events",
         "site": "https://www.foodbanknyc.org/",
         "need": "food",
-        "trust_free": True,
+        "trust_free": r"(?i)pantry",
+        # Its event pages are empty shells: a pantry's own page shows no date,
+        # no place and no text, only the site's menus (opened 10 Oct 2026).
+        # The address is in the feed, so the row keeps it, and the link goes
+        # to the Food Bank's own map of where to get food.
+        "fallback": "https://www.foodbanknyc.org/find-food/",
         "note": "Mobile pantry distributions.",
     },
     {
@@ -111,6 +141,99 @@ SOURCES = [
         "trust_free": False,
         "note": "Free and low-cost programming in the city's parks.",
     },
+    # Eleven more that run The Events Calendar, found by probing ninety NYC
+    # organizations' sites for the endpoint on 10 Oct 2026. Every one had an
+    # event page opened in a browser first, and each showed its event — which
+    # is not a given: the Food Bank's pages are empty shells (see blank_pages).
+    #
+    # file_by_words is off for all eleven: their categories are audience tags,
+    # not topics. NAMI-NYC's "Family or Friend" means a group for relatives,
+    # and word-filing labelled it "Kids & young people"; Prospect Park's
+    # "Food Kids Lakeside" put a farmers market under "Older adults". Each
+    # files under its own need instead, which is never wrong about it.
+    {
+        "key": "nami", "name": "NAMI-NYC", "kind": "tribe",
+        "url": "https://naminycmetro.org/wp-json/tribe/events/v1/events",
+        "site": "https://naminycmetro.org/", "need": "crisis", "trust_free": True,
+        "file_by_words": False,
+        "note": "Free mental health support groups and talks, many on Zoom.",
+    },
+    {
+        "key": "prospect", "name": "Prospect Park Alliance", "kind": "tribe",
+        "url": "https://www.prospectpark.org/wp-json/tribe/events/v1/events",
+        "site": "https://www.prospectpark.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Nature walks, markets and family days in Prospect Park.",
+    },
+    {
+        "key": "riverside", "name": "Riverside Park Conservancy", "kind": "tribe",
+        "url": "https://riversideparknyc.org/wp-json/tribe/events/v1/events",
+        "site": "https://riversideparknyc.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Concerts, walks and volunteer days in Riverside Park.",
+    },
+    {
+        "key": "qbg", "name": "Queens Botanical Garden", "kind": "tribe",
+        "url": "https://queensbotanical.org/wp-json/tribe/events/v1/events",
+        "site": "https://queensbotanical.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Garden workshops, festivals and volunteer days in Flushing.",
+    },
+    {
+        "key": "randalls", "name": "Randall's Island Park Alliance", "kind": "tribe",
+        "url": "https://randallsisland.org/wp-json/tribe/events/v1/events",
+        "site": "https://randallsisland.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Youth sports, farm days and volunteering on Randall's Island.",
+    },
+    {
+        "key": "simuseum", "name": "Staten Island Museum", "kind": "tribe",
+        "url": "https://www.statenislandmuseum.org/wp-json/tribe/events/v1/events",
+        "site": "https://www.statenislandmuseum.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Workshops, talks and nature walks on Staten Island.",
+    },
+    {
+        "key": "cmom", "name": "Children's Museum of Manhattan", "kind": "tribe",
+        "url": "https://cmom.org/wp-json/tribe/events/v1/events",
+        "site": "https://cmom.org/", "need": "family", "trust_free": False,
+        "file_by_words": False,
+        # Its feed leaves every venue empty; everything is at the museum.
+        "place": ("Children's Museum of Manhattan", "Manhattan"),
+        "note": "Story times, art and play for young children.",
+    },
+    {
+        "key": "weeksville", "name": "Weeksville Heritage Center", "kind": "tribe",
+        "url": "https://www.weeksvillesociety.org/wp-json/tribe/events/v1/events",
+        "site": "https://www.weeksvillesociety.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Music, history and community days in Crown Heights.",
+    },
+    {
+        "key": "littleisland", "name": "Little Island", "kind": "tribe",
+        "url": "https://littleisland.org/wp-json/tribe/events/v1/events",
+        "site": "https://littleisland.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Performances and evenings in the park on the Hudson.",
+    },
+    {
+        "key": "fortune", "name": "The Fortune Society", "kind": "tribe",
+        "url": "https://fortunesociety.org/wp-json/tribe/events/v1/events",
+        "site": "https://fortunesociety.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Help for people coming home from jail or prison.",
+    },
+    {
+        "key": "camba", "name": "CAMBA", "kind": "tribe",
+        "url": "https://camba.org/wp-json/tribe/events/v1/events",
+        "site": "https://camba.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Brooklyn help with housing, health, jobs and legal problems.",
+    },
+    {
+        "key": "curated", "name": "Checked by hand", "kind": "curated",
+        "url": "", "site": "", "need": "other", "trust_free": False, "note": "",
+    },
     # An iCalendar source looks like this. Luma exposes one per public
     # calendar, Partiful one per event, Google Calendar one per calendar.
     # {
@@ -124,13 +247,21 @@ SOURCES = [
 
 # ------------------------------------------------------------------ plumbing
 
-def fetch(url):
+def fetch_bytes(url, final=None):
+    """GET url. With `final` (a list), the address it ended up at is appended."""
+    url = urllib.parse.quote(url, safe=":/?&=%#+,;@~!$'()*")
     req = urllib.request.Request(url, headers={
         "User-Agent": UA,
         "Accept": "application/json, application/rss+xml, text/calendar, */*",
     })
     with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-        raw = r.read()
+        if final is not None:
+            final.append(r.geturl())
+        return r.read(8_000_000)
+
+
+def fetch(url, final=None):
+    raw = fetch_bytes(url, final)
     # NYC Parks serves iso-8859-1 and says so; everything else is utf-8.
     for enc in ("utf-8", "iso-8859-1"):
         try:
@@ -234,12 +365,19 @@ def fmt_of(*blobs):
 FREE = re.compile(r"(?i)\b(free|no cost|no charge|at no cost|complimentary)\b")
 
 
-def is_free(src, *blobs):
-    if src.get("trust_free"):
-        return True
-    joined = " ".join(b for b in blobs if b)
+def is_free(src, kind, *blobs):
+    """Free to go to. A price anywhere beats the source's word for it.
+
+    `trust_free` is True for a source whose events are all free, or a pattern
+    over the event's kind for one that mixes: the Food Bank's mobile pantries
+    are free and its Eat For Good dinners, in the same feed, are not.
+    """
+    joined = " ".join(b for b in (kind, *blobs) if b)
     if re.search(r"(?i)\$\s?\d", joined):
         return False
+    t = src.get("trust_free")
+    if t is True or (isinstance(t, str) and re.search(t, kind or "")):
+        return True
     return bool(FREE.search(joined))
 
 
@@ -257,8 +395,11 @@ NEED_BY_WORD = [
     (r"(?i)\b(legal|lawyer|attorney|know your rights|eviction|tenant rights|"
      r"immigration help|asylum|deportation)\b", "legal"),
     (r"(?i)\b(pantry|food bank|free food|meal|grocer|nutrition|snap benefits|produce)\b", "food"),
+    # Before "doctor": the directory's own name for this need is "Crisis &
+    # mental health", and a support group is not a visit to a doctor.
+    (r"(?i)\b(mental health|suicide prevention|support group)\b", "crisis"),
     (r"(?i)\b(health (screening|clinic|fair|insurance)|medical clinic|free clinic|"
-     r"vaccin|immuniz|dental|dentist|blood pressure|mental health|flu shot|"
+     r"vaccin|immuniz|dental|dentist|blood pressure|flu shot|"
      r"covid test)\b", "doctor"),
     (r"(?i)\b(housing|shelter|homeless|rent(al)? assistance)\b", "housing"),
     (r"(?i)\b(job fair|career|employment|resume|hiring|workforce|"
@@ -318,7 +459,12 @@ def from_tribe(src, today, horizon):
         try:
             d = json.loads(fetch(url))
         except (urllib.error.HTTPError, urllib.error.URLError, ValueError):
-            break                      # a 400 past the last page is the normal end
+            # A 400 past the last page is the normal end. On the first page it
+            # is a refusal, and has to reach the report rather than read as a
+            # quiet day: two feeds sat at zero that way.
+            if page == 1:
+                raise
+            break
         events = d.get("events") or []
         if not events:
             break
@@ -345,7 +491,8 @@ def from_tribe(src, today, horizon):
                 "image": (img.get("url") if isinstance(img, dict) else None) or None,
                 "kind": text(cats, 60) or src["name"],
                 "format": fmt_of(place, blurb, cats, e.get("title")),
-                "free": is_free(src, blurb, cats, e.get("cost")),
+                "free": is_free(src, cats, blurb, e.get("cost")),
+                "alt_url": e.get("website") or None,
             })
         page += 1
         seen_pages += 1
@@ -411,7 +558,7 @@ def from_parks_rss(src, today, horizon):
             "image": img.replace("http://", "https://") if img else None,
             "kind": text(cats, 60),
             "format": fmt_of(loc, blurb, cats, title),
-            "free": is_free(src, blurb, title, cats),
+            "free": is_free(src, cats, blurb, title),
         })
     return out
 
@@ -453,17 +600,203 @@ def from_ics(src, today, horizon):
             "image": None,
             "kind": src["name"],
             "format": fmt_of(loc, blurb, title),
-            "free": is_free(src, blurb, title),
+            "free": is_free(src, "", blurb, title),
         })
     return out
 
 
-ADAPTERS = {"tribe": from_tribe, "parks-rss": from_parks_rss, "ics": from_ics}
+def slug(s):
+    return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")[:40]
+
+
+def from_curated(src, today, horizon):
+    """Events found and opened by hand, from data/events_curated.json.
+
+    For hosts with no feed — a walk, a parade, a race, a night market — so
+    the featured row is not limited to the few nonprofits that happen to run
+    one calendar plugin. Each row says the day a person opened its page in a
+    browser (`checked`) and what that page showed. It stays until the event is
+    over, unless its page goes away first: verify() drops a row whose link
+    answers 404 or 410, so a cancelled event does not outlive its listing.
+    """
+    if not CURATED.exists():
+        return []
+    out = []
+    for c in json.loads(CURATED.read_text("utf-8"))["events"]:
+        out.append({
+            "title": c["title"], "start": c["start"], "end": c.get("end") or c["start"],
+            "all_day": bool(c.get("all_day")),
+            "venue": c.get("venue", ""), "borough": c.get("borough", ""),
+            "address": c.get("address", ""), "description": c.get("description", ""),
+            "url": c["url"], "image": c.get("image"), "fit": c.get("fit"),
+            "kind": c.get("kind") or c["org"], "format": c.get("format") or "In person",
+            "free": bool(c.get("free")), "need": c.get("need") or "other",
+            "source": c["org"], "source_key": slug(c["org"]), "source_url": c["site"],
+            "checked": c["checked"],
+        })
+    return out
+
+
+ADAPTERS = {"tribe": from_tribe, "parks-rss": from_parks_rss, "ics": from_ics,
+            "curated": from_curated}
+
+
+# ------------------------------------------------- is the link a real page?
+
+MONTHS = ["January", "February", "March", "April", "May", "June", "July",
+          "August", "September", "October", "November", "December"]
+
+CANCELLED = re.compile(r"(?i)\b(cancell?ed|postponed)\b")
+
+
+def page_words(url):
+    """What a reader of url would read: no head, no script, no style.
+
+    Raises on a redirect that leaves the host's own domain. A lapsed domain
+    gets bought and pointed somewhere else: americasparade.org, which a search
+    still gives for the Veterans Day Parade, lands on a gambling site today.
+    """
+    final = []
+    s = fetch(url, final)
+    if final and base(final[0]) != base(url):
+        raise ValueError(f"{url} now lands on {final[0]}")
+    s = re.sub(r"(?is)<(head|script|style|noscript|svg|template)\b.*?</\1>", " ", s)
+    return SPACE.sub(" ", _html.unescape(TAGS.sub(" ", s))).lower()
+
+
+def base(url):
+    """nyrr.org for www.nyrr.org; give.foodbanknyc.org is still the Food Bank."""
+    host = urllib.parse.urlsplit(url).hostname or ""
+    return ".".join(host.split(".")[-2:])
+
+
+def says_date(words, start):
+    """Does the page name the day? Any page that is about an event does.
+
+    The Food Bank's pantry pages answer 200 with a full site around them and
+    nothing in the middle — no date, no place. A status code cannot tell that
+    page from a real one; the date can.
+    """
+    d = parse_dt(start)
+    m = MONTHS[d.month - 1].lower()
+    forms = [f"{m} {d.day}", f"{m[:3]} {d.day}", f"{m[:3]}. {d.day}",
+             f"{d.day} {m}", f"{d.month}/{d.day}", f"{d.month:02d}/{d.day:02d}",
+             f"{d:%Y-%m-%d}"]
+    return any(re.search(rf"(?<!\w){re.escape(f)}(st|nd|rd|th)?(?!\w)", words)
+               for f in forms)
+
+
+def verify(e):
+    """Is the link a real page for this event?
+
+    A feed's row has to show its own date. A hand-checked row was already
+    opened in a browser — some hosts build the page in script, some turn a
+    robot away — so it only has to still be there.
+    """
+    try:
+        words = page_words(e["url"])
+    except urllib.error.HTTPError as x:
+        return bool(e.get("checked")) and x.code not in (404, 410)
+    except ValueError:
+        return False
+    except Exception:                                # noqa: BLE001
+        return bool(e.get("checked"))
+    return bool(e.get("checked")) or says_date(words, e["start"])
+
+
+def blank_pages(rows, n=3):
+    """True when a feed's event pages do not show their events.
+
+    Sampled: a feed's pages come out of one template, so three empty ones
+    mean the template is empty. Opening every page every morning would be
+    hundreds of requests to small nonprofits' servers.
+    """
+    seen = []
+    for r in list({r["url"]: r for r in rows}.values())[:n]:
+        try:
+            seen.append(says_date(page_words(r["url"]), r["start"]))
+        except Exception:                            # noqa: BLE001
+            continue
+    return bool(seen) and not any(seen)
+
+
+def carried(key):
+    """Yesterday's rows for a source that failed today.
+
+    NYC Parks has answered GitHub's servers with 405 every morning since at
+    least 27 Sep 2026, while answering a browser normally, and each failure
+    deleted every park event from the site. A row still in the future is
+    still true; it stays until the source answers again or the day passes.
+    """
+    try:
+        old = json.loads(OUT.read_text("utf-8"))["events"]
+    except (OSError, ValueError, KeyError):
+        return []
+    return [e for e in old if e.get("source_key") == key]
+
+
+# ------------------------------------------------------------------ photos
+
+def webp_size(path):
+    b = Path(path).read_bytes()[:30]
+    if b[12:16] == b"VP8X":
+        return (1 + int.from_bytes(b[24:27], "little"),
+                1 + int.from_bytes(b[27:30], "little"))
+    if b[12:16] == b"VP8L":
+        n = int.from_bytes(b[21:25], "little")
+        return (n & 0x3FFF) + 1, ((n >> 14) & 0x3FFF) + 1
+    return (int.from_bytes(b[26:28], "little") & 0x3FFF,
+            int.from_bytes(b[28:30], "little") & 0x3FFF)
+
+
+def photo(e, offline=False):
+    """The host's own picture for this event, copied here.
+
+    Shrunk to 640px wide (two pixels per pixel on the widest card) and
+    re-encoded by cwebp. Named after the picture's address, so it is fetched
+    once and every later run finds it on disk. When cwebp is missing or the
+    host refuses, the card keeps its painted panel; nothing else changes.
+    """
+    src = e.get("image")
+    if not src:
+        return
+    out = PHOTOS / (hashlib.sha1(src.encode()).hexdigest()[:16] + ".webp")
+    if not out.exists():
+        if offline or not shutil.which("cwebp"):
+            return
+        try:
+            raw = fetch_bytes(src)
+        except Exception:                            # noqa: BLE001
+            return
+        PHOTOS.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory() as d:
+            tmp = Path(d) / "in"
+            tmp.write_bytes(raw)
+            # ponytail: -resize also enlarges a picture narrower than 640px.
+            # Hosts' share images are 1200px and up; measure before adding a
+            # width probe.
+            r = subprocess.run(["cwebp", "-quiet", "-metadata", "none", "-q", "62",
+                                "-resize", "640", "0", str(tmp), "-o", str(out)],
+                               capture_output=True)
+        if r.returncode or not out.exists() or out.stat().st_size < 2000:
+            out.unlink(missing_ok=True)
+            return
+    e["photo"] = out.as_posix()
+    e["photo_w"], e["photo_h"] = webp_size(out)
+
+
+def prune(events):
+    """Delete pictures nothing uses any more, so assets/ does not only grow."""
+    used = {Path(e["photo"]).name for e in events if e.get("photo")}
+    for f in PHOTOS.glob("*.webp"):
+        if f.name not in used:
+            f.unlink()
 
 
 # --------------------------------------------------------------------- driver
 
 def collect(today, horizon):
+    now = datetime.now()
     got, report = [], []
     for src in SOURCES:
         try:
@@ -473,32 +806,63 @@ def collect(today, horizon):
             # One source having a bad day must not empty the page. The old
             # file stays on disk and yesterday's events are still better than
             # none — but the run says so, loudly, and --dry-run shows it.
-            rows, err = [], f"{type(e).__name__}: {e}"
+            rows, err = carried(src["key"]), f"{type(e).__name__}: {e}"
         kept = []
         for r in rows:
             d = parse_dt(r["start"])
             if not d or d.date() < today or d.date() > horizon:
                 continue
-            if not r["title"]:
+            # Over already. The morning run never sees this; a run in the
+            # evening listed that day's 8am farmers market as coming up.
+            if not r.get("all_day") and (parse_dt(r.get("end")) or d) < now:
                 continue
-            r["source"] = src["name"]
-            r["source_key"] = src["key"]
-            r["source_url"] = src["site"]
-            r["need"] = need_for(src, r["title"], r["kind"], r["description"])
+            # NAMI-NYC keeps a cancelled group on its calendar and says so
+            # only in the title.
+            if not r["title"] or CANCELLED.search(r["title"]):
+                continue
+            # A hand-checked row names its own host; a feed's rows are the feed's.
+            if not r.get("venue") and src.get("place"):
+                r["venue"], r["borough"] = src["place"]
+            r.setdefault("source", src["name"])
+            r.setdefault("source_key", src["key"])
+            r.setdefault("source_url", src["site"])
+            r["need"] = r.get("need") or (
+                need_for(src, r["title"], r["kind"], r["description"])
+                if src.get("file_by_words", True) else src["need"])
             kept.append(r)
         kept.sort(key=lambda r: r["start"])
-        per_day, spread = {}, []
+        per_day, per_org, spread = {}, {}, []
         for r in kept:
-            day = r["start"][:10]
-            if per_day.get(day, 0) >= PER_SOURCE_DAY:
+            k = (r["source_key"], r["start"][:10])
+            if per_day.get(k, 0) >= PER_SOURCE_DAY:
                 continue
-            per_day[day] = per_day.get(day, 0) + 1
+            if per_org.get(r["source_key"], 0) >= PER_SOURCE:
+                continue
+            per_day[k] = per_day.get(k, 0) + 1
+            per_org[r["source_key"]] = per_org.get(r["source_key"], 0) + 1
             spread.append(r)
-        kept = spread[:PER_SOURCE]
+        kept = spread
+        note = ""
+        if src["kind"] == "tribe" and not err and blank_pages(kept):
+            # The pages are empty, but the feed is not. A row with its own
+            # event website goes there; a row with a place goes to the host's
+            # page about that kind of event; a row with neither has nothing
+            # to tell anyone and is dropped.
+            keep = []
+            for r in kept:
+                if r.get("alt_url"):
+                    r["url"] = r["alt_url"]
+                elif src.get("fallback") and (r["venue"] or r["address"]):
+                    r["url"] = src["fallback"]
+                else:
+                    continue
+                keep.append(r)
+            note = f"  (pages are empty: {len(keep)} relinked, {len(kept) - len(keep)} dropped)"
+            kept = keep
         got += kept
         newest = max((r["start"][:10] for r in kept), default="—")
         report.append({"key": src["key"], "name": src["name"], "n": len(kept),
-                       "newest": newest, "error": err})
+                       "newest": newest, "error": err, "note": note})
     return got, report
 
 
@@ -514,6 +878,41 @@ def dedupe(events):
         seen[k] = True
         out.append(e)
     return out
+
+
+def pick(events, offline=False):
+    """The featured row: one event per organization, each link checked.
+
+    One per organization because the row is how a reader finds out who is out
+    there, and six cards of the same legal van said one thing six times. Each
+    host's best three are checked at once, and the best that passes gets the
+    card, so a host with an empty page loses its card to its own next event,
+    or to the next host, never to a dead link.
+    """
+    per, cands = {}, []
+    for e in sorted(events, key=rank):
+        k = e["source_key"]
+        if per.get(k, 0) < 3:
+            per[k] = per.get(k, 0) + 1
+            cands.append(e)
+    if offline:
+        good = [True] * len(cands)
+    else:
+        with concurrent.futures.ThreadPoolExecutor(12) as ex:
+            good = list(ex.map(verify, cands))
+    out, orgs, gists = [], set(), []
+    for e, g in zip(cands, good):
+        if not g or e["source_key"] in orgs:
+            continue
+        # Two hosts, one event: the Fortune Society lists its marathon team
+        # as "The 2026 TCS New York City Marathon". The row names it once.
+        day, gist = e["start"][:10], re.sub(r"\d+|\bthe\b|\W+", "", e["title"].lower())
+        if any(d == day and (gist in o or o in gist) for d, o in gists):
+            continue
+        orgs.add(e["source_key"])
+        gists.append((day, gist))
+        out.append(e)
+    return out[:FEATURED]
 
 
 def rank(e):
@@ -570,6 +969,7 @@ def selfcheck():
     assert need_for(legal, "Van at Senator Comrie's office", "Mobile Legal "
                     "Help Center", "") == "legal"
     assert need_for(parks, "Mobile Pantry", "Food", "") == "food"
+    assert need_for(parks, "Mental Health First Aid", "Wellness", "") == "crisis"
     # the fallback is the source's own, and for parks that is deliberately
     # not one of the directory's needs
     assert need_for(parks, "Kayaking", "Waterfront", "") == "other"
@@ -623,6 +1023,36 @@ def selfcheck():
     assert rows[0]["borough"] == "Brooklyn"          # the escaped comma parsed
     assert rows[0]["url"] == "https://lu.ma/x"
 
+    # --- a link has to show its event. The Food Bank's pantry pages answer
+    # 200 and are empty; only the date tells them from a real page.
+    assert says_date("october 15 @ 10:00 am - 3:00 pm", "2026-10-15T10:00:00")
+    assert says_date("tuesday, october 13th 2026 vip", "2026-10-13T17:30:00")
+    assert says_date("mobile pantry 10/13/2026", "2026-10-13T11:00:00")
+    assert not says_date("october 15", "2026-10-01T10:00:00"), "Oct 1 is not Oct 15"
+    assert not says_date("10/13", "2026-10-01T10:00:00")
+    assert not says_date("donate now sign up for updates", "2026-10-13T11:00:00")
+    assert base("https://give.foodbanknyc.org/e/1") == base("https://www.foodbanknyc.org/")
+    assert base("https://njtanksweeps.com/") != base("https://americasparade.org/")
+
+    # --- free: a price beats the source's word; a mixed feed trusts by kind
+    fb = {"trust_free": r"(?i)pantry"}
+    assert is_free(fb, "Mobile Pantry") and not is_free(fb, "Eat For Good")
+    assert not is_free({"trust_free": True}, "Race", "Registration $35")
+    assert CANCELLED.search("Living with Thoughts of Suicide CANCELLED")
+    assert not CANCELLED.search("Cancellation policy")
+
+    # --- the featured row: one card per organization
+    def fe(i, k, d):
+        return {"id": i, "source_key": k, "start": d + "T10:00:00",
+                "need": "other", "title": i}
+    got = pick([fe("1", "a", "2026-10-12"), fe("2", "a", "2026-10-13"),
+                fe("3", "b", "2026-10-14")], offline=True)
+    assert [e["id"] for e in got] == ["1", "3"], got
+    got = pick([fe("TCS New York City Marathon", "a", "2026-11-01"),
+                fe("The 2026 TCS New York City Marathon", "b", "2026-11-01")],
+               offline=True)
+    assert len(got) == 1, "one event listed by two hosts gets one card"
+
     print("selfcheck ok")
 
 
@@ -656,40 +1086,54 @@ def main():
 
     events = dedupe(events)
     events.sort(key=lambda e: (e["start"], e["title"]))
+    for e in events:                 # recomputed below, never carried over
+        for k in ("photo", "photo_w", "photo_h"):
+            e.pop(k, None)
     for i, e in enumerate(events):
         e["id"] = f'{e["source_key"]}-{e["start"][:10]}-{i:04d}'
 
-    # One card per title. These feeds are full of weekly series, and the six
-    # featured slots filled up with the same tai chi class on six Sundays.
-    # One card per title, and at most two per category. Ranking alone filled
-    # all six slots with the same legal van parked outside six different
-    # offices — correctly scored, and a dull row that hides the other 135
-    # events behind it.
-    featured, titles, per_need = [], set(), {}
-    for e in sorted(events, key=rank):
-        t = re.sub(r"\W+", "", e["title"].lower())[:40]
-        if t in titles or per_need.get(e["need"], 0) >= 2:
-            continue
-        titles.add(t)
-        per_need[e["need"]] = per_need.get(e["need"], 0) + 1
-        featured.append(e["id"])
-        if len(featured) == 6:
-            break
+    picks = pick(events, a.offline)
+    chosen = {id(e) for e in picks}
+    for e in events:
+        if id(e) in chosen or e.get("checked"):
+            photo(e, offline=a.offline or a.dry_run)
+    # By date, so the row reads as what is coming up. The wide first card is
+    # the soonest with a picture that a person checked: it is the one with a
+    # description written here, and its blurb is printed. A feed's own blurb
+    # put "For tickets and more information, click here ." on the lead.
+    picks.sort(key=lambda e: e["start"])
+    lead = (next((e for e in picks if e.get("photo") and e.get("checked")), None)
+            or next((e for e in picks if e.get("photo")), None))
+    if lead:
+        picks.remove(lead)
+        picks.insert(0, lead)
+    # Pictures before painted panels, each group by date: a phone shows only
+    # the first four, and those are the cards that show the event is real.
+    picks[1:] = sorted(picks[1:], key=lambda e: (not e.get("photo"), e["start"]))
+    featured = [e["id"] for e in picks]
+
+    sources = [{"key": s["key"], "name": s["name"], "site": s["site"],
+                "note": s["note"]} for s in SOURCES if s["kind"] != "curated"]
+    for e in events:
+        if e.get("checked") and all(x["key"] != e["source_key"] for x in sources):
+            sources.append({"key": e["source_key"], "name": e["source"],
+                            "site": e["source_url"],
+                            "note": "Found on its own page and checked by hand."})
 
     doc = {
         "generated": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
         "horizon": horizon.isoformat(),
-        "sources": [{"key": s["key"], "name": s["name"], "site": s["site"],
-                     "note": s["note"]} for s in SOURCES],
+        "sources": sources,
         "featured": featured,
         "events": events,
     }
 
     for r in report:
         flag = "  !! " + r["error"] if r["error"] else ""
-        print(f'  {r["n"]:5d}  {r["name"]:38s} through {r["newest"]}{flag}',
+        print(f'  {r["n"]:5d}  {r["name"]:38s} through {r["newest"]}{flag}{r["note"]}',
               file=sys.stderr)
-    print(f"  {len(events):5d}  kept after dedupe, {len(featured)} featured",
+    print(f"  {len(events):5d}  kept after dedupe; {len(featured)} featured, "
+          f"{sum(1 for e in picks if e.get('photo'))} with a photo",
           file=sys.stderr)
 
     if a.dry_run:
