@@ -921,7 +921,9 @@ that had nothing to do with page length.
   is 1189px of content in a 354px box and the next card peeks by 19px — 9px at
   320px. It charged 647px for that. Stacked, two cards show in the same room,
   and the block moved below the directory. `#needs` went from 3.07 screens to
-  2.24.
+  2.24. (October 2026: once the cards carried each host's own photo, the
+  phone got four compact rows with a 104px thumbnail instead; see *Featured
+  events* below.)
 
 - **The bar was still fixed on `index.html`** — the one page most first-time
   readers land on, holding 36% of a 320px viewport for the whole scroll, while
@@ -1234,6 +1236,50 @@ no scroll-driven anything.
 - **A resource whose HTTPS chain is broken is dropped.** A current desktop
   browser papers over a missing intermediate certificate; a six-year-old
   Android shows a full-screen security warning instead of the page.
+
+### Featured events and the events page
+
+Two files own it: `fetch_events.py` talks to the network and writes
+`data/events.json`; `events.py` renders and touches nothing. The daily job
+(`.github/workflows/events.yml`) fetches, rebuilds and commits only if
+`check.py` passes, with nobody reading the diff — so every rule below is
+about what that job must never publish.
+
+- **One card per organization**, `FEATURED` cards, by name (a host can come
+  by a feed and by hand). Ranked soonest first, plus: a photo, a free event,
+  a core need (food, legal, health, housing, money, mental health, work), and
+  a hand-checked row. A public meeting counts for less than legal help, and
+  `NEED_CAP` holds civic to two cards — by date alone the row became this
+  week's feed events and lost the walk, the race, the market and the
+  meeting it was asked to carry.
+- **A link has to show its event.** A status code cannot tell an empty page
+  from a real one: the Food Bank's event pages answer 200 with nothing in
+  the middle. A feed's link must name its own day in the page's words
+  (`says_date`); `blank_pages()` samples each feed; a redirect off the
+  host's domain fails (a lapsed parade domain now serves a casino).
+- **The picture is the host's own, served from here.** Feed image, else a
+  flyer in the event's own description (shown whole, `fit=contain`), else
+  the organization's share image, else the painted panel. Downloaded at
+  fetch time into `assets/events/` and re-encoded; hotlinking would hand
+  every reader's address to every host, and `privacy.html` names one third
+  party. `check_the_featured_photos_are_ours` holds it.
+- **"Hosted by" only when it is true.** A park's or a neighborhood's
+  calendar lists other groups' events, and those cards say "Listed by".
+  Community boards keep only their own meetings; members-only, private and
+  sold-out listings are dropped.
+- **Counted, not claimed.** The page says how many events are free rather
+  than calling them all free, and offers *Free only*; a meeting with a room
+  and a stream is "In person or online" and answers both filters.
+- **Hand-checked rows** (`data/events_curated.json`) are for hosts with no
+  feed. Each records the day a person opened its page and what it said
+  (`checked`, `seen`); `--recheck` reopens them all. The daily job drops a
+  row only when its page is gone, so run it before trusting the file.
+- **The job cannot stall on its own guards.** A failing feed keeps
+  yesterday's future rows (`carried()`); feeds are capped (`PER_SOURCE`) and
+  so is the page (`MAX_EVENTS`); a heavy photo is re-encoded or dropped;
+  times are New York's, because the runners are on UTC; and the
+  forbidden-phrase guard reads Waypoint's copy, not other organizations'
+  event titles.
 
 ### Print
 

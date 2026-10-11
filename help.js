@@ -239,14 +239,19 @@
     };
 
     var apply = function () {
-      var need = chosen("need"), boro = chosen("boro"), fmt = chosen("fmt");
+      var need = chosen("need"), boro = chosen("boro"), fmt = chosen("fmt"),
+          cost = chosen("cost");
       var shown = 0;
 
       Array.prototype.forEach.call(evs, function (el) {
         var ok =
           (!need.length || need.indexOf(el.getAttribute("data-need")) > -1) &&
           (!boro.length || boro.indexOf(el.getAttribute("data-boro")) > -1) &&
-          (!fmt.length || fmt.indexOf(el.getAttribute("data-fmt")) > -1);
+          /* a hybrid event carries "In person|Virtual" and matches either */
+          (!fmt.length || fmt.some(function (f) {
+            return (el.getAttribute("data-fmt") || "").split("|").indexOf(f) > -1;
+          })) &&
+          (!cost.length || cost.indexOf(el.getAttribute("data-cost")) > -1);
         el.hidden = !ok;
         if (ok) shown++;
       });
@@ -265,7 +270,7 @@
       if (none) { none.hidden = shown > 0; }
       if (calReset) { calReset.hidden = !picked; }
       if (state) {
-        var filtered = need.length || boro.length || fmt.length || picked;
+        var filtered = need.length || boro.length || fmt.length || cost.length || picked;
         state.textContent = filtered
           ? shown + (shown === 1 ? " event" : " events") + " shown"
           : "";

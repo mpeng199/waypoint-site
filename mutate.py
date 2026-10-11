@@ -26,6 +26,16 @@ FILES = ["data/resources.csv","help.css","styles.css","tokens.css","help.js",
 BAK = tempfile.mkdtemp(prefix="mutate-")
 
 MUTATIONS = [
+    # October 2026: the featured row's promises — host photos served from
+    # here, a host named on every card — and the events filters' status line.
+    ("a featured card hotlinks its host's photo", "events.py",
+     'src="{esc(e["photo"])}"', 'src="https://example.org/{esc(e["photo"])}"'),
+    ("a featured card stops naming its host", "events.py",
+     '<p class="fev__by">{by} ', '<p class="fev__note">{by} '),
+    ("the Free only filter hides events without saying how many are left", "help.js",
+     "|| cost.length || picked", "|| picked"),
+    ("a hand-checked event loses the day it was checked", "data/events_curated.json",
+     '"checked": "2026-10-10"', '"checked": ""'),
  ("a phone number loses a digit",
   "data/resources.csv", "800-621-4673", "800-621-467"),
  ("the honesty statement is reworded",
@@ -308,12 +318,21 @@ MUTATIONS = [
 
 
 
+def targets():
+    """Every file a mutation touches, as well as the fixed list.
+
+    FILES was the only list, so a mutation aimed at a file not on it was
+    applied and never put back: the first one at data/events_curated.json
+    blanked all 27 "checked" dates and left them blank (October 2026).
+    """
+    return sorted(set(FILES) | {path for _, path, _, _ in MUTATIONS})
+
 def snapshot():
-    for f in FILES:
+    for f in targets():
         shutil.copy(f, os.path.join(BAK, f.replace("/","_")))
 
 def restore():
-    for f in FILES:
+    for f in targets():
         shutil.copy(os.path.join(BAK, f.replace("/","_")), f)
 
 def run(cmd):

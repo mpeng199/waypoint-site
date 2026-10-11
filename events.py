@@ -4,19 +4,17 @@ Two renderers and one data file. `fetch_events.py` writes data/events.json
 from other people's calendars; nothing here touches the network, so the build
 and every guard over it stay offline and repeatable.
 
-WHY THERE ARE NO PHOTOGRAPHS ON THESE CARDS
+WHERE THE PHOTOGRAPHS COME FROM
 
-The feeds carry image URLs — about a third of the NYC Parks events have one —
-and hotlinking them would have been one attribute. privacy.html names exactly
-one third party, Google Fonts, and explains that the reader's browser hands it
-an IP address. Loading art from nycgovparks.org would have added a second
-without saying so, on the page most likely to be opened by somebody who was
-promised the site asks nothing of them. The card art is painted here instead,
-out of the same palette as the rest of the site.
-
-To put the photographs back, the honest way is to download them at fetch time
-into assets/ and serve them from this origin. That is an image pipeline and a
-licensing question, not an attribute.
+A featured card shows the picture its host put on the event's own page — the
+photo or flyer the organization chose for it — so a reader sees the same
+image they will find when they click through. fetch_events.py downloads it at
+fetch time, shrinks it to 640px and keeps it in assets/events/, and it is
+served from this origin. Hotlinking would have been one attribute and a broken
+promise: privacy.html names exactly one third party, Google Fonts, and loading
+art from two dozen hosts would have handed each of them every reader's IP
+address without saying so. A card whose host offers no picture keeps the
+painted panel below.
 """
 
 import json
@@ -25,9 +23,9 @@ from pathlib import Path
 
 DATA = Path("data/events.json")
 
-# How many events the front page's featured row shows. Six is what
-# fetch_events.py ranks; this is the render side of the same number.
-FEATURED = 6
+# How many events the front page's featured row shows, one per organization.
+# fetch_events.FEATURED picks them; this is the render side of the same number.
+FEATURED = 24
 
 
 def load():
@@ -119,10 +117,28 @@ def fmt_icon(e):
     return SCREEN if e.get("format") == "Virtual" else PERSON
 
 
+# "Hybrid" is the data's word; a reader is told what it means.
+FORMAT_LABEL = {"Hybrid": "In person or online"}
+
+
+def fmt_label(e):
+    f = e.get("format") or "In person"
+    return FORMAT_LABEL.get(f, f)
+
+
+def fmt_tokens(e):
+    """What the How filter matches: a hybrid event is both."""
+    f = e.get("format") or ""
+    return "In person|Virtual" if f == "Hybrid" else f
+
+
 # Buckets that are not one of the directory's needs. An event is filed here
 # when it is a real, free, public thing that simply is not what this site
 # exists to help with — a park concert is not a category of help.
-EXTRA = {"other": "Community & recreation"}
+EXTRA = {"other": "Community & recreation",
+         # Voting is not help with a problem and not recreation either, and
+         # calling Election Day "Community & recreation" would be a small lie.
+         "civic": "Voting & civic life"}
 
 
 def trim(s, n):
@@ -154,13 +170,21 @@ def need_icon(need_key, build_help):
     return build_help.icon("compass")
 
 
-def card_art(e, build_help):
-    """The panel where a photograph would be.
+def card_art(e, build_help, lead=False):
+    """The host's own picture, or a painted panel where there is none.
 
-    Tinted per category out of tokens.css so a row of cards reads as a set
-    rather than a gallery, with the category's own glyph large in the middle.
+    The picture is decorative: the card's heading already says what it shows,
+    and a flyer's words are the same words the card prints. The panel is
+    tinted per category out of tokens.css, with the category's glyph in the
+    middle, so a row with gaps in it still reads as one set.
     """
     esc = build_help.esc
+    if e.get("photo"):
+        cls = "fev__img fev__img--whole" if e.get("fit") == "contain" else "fev__img"
+        lazy = "" if lead else ' loading="lazy"'
+        return (f'<img class="{cls}" src="{esc(e["photo"])}" alt="" '
+                f'width="{e["photo_w"]}" height="{e["photo_h"]}"{lazy} '
+                f'decoding="async" />')
     return (f'<span class="fev__art" data-need="{esc(e["need"])}" aria-hidden="true">'
             f'{need_icon(e["need"], build_help)}</span>')
 
@@ -168,7 +192,9 @@ def card_art(e, build_help):
 def pills(e, build_help):
     esc = build_help.esc
     out = [f'<span class="bdg bdg--need">{esc(need_label(e["need"], build_help))}</span>',
-           f'<span class="bdg bdg--fmt">{fmt_icon(e)}{esc(e.get("format") or "In person")}</span>']
+           f'<span class="bdg bdg--fmt">{fmt_icon(e)}{esc(fmt_label(e))}</span>']
+    if e.get("free"):
+        out.append('<span class="bdg bdg--free">Free</span>')
     return '<span class="fev__pills">' + "".join(out) + "</span>"
 
 
@@ -183,12 +209,18 @@ def card(e, build_help, lead=False):
     esc = build_help.esc
     cls = "fev__c fev__c--lead" if lead else "fev__c"
     a = [f'<li class="{cls}">', '  <article class="fev__card">']
-    a.append(f'    <span class="fev__pic">{card_art(e, build_help)}{pills(e, build_help)}</span>')
+    a.append(f'    <span class="fev__pic">{card_art(e, build_help, lead)}{pills(e, build_help)}</span>')
     a.append('    <span class="fev__body">')
     if lead:
         a.append('      <span class="bdg bdg--feat">Featured</span>')
     a.append(f'      <h3 class="fev__h"><a href="{esc(e["url"])}" target="_blank" '
              f'rel="noopener">{esc(e["title"])}</a></h3>')
+    # Who is putting it on. A card with no host on it is an advert; one that
+    # names the organization is a listing the reader can check. "Listed by"
+    # where the source is a calendar of other groups' events, because
+    # "Hosted by NYC Parks" over a road runners' club run is not true.
+    by = "Listed by" if e.get("listed") else "Hosted by"
+    a.append(f'      <p class="fev__by">{by} {esc(e["source"])}</p>')
     if lead and e.get("description"):
         a.append(f'      <p class="fev__b">{esc(trim(e["description"], 150))}</p>')
     a.append(f'      <p class="fev__meta"><span class="fev__m">{CAL}{esc(when(e))}</span>'
@@ -214,12 +246,16 @@ def featured_frag(doc, build_help):
         return []
 
     n = len(doc.get("events", []))
+    # By name, the way fetch_events.pick() counts them: one organization can
+    # reach the data by a feed and by hand under two keys.
+    orgs = len({e["source"].lower() for e in picks})
     a = ['<section class="fev" id="featured" aria-labelledby="fev-h">',
          '  <div class="fev__top">',
          '    <div>',
          '      <h2 id="fev-h">Featured events</h2>',
-         '      <p class="fev__say">Free things happening around the city &mdash; '
-         'food, legal help, and places to take the kids.</p>',
+         f'      <p class="fev__say">Coming up from {orgs} organizations around the '
+         'city &mdash; food, legal help, support groups, walks and fairs. Each '
+         'card opens the event&rsquo;s own page.</p>',
          '    </div>',
          # Arrows are an enhancement: the track scrolls and swipes without
          # them, so they start hidden and help.js shows them.
@@ -356,7 +392,8 @@ def day_block(key, evs, build_help):
         a += [
             f'    <li class="ev" data-need="{esc(e["need"])}" '
             f'data-boro="{esc(e.get("borough") or "")}" '
-            f'data-fmt="{esc(e.get("format") or "")}">',
+            f'data-fmt="{esc(fmt_tokens(e))}" '
+            f'data-cost="{"free" if e.get("free") else "paid"}">',
             f'      <span class="ev__t">{esc(t)}</span>',
             '      <span class="ev__main">',
             f'        <h4 class="ev__h"><a href="{esc(e["url"])}" target="_blank" '
@@ -371,7 +408,7 @@ def day_block(key, evs, build_help):
         a.append('      <span class="ev__tags">'
                  f'<span class="bdg bdg--need">{esc(need_label(e["need"], build_help))}</span>'
                  f'<span class="bdg bdg--fmt">{fmt_icon(e)}'
-                 f'{esc(e.get("format") or "In person")}</span>'
+                 f'{esc(fmt_label(e))}</span>'
                  + (f'<span class="bdg bdg--free">Free</span>' if e.get("free") else "")
                  + '</span>')
         a.append('    </li>')
@@ -400,10 +437,11 @@ def render_page(doc, build_help, rows):
     p = []
     A = p.append
     p += build_help.head(
-        "Free events happening in New York City — Waypoint",
-        "A day-by-day calendar of free events in New York City: mobile food "
-        "pantries, free legal help, and things to do in every borough. Updated "
-        "every morning from the organizations that run them.",
+        "Events happening in New York City — Waypoint",
+        "A day-by-day calendar of events in New York City, many of them free: "
+        "mobile food pantries, free legal help, support groups, walks and "
+        "things to do in every borough. Updated every morning from the "
+        "organizations that run them.",
         "#days", "Skip to the events",
         build_help.alternates("events.html"))
     p += build_help.header_frag()
@@ -413,11 +451,14 @@ def render_page(doc, build_help, rows):
     A('<section class="mast mast--ev">')
     A('  <div class="mast__bg" aria-hidden="true"></div>')
     A('  <span class="eyebrow mast__eye">Waypoint &middot; New York City</span>')
-    A('  <h1>Free events, <em>day by day.</em></h1>')
+    A('  <h1>Events in the city, <em>day by day.</em></h1>')
     if n:
-        A(f'  <p class="mast__say">There are <b>{n} free events</b> on this page, '
-          'from mobile food pantries and free legal help to story hours and '
-          'fitness classes in the parks. Pick a day below.</p>')
+        # Counted, not claimed. Fundraising walks and races are on this page
+        # too, and "free events" over all of them would be untrue.
+        free = sum(1 for e in events if e.get("free"))
+        A(f'  <p class="mast__say">There are <b>{n} events</b> on this page, '
+          f'<b>{free} of them free</b>: mobile food pantries and free legal help, '
+          'support groups, walks, fairs and story hours. Pick a day below.</p>')
     else:
         A('  <p class="mast__say">The events list has not been collected yet. '
           'The directory is still here, and every phone number on it works.</p>')
@@ -438,8 +479,8 @@ def render_page(doc, build_help, rows):
     A('</div>')
 
     if n:
-        A(f'<p class="ev__fresh">Collected from '
-          f'{len(doc.get("sources", []))} public calendars, last updated '
+        A(f'<p class="ev__fresh">Collected from the calendars and pages of '
+          f'{len({e["source"].lower() for e in events})} organizations, last updated '
           f'{build_help.esc(freshness(doc))}. Times and places come from the '
           f'organizations themselves &mdash; call ahead if you are going far.</p>')
 
@@ -489,6 +530,13 @@ def render_page(doc, build_help, rows):
             if any(e.get("format") == f for e in events):
                 opt("fmt", f, f)
         A('    </fieldset>')
+        # The page carries fundraising walks and ticketed shows beside free
+        # pantries and legal vans, so "only what costs nothing" is a filter
+        # somebody here needs. "paid" means only "not known to be free".
+        if any(e.get("free") for e in events) and not all(e.get("free") for e in events):
+            A('    <fieldset class="evf__set"><legend>Cost</legend>')
+            opt("cost", "free", "Free only")
+            A('    </fieldset>')
         A('  </div>')
         A('  <p class="evf__state" role="status"></p>')
         A('</section>')
@@ -580,9 +628,18 @@ def render_page(doc, build_help, rows):
         A('<section class="src" aria-labelledby="src-h">')
         A('  <h2 id="src-h" class="src__h">Where these come from</h2>')
         A('  <ul class="src__l">')
-        for s in doc["sources"]:
-            A(f'    <li><a href="{esc(s["site"])}" target="_blank" rel="noopener">'
-              f'{esc(s["name"])}</a> &mdash; {esc(s["note"])}</li>')
+        # The hosts with no feed share one line: thirteen copies of "checked
+        # by hand" read as a form letter, and the names are the point.
+        by_hand = [x for x in doc["sources"] if x.get("by_hand")]
+        for x in doc["sources"]:
+            if not x.get("by_hand"):
+                A(f'    <li><a href="{esc(x["site"])}" target="_blank" rel="noopener">'
+                  f'{esc(x["name"])}</a> &mdash; {esc(x["note"])}</li>')
+        if by_hand:
+            names = ", ".join(f'<a href="{esc(x["site"])}" target="_blank" '
+                              f'rel="noopener">{esc(x["name"])}</a>' for x in by_hand)
+            A(f'    <li>Found on each host&rsquo;s own page and checked by hand: '
+              f'{names}.</li>')
         A('  </ul>')
         A('</section>')
 
