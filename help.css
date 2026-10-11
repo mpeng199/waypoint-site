@@ -809,6 +809,9 @@ html.hasjs .sitehead:not(.stuck){ --head-bg:transparent; --head-line:transparent
 /* Outside .find on purpose: the search block ships hidden for a reader with no
    JavaScript, and the page this points at is static HTML with a form on it. */
 .find__add{ margin:10px 2px 0; font-size:.9rem; color:var(--ink-3); }
+/* 17px tall in a .9rem line, under the 24px a finger needs (audit_in_browser.js,
+   October 2026). The padding makes the target without moving the sentence. */
+.find__add a{ display:inline-block; padding:4px 0; }
 .grp__why{ margin:-6px 0 14px; font-size:.9rem; color:var(--ink-3); max-width:62ch; }
 
 .grp{ margin-bottom:clamp(38px,6vw,64px); scroll-margin-top:calc(var(--head-h) + 14px); }
