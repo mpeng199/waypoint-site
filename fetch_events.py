@@ -1299,10 +1299,21 @@ def dedupe(events):
 
 
 def cap(events, n=MAX_EVENTS):
-    """The soonest n, keeping every hand-checked row: there are few, and each
-    is a host with no feed that would otherwise vanish from the page."""
-    keep = [e for e in events if e.get("checked")]
-    rest = [e for e in events if not e.get("checked")][:max(0, n - len(keep))]
+    """At most n events: every hand-checked row, every organization's next
+    two, then the soonest of the rest.
+
+    Soonest-first alone dropped an organization whose events all fell after
+    the cut, and the page exists to show how many there are.
+    """
+    keep, per = [], {}
+    for e in events:                                   # already by date
+        k = e.get("source", "").lower()
+        if e.get("checked") or per.get(k, 0) < 2:
+            keep.append(e)
+            if not e.get("checked"):
+                per[k] = per.get(k, 0) + 1
+    kept = {id(e) for e in keep}
+    rest = [e for e in events if id(e) not in kept][:max(0, n - len(keep))]
     return sorted(keep + rest, key=lambda e: (e["start"], e["title"]))
 
 
@@ -1572,10 +1583,13 @@ def selfcheck():
     assert flyer_in("") is None
 
     # --- the page cap keeps the soonest, and every hand-checked row
-    many = [{"start": f"2026-10-{d:02d}T10:00:00", "title": str(d)} for d in range(11, 31)]
-    many.append({"start": "2026-12-31T10:00:00", "title": "late, by hand", "checked": "2026-10-10"})
-    kept = cap(many, 5)
-    assert [e["title"] for e in kept] == ["11", "12", "13", "14", "late, by hand"], kept
+    many = [{"start": f"2026-10-{d:02d}T10:00:00", "title": str(d), "source": "Busy"}
+            for d in range(11, 31)]
+    many.append({"start": "2026-12-20T10:00:00", "title": "late feed", "source": "Quiet"})
+    many.append({"start": "2026-12-31T10:00:00", "title": "late, by hand", "checked": "2026-10-10",
+                 "source": "Hand"})
+    kept = [e["title"] for e in cap(many, 5)]
+    assert kept == ["11", "12", "13", "late feed", "late, by hand"], kept
 
     print("selfcheck ok")
 
