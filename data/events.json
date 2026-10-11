@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-11T02:30:46",
+ "generated": "2026-10-11T02:31:54",
  "horizon": "2027-02-08",
  "sources": [
   {
@@ -414,8 +414,8 @@
   "bryant-park-2026-10-28-0382",
   "village-halloween-parade-2026-10-31-0430",
   "new-york-road-runners-2026-11-01-0433",
-  "jobs-nyc-2026-10-20-0238",
-  "bhakti-center-2026-11-08-0480"
+  "bhakti-center-2026-11-08-0480",
+  "jobs-nyc-2026-10-20-0238"
  ],
  "events": [
   {
@@ -11135,7 +11135,10 @@
    "source_url": "https://bhakticenter.org/",
    "checked": "2026-10-11",
    "id": "bhakti-center-2026-11-08-0480",
-   "verified": true
+   "verified": true,
+   "photo": "assets/events/cd8078e3b913ad53.webp",
+   "photo_w": 640,
+   "photo_h": 735
   },
   {
    "title": "Compost Build Community Volunteer Days",
