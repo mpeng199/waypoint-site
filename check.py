@@ -7309,6 +7309,60 @@ def check_find_help_opens_a_menu():
 
 
 
+def check_the_featured_photos_are_ours():
+    """Every picture on a featured card is a file here, and every card a host.
+
+    The photographs are the hosts' own, copied by fetch_events.py at fetch
+    time. Hotlinking one would hand every reader's IP address to that host,
+    and privacy.html promises exactly one third party; so a featured <img>
+    must point into assets/events, the file must exist, and it must be small
+    enough for the connection these pages are written for. One card per
+    organization is the rule the row exists for, so a host named twice is a
+    regression in the picker, not a matter of taste.
+    """
+    src = read("help.html")
+    m = re.search(r'<section class="fev".*?</section>', src, re.S)
+    if not m:
+        ok("featured: no featured row on help.html, so nothing to check")
+        return
+    row = m.group(0)
+    imgs = re.findall(r"<img\b[^>]*>", row)
+    total = 0
+    for tag in imgs:
+        at = dict(re.findall(r'([a-z-]+)="([^"]*)"', tag))
+        name = at.get("src", "")
+        if not name.startswith("assets/events/") or "//" in name:
+            bad(f"featured: a card's picture is not served from here: {name[:70]}")
+            continue
+        f = ROOT / name
+        if not f.is_file():
+            bad(f"featured: {name} is on a card and not on disk")
+            continue
+        kb = f.stat().st_size / 1024
+        total += kb
+        if kb > 120:
+            bad(f"featured: {name} is {kb:.0f}KB, over the 120KB a card photo gets")
+        if "alt" not in at or not at.get("width") or not at.get("height"):
+            bad(f"featured: {name} lacks alt, width or height; the row jumps as it loads")
+    if imgs:
+        ok(f"featured: {len(imgs)} card photos, all served from assets/events, "
+           f"{total:.0f}KB together")
+    hosts = re.findall(r'<p class="fev__by">Hosted by ([^<]+)</p>', row)
+    cards = row.count('<article class="fev__card">')
+    dup = sorted({h for h in hosts if hosts.count(h) > 1})
+    if len(hosts) != cards:
+        bad(f"featured: {cards} cards and {len(hosts)} hosts named; every card says who runs it")
+    elif dup:
+        bad(f"featured: {', '.join(dup)} has more than one card; the row is one per organization")
+    else:
+        ok(f"featured: {cards} cards from {len(set(hosts))} different organizations")
+    links = re.findall(r'<h3 class="fev__h"><a href="([^"]+)"', row)
+    if all(u.startswith("https://") for u in links):
+        ok("featured: every card links over https")
+    else:
+        bad("featured: a card links over plain http")
+
+
 def main():
     for fn in [check_pages_exist, check_links, check_cross_page_anchors, check_stage_layers,
                check_honesty_statement, check_forbidden, check_no_invented_numbers,
@@ -7379,7 +7433,7 @@ def main():
                check_the_hero_ground_has_no_edge,
                check_the_far_side_of_the_door_is_dim,
                check_the_entrance_stays_off_the_phone,
-               check_a_feed_cannot_break_the_cards,
+               check_a_feed_cannot_break_the_cards, check_the_featured_photos_are_ours,
                check_keyframes_stay_on_the_compositor,
                check_the_rail_says_where_it_goes,
                check_long_motion_has_a_reason,

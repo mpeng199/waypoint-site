@@ -27,6 +27,22 @@ The city's libraries are the biggest free-programming provider in New York and
 the omission is a real hole. It needs a browser to fill, which belongs in
 check_links_live.py's --browser-list pass, not here.
 
+HOSTS WITH NO FEED
+
+A walk, a parade, a race or a night market has a page and no calendar feed.
+Those go in data/events_curated.json, one row per event, after a person has
+opened the page in a browser and read the date, the place and whether it is
+free off the page itself. Each row records the day it was checked and what
+the page said, and is carried until the day passes.
+
+EVERY LINK HAS TO LEAD SOMEWHERE
+
+A status code is not enough. The Food Bank's event pages answer 200 with a
+complete site around an empty middle; a lapsed domain answers 200 from
+whoever bought it. So a feed's link must show its own date in the words of
+the page (says_date), and a redirect off the host's domain fails (base). The
+featured row only takes links that pass.
+
 ADDING A SOURCE
 
 Append to SOURCES. A WordPress site running The Events Calendar plugin —
