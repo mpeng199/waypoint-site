@@ -119,8 +119,10 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
 # may carry a materials fee, so it is not claimed to be free unless it says so.
 # What a community board itself holds, as against what it lists (see the
 # boards below).
-# Not "town hall": the one that matched was a senator's, listed by a board.
-MEETINGS = r"(?i)\b(meeting|hearing|committee)\b"
+# A board's own sessions. Not "town hall" (a senator's, listed by a board),
+# not "public hearing" (Brooklyn 6 lists the Borough President's), and not a
+# bare "meeting" (it lists the Park Slope Food Coop's members' meeting).
+MEETINGS = r"(?i)\b(committee|full board|board meeting|monthly meeting)\b"
 
 SOURCES = [
     {
@@ -182,6 +184,7 @@ SOURCES = [
     },
     {
         "key": "prospect", "name": "Prospect Park Alliance", "kind": "tribe",
+        "lists_others": True,
         "url": "https://www.prospectpark.org/wp-json/tribe/events/v1/events",
         "site": "https://www.prospectpark.org/", "need": "other", "trust_free": False,
         "file_by_words": False,
@@ -189,6 +192,7 @@ SOURCES = [
     },
     {
         "key": "riverside", "name": "Riverside Park Conservancy", "kind": "tribe",
+        "lists_others": True,
         "url": "https://riversideparknyc.org/wp-json/tribe/events/v1/events",
         "site": "https://riversideparknyc.org/", "need": "other", "trust_free": False,
         "file_by_words": False,
@@ -314,6 +318,7 @@ SOURCES = [
     },
     {
         "key": "cityparks", "name": "City Parks Foundation", "kind": "tribe",
+        "lists_others": True,
         "url": "https://cityparksfoundation.org/wp-json/tribe/events/v1/events",
         "site": "https://cityparksfoundation.org/", "need": "other", "trust_free": False,
         "file_by_words": False,
@@ -321,6 +326,7 @@ SOURCES = [
     },
     {
         "key": "flatironnomad", "name": "Flatiron NoMad Partnership", "kind": "tribe",
+        "lists_others": True,
         "url": "https://www.flatironnomad.nyc/wp-json/tribe/events/v1/events",
         "site": "https://www.flatironnomad.nyc/", "need": "other", "trust_free": False,
         "file_by_words": False,
@@ -328,6 +334,7 @@ SOURCES = [
     },
     {
         "key": "parkslope5th", "name": "Park Slope Fifth Avenue BID", "kind": "tribe",
+        "lists_others": True,
         "url": "https://www.parkslopefifthavenuebid.com/wp-json/tribe/events/v1/events",
         "site": "https://www.parkslopefifthavenuebid.com/", "need": "other", "trust_free": False,
         "file_by_words": False,
@@ -335,6 +342,7 @@ SOURCES = [
     },
     {
         "key": "cobblehill", "name": "Cobble Hill Association", "kind": "tribe",
+        "lists_others": True,
         "url": "https://cobblehill.nyc/wp-json/tribe/events/v1/events",
         "site": "https://cobblehill.nyc/", "need": "other", "trust_free": False,
         "file_by_words": False,
@@ -344,6 +352,7 @@ SOURCES = [
     # list the page shows. Three of the hosts checked by hand run on it.
     {
         "key": "essexmarket", "name": "Essex Market", "kind": "squarespace",
+        "lists_others": True,
         "url": "https://www.essexmarket.nyc/events",
         "site": "https://www.essexmarket.nyc/", "need": "other", "trust_free": False,
         "file_by_words": False, "place": ("Essex Market", "Manhattan"),
@@ -358,6 +367,7 @@ SOURCES = [
     },
     {
         "key": "fortgreenepark", "name": "Fort Greene Park Conservancy", "kind": "squarespace",
+        "lists_others": True,
         "url": "https://www.fortgreenepark.org/calendar",
         "site": "https://www.fortgreenepark.org/", "need": "other", "trust_free": False,
         "file_by_words": False, "place": ("Fort Greene Park", "Brooklyn"),
@@ -830,6 +840,11 @@ MONTHS = ["January", "February", "March", "April", "May", "June", "July",
 # the same calendar as its meetings.
 CANCELLED = re.compile(r"(?i)\b(cancell?ed|postponed)\b|^office closed\b")
 
+# Real events that a reader of this page cannot go to. Historic Richmond
+# Town's "Restoration Alumni Reunion" was its featured card for a night.
+NOT_PUBLIC = re.compile(r"(?i)\b(alumni reunion|members?[- ]only|for members only|"
+                        r"member mornings?|private event|invitation[- ]only|sold[- ]out)\b")
+
 
 def page_words(url):
     """What a reader of url would read: no head, no script, no style.
@@ -1009,6 +1024,9 @@ def collect(today, horizon):
             # only in the title.
             if not r["title"] or CANCELLED.search(r["title"]):
                 continue
+            # Listed, but not open to whoever reads this page.
+            if NOT_PUBLIC.search(r["title"]) or NOT_PUBLIC.search(r.get("description") or ""):
+                continue
             # A hand-checked row names its own host; a feed's rows are the feed's.
             if not r.get("venue") and src.get("place"):
                 r["venue"], r["borough"] = src["place"]
@@ -1016,6 +1034,11 @@ def collect(today, horizon):
                 if re.search(rx, r["kind"]) and ":" not in r["title"]:
                     r["title"] = tpl.format(title=r["title"])
                     break
+            # A park's or a neighborhood's calendar lists other groups'
+            # events (an NYRR run on NYC Parks', a health van on Prospect
+            # Park's). The card says "Listed by" for those, not "Hosted by".
+            if src.get("lists_others"):
+                r["listed"] = True
             r.setdefault("source", src["name"])
             r.setdefault("source_key", src["key"])
             r.setdefault("source_url", src["site"])
@@ -1156,6 +1179,7 @@ def rank(e):
 
 def selfcheck():
     parks = {"key": "parks", "name": "NYC Parks", "need": "other",
+        "lists_others": True,
              "trust_free": False}
     legal = {"key": "nylag", "name": "NYLAG", "need": "legal",
              "trust_free": True}
@@ -1243,6 +1267,13 @@ def selfcheck():
     assert CANCELLED.search("Living with Thoughts of Suicide CANCELLED")
     assert not CANCELLED.search("Cancellation policy")
     assert CANCELLED.search("Office Closed – Columbus Day")
+    assert NOT_PUBLIC.search("Restoration Alumni Reunion")
+    assert NOT_PUBLIC.search("Member Mornings: Iris van Herpen")
+    assert not NOT_PUBLIC.search("Open to members of the public")
+    assert re.search(MEETINGS, "CB6 Full Board Meeting")
+    assert re.search(MEETINGS, "Human Services Committee Meeting")
+    assert not re.search(MEETINGS, "Park Slope Food Coop: General Meeting")
+    assert not re.search(MEETINGS, "BKBP ULURP Public Hearing")
 
     # --- the featured row: one card per organization
     def fe(i, k, d):

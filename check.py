@@ -7350,7 +7350,7 @@ def check_the_featured_photos_are_ours():
     if imgs:
         ok(f"featured: {len(imgs)} card photos, all served from assets/events, "
            f"{total:.0f}KB together")
-    hosts = re.findall(r'<p class="fev__by">Hosted by ([^<]+)</p>', row)
+    hosts = re.findall(r'<p class="fev__by">(?:Hosted|Listed) by ([^<]+)</p>', row)
     cards = row.count('<article class="fev__card">')
     dup = sorted({h for h in hosts if hosts.count(h) > 1})
     if len(hosts) != cards:

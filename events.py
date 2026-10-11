@@ -201,8 +201,11 @@ def card(e, build_help, lead=False):
     a.append(f'      <h3 class="fev__h"><a href="{esc(e["url"])}" target="_blank" '
              f'rel="noopener">{esc(e["title"])}</a></h3>')
     # Who is putting it on. A card with no host on it is an advert; one that
-    # names the organization is a listing the reader can check.
-    a.append(f'      <p class="fev__by">Hosted by {esc(e["source"])}</p>')
+    # names the organization is a listing the reader can check. "Listed by"
+    # where the source is a calendar of other groups' events, because
+    # "Hosted by NYC Parks" over a road runners' club run is not true.
+    by = "Listed by" if e.get("listed") else "Hosted by"
+    a.append(f'      <p class="fev__by">{by} {esc(e["source"])}</p>')
     if lead and e.get("description"):
         a.append(f'      <p class="fev__b">{esc(trim(e["description"], 150))}</p>')
     a.append(f'      <p class="fev__meta"><span class="fev__m">{CAL}{esc(when(e))}</span>'
@@ -228,14 +231,16 @@ def featured_frag(doc, build_help):
         return []
 
     n = len(doc.get("events", []))
-    orgs = len({e["source_key"] for e in picks})
+    # By name, the way fetch_events.pick() counts them: one organization can
+    # reach the data by a feed and by hand under two keys.
+    orgs = len({e["source"].lower() for e in picks})
     a = ['<section class="fev" id="featured" aria-labelledby="fev-h">',
          '  <div class="fev__top">',
          '    <div>',
          '      <h2 id="fev-h">Featured events</h2>',
          f'      <p class="fev__say">Coming up from {orgs} organizations around the '
          'city &mdash; food, legal help, support groups, walks and fairs. Each '
-         'card opens the host&rsquo;s own page.</p>',
+         'card opens the event&rsquo;s own page.</p>',
          '    </div>',
          # Arrows are an enhancement: the track scrolls and swipes without
          # them, so they start hidden and help.js shows them.
@@ -459,7 +464,7 @@ def render_page(doc, build_help, rows):
 
     if n:
         A(f'<p class="ev__fresh">Collected from the calendars and pages of '
-          f'{len({e["source_key"] for e in events})} organizations, last updated '
+          f'{len({e["source"].lower() for e in events})} organizations, last updated '
           f'{build_help.esc(freshness(doc))}. Times and places come from the '
           f'organizations themselves &mdash; call ahead if you are going far.</p>')
 
