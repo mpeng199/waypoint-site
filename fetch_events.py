@@ -296,6 +296,42 @@ SOURCES = [
         "file_by_words": False, "keep_if": MEETINGS,
         "note": "Public meetings about Jackson Heights, East Elmhurst and North Corona.",
     },
+    # A second probe the same night, of borough presidents, the Council and
+    # business improvement districts, found five more.
+    {
+        "key": "brooklynbp", "name": "Brooklyn Borough President", "kind": "tribe",
+        "url": "https://www.brooklynbp.nyc.gov/wp-json/tribe/events/v1/events",
+        "site": "https://www.brooklynbp.nyc.gov/", "need": "civic", "trust_free": True,
+        "note": "Public hearings, resource fairs and know-your-rights sessions in Brooklyn.",
+    },
+    {
+        "key": "cb14brooklyn", "name": "Brooklyn Community Board 14", "kind": "tribe",
+        "url": "https://cb14brooklyn.com/wp-json/tribe/events/v1/events",
+        "site": "https://cb14brooklyn.com/", "need": "civic", "trust_free": True,
+        "file_by_words": False, "keep_if": MEETINGS,
+        "note": "Public meetings about Flatbush, Midwood and Kensington.",
+    },
+    {
+        "key": "cityparks", "name": "City Parks Foundation", "kind": "tribe",
+        "url": "https://cityparksfoundation.org/wp-json/tribe/events/v1/events",
+        "site": "https://cityparksfoundation.org/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Volunteer days in neighborhood parks, and free programs in them.",
+    },
+    {
+        "key": "flatironnomad", "name": "Flatiron NoMad Partnership", "kind": "tribe",
+        "url": "https://www.flatironnomad.nyc/wp-json/tribe/events/v1/events",
+        "site": "https://www.flatironnomad.nyc/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Run clubs, shows and public events around the Flatiron plazas.",
+    },
+    {
+        "key": "parkslope5th", "name": "Park Slope Fifth Avenue BID", "kind": "tribe",
+        "url": "https://www.parkslopefifthavenuebid.com/wp-json/tribe/events/v1/events",
+        "site": "https://www.parkslopefifthavenuebid.com/", "need": "other", "trust_free": False,
+        "file_by_words": False,
+        "note": "Free advice for small businesses, and Fifth Avenue's street events.",
+    },
     {
         "key": "curated", "name": "Checked by hand", "kind": "curated",
         "url": "", "site": "", "need": "other", "trust_free": False, "note": "",
