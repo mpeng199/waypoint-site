@@ -99,7 +99,7 @@ PHOTO_MAX = 100_000
 # check that fails stops the daily job from committing anything; forty per
 # source across thirty-one sources could reach twice that. The fetcher keeps
 # the page inside the budget rather than letting a busy week stale the site.
-MAX_EVENTS = 650
+MAX_EVENTS = 600
 
 # How far ahead to keep. Past today is dropped on every run, so the file is
 # self-cleaning: nothing has to remember to delete last week.
