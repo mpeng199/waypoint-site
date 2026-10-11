@@ -272,11 +272,21 @@ def check_honesty_statement():
                     f"({n}x, expected {times}x): {fragment!r}")
 
 
+# Other organizations' words, as their calendars wrote them: event titles,
+# blurbs, places and hosts. FORBIDDEN polices Waypoint's own copy. A senior
+# center's "Companionship Club" or a clinic's "Medical Debt Relief" night is
+# not our claim, and matching it would stop the daily events refresh from
+# committing anything at all.
+THEIRS = re.compile(r'(?s)<(h3|h4) class="(?:fev|ev)__h">.*?</\1>'
+                    r'|<p class="(?:fev|ev)__(?:b|meta|by)">.*?</p>'
+                    r'|<span class="ev__by">.*?</span>')
+
+
 def check_forbidden():
     for page in PAGES:
         if not (ROOT / page).is_file():
             continue
-        src = read(page)
+        src = THEIRS.sub(" ", read(page))
         for pattern, why in FORBIDDEN:
             hits = re.findall(pattern, src)
             if hits:
