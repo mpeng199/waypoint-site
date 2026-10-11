@@ -818,9 +818,20 @@ NOT_A_PICTURE = re.compile(r"(?i)emoji|icon|logo|avatar|spinner|pixel|badge|butt
 
 
 def flyer_in(html):
-    """The first real picture in an event's description HTML, if any."""
+    """The first real picture in an event's description HTML, if any.
+
+    The attribute is HTML, so it is unescaped: the Samaritans' flyer arrived
+    as "...?resize=247%2C321&#038;ssl=1", and asking for that 404s. A link
+    through WordPress's image CDN (i0.wp.com/<host>/<path>) is turned back into
+    the file on the host's own site: the CDN's 247px thumbnail is too small,
+    and without its ssl=1 parameter the CDN answers 404.
+    """
     for src in re.findall(r'<img[^>]+src="([^"]+)"', html or ""):
+        src = _html.unescape(src)
         if re.search(r"(?i)\.(jpe?g|png|webp)(\?|$)", src) and not NOT_A_PICTURE.search(src):
+            u = urllib.parse.urlsplit(src)
+            if re.fullmatch(r"i\d\.wp\.com", u.hostname or ""):
+                src = "https://" + u.path.lstrip("/")
             return src
     return None
 
@@ -1581,6 +1592,9 @@ def selfcheck():
         == "https://h/up/Legal-Clinic-2.5-scaled.png"
     assert flyer_in('<img src="https://h/logo.svg"><img src="https://h/site-logo.png">') is None
     assert flyer_in("") is None
+    assert flyer_in('<img src="https://h/a.png?w=1&#038;h=2">') == "https://h/a.png?w=1&h=2"
+    assert flyer_in('<img src="https://i0.wp.com/s.org/u/F.webp?resize=247%2C321&#038;ssl=1">') \
+        == "https://s.org/u/F.webp"
 
     # --- the page cap keeps the soonest, and every hand-checked row
     many = [{"start": f"2026-10-{d:02d}T10:00:00", "title": str(d), "source": "Busy"}

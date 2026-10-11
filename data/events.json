@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-11T04:37:37",
+ "generated": "2026-10-11T05:08:28",
  "horizon": "2027-02-08",
  "sources": [
   {
@@ -445,6 +445,7 @@
   "cityparks-2026-10-11-0007",
   "nami-2026-10-14-0083",
   "new-york-public-library-2026-10-14-0090",
+  "samaritans-2026-10-14-0095",
   "brooklyncb6-2026-10-14-0096",
   "brooklynbp-2026-10-15-0106",
   "nylag-2026-10-15-0113",
@@ -462,7 +463,6 @@
   "village-halloween-parade-2026-10-31-0459",
   "new-york-road-runners-2026-11-01-0462",
   "bhakti-center-2026-11-08-0518",
-  "samaritans-2026-10-14-0095",
   "jobs-nyc-2026-10-20-0251"
  ],
  "events": [
@@ -2612,7 +2612,7 @@
    "address": "",
    "description": "Join acclaimed author and advocate Carla Fine for an interactive, deeply engaging workshop that unlocks the healing power of writing . Through guided prompts and reflective exercises, you’ll discover how expressive writing can help you navigate grief…",
    "url": "https://samaritansnyc.org/event/writing-as-healing-oct-14/",
-   "image": "https://i0.wp.com/samaritansnyc.org/wp-content/uploads/2026/09/Screenshot-2026-09-19-035759.webp?resize=247%2C321&#038;ssl=1",
+   "image": "https://samaritansnyc.org/wp-content/uploads/2026/09/Screenshot-2026-09-19-035759.webp",
    "fit": "contain",
    "kind": "Samaritans of New York",
    "format": "In person",
@@ -2623,7 +2623,10 @@
    "source_url": "https://samaritansnyc.org/",
    "need": "crisis",
    "id": "samaritans-2026-10-14-0095",
-   "verified": true
+   "verified": true,
+   "photo": "assets/events/f040cd774525583d.webp",
+   "photo_w": 640,
+   "photo_h": 831
   },
   {
    "title": "CB6 Full Board Meeting",
@@ -13662,7 +13665,7 @@
    "address": "",
    "description": "Join acclaimed author and advocate Carla Fine for an interactive, deeply engaging workshop that unlocks the healing power of writing . Through guided prompts and reflective exercises, you’ll discover how expressive writing can help you navigate grief…",
    "url": "https://samaritansnyc.org/event/writing-as-healing-nov-24/",
-   "image": "https://i0.wp.com/samaritansnyc.org/wp-content/uploads/2026/09/Screenshot-2026-09-19-035759.webp?resize=231%2C300&#038;ssl=1",
+   "image": "https://samaritansnyc.org/wp-content/uploads/2026/09/Screenshot-2026-09-19-035759.webp",
    "fit": "contain",
    "kind": "Samaritans of New York",
    "format": "In person",
