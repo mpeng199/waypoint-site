@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-11T10:15:59",
+ "generated": "2026-10-11T07:18:52",
  "horizon": "2027-02-08",
  "sources": [
   {
@@ -484,7 +484,8 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-10-11-0000"
+   "id": "parks-2026-10-11-0000",
+   "verified": true
   },
   {
    "title": "Proximity Exhibition",
@@ -1584,7 +1585,8 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-10-13-0049"
+   "id": "parks-2026-10-13-0049",
+   "verified": true
   },
   {
    "title": "It’s My Park Day",
@@ -2758,7 +2760,8 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-10-15-0101"
+   "id": "parks-2026-10-15-0101",
+   "verified": true
   },
   {
    "title": "Prospect Park Fall Migration Walks",
