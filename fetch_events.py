@@ -8,6 +8,7 @@ give the same answer on a plane.
 Run it:  python3 fetch_events.py            # fetch, write data/events.json
          python3 fetch_events.py --dry-run  # fetch, print a summary, write nothing
          python3 fetch_events.py --offline  # re-normalise what is already on disk
+         python3 fetch_events.py --recheck  # is each hand-checked page still right?
 
 WHAT IS IN HERE AND WHY
 
@@ -1523,6 +1524,41 @@ def selfcheck():
     print("selfcheck ok")
 
 
+def recheck():
+    """Open every hand-checked row's page again and say what it shows now.
+
+    The daily job drops a row whose page answers 404 or 410, and nothing
+    else: a page that stays up after its event moves, or after it is
+    cancelled, keeps its row. This is the person-sized pass for that — run it
+    before trusting the file, then open anything not OK in a browser.
+      OK       the page still names the day
+      CHANGED  the page answers but no longer names the day: open it
+      GONE     404 or 410; the daily job will drop it
+      BLOCKED  the host refused a robot or did not answer; open it by hand
+    """
+    today = datetime.now(NYC).date()
+    rows = [r for r in from_curated({}, today, today)
+            if (parse_dt(r["end"]) or parse_dt(r["start"])).date() >= today]
+
+    def one(r):
+        try:
+            words = page_words(r["url"])
+        except urllib.error.HTTPError as x:
+            return "GONE" if x.code in (404, 410) else f"BLOCKED ({x.code})"
+        except ValueError as x:
+            return f"CHANGED ({x})"
+        except Exception as x:                       # noqa: BLE001
+            return f"BLOCKED ({type(x).__name__})"
+        return "OK" if says_date(words, r["start"]) else "CHANGED"
+
+    with concurrent.futures.ThreadPoolExecutor(12) as ex:
+        verdicts = list(ex.map(one, rows))
+    for r, v in sorted(zip(rows, verdicts), key=lambda x: (x[1] == "OK", x[0]["start"])):
+        print(f"  {v:14s} {r['start'][:10]}  {r['source'][:30]:30s} {r['title'][:44]}")
+    bad_ones = sum(1 for v in verdicts if v != "OK")
+    print(f"  {len(rows) - bad_ones} of {len(rows)} hand-checked pages still show their day")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -1532,7 +1568,12 @@ def main():
                     help="re-sort and re-filter data/events.json without fetching")
     ap.add_argument("--selfcheck", action="store_true",
                     help="run the offline assertions and exit")
+    ap.add_argument("--recheck", action="store_true",
+                    help="open each hand-checked page again and report what it shows")
     a = ap.parse_args()
+    if a.recheck:
+        recheck()
+        return
 
     if a.selfcheck:
         selfcheck()
