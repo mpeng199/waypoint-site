@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-10T22:25:03",
+ "generated": "2026-10-10T22:29:22",
  "horizon": "2027-02-07",
  "sources": [
   {
@@ -150,6 +150,13 @@
    "by_hand": true
   },
   {
+   "key": "artbuilt-and-casa-cultural",
+   "name": "ArtBuilt and Casa Cultural",
+   "site": "https://www.nyctourism.com/events/dia-de-los-muertos-celebration/",
+   "note": "",
+   "by_hand": true
+  },
+  {
    "key": "village-halloween-parade",
    "name": "Village Halloween Parade",
    "site": "https://halloween-nyc.com/",
@@ -176,6 +183,20 @@
    "site": "https://www.glwd.org/",
    "note": "",
    "by_hand": true
+  },
+  {
+   "key": "prospect-park-track-club",
+   "name": "Prospect Park Track Club",
+   "site": "https://runsignup.com/Race/NY/Brooklyn/PPTCTurkeyTrotRaceforReconciliation5Miler",
+   "note": "",
+   "by_hand": true
+  },
+  {
+   "key": "rockefeller-center",
+   "name": "Rockefeller Center",
+   "site": "https://www.rockefellercenter.com/",
+   "note": "",
+   "by_hand": true
   }
  ],
  "featured": [
@@ -197,10 +218,10 @@
   "the-high-line-2026-10-24-0201",
   "american-foundation-for-suicide-preventi-2026-10-25-0210",
   "bryant-park-2026-10-28-0233",
-  "village-halloween-parade-2026-10-31-0268",
-  "new-york-road-runners-2026-11-01-0270",
+  "village-halloween-parade-2026-10-31-0269",
+  "new-york-road-runners-2026-11-01-0271",
+  "united-war-veterans-council-2026-11-11-0322",
   "cmom-2026-10-11-0007",
-  "foodbank-2026-10-13-0034",
   "nami-2026-10-14-0045",
   "nylag-2026-10-15-0062"
  ],
@@ -809,6 +830,7 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
@@ -1524,6 +1546,7 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
@@ -1839,6 +1862,7 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
@@ -3096,6 +3120,7 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
@@ -3470,6 +3495,7 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
@@ -3802,6 +3828,7 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
@@ -5260,6 +5287,7 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
@@ -5469,6 +5497,7 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
@@ -5812,6 +5841,28 @@
    "id": "riverside-2026-10-31-0265"
   },
   {
+   "title": "Día de los Muertos Celebration",
+   "start": "2026-10-31T14:00:00",
+   "end": "2026-10-31T19:00:00",
+   "all_day": false,
+   "venue": "Brooklyn Army Terminal Arches",
+   "borough": "Brooklyn",
+   "address": "140 58th Street",
+   "description": "A free afternoon for the Day of the Dead in Sunset Park: a shared altar, crafts, face painting, food, music and dance.",
+   "url": "https://www.nyctourism.com/events/dia-de-los-muertos-celebration/",
+   "image": null,
+   "fit": null,
+   "kind": "Festival",
+   "format": "In person",
+   "free": true,
+   "need": "other",
+   "source": "ArtBuilt and Casa Cultural",
+   "source_key": "artbuilt-and-casa-cultural",
+   "source_url": "https://www.nyctourism.com/events/dia-de-los-muertos-celebration/",
+   "checked": "2026-10-10",
+   "id": "artbuilt-and-casa-cultural-2026-10-31-0266"
+  },
+  {
    "title": "Hippo Halloween Parade",
    "start": "2026-10-31T15:30:00",
    "end": "2026-10-31T17:30:00",
@@ -5830,7 +5881,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-10-31-0266"
+   "id": "riverside-2026-10-31-0267"
   },
   {
    "title": "Queens Night Market: the last night of the season",
@@ -5852,7 +5903,7 @@
    "source_key": "queens-night-market",
    "source_url": "https://www.queensnightmarket.com/",
    "checked": "2026-10-10",
-   "id": "queens-night-market-2026-10-31-0267",
+   "id": "queens-night-market-2026-10-31-0268",
    "photo": "assets/events/33e30c53c771656c.webp",
    "photo_w": 640,
    "photo_h": 480
@@ -5877,7 +5928,7 @@
    "source_key": "village-halloween-parade",
    "source_url": "https://halloween-nyc.com/",
    "checked": "2026-10-10",
-   "id": "village-halloween-parade-2026-10-31-0268",
+   "id": "village-halloween-parade-2026-10-31-0269",
    "photo": "assets/events/fb26dcf96c914b8c.webp",
    "photo_w": 640,
    "photo_h": 359
@@ -5901,7 +5952,7 @@
    "source_key": "fortune",
    "source_url": "https://fortunesociety.org/",
    "need": "other",
-   "id": "fortune-2026-11-01-0269"
+   "id": "fortune-2026-11-01-0270"
   },
   {
    "title": "TCS New York City Marathon",
@@ -5923,7 +5974,7 @@
    "source_key": "new-york-road-runners",
    "source_url": "https://www.nyrr.org/",
    "checked": "2026-10-10",
-   "id": "new-york-road-runners-2026-11-01-0270",
+   "id": "new-york-road-runners-2026-11-01-0271",
    "photo": "assets/events/5e81352c43bb1ab8.webp",
    "photo_w": 640,
    "photo_h": 427
@@ -5947,7 +5998,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-01-0271"
+   "id": "cmom-2026-11-01-0272"
   },
   {
    "title": "Music and Marks: Performance with a Woodwind Trio from Manhattan School of Music",
@@ -5968,7 +6019,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-01-0272"
+   "id": "cmom-2026-11-01-0273"
   },
   {
    "title": "Pumpkin Smash",
@@ -5989,7 +6040,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-01-0273"
+   "id": "qbg-2026-11-01-0274"
   },
   {
    "title": "Goal Getter Medals",
@@ -6010,7 +6061,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-01-0274"
+   "id": "cmom-2026-11-01-0275"
   },
   {
    "title": "PlacePartner Opportunity: Compost Compound at W 95th St",
@@ -6031,7 +6082,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-02-0275"
+   "id": "riverside-2026-11-02-0276"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -6052,7 +6103,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-02-0276"
+   "id": "qbg-2026-11-02-0277"
   },
   {
    "title": "Fall Bodyroll in the Field House",
@@ -6073,7 +6124,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-02-0277"
+   "id": "riverside-2026-11-02-0278"
   },
   {
    "title": "Van at Assembly Member Catalina Cruz’s Office",
@@ -6089,11 +6140,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-02-0278"
+   "id": "nylag-2026-11-02-0279"
   },
   {
    "title": "Living with Anxiety (Virtual)",
@@ -6114,7 +6166,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-02-0279"
+   "id": "nami-2026-11-02-0280"
   },
   {
    "title": "Black Minds Matter Family & Friends (Virtual)",
@@ -6135,7 +6187,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-02-0280"
+   "id": "nami-2026-11-02-0281"
   },
   {
    "title": "Family & Friends (In-Person)",
@@ -6156,7 +6208,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-03-0281"
+   "id": "nami-2026-11-03-0282"
   },
   {
    "title": "NAMI Connection 55+ (Virtual)",
@@ -6177,7 +6229,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-03-0282"
+   "id": "nami-2026-11-03-0283"
   },
   {
    "title": "Asian American & Pacific Islander (AAPI) (Virtual)",
@@ -6198,7 +6250,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-03-0283"
+   "id": "nami-2026-11-03-0284"
   },
   {
    "title": "PlacePartner Opportunity: Camel Gardens at W 143rd St",
@@ -6219,7 +6271,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-04-0284"
+   "id": "riverside-2026-11-04-0285"
   },
   {
    "title": "PlacePartner Opportunity: Sakura Park and Claremont at W 122nd St",
@@ -6240,7 +6292,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-04-0285"
+   "id": "riverside-2026-11-04-0286"
   },
   {
    "title": "PlacePartner Opportunity: The Sweet Spot at W 72nd-96th St",
@@ -6261,7 +6313,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-04-0286"
+   "id": "riverside-2026-11-04-0287"
   },
   {
    "title": "Farm Community Volunteer Days",
@@ -6282,7 +6334,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-04-0287"
+   "id": "qbg-2026-11-04-0288"
   },
   {
    "title": "Team RIVER Volunteers",
@@ -6303,7 +6355,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-11-04-0288"
+   "id": "randalls-2026-11-04-0289"
   },
   {
    "title": "Bird and Nature Walk: Fresh Kills – North Park",
@@ -6324,7 +6376,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-11-04-0289"
+   "id": "simuseum-2026-11-04-0290"
   },
   {
    "title": "Van at Assembly Member Manny De Los Santos’ Office",
@@ -6340,11 +6392,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-04-0290"
+   "id": "nylag-2026-11-04-0291"
   },
   {
    "title": "Sibling and Adult Child (In-Person)",
@@ -6365,7 +6418,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-04-0291"
+   "id": "nami-2026-11-04-0292"
   },
   {
    "title": "Living with Depression (Virtual)",
@@ -6386,7 +6439,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-04-0292"
+   "id": "nami-2026-11-04-0293"
   },
   {
    "title": "AAPI Family & Friends (Virtual)",
@@ -6407,7 +6460,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-04-0293"
+   "id": "nami-2026-11-04-0294"
   },
   {
    "title": "Horticulture Community Volunteer Days 2026",
@@ -6428,7 +6481,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-05-0294"
+   "id": "qbg-2026-11-05-0295"
   },
   {
    "title": "PlacePartner Opportunity: Island Vibes at W 97th-116th St",
@@ -6449,7 +6502,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-05-0295"
+   "id": "riverside-2026-11-05-0296"
   },
   {
    "title": "Farm Open Hours",
@@ -6470,7 +6523,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-05-0296"
+   "id": "qbg-2026-11-05-0297"
   },
   {
    "title": "Field House Mat Pilates",
@@ -6491,7 +6544,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-05-0297"
+   "id": "riverside-2026-11-05-0298"
   },
   {
    "title": "Teen Support Group 14-18 (Virtual)",
@@ -6512,7 +6565,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-05-0298"
+   "id": "nami-2026-11-05-0299"
   },
   {
    "title": "CAMBA Night Out",
@@ -6533,7 +6586,7 @@
    "source_key": "camba",
    "source_url": "https://camba.org/",
    "need": "other",
-   "id": "camba-2026-11-05-0299"
+   "id": "camba-2026-11-05-0300"
   },
   {
    "title": "Family-to-Family Grads (Virtual)",
@@ -6554,7 +6607,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-05-0300"
+   "id": "nami-2026-11-05-0301"
   },
   {
    "title": "LGBTQ+ (Virtual)",
@@ -6575,7 +6628,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-05-0301"
+   "id": "nami-2026-11-05-0302"
   },
   {
    "title": "PlacePartner Opportunity: South Park at W 68th St",
@@ -6596,7 +6649,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-06-0302"
+   "id": "riverside-2026-11-06-0303"
   },
   {
    "title": "Parents (Virtual)",
@@ -6617,7 +6670,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-06-0303"
+   "id": "nami-2026-11-06-0304"
   },
   {
    "title": "Van at Council Member Salaam’s Office",
@@ -6633,11 +6686,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-06-0304"
+   "id": "nylag-2026-11-06-0305"
   },
   {
    "title": "Wellness Chats (Virtual)",
@@ -6658,7 +6712,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-06-0305"
+   "id": "nami-2026-11-06-0306"
   },
   {
    "title": "RIPA Fall Cleanup",
@@ -6679,7 +6733,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-11-07-0306"
+   "id": "randalls-2026-11-07-0307"
   },
   {
    "title": "Meet the Fleet",
@@ -6700,7 +6754,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-07-0307"
+   "id": "riverside-2026-11-07-0308"
   },
   {
    "title": "PlacePartner Opportunity: West Harlem Forest Tree Club",
@@ -6721,7 +6775,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-07-0308"
+   "id": "riverside-2026-11-07-0309"
   },
   {
    "title": "PlacePartner Opportunity: Compost Compound at W 95th St",
@@ -6742,7 +6796,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-09-0309"
+   "id": "riverside-2026-11-09-0310"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -6763,7 +6817,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-09-0310"
+   "id": "qbg-2026-11-09-0311"
   },
   {
    "title": "Fall Bodyroll in the Field House",
@@ -6784,7 +6838,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-09-0311"
+   "id": "riverside-2026-11-09-0312"
   },
   {
    "title": "Living With Thoughts of Suicide (Virtual)",
@@ -6805,7 +6859,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-09-0312"
+   "id": "nami-2026-11-09-0313"
   },
   {
    "title": "Van at Assemblymember González-Rojas’ Office",
@@ -6821,11 +6875,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-10-0313"
+   "id": "nylag-2026-11-10-0314"
   },
   {
    "title": "Spirituality Speaks (Virtual)",
@@ -6846,7 +6901,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-10-0314"
+   "id": "nami-2026-11-10-0315"
   },
   {
    "title": "Living with Addiction and Mental Health Challenges (Virtual)",
@@ -6867,7 +6922,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-10-0315"
+   "id": "nami-2026-11-10-0316"
   },
   {
    "title": "Peer-to-Peer Grads (Virtual)",
@@ -6888,7 +6943,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-10-0316"
+   "id": "nami-2026-11-10-0317"
   },
   {
    "title": "PlacePartner Opportunity: Sakura Park and Claremont at W 122nd St",
@@ -6909,7 +6964,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-11-0317"
+   "id": "riverside-2026-11-11-0318"
   },
   {
    "title": "PlacePartner Opportunity: The Sweet Spot at W 72nd-96th St",
@@ -6930,7 +6985,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-11-0318"
+   "id": "riverside-2026-11-11-0319"
   },
   {
    "title": "Fall Yoga in the Field House",
@@ -6951,7 +7006,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-11-0319"
+   "id": "riverside-2026-11-11-0320"
   },
   {
    "title": "Farm Community Volunteer Days",
@@ -6972,7 +7027,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-11-0320"
+   "id": "qbg-2026-11-11-0321"
   },
   {
    "title": "NYC Veterans Day Parade",
@@ -6994,7 +7049,7 @@
    "source_key": "united-war-veterans-council",
    "source_url": "https://www.uwvc.org/",
    "checked": "2026-10-10",
-   "id": "united-war-veterans-council-2026-11-11-0321",
+   "id": "united-war-veterans-council-2026-11-11-0322",
    "photo": "assets/events/55555b3bfcb670be.webp",
    "photo_w": 640,
    "photo_h": 426
@@ -7018,7 +7073,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-11-0322"
+   "id": "nami-2026-11-11-0323"
   },
   {
    "title": "NAMI Connection (Virtual)",
@@ -7039,7 +7094,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-11-0323"
+   "id": "nami-2026-11-11-0324"
   },
   {
    "title": "Teen Support Group 14-18 (Virtual)",
@@ -7060,7 +7115,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-11-0324"
+   "id": "nami-2026-11-11-0325"
   },
   {
    "title": "PlacePartner Opportunity: Tunnel Gardens at W 148th St",
@@ -7081,7 +7136,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-12-0325"
+   "id": "riverside-2026-11-12-0326"
   },
   {
    "title": "Horticulture Community Volunteer Days 2026",
@@ -7102,7 +7157,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-12-0326"
+   "id": "qbg-2026-11-12-0327"
   },
   {
    "title": "PlacePartner Opportunity: Canopy Club at W 97th-120th St",
@@ -7123,7 +7178,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-12-0327"
+   "id": "riverside-2026-11-12-0328"
   },
   {
    "title": "Farm Open Hours",
@@ -7144,7 +7199,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-12-0328"
+   "id": "qbg-2026-11-12-0329"
   },
   {
    "title": "Van at Senator Sepulveda’s Office",
@@ -7160,11 +7215,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-12-0329"
+   "id": "nylag-2026-11-12-0330"
   },
   {
    "title": "Field House Mat Pilates",
@@ -7185,7 +7241,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-12-0330"
+   "id": "riverside-2026-11-12-0331"
   },
   {
    "title": "Teen Support Group 14-18 (Virtual)",
@@ -7206,7 +7262,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-12-0331"
+   "id": "nami-2026-11-12-0332"
   },
   {
    "title": "Spanglish (Virtual)",
@@ -7227,7 +7283,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-12-0332"
+   "id": "nami-2026-11-12-0333"
   },
   {
    "title": "Stephanie Dinkins: Anchoring Home Member’s Preview",
@@ -7248,7 +7304,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-11-12-0333"
+   "id": "simuseum-2026-11-12-0334"
   },
   {
    "title": "NAMI Connection (In Person)",
@@ -7269,7 +7325,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-12-0334"
+   "id": "nami-2026-11-12-0335"
   },
   {
    "title": "Van at Senator Roxanne Persaud’s Office",
@@ -7285,11 +7341,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-13-0335"
+   "id": "nylag-2026-11-13-0336"
   },
   {
    "title": "Wellness Chats (Virtual)",
@@ -7310,7 +7367,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-13-0336"
+   "id": "nami-2026-11-13-0337"
   },
   {
    "title": "Hearing Voices (Virtual)",
@@ -7331,7 +7388,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-13-0337"
+   "id": "nami-2026-11-13-0338"
   },
   {
    "title": "Annual Leaf Lift",
@@ -7352,7 +7409,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-14-0338"
+   "id": "riverside-2026-11-14-0339"
   },
   {
    "title": "Fire Cider Workshop",
@@ -7373,7 +7430,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-11-14-0339"
+   "id": "randalls-2026-11-14-0340"
   },
   {
    "title": "PlacePartner Opportunity: West Harlem Forest Tree Club",
@@ -7394,7 +7451,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-14-0340"
+   "id": "riverside-2026-11-14-0341"
   },
   {
    "title": "Stephanie Dinkins: Anchoring Home Public Exhibition Opening",
@@ -7415,7 +7472,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-11-14-0341"
+   "id": "simuseum-2026-11-14-0342"
   },
   {
    "title": "Compost Beautification Community Volunteer Days",
@@ -7436,7 +7493,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-15-0342"
+   "id": "qbg-2026-11-15-0343"
   },
   {
    "title": "PlacePartner Opportunity: Compost Compound at W 95th St",
@@ -7457,7 +7514,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-16-0343"
+   "id": "riverside-2026-11-16-0344"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -7478,7 +7535,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-16-0344"
+   "id": "qbg-2026-11-16-0345"
   },
   {
    "title": "Fall Bodyroll in the Field House",
@@ -7499,7 +7556,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-16-0345"
+   "id": "riverside-2026-11-16-0346"
   },
   {
    "title": "Van at Council Member Alexa Avilés’ Office",
@@ -7515,11 +7572,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-16-0346"
+   "id": "nylag-2026-11-16-0347"
   },
   {
    "title": "Van at Council Member Rita Joseph Office",
@@ -7535,11 +7593,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-17-0347"
+   "id": "nylag-2026-11-17-0348"
   },
   {
    "title": "PlacePartner Opportunity: Camel Gardens at W 143rd St",
@@ -7560,7 +7619,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-18-0348"
+   "id": "riverside-2026-11-18-0349"
   },
   {
    "title": "Farm Community Volunteer Days",
@@ -7581,7 +7640,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-18-0349"
+   "id": "qbg-2026-11-18-0350"
   },
   {
    "title": "Team RIVER Volunteers",
@@ -7602,7 +7661,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-11-18-0350"
+   "id": "randalls-2026-11-18-0351"
   },
   {
    "title": "Bird and Nature Walk: Wolfe’s Pond Park",
@@ -7623,7 +7682,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-11-18-0351"
+   "id": "simuseum-2026-11-18-0352"
   },
   {
    "title": "Van at Council Member Zhuang’s Office",
@@ -7639,11 +7698,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-18-0352"
+   "id": "nylag-2026-11-18-0353"
   },
   {
    "title": "Horticulture Community Volunteer Days 2026",
@@ -7664,7 +7724,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-19-0353"
+   "id": "qbg-2026-11-19-0354"
   },
   {
    "title": "Rain Garden Stewardship Volunteer Days",
@@ -7685,7 +7745,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-19-0354"
+   "id": "qbg-2026-11-19-0355"
   },
   {
    "title": "Farm Open Hours",
@@ -7706,7 +7766,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-19-0355"
+   "id": "qbg-2026-11-19-0356"
   },
   {
    "title": "Van at Council Member Thomas-Henry’s Office",
@@ -7722,11 +7782,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-19-0356"
+   "id": "nylag-2026-11-19-0357"
   },
   {
    "title": "Family History Month Workshop 2: Transcribe-a-thon",
@@ -7747,7 +7808,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-11-21-0357"
+   "id": "simuseum-2026-11-21-0358"
   },
   {
    "title": "Race to Deliver",
@@ -7769,7 +7830,7 @@
    "source_key": "god-s-love-we-deliver",
    "source_url": "https://www.glwd.org/",
    "checked": "2026-10-10",
-   "id": "god-s-love-we-deliver-2026-11-22-0358",
+   "id": "god-s-love-we-deliver-2026-11-22-0359",
    "photo": "assets/events/360971ba9e78f4a2.webp",
    "photo_w": 640,
    "photo_h": 427
@@ -7793,7 +7854,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-23-0359"
+   "id": "qbg-2026-11-23-0360"
   },
   {
    "title": "Van at Senator Comrie’s office",
@@ -7809,11 +7870,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-11-23-0360"
+   "id": "nylag-2026-11-23-0361"
   },
   {
    "title": "Farm Community Volunteer Days",
@@ -7834,7 +7896,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-25-0361"
+   "id": "qbg-2026-11-25-0362"
   },
   {
    "title": "Team RIVER Volunteers",
@@ -7855,7 +7917,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-11-25-0362"
+   "id": "randalls-2026-11-25-0363"
   },
   {
    "title": "Thanksgiving Day – Garden is CLOSED",
@@ -7876,7 +7938,32 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-26-0363"
+   "id": "qbg-2026-11-26-0364"
+  },
+  {
+   "title": "PPTC Turkey Trot: Race for Reconciliation 5 Miler",
+   "start": "2026-11-26T08:15:00",
+   "end": "2026-11-26T08:15:00",
+   "all_day": false,
+   "venue": "Prospect Park, starting on Center Drive",
+   "borough": "Brooklyn",
+   "address": "",
+   "description": "A five-mile Thanksgiving morning race in Prospect Park, in two waves at 8:15 and 9:00. Sign up and pay on the page.",
+   "url": "https://runsignup.com/Race/NY/Brooklyn/PPTCTurkeyTrotRaceforReconciliation5Miler",
+   "image": "https://d368g9lw5ileu7.cloudfront.net/uploads/generic/genericWebsites-142/142081/websiteBanner-kRblTzuy-bQDGaE-huge.jpg",
+   "fit": null,
+   "kind": "Race",
+   "format": "In person",
+   "free": false,
+   "need": "other",
+   "source": "Prospect Park Track Club",
+   "source_key": "prospect-park-track-club",
+   "source_url": "https://runsignup.com/Race/NY/Brooklyn/PPTCTurkeyTrotRaceforReconciliation5Miler",
+   "checked": "2026-10-10",
+   "id": "prospect-park-track-club-2026-11-26-0365",
+   "photo": "assets/events/eef3fec5dfe26cc0.webp",
+   "photo_w": 640,
+   "photo_h": 214
   },
   {
    "title": "Horticulture Community Volunteer Days 2026",
@@ -7897,7 +7984,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-26-0364"
+   "id": "qbg-2026-11-26-0366"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -7918,7 +8005,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-30-0365"
+   "id": "qbg-2026-11-30-0367"
   },
   {
    "title": "Van at Senator Roxanne Persaud’s Office",
@@ -7934,11 +8021,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-01-0366"
+   "id": "nylag-2026-12-01-0368"
   },
   {
    "title": "Bird and Nature Walk: Silver Lake Park",
@@ -7959,7 +8047,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-12-02-0367"
+   "id": "simuseum-2026-12-02-0369"
   },
   {
    "title": "Van at Senator Comrie’s office",
@@ -7975,11 +8063,34 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-02-0368"
+   "id": "nylag-2026-12-02-0370"
+  },
+  {
+   "title": "The Rockefeller Center Christmas Tree Lighting",
+   "start": "2026-12-02T19:00:00",
+   "end": "2026-12-02T19:00:00",
+   "all_day": true,
+   "venue": "Rockefeller Plaza",
+   "borough": "Manhattan",
+   "address": "",
+   "description": "The tree in Rockefeller Plaza is lit for the season. It arrives on November 7; check the page for viewing details before you go.",
+   "url": "https://www.rockefellercenter.com/holidays/rockefeller-center-christmas-tree/",
+   "image": null,
+   "fit": null,
+   "kind": "Holiday",
+   "format": "In person",
+   "free": false,
+   "need": "other",
+   "source": "Rockefeller Center",
+   "source_key": "rockefeller-center",
+   "source_url": "https://www.rockefellercenter.com/",
+   "checked": "2026-10-10",
+   "id": "rockefeller-center-2026-12-02-0371"
   },
   {
    "title": "Horticulture Community Volunteer Days 2026",
@@ -8000,7 +8111,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-03-0369"
+   "id": "qbg-2026-12-03-0372"
   },
   {
    "title": "Van at Senator Sepulveda’s Office",
@@ -8016,11 +8127,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-03-0370"
+   "id": "nylag-2026-12-03-0373"
   },
   {
    "title": "Van at Council Member Salaam’s Office",
@@ -8036,11 +8148,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-04-0371"
+   "id": "nylag-2026-12-04-0374"
   },
   {
    "title": "Edible Island – part of the Holiday Hop!",
@@ -8061,7 +8174,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-12-05-0372"
+   "id": "simuseum-2026-12-05-0375"
   },
   {
    "title": "Winter Wonder",
@@ -8082,7 +8195,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-06-0373"
+   "id": "qbg-2026-12-06-0376"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -8103,7 +8216,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-07-0374"
+   "id": "qbg-2026-12-07-0377"
   },
   {
    "title": "Van at Assembly Member Catalina Cruz’s Office",
@@ -8119,11 +8232,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-07-0375"
+   "id": "nylag-2026-12-07-0378"
   },
   {
    "title": "Van at Assembly Member Manny De Los Santos’ Office",
@@ -8139,11 +8253,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-09-0376"
+   "id": "nylag-2026-12-09-0379"
   },
   {
    "title": "Horticulture Community Volunteer Days 2026",
@@ -8164,7 +8279,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-10-0377"
+   "id": "qbg-2026-12-10-0380"
   },
   {
    "title": "Van at Assemblymember González-Rojas’ Office",
@@ -8180,11 +8295,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-10-0378"
+   "id": "nylag-2026-12-10-0381"
   },
   {
    "title": "Van at Council Member Thomas-Henry’s Office",
@@ -8200,11 +8316,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-11-0379"
+   "id": "nylag-2026-12-11-0382"
   },
   {
    "title": "Winter Wreath Workshop",
@@ -8225,7 +8342,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-12-12-0380"
+   "id": "randalls-2026-12-12-0383"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -8246,7 +8363,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-14-0381"
+   "id": "qbg-2026-12-14-0384"
   },
   {
    "title": "Van at Council Member Alexa Avilés’ Office",
@@ -8262,11 +8379,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-14-0382"
+   "id": "nylag-2026-12-14-0385"
   },
   {
    "title": "Van at Council Member Rita Joseph Office",
@@ -8282,11 +8400,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-15-0383"
+   "id": "nylag-2026-12-15-0386"
   },
   {
    "title": "Bird and Nature Walk: Blue Heron Park",
@@ -8307,7 +8426,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-12-16-0384"
+   "id": "simuseum-2026-12-16-0387"
   },
   {
    "title": "Van at Council Member Zhuang’s Office",
@@ -8323,11 +8442,12 @@
    "kind": "Mobile Legal Help Center",
    "format": "In person",
    "free": true,
+   "alt_url": null,
    "source": "New York Legal Assistance Group",
    "source_key": "nylag",
    "source_url": "https://nylag.org/",
    "need": "legal",
-   "id": "nylag-2026-12-16-0385"
+   "id": "nylag-2026-12-16-0388"
   },
   {
    "title": "Horticulture Community Volunteer Days 2026",
@@ -8348,7 +8468,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-17-0386"
+   "id": "qbg-2026-12-17-0389"
   },
   {
    "title": "Compost Beautification Community Volunteer Days",
@@ -8369,7 +8489,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-20-0387"
+   "id": "qbg-2026-12-20-0390"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -8390,7 +8510,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-21-0388"
+   "id": "qbg-2026-12-21-0391"
   },
   {
    "title": "Horticulture Community Volunteer Days 2026",
@@ -8411,7 +8531,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-24-0389"
+   "id": "qbg-2026-12-24-0392"
   },
   {
    "title": "Christmas Day – Garden is CLOSED",
@@ -8432,7 +8552,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-25-0390"
+   "id": "qbg-2026-12-25-0393"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -8453,7 +8573,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-28-0391"
+   "id": "qbg-2026-12-28-0394"
   },
   {
    "title": "Bird and Nature Walk: Great Kills Park",
@@ -8474,7 +8594,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-12-30-0392"
+   "id": "simuseum-2026-12-30-0395"
   },
   {
    "title": "Horticulture Community Volunteer Days 2026",
@@ -8495,7 +8615,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-31-0393"
+   "id": "qbg-2026-12-31-0396"
   },
   {
    "title": "New Year’s Day – Garden is CLOSED",
@@ -8516,7 +8636,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2027-01-01-0394"
+   "id": "qbg-2027-01-01-0397"
   },
   {
    "title": "Compost Beautification Community Volunteer Days",
@@ -8537,7 +8657,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2027-01-17-0395"
+   "id": "qbg-2027-01-17-0398"
   },
   {
    "title": "Martin Luther King Jr. Day – Garden is OPEN",
@@ -8558,7 +8678,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2027-01-18-0396"
+   "id": "qbg-2027-01-18-0399"
   }
  ]
 }
