@@ -1,6 +1,6 @@
 {
- "generated": "2026-11-21T16:50:37",
- "horizon": "2027-03-21",
+ "generated": "2026-11-22T17:12:47",
+ "horizon": "2027-03-22",
  "sources": [
   {
    "key": "nylag",
@@ -314,741 +314,32 @@
   }
  ],
  "featured": [
-  "god-s-love-we-deliver-2026-11-22-0035",
-  "lesec-2026-11-21-0000",
-  "prospect-2026-11-21-0002",
-  "cityparks-2026-11-21-0003",
-  "forestparktrust-2026-11-21-0006",
-  "fortgreenepark-2026-11-21-0011",
-  "wyckoff-2026-11-21-0016",
-  "sichildrens-2026-11-21-0019",
-  "simuseum-2026-11-21-0021",
-  "noblemaritime-2026-11-21-0022",
-  "cmom-2026-11-21-0023",
-  "essexmarket-2026-11-22-0051",
-  "jbrpc-2026-11-22-0053",
-  "nami-2026-11-23-0063",
-  "queenscb3-2026-11-23-0068",
-  "82ndstreet-2026-11-24-0077",
-  "samaritans-2026-11-24-0084",
-  "prospect-park-track-club-2026-11-26-0108",
-  "foodbank-2026-12-02-0194",
-  "friends-of-washington-market-park-2026-12-05-0246",
-  "betances-2026-12-05-0249",
-  "brooklynbp-2026-12-06-0259",
-  "chasi-2026-11-26-0113",
-  "historic-richmond-town-2026-12-04-0227"
+  "god-s-love-we-deliver-2026-11-22-0003",
+  "lesec-2026-11-22-0001",
+  "cityparks-2026-11-22-0006",
+  "randalls-2026-11-22-0007",
+  "cmom-2026-11-22-0008",
+  "prospect-2026-11-22-0010",
+  "sichildrens-2026-11-22-0014",
+  "essexmarket-2026-11-22-0018",
+  "jbrpc-2026-11-22-0020",
+  "nami-2026-11-23-0030",
+  "queenscb3-2026-11-23-0035",
+  "82ndstreet-2026-11-24-0044",
+  "samaritans-2026-11-24-0051",
+  "prospect-park-track-club-2026-11-26-0075",
+  "forestparktrust-2026-11-27-0088",
+  "foodbank-2026-12-02-0162",
+  "noblemaritime-2026-12-03-0173",
+  "simuseum-2026-12-05-0211",
+  "friends-of-washington-market-park-2026-12-05-0214",
+  "betances-2026-12-05-0217",
+  "brooklynbp-2026-12-06-0228",
+  "chasi-2026-11-26-0080",
+  "rockefeller-center-2026-12-02-0164",
+  "historic-richmond-town-2026-12-04-0195"
  ],
  "events": [
-  {
-   "title": "Food scrap drop-off: Mathews-Palmer Park",
-   "start": "2026-11-21T07:00:00",
-   "end": "2026-11-21T18:00:00",
-   "all_day": false,
-   "venue": "Mathews–Palmer Park",
-   "borough": "Manhattan",
-   "address": "445 W 45th St",
-   "description": "Thank you for participating in the Hell’s Kitchen Commons Food Scrap Drop-Off. Hell’s Kitchen Commons accepts food scraps at Mathews Palmer Park (45th between 9th/10th Ave) during the park’s open hours. This is a community-managed compost drop-off site.…",
-   "url": "https://www.lesecologycenter.org/calendar/mathews-palmer-park/2026-11-21/",
-   "image": "https://www.lesecologycenter.org/wp-content/uploads/tribe_events/mathews-palmer-park/Compost-Site-Featured-Image.jpg",
-   "fit": null,
-   "kind": "Compost Drop-Off",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "source": "Lower East Side Ecology Center",
-   "source_key": "lesec",
-   "source_url": "https://www.lesecologycenter.org/",
-   "need": "other",
-   "id": "lesec-2026-11-21-0000",
-   "verified": true,
-   "photo": "assets/events/aa754843c3c6d9bc.webp",
-   "photo_w": 640,
-   "photo_h": 480
-  },
-  {
-   "title": "Food scrap drop-off: Union Square",
-   "start": "2026-11-21T08:00:00",
-   "end": "2026-11-21T17:00:00",
-   "all_day": false,
-   "venue": "Union Square Greenmarket",
-   "borough": "Manhattan",
-   "address": "Union Square",
-   "description": "Bring your compost to our original community compost drop-off location, operating since 1994. Located at the eastern edge of the Union Square Greenmarket–look for the grey barrels or ask a GrowNYC representative for the compost drop-off. For more information…",
-   "url": "https://www.lesecologycenter.org/calendar/union-square-compost-drop-off-2020/2026-11-21/",
-   "image": "https://www.lesecologycenter.org/wp-content/uploads/tribe_events/mathews-palmer-park/Compost-Site-Featured-Image.jpg",
-   "fit": null,
-   "kind": "Compost Drop-Off Union Square",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "source": "Lower East Side Ecology Center",
-   "source_key": "lesec",
-   "source_url": "https://www.lesecologycenter.org/",
-   "need": "other",
-   "id": "lesec-2026-11-21-0001",
-   "verified": true
-  },
-  {
-   "title": "Greenmarket at Grand Army Plaza",
-   "start": "2026-11-21T08:00:00",
-   "end": "2026-11-21T16:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "Brooklyn",
-   "address": "",
-   "description": "At what other market can you do all your food shopping, sample local wine and explore Brooklyn’s favorite park? Established in 1989, the Grand Army Plaza greenmarket is the flagship Brooklyn market. EBT/Food Stamps and WIC & Senior FMNP coupons accepted…",
-   "url": "https://www.prospectpark.org/event/greenmarket-at-grand-army-plaza-2/2026-11-21/",
-   "image": "https://www.prospectpark.org/wp-content/uploads/filer_public/bc/e9/bce94562-9695-40f8-9cf3-c7124c2d64b4/greenmarket_c_martin_seck-scaled.jpg",
-   "fit": null,
-   "kind": "Food Wellness",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "listed": true,
-   "source": "Prospect Park Alliance",
-   "source_key": "prospect",
-   "source_url": "https://www.prospectpark.org/",
-   "need": "other",
-   "id": "prospect-2026-11-21-0002",
-   "verified": true,
-   "photo": "assets/events/4ed6621627cabfab.webp",
-   "photo_w": 640,
-   "photo_h": 431
-  },
-  {
-   "title": "It’s My Park at Baisley Pond Park",
-   "start": "2026-11-21T09:00:00",
-   "end": "2026-11-21T12:00:00",
-   "all_day": false,
-   "venue": "Queens",
-   "borough": "Queens",
-   "address": "",
-   "description": "This It’s My Park season, volunteer with Next Day After, Inc to plant daffodils in Baisley Pond Park. We look forward to cleaning up the park with you! Volunteers should meet at Baisley Pond Park-entrance at 155th Street and Foch Blvd, closest to basketball…",
-   "url": "https://cityparksfoundation.org/events/its-my-park-at-baisley-pond-park-3/",
-   "image": "https://cityparksfoundation.org/wp-content/uploads/2025/02/IMP_widget_2023_rt_3-2-1-2-1-1-1-1-1-1-2-1-1-1-2-1-1-1-1-8-1-2-1-1-1-5-1-2-1-1-1-3-1-2-1-1-3-3-1-2-4-2-2-3.jpg",
-   "fit": null,
-   "kind": "Volunteer: It's My Park",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "listed": true,
-   "source": "City Parks Foundation",
-   "source_key": "cityparks",
-   "source_url": "https://cityparksfoundation.org/",
-   "need": "other",
-   "id": "cityparks-2026-11-21-0003",
-   "verified": true,
-   "photo": "assets/events/37d17774ba0ac08b.webp",
-   "photo_w": 640,
-   "photo_h": 451
-  },
-  {
-   "title": "It’s My Park at Westerleigh Park",
-   "start": "2026-11-21T09:00:00",
-   "end": "2026-11-21T12:00:00",
-   "all_day": false,
-   "venue": "Staten Island",
-   "borough": "Staten Island",
-   "address": "",
-   "description": "This It’s My Park season, volunteer with Westerleigh Parks Coalition to beautify Westerleigh Park. We look forward to cleaning up the park with you! Volunteers should meet at the bandstand for parl clean up. For more information, please email…",
-   "url": "https://cityparksfoundation.org/events/its-my-park-at-westerleigh-park-40/",
-   "image": "https://cityparksfoundation.org/wp-content/uploads/2025/02/IMP_widget_2023_centr_2-1-3-1-3-1-1-1-2-2-1-1-2-2-1-1-3-1-2-1-2-1-5-1-2-1-1-1-3-1-1-2-2-5-1-1-5-3-1-3-1-1.jpg",
-   "fit": null,
-   "kind": "Volunteer: It's My Park",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "listed": true,
-   "source": "City Parks Foundation",
-   "source_key": "cityparks",
-   "source_url": "https://cityparksfoundation.org/",
-   "need": "other",
-   "id": "cityparks-2026-11-21-0004",
-   "verified": true
-  },
-  {
-   "title": "It’s My Park at Glenwood Landing",
-   "start": "2026-11-21T09:30:00",
-   "end": "2026-11-21T12:00:00",
-   "all_day": false,
-   "venue": "Queens",
-   "borough": "Queens",
-   "address": "",
-   "description": "10th Annual Fall Cleanup and Bulb Planting at Glenwood Landing Park. We have two cleanup events annually — Spring and Fall. Volunteers should meet at Corner of Glenwood St. and 39th Avenue. For more information, please email westmorelandassn@aol.com.",
-   "url": "https://cityparksfoundation.org/events/its-my-park-at-glenwood-landing-3/",
-   "image": "https://cityparksfoundation.org/wp-content/uploads/2025/03/IMP_widget_2023_rt_1-2-1-4-1-2-1-1-1-1-1-2-1-1-2-1-1-1-1-8-4-1-1-1-5-1-2-3-1-2-1-2-1-3-1-1-1-3-1-1-3-1.jpg",
-   "fit": null,
-   "kind": "Volunteer: It's My Park",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "listed": true,
-   "source": "City Parks Foundation",
-   "source_key": "cityparks",
-   "source_url": "https://cityparksfoundation.org/",
-   "need": "other",
-   "id": "cityparks-2026-11-21-0005",
-   "verified": true
-  },
-  {
-   "title": "11/21 Trail Restoration at Forest Park",
-   "start": "2026-11-21T10:00:00",
-   "end": "2026-11-21T13:00:00",
-   "all_day": false,
-   "venue": "Forest Park",
-   "borough": "Queens",
-   "address": "",
-   "description": "Join NYC Parks and The Forest Park Trust for Restoration Fridays this fall to engage in hands-on forest restoration work, including invasive species removal, trail restoration, and possible planting in our park. Advance registration is required with the link…",
-   "url": "https://www.forestparktrust.org/events/9qq6rqvdgflq8mje0j3zsrtavbvfz5-ef6ht-barmr-tjlrn-ny8bw-jt5c5-5kj6p-ac54c-acm22-h254e-yjhj2-7pcyl-kyf7k-6nct9-pgn7h-4hrfr",
-   "image": "https://images.squarespace-cdn.com/content/v1/5f2b0fb8e4b73c703250481c/1792780947655-RVB0RXS611U8XY0L8MJH/20240823_130720.jpg?format=1500w",
-   "kind": "Forest Park Trust",
-   "format": "In person",
-   "free": false,
-   "source": "Forest Park Trust",
-   "source_key": "forestparktrust",
-   "source_url": "https://www.forestparktrust.org/",
-   "need": "other",
-   "id": "forestparktrust-2026-11-21-0006",
-   "verified": true,
-   "photo": "assets/events/853daf42a31c6b70.webp",
-   "photo_w": 640,
-   "photo_h": 480
-  },
-  {
-   "title": "2026 Leaf Fest Day Two - Community Volunteer Day",
-   "start": "2026-11-21T10:00:00",
-   "end": "2026-11-21T12:00:00",
-   "all_day": false,
-   "venue": "Astoria Park",
-   "borough": "",
-   "address": "",
-   "description": "Turn leaves into compost in Astoria Park!",
-   "url": "https://www.astoriaparkalliance.org/events/2026-11-21/astoria-park-leaffest-th2ff-ggyph-4ek75-s8mhc",
-   "image": "https://images.squarespace-cdn.com/content/v1/567818daa12f4431fe768038/1634789705576-7M470MAERLI99LCANNWE/IMG_1286.JPG?format=1500w",
-   "kind": "Astoria Park Alliance",
-   "format": "In person",
-   "free": false,
-   "source": "Astoria Park Alliance",
-   "source_key": "astoriapark",
-   "source_url": "https://www.astoriaparkalliance.org/",
-   "need": "other",
-   "id": "astoriapark-2026-11-21-0007",
-   "verified": true
-  },
-  {
-   "title": "Electronics recycling: Bayside (Crocheron Park)",
-   "start": "2026-11-21T10:00:00",
-   "end": "2026-11-21T14:00:00",
-   "all_day": false,
-   "venue": "Crocheron Park",
-   "borough": "",
-   "address": "34th Avenue 214-41",
-   "description": "We accept the following working and non-working electronic equipment: Audio-visual equipment Cell phones, pagers, PDAs Components (hard drives, circuit boards, power supplies, etc.) Computers (laptops & desktops, servers, mainframes) Digital Converter Boxes…",
-   "url": "https://www.lesecologycenter.org/calendar/bayside-crocheron-park/",
-   "image": "https://www.lesecologycenter.org/wp-content/uploads/tribe_events/williamsburg-el-puente/Ewaste-Textiles-Featured-Image.jpg",
-   "fit": null,
-   "kind": "Community Events Community Recycling Events",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "source": "Lower East Side Ecology Center",
-   "source_key": "lesec",
-   "source_url": "https://www.lesecologycenter.org/",
-   "need": "other",
-   "id": "lesec-2026-11-21-0008"
-  },
-  {
-   "title": "Introduction to Birdwatching Outings",
-   "start": "2026-11-21T10:00:00",
-   "end": "2026-11-21T12:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "Brooklyn",
-   "address": "",
-   "description": "Whether you’re new to birding or looking to build your skills, this introductory outing is a great way to explore Prospect Park and learn about the birds that visit throughout the year. Join a member of the Brooklyn Bird Club to learn birding basics and…",
-   "url": "https://www.prospectpark.org/event/introduction-to-birdwatching-outings-3-2/2026-11-21/",
-   "image": "https://www.prospectpark.org/wp-content/uploads/2025/08/RS21286_DSC_9940-scaled.jpg",
-   "fit": null,
-   "kind": "Audubon Center Birdwatching Free Nature Programs",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "listed": true,
-   "source": "Prospect Park Alliance",
-   "source_key": "prospect",
-   "source_url": "https://www.prospectpark.org/",
-   "need": "other",
-   "id": "prospect-2026-11-21-0009",
-   "verified": true
-  },
-  {
-   "title": "Workshop with the New Victory Theater: Tilt! An 80’s Circus Thrill Ride",
-   "start": "2026-11-21T10:30:00",
-   "end": "2026-11-21T12:30:00",
-   "all_day": false,
-   "venue": "Inside Art",
-   "borough": "",
-   "address": "",
-   "description": "Join us for a special workshop and activities inspired by the performance Tilt! An ’80s Circus Thrill Ride .",
-   "url": "https://cmom.org/event/workshop-with-the-new-victory-theater-tilt-an-80s-circus-thrill-ride/",
-   "image": "https://cmom.org/wp-content/uploads/2026/09/1117-to-1122-Whats-On-Weekly-Programs-1.png",
-   "fit": null,
-   "kind": "Drop-in Programs Performances & Shows",
-   "format": "In person",
-   "free": false,
-   "alt_url": null,
-   "source": "Children's Museum of Manhattan",
-   "source_key": "cmom",
-   "source_url": "https://cmom.org/",
-   "need": "family",
-   "id": "cmom-2026-11-21-0010",
-   "verified": true
-  },
-  {
-   "title": "Black History And Culture Tour Of Fort Greene",
-   "start": "2026-11-21T11:00:00",
-   "end": "2026-11-21T12:30:00",
-   "all_day": false,
-   "venue": "Fort Greene Park",
-   "borough": "Brooklyn",
-   "address": "",
-   "description": "Experience the Black History and Culture of Fort Greene Tour led by local historian, Suzanne Spellen. Working with Spellen and our Tour Advisory Committee, we develop and refine the route and educational content to help retell Fort Greene’s deep roots in…",
-   "url": "https://www.fortgreenepark.org/calendar/black-history-culture-tour-112126",
-   "image": "https://images.squarespace-cdn.com/content/v1/63e12e443e0bde59091188ad/1772223427436-IR68XUAUUMO8JPPIVY37/IMG_9812.jpg?format=1500w",
-   "kind": "Fort Greene Park Conservancy",
-   "format": "In person",
-   "free": false,
-   "listed": true,
-   "source": "Fort Greene Park Conservancy",
-   "source_key": "fortgreenepark",
-   "source_url": "https://www.fortgreenepark.org/",
-   "need": "other",
-   "id": "fortgreenepark-2026-11-21-0011",
-   "verified": true,
-   "photo": "assets/events/575b4c428f467521.webp",
-   "photo_w": 640,
-   "photo_h": 480
-  },
-  {
-   "title": "Hearth & Harvest Festival",
-   "start": "2026-11-21T11:00:00",
-   "end": "2026-11-21T16:00:00",
-   "all_day": false,
-   "venue": "Historic Richmond Town",
-   "borough": "Staten Island",
-   "address": "",
-   "description": "Explore native life and culture through presentations of indigenous dance, storytelling, and crafts in the 3rd County Courthouse and the Native Encampment. See demonstrations of hearth cooking in North America by costumed interpreters who use 18th & 19th…",
-   "url": "https://www.historicrichmondtown.org/events/hearth-amp-harvest",
-   "image": "https://images.squarespace-cdn.com/content/v1/5b24209fda02bc5bf5953ca1/1664554540866-QIWKKQ9D9T1L0A5W137W/Hearth+%26+Harvest+logo+%28Facebook+Post%29+%284+x+2+in%29+%283+x+2+in%29+%282%29.png?format=1500w",
-   "kind": "Historic Richmond Town",
-   "format": "In person",
-   "free": false,
-   "source": "Historic Richmond Town",
-   "source_key": "historic-richmond-town",
-   "source_url": "https://www.historicrichmondtown.org/",
-   "need": "other",
-   "id": "historic-richmond-town-2026-11-21-0012",
-   "verified": true
-  },
-  {
-   "title": "Mobile Pantry 11/21/2026",
-   "start": "2026-11-21T11:00:00",
-   "end": "2026-11-21T13:00:00",
-   "all_day": false,
-   "venue": "Zero Hunger",
-   "borough": "Brooklyn",
-   "address": "195 Graham Avenue",
-   "description": "",
-   "url": "https://www.foodbanknyc.org/find-food/",
-   "image": null,
-   "fit": null,
-   "kind": "Exclude from Fundraising Event Sections Mobile Pantry…",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "source": "Food Bank For New York City",
-   "source_key": "foodbank",
-   "source_url": "https://www.foodbanknyc.org/",
-   "need": "food",
-   "id": "foodbank-2026-11-21-0013"
-  },
-  {
-   "title": "Mobile Pantry 11/21/2026",
-   "start": "2026-11-21T11:00:00",
-   "end": "2026-11-21T13:00:00",
-   "all_day": false,
-   "venue": "Lehman Village",
-   "borough": "Manhattan",
-   "address": "1589 Madison Ave",
-   "description": "",
-   "url": "https://www.foodbanknyc.org/find-food/",
-   "image": null,
-   "fit": null,
-   "kind": "Exclude from Fundraising Event Sections Mobile Pantry…",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "source": "Food Bank For New York City",
-   "source_key": "foodbank",
-   "source_url": "https://www.foodbanknyc.org/",
-   "need": "food",
-   "id": "foodbank-2026-11-21-0014"
-  },
-  {
-   "title": "Park Pitch In: Fall Leaf Raking",
-   "start": "2026-11-21T11:00:00",
-   "end": "2026-11-21T14:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "Brooklyn",
-   "address": "",
-   "description": "Join Prospect Park Alliance during leaf-peeping season to care for Brooklyn’s Backyard! Volunteers will help to rake leaves from pathways and other areas around the 3rd St and Willink Entrances to ensure safe and easy access. Volunteers may also assist with…",
-   "url": "https://www.prospectpark.org/event/park-pitch-in-fall-leaf-raking/2026-11-21/",
-   "image": "https://www.prospectpark.org/wp-content/uploads/2023/03/RS7529_7.16.16_Volunteers_Martin-Seck-66-scaled.jpg",
-   "fit": null,
-   "kind": "Environment Free Volunteer",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "listed": true,
-   "source": "Prospect Park Alliance",
-   "source_key": "prospect",
-   "source_url": "https://www.prospectpark.org/",
-   "need": "other",
-   "id": "prospect-2026-11-21-0015",
-   "verified": true
-  },
-  {
-   "title": "Public Tours",
-   "start": "2026-11-21T11:00:00",
-   "end": "2026-11-21T14:00:00",
-   "all_day": false,
-   "venue": "Wyckoff Farmhouse Museum",
-   "borough": "Brooklyn",
-   "address": "",
-   "description": "@ Experience New York’s oldest house during our public tour hours, offered every Saturday in the spring, summer, and fall. Our park grounds and garden are open from 11:00 AM to 2:00 PM, with guided tours of the historic house offered each hour starting at…",
-   "url": "https://wyckoffmuseum.org/event/public-tours-12/2026-11-21/",
-   "image": "https://wyckoffmuseum.org/wp-content/uploads/2025/05/71-1.webp",
-   "fit": null,
-   "kind": "Wyckoff Farmhouse Museum",
-   "format": "In person",
-   "free": false,
-   "alt_url": null,
-   "source": "Wyckoff Farmhouse Museum",
-   "source_key": "wyckoff",
-   "source_url": "https://wyckoffmuseum.org/",
-   "need": "other",
-   "id": "wyckoff-2026-11-21-0016",
-   "verified": true,
-   "photo": "assets/events/bc886c2cf332bff9.webp",
-   "photo_w": 640,
-   "photo_h": 426
-  },
-  {
-   "title": "Autumn Painting",
-   "start": "2026-11-21T11:15:00",
-   "end": "2026-11-21T12:15:00",
-   "all_day": false,
-   "venue": "PlayWorks",
-   "borough": "",
-   "address": "",
-   "description": "What colors do you see during autumn? Apply warm colors of paint to paper using painting tools to create an autumn scene!",
-   "url": "https://cmom.org/event/autumn-painting/2026-11-21/1/",
-   "image": "https://cmom.org/wp-content/uploads/2026/05/A7402581_11zon.webp",
-   "fit": null,
-   "kind": "Drop-in Programs",
-   "format": "In person",
-   "free": false,
-   "alt_url": null,
-   "source": "Children's Museum of Manhattan",
-   "source_key": "cmom",
-   "source_url": "https://cmom.org/",
-   "need": "family",
-   "id": "cmom-2026-11-21-0017",
-   "verified": true
-  },
-  {
-   "title": "Public Walking Tour- Chinatown: A Walk through History",
-   "start": "2026-11-21T11:30:00",
-   "end": "2026-11-21T13:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "",
-   "address": "",
-   "description": "Uncover the history of one of New York City’s oldest and most culturally diverse neighborhoods! This walking tour explores how both everyday buildings and places of historical significance reflect and shape a community. Together, trace the transformation of…",
-   "url": "https://www.mocanyc.org/event/public-walking-tour-chinatown-a-walk-through-history-14-2-2/",
-   "image": "https://www.mocanyc.org/wp-content/uploads/2025/06/Columbus-Park-Walking-Tour.avif",
-   "fit": null,
-   "kind": "AANHPI Events In-Person Open to general public",
-   "format": "In person",
-   "free": false,
-   "alt_url": null,
-   "source": "Museum of Chinese in America",
-   "source_key": "moca",
-   "source_url": "https://www.mocanyc.org/",
-   "need": "other",
-   "id": "moca-2026-11-21-0018",
-   "verified": true
-  },
-  {
-   "title": "Weekend Walk-In! Workshop: Fall Foodscapes",
-   "start": "2026-11-21T12:00:00",
-   "end": "2026-11-21T16:00:00",
-   "all_day": false,
-   "venue": "Staten Island Children’s Museum",
-   "borough": "Staten Island",
-   "address": "1000 Richmond Terrace, Building M",
-   "description": "[vc_row][vc_column width=”2/3″][vc_column_text] Create a colorful plate of your favorite fall foods! In this hands-on art activity, children will use cardboard, paper, scissors, and glue to design their own fall foodscape. From pumpkins and apples to pies and…",
-   "url": "https://sichildrensmuseum.org/event/weekend-walk-in-workshop-fall-foodscapes/2026-11-21/",
-   "image": "https://sichildrensmuseum.org/wp-content/uploads/2026/10/fall-foodscapes-rhombus.png",
-   "fit": null,
-   "kind": "art crafts Event for Kids Family Friendly",
-   "format": "In person",
-   "free": false,
-   "alt_url": null,
-   "source": "Staten Island Children's Museum",
-   "source_key": "sichildrens",
-   "source_url": "https://sichildrensmuseum.org/",
-   "need": "family",
-   "id": "sichildrens-2026-11-21-0019",
-   "verified": true,
-   "photo": "assets/events/b5bc6573fbdd12e3.webp",
-   "photo_w": 640,
-   "photo_h": 643
-  },
-  {
-   "title": "Math in Bloom: Fibonacci Community Volunteer Day",
-   "start": "2026-11-21T12:30:00",
-   "end": "2026-11-21T16:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "",
-   "address": "",
-   "description": ", Celebrate the finale of Math in Bloom programming for 2026! Join QBG’s horticulture staff for an engaging, educational event where you will learn about the special Fibonacci spiral at QBG. Make new friends and put your green thumb to good use in by helping…",
-   "url": "https://queensbotanical.org/event/math-in-bloom-fibonacci-community-volunteer-day/",
-   "image": "https://queensbotanical.org/wp-content/uploads/2026/11/volunteering.webp",
-   "fit": null,
-   "kind": "Queens Botanical Garden",
-   "format": "In person",
-   "free": false,
-   "alt_url": "https://www.eventbrite.com/e/fibonacci-community-volunteer-day-registration-2003718580212?aff=oddtdtcreator",
-   "source": "Queens Botanical Garden",
-   "source_key": "qbg",
-   "source_url": "https://queensbotanical.org/",
-   "need": "other",
-   "id": "qbg-2026-11-21-0020",
-   "verified": true
-  },
-  {
-   "title": "Family History Month Workshop 2: Transcribe-a-thon",
-   "start": "2026-11-21T13:00:00",
-   "end": "2026-11-21T15:00:00",
-   "all_day": false,
-   "venue": "Staten Island Museum at Snug Harbor",
-   "borough": "Staten Island",
-   "address": "1000 Richmond Terrace, Building A",
-   "description": "Free with museum admission. Help the Staten Island Museum transcribe newly digitized family history records, making them more easily searchable and accessible for researchers. A transcribe-a-thon is an event where people gather to work simultaneously on a…",
-   "url": "https://www.statenislandmuseum.org/event/family-history-month-workshop-2-transcribe-a-thon/",
-   "image": "https://www.statenislandmuseum.org/wp-content/uploads/2021/12/Transcribathon.png",
-   "fit": null,
-   "kind": "History Event",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "source": "Staten Island Museum",
-   "source_key": "simuseum",
-   "source_url": "https://www.statenislandmuseum.org/",
-   "need": "other",
-   "id": "simuseum-2026-11-21-0021",
-   "verified": true,
-   "photo": "assets/events/9e2070696bc794f2.webp",
-   "photo_w": 640,
-   "photo_h": 480
-  },
-  {
-   "title": "Whistle While You Work - A Basket Weaving and Sea Shanty Workshop",
-   "start": "2026-11-21T13:00:00",
-   "end": "2026-11-21T15:00:00",
-   "all_day": false,
-   "venue": "Noble Maritime Collection",
-   "borough": "Staten Island",
-   "address": "1000 Richmond Terrace, Building D",
-   "description": "Join us on Saturday, November 21 at 1pm as we conclude our exploration of what the “weary sailors” of Snug Harbor did in their retirement. Teresa Caliari will lead a mini tour of basket weaving and musical artifacts in the museum. Then Bob Wright will teach…",
-   "url": "https://www.noblemaritime.org/events/2026/11/21/whistle-while-you-work-nbsp-a-basket-weaving-and-sea-shanty-workshopnbsp",
-   "image": "https://images.squarespace-cdn.com/content/v1/569cf10657eb8d0f114f34c4/1791384689830-B7D6KEGPADA1O5JR2T6L/Basket+Making.jpg?format=1500w",
-   "kind": "Noble Maritime Collection",
-   "format": "In person",
-   "free": false,
-   "source": "Noble Maritime Collection",
-   "source_key": "noblemaritime",
-   "source_url": "https://www.noblemaritime.org/",
-   "need": "other",
-   "id": "noblemaritime-2026-11-21-0022",
-   "verified": true,
-   "photo": "assets/events/6d017611c54d2dd4.webp",
-   "photo_w": 640,
-   "photo_h": 373
-  },
-  {
-   "title": "Workshop: Cooking Lesson with Harlem Grown",
-   "start": "2026-11-21T13:00:00",
-   "end": "2026-11-21T13:45:00",
-   "all_day": false,
-   "venue": "PlayWorks Classroom",
-   "borough": "Manhattan",
-   "address": "",
-   "description": "Children and families will join Harlem Grown Chef educator Sasha Dubose for a hands- on cooking lesson, at the Children’s Museum of Manhattan. Participants will practice basic cooking skills, explore recipe creation, and discover the cultural history and…",
-   "url": "https://cmom.org/event/workshop-cooking-lesson-with-harlem-grown/2026-11-21/1/",
-   "image": "https://cmom.org/wp-content/uploads/2026/10/1117-to-1122-Whats-On-Weekly-Programs-2.png",
-   "fit": null,
-   "kind": "Sign-up Workshops",
-   "format": "In person",
-   "free": false,
-   "alt_url": null,
-   "source": "Children's Museum of Manhattan",
-   "source_key": "cmom",
-   "source_url": "https://cmom.org/",
-   "need": "family",
-   "id": "cmom-2026-11-21-0023",
-   "verified": true,
-   "photo": "assets/events/5ea39fb03bb30b2b.webp",
-   "photo_w": 640,
-   "photo_h": 503
-  },
-  {
-   "title": "How To Hibernate Walk",
-   "start": "2026-11-21T14:00:00",
-   "end": "2026-11-21T16:00:00",
-   "all_day": false,
-   "venue": "Jamaica Bay Wildlife Refuge Visitor Center",
-   "borough": "",
-   "address": "175-10 Cross Bay Boulevard",
-   "description": "While some migrate, others stay put. How do different animals make it through the winter? Join a ranger on a walk through the wildlife refuge to learn all about the different winter survival strategies present in the park. Learn more",
-   "url": "https://www.jbrpc.org/events/2026/11/21/how-to-hibernate-walk",
-   "image": "https://images.squarespace-cdn.com/content/v1/5398acafe4b03ea7cc92ff58/1793546177898-KCDVRB3ULMYWCKT42JC4/F1823658-DB59-EDEF-E5620C11074D6922.jpg?format=1500w",
-   "kind": "Jamaica Bay-Rockaway Parks Conservancy",
-   "format": "In person",
-   "free": false,
-   "source": "Jamaica Bay-Rockaway Parks Conservancy",
-   "source_key": "jbrpc",
-   "source_url": "https://www.jbrpc.org/",
-   "need": "other",
-   "id": "jbrpc-2026-11-21-0024",
-   "verified": true
-  },
-  {
-   "title": "MOCACREATE: Writing From the Heart with Teaching Artist Yu Rong",
-   "start": "2026-11-21T14:00:00",
-   "end": "2026-11-21T16:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "",
-   "address": "",
-   "description": "Join us on an adventure into Chinese characters and calligraphy with Teaching Artist Yu Rong! With over 4,000 years of history, Chinese characters have a lot to share with us. Ed Young explored just a few in his book Voices of the Heart on display in the…",
-   "url": "https://www.mocanyc.org/event/writingfromtheheart-2/",
-   "image": "https://www.mocanyc.org/wp-content/uploads/2026/07/November-11-MOCACREATE-Universe-banner.png",
-   "fit": null,
-   "kind": "AANHPI Events In-Person Open to general public 家庭活动",
-   "format": "In person",
-   "free": false,
-   "alt_url": null,
-   "source": "Museum of Chinese in America",
-   "source_key": "moca",
-   "source_url": "https://www.mocanyc.org/",
-   "need": "other",
-   "id": "moca-2026-11-21-0025",
-   "verified": true
-  },
-  {
-   "title": "DJ Got Me Fit Dance Party",
-   "start": "2026-11-21T16:00:00",
-   "end": "2026-11-21T16:45:00",
-   "all_day": false,
-   "venue": "Staten Island Children’s Museum",
-   "borough": "Staten Island",
-   "address": "1000 Richmond Terrace, Building M",
-   "description": "[vc_row content_placement=”middle”][vc_column width=”2/3″][vc_column_text css=””] Join us for some super fun fitness! Local favorite DJ Got Me Fit will lead children in silly games and dances inspired by the latest pop music. Included with admission.…",
-   "url": "https://sichildrensmuseum.org/event/dj-got-me-fit-dance-party-8/2026-11-21/",
-   "image": "https://sichildrensmuseum.org/wp-content/uploads/2026/01/dj-got-me-rhombus-1.png",
-   "fit": null,
-   "kind": "Dance Event for Kids Family Friendly Music",
-   "format": "In person",
-   "free": false,
-   "alt_url": null,
-   "source": "Staten Island Children's Museum",
-   "source_key": "sichildrens",
-   "source_url": "https://sichildrensmuseum.org/",
-   "need": "family",
-   "id": "sichildrens-2026-11-21-0026",
-   "verified": true
-  },
-  {
-   "title": "Marvin's Camp Night",
-   "start": "2026-11-21T18:00:00",
-   "end": "2026-11-21T20:00:00",
-   "all_day": false,
-   "venue": "Bernikow JCC",
-   "borough": "Staten Island",
-   "address": "1466 Manor Rd",
-   "description": "Register here",
-   "url": "https://www.sijcc.org/calendar/marvins-camp-night",
-   "image": "https://images.squarespace-cdn.com/content/v1/6a2b0e17af7a1d51e5bf487c/1794324933235-J7LSTDTZI6G0TN764I6R/Camp+Night+%2829%29.png?format=1500w",
-   "kind": "Staten Island JCC",
-   "format": "In person",
-   "free": false,
-   "source": "Staten Island JCC",
-   "source_key": "sijcc",
-   "source_url": "https://www.sijcc.org/",
-   "need": "family",
-   "id": "sijcc-2026-11-21-0027",
-   "verified": true
-  },
-  {
-   "title": "Saturday Sports Night",
-   "start": "2026-11-21T18:00:00",
-   "end": "2026-11-21T20:00:00",
-   "all_day": false,
-   "venue": "Bernikow JCC",
-   "borough": "Staten Island",
-   "address": "1466 Manor Rd",
-   "description": "Register here",
-   "url": "https://www.sijcc.org/calendar/november-sport-night",
-   "image": "https://images.squarespace-cdn.com/content/v1/6a2b0e17af7a1d51e5bf487c/1792613064575-QOJ792CTDXWLLT1II4DQ/Saturday+Sports+Night+%2815%29.png?format=1500w",
-   "kind": "Staten Island JCC",
-   "format": "In person",
-   "free": false,
-   "source": "Staten Island JCC",
-   "source_key": "sijcc",
-   "source_url": "https://www.sijcc.org/",
-   "need": "family",
-   "id": "sijcc-2026-11-21-0028",
-   "verified": true
-  },
-  {
-   "title": "The Jazz Gallery: Marcus Gilmore & Ryoma Takenaga",
-   "start": "2026-11-21T19:00:00",
-   "end": "2026-11-21T22:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "",
-   "address": "",
-   "description": "Marcus Gilmore – drums Ryoma Takenaga – bass Fabian Almazan – piano Mentorship has always been a key theme in jazz history. Most of today’s great jazz musicians were raised through informal channels and gained invaluable experience working alongside their…",
-   "url": "https://www.flatironnomad.nyc/event/the-jazz-gallery-marcus-gilmore-ryoma-takenaga-61082/",
-   "image": null,
-   "fit": null,
-   "kind": "Culture Entertainment",
-   "format": "In person",
-   "free": false,
-   "alt_url": null,
-   "listed": true,
-   "source": "Flatiron NoMad Partnership",
-   "source_key": "flatironnomad",
-   "source_url": "https://www.flatironnomad.nyc/",
-   "need": "other",
-   "id": "flatironnomad-2026-11-21-0029",
-   "verified": true
-  },
   {
    "title": "Proximity Exhibition",
    "start": "2026-11-22T00:00:00",
@@ -1067,7 +358,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-22-0030"
+   "id": "parks-2026-11-22-0000"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -1089,8 +380,11 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-22-0031",
-   "verified": true
+   "id": "lesec-2026-11-22-0001",
+   "verified": true,
+   "photo": "assets/events/aa754843c3c6d9bc.webp",
+   "photo_w": 640,
+   "photo_h": 480
   },
   {
    "title": "Food scrap drop-off: Tompkins Square Greenmarket",
@@ -1112,50 +406,8 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-22-0032"
-  },
-  {
-   "title": "It's My Park at Roberto Clemente Ballfield",
-   "start": "2026-11-22T08:00:00",
-   "end": "2026-11-22T12:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "",
-   "address": "",
-   "description": "This It's My Park season, volunteer with Friends of Roberto Clemente Ballfield to beautify at Roberto Clemente Ballfield. We look forward to cleaning up the park with you!",
-   "url": "https://www.nycgovparks.org/events/2026/11/22/its-my-park-at-roberto-clemente-ballfield",
-   "image": null,
-   "kind": "Volunteer , It's My Park",
-   "format": "In person",
-   "free": false,
-   "source": "NYC Parks",
-   "source_key": "parks",
-   "source_url": "https://www.nycgovparks.org/events",
-   "need": "other",
-   "id": "parks-2026-11-22-0033"
-  },
-  {
-   "title": "It’s My Park at Roberto Clemente Ballfield",
-   "start": "2026-11-22T08:00:00",
-   "end": "2026-11-22T12:00:00",
-   "all_day": false,
-   "venue": "Brooklyn",
-   "borough": "Brooklyn",
-   "address": "",
-   "description": "This It’s My Park season, volunteer with Friends of Roberto Clemente Ballfield to beautify at Roberto Clemente Ballfield. We look forward to cleaning up the park with you! Volunteers should meet at Roberto Clemente Ballfield in Williamsburg, Brooklyn…",
-   "url": "https://cityparksfoundation.org/events/its-my-park-at-roberto-clemente-ballfield/",
-   "image": "https://cityparksfoundation.org/wp-content/uploads/2025/03/IMP_widget_2023_lft_2-4-1-1-3-1-6-3-5-1-2-2-1-1-3-1-1-1-1-8-1-3-1-1-1-10-1-2-1-1-1-2-1-1-3-1-2-2-6-1-2-1-1-1-1-1.jpg",
-   "fit": null,
-   "kind": "Volunteer: It's My Park",
-   "format": "In person",
-   "free": true,
-   "alt_url": null,
-   "listed": true,
-   "source": "City Parks Foundation",
-   "source_key": "cityparks",
-   "source_url": "https://cityparksfoundation.org/",
-   "need": "other",
-   "id": "cityparks-2026-11-22-0034"
+   "id": "lesec-2026-11-22-0002",
+   "verified": true
   },
   {
    "title": "Race to Deliver",
@@ -1177,31 +429,11 @@
    "source_key": "god-s-love-we-deliver",
    "source_url": "https://www.glwd.org/",
    "checked": "2026-10-10",
-   "id": "god-s-love-we-deliver-2026-11-22-0035",
+   "id": "god-s-love-we-deliver-2026-11-22-0003",
    "verified": true,
    "photo": "assets/events/360971ba9e78f4a2.webp",
    "photo_w": 640,
    "photo_h": 427
-  },
-  {
-   "title": "NYRR Open Run: Conference House Park",
-   "start": "2026-11-22T08:45:00",
-   "end": "2026-11-22T11:00:00",
-   "all_day": false,
-   "venue": "Conference House Park",
-   "borough": "Staten Island",
-   "address": "Conference House Park",
-   "description": "NYRR Open Run Brings free, 5K weekly community-led runs, to neighborhood parks across the greater New York City area. The program is free and open to runners and walkers of all ages, abilities, and experience levels. Located at the southernmost point of New…",
-   "url": "https://www.nycgovparks.org/events/2026/11/22/nyrr-open-run-conference-house-park",
-   "image": null,
-   "kind": "Running/Jogging",
-   "format": "In person",
-   "free": true,
-   "source": "NYC Parks",
-   "source_key": "parks",
-   "source_url": "https://www.nycgovparks.org/events",
-   "need": "other",
-   "id": "parks-2026-11-22-0036"
   },
   {
    "title": "Sunday Greenmarket at Bartel-Pritchard Square",
@@ -1224,30 +456,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-22-0037"
-  },
-  {
-   "title": "Farm Cooking Workshop: Pickling",
-   "start": "2026-11-22T09:30:00",
-   "end": "2026-11-22T12:00:00",
-   "all_day": false,
-   "venue": "",
-   "borough": "",
-   "address": "",
-   "description": ", Join the QBG Farm team in pickling our end-of-season harvest! Do you have unripe tomatoes? Green peppers? A handful of random beets? We do! Learn how to preserve the end of the harvest to keep eating delicious veggies through the winter. All participants…",
-   "url": "https://queensbotanical.org/event/farm-cooking-workshop-pickling-2/",
-   "image": "https://queensbotanical.org/wp-content/uploads/2026/10/beets_bunched-scaled-1.jpeg",
-   "fit": null,
-   "kind": "Queens Botanical Garden",
-   "format": "In person",
-   "free": false,
-   "alt_url": "https://www.eventbrite.com/e/farm-cooking-workshop-pickling-tickets-2003617247122",
-   "source": "Queens Botanical Garden",
-   "source_key": "qbg",
-   "source_url": "https://queensbotanical.org/",
-   "need": "other",
-   "id": "qbg-2026-11-22-0038",
-   "verified": true
+   "id": "prospect-2026-11-22-0004"
   },
   {
    "title": "Fall Bulb Planting and Leaf Crunch with Corlears Hook Park",
@@ -1269,7 +478,8 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-22-0039"
+   "id": "lesec-2026-11-22-0005",
+   "verified": true
   },
   {
    "title": "It’s My Park at Corlears Hook Park",
@@ -1292,7 +502,11 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-11-22-0040"
+   "id": "cityparks-2026-11-22-0006",
+   "verified": true,
+   "photo": "assets/events/ab94cd2a05875554.webp",
+   "photo_w": 640,
+   "photo_h": 451
   },
   {
    "title": "Winter Composting with Big Reuse",
@@ -1314,8 +528,11 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-11-22-0041",
-   "verified": true
+   "id": "randalls-2026-11-22-0007",
+   "verified": true,
+   "photo": "assets/events/8a692450b077167c.webp",
+   "photo_w": 640,
+   "photo_h": 640
   },
   {
    "title": "Workshop with the Whitney Museum Pop-Up Open Studio: Roy Lichtenstein",
@@ -1337,7 +554,11 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-22-0042"
+   "id": "cmom-2026-11-22-0008",
+   "verified": true,
+   "photo": "assets/events/6a32cd02073a716e.webp",
+   "photo_w": 640,
+   "photo_h": 503
   },
   {
    "title": "It’s My Park at Rainbow Playground",
@@ -1360,7 +581,8 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-11-22-0043"
+   "id": "cityparks-2026-11-22-0009",
+   "verified": true
   },
   {
    "title": "Park Pitch In: Fall Leaf Raking",
@@ -1383,7 +605,11 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-22-0044"
+   "id": "prospect-2026-11-22-0010",
+   "verified": true,
+   "photo": "assets/events/b53d3833ac8d7655.webp",
+   "photo_w": 640,
+   "photo_h": 457
   },
   {
    "title": "Autumn Painting",
@@ -1405,7 +631,8 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-22-0045"
+   "id": "cmom-2026-11-22-0011",
+   "verified": true
   },
   {
    "title": "CJ Nye: Holiday Open Studio",
@@ -1428,7 +655,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-11-22-0046"
+   "id": "flatironnomad-2026-11-22-0012"
   },
   {
    "title": "Carousel Rides",
@@ -1451,7 +678,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-22-0047"
+   "id": "prospect-2026-11-22-0013"
   },
   {
    "title": "Weekend Walk-In! Workshop: Fall Foodscapes",
@@ -1473,7 +700,34 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-11-22-0048",
+   "id": "sichildrens-2026-11-22-0014",
+   "verified": true,
+   "photo": "assets/events/b5bc6573fbdd12e3.webp",
+   "photo_w": 640,
+   "photo_h": 643
+  },
+  {
+   "title": "It’s My Park at Brower Park",
+   "start": "2026-11-22T13:00:00",
+   "end": "2026-11-22T16:00:00",
+   "all_day": false,
+   "venue": "Brooklyn",
+   "borough": "Brooklyn",
+   "address": "",
+   "description": "Join Friends of Brower Park for our Annual Leaf Crunch Event – we’ll rake leaves into a big pile, give event participants young and old the opportunity to jump in the leaves, and all leaves will be deposited into the last mold compost bin. Volunteers should…",
+   "url": "https://cityparksfoundation.org/events/its-my-park-at-brower-park-30/",
+   "image": "https://cityparksfoundation.org/wp-content/uploads/2025/03/IMP_widget_2023_lft_4-4-1-3-1-2-1-2-2-2-2-1-3-1-1-3-1-1-1-1-8-1-4-1-1-1-10-1-2-1-1-3-2-2-1-5-1-1-2-6-4-4-1.jpg",
+   "fit": null,
+   "kind": "Volunteer: It's My Park",
+   "format": "In person",
+   "free": true,
+   "alt_url": null,
+   "listed": true,
+   "source": "City Parks Foundation",
+   "source_key": "cityparks",
+   "source_url": "https://cityparksfoundation.org/",
+   "need": "other",
+   "id": "cityparks-2026-11-22-0015",
    "verified": true
   },
   {
@@ -1496,7 +750,8 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-22-0049"
+   "id": "cmom-2026-11-22-0016",
+   "verified": true
   },
   {
    "title": "JCC Teens Friendsgiving",
@@ -1516,7 +771,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-11-22-0050",
+   "id": "sijcc-2026-11-22-0017",
    "verified": true
   },
   {
@@ -1538,7 +793,7 @@
    "source_key": "essexmarket",
    "source_url": "https://www.essexmarket.nyc/",
    "need": "other",
-   "id": "essexmarket-2026-11-22-0051",
+   "id": "essexmarket-2026-11-22-0018",
    "verified": true,
    "photo": "assets/events/6e14fbf9f5a43514.webp",
    "photo_w": 640,
@@ -1564,7 +819,8 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-11-22-0052"
+   "id": "sichildrens-2026-11-22-0019",
+   "verified": true
   },
   {
    "title": "Jamaica Bay Sunset Walk",
@@ -1584,7 +840,7 @@
    "source_key": "jbrpc",
    "source_url": "https://www.jbrpc.org/",
    "need": "other",
-   "id": "jbrpc-2026-11-22-0053",
+   "id": "jbrpc-2026-11-22-0020",
    "verified": true,
    "photo": "assets/events/7e180bca167f6587.webp",
    "photo_w": 640,
@@ -1610,7 +866,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-23-0054"
+   "id": "cmom-2026-11-23-0021"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -1632,7 +888,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-23-0055"
+   "id": "lesec-2026-11-23-0022"
   },
   {
    "title": "Food scrap drop-off: Union Square",
@@ -1654,7 +910,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-23-0056"
+   "id": "lesec-2026-11-23-0023"
   },
   {
    "title": "Food scrap drop-off: Grand and Clinton",
@@ -1676,7 +932,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-23-0057"
+   "id": "lesec-2026-11-23-0024"
   },
   {
    "title": "Interval Walking Sessions",
@@ -1696,7 +952,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-23-0058"
+   "id": "parks-2026-11-23-0025"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -1718,7 +974,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-23-0059",
+   "id": "qbg-2026-11-23-0026",
    "verified": true
   },
   {
@@ -1739,7 +995,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "disability",
-   "id": "parks-2026-11-23-0060"
+   "id": "parks-2026-11-23-0027"
   },
   {
    "title": "Sexual Health Mobile Medical Unit",
@@ -1762,7 +1018,8 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-23-0061"
+   "id": "prospect-2026-11-23-0028",
+   "verified": true
   },
   {
    "title": "Yoga en Español (Yoga in Spanish)",
@@ -1782,7 +1039,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-23-0062"
+   "id": "parks-2026-11-23-0029"
   },
   {
    "title": "Family-to-Family Grads (Virtual)",
@@ -1804,7 +1061,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-23-0063",
+   "id": "nami-2026-11-23-0030",
    "verified": true,
    "photo": "assets/events/d1d63f136427cb20.webp",
    "photo_w": 640,
@@ -1828,7 +1085,7 @@
    "source_key": "projecthospitality",
    "source_url": "https://www.projecthospitality.org/",
    "need": "other",
-   "id": "projecthospitality-2026-11-23-0064",
+   "id": "projecthospitality-2026-11-23-0031",
    "verified": true
   },
   {
@@ -1851,7 +1108,7 @@
    "source_key": "cb14brooklyn",
    "source_url": "https://cb14brooklyn.com/",
    "need": "civic",
-   "id": "cb14brooklyn-2026-11-23-0065",
+   "id": "cb14brooklyn-2026-11-23-0032",
    "verified": true
   },
   {
@@ -1874,7 +1131,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-23-0066",
+   "id": "nami-2026-11-23-0033",
    "verified": true
   },
   {
@@ -1898,7 +1155,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-11-23-0067"
+   "id": "flatironnomad-2026-11-23-0034"
   },
   {
    "title": "Traffic & Transportation Committee Meeting",
@@ -1920,7 +1177,7 @@
    "source_key": "queenscb3",
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
-   "id": "queenscb3-2026-11-23-0068",
+   "id": "queenscb3-2026-11-23-0035",
    "verified": true,
    "photo": "assets/events/e45474ff01828847.webp",
    "photo_w": 640,
@@ -1946,7 +1203,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-24-0069"
+   "id": "lesec-2026-11-24-0036"
   },
   {
    "title": "Forest Fitness",
@@ -1966,7 +1223,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-24-0070"
+   "id": "parks-2026-11-24-0037"
   },
   {
    "title": "Total Body Fitness",
@@ -1986,7 +1243,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-24-0071"
+   "id": "parks-2026-11-24-0038"
   },
   {
    "title": "Senior Cardio Sculpt",
@@ -2006,7 +1263,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "senior",
-   "id": "parks-2026-11-24-0072"
+   "id": "parks-2026-11-24-0039"
   },
   {
    "title": "Farm Community Volunteer Days",
@@ -2028,7 +1285,8 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-24-0073"
+   "id": "qbg-2026-11-24-0040",
+   "verified": true
   },
   {
    "title": "It’s My Park at Ralph Bunche Park",
@@ -2051,7 +1309,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-11-24-0074"
+   "id": "cityparks-2026-11-24-0041"
   },
   {
    "title": "Thankful Pie Patch Placemats",
@@ -2073,7 +1331,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-24-0075"
+   "id": "cmom-2026-11-24-0042"
   },
   {
    "title": "Mobile Pantry 11/24/2026",
@@ -2084,7 +1342,7 @@
    "borough": "Bronx",
    "address": "923 Longwood Avenue",
    "description": "",
-   "url": "https://www.foodbanknyc.org/find-food/",
+   "url": "https://www.foodbanknyc.org/event/mobile-pantry-11-24-2026/",
    "image": null,
    "fit": null,
    "kind": "Exclude from Fundraising Event Sections Mobile Pantry…",
@@ -2095,7 +1353,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-11-24-0076"
+   "id": "foodbank-2026-11-24-0043"
   },
   {
    "title": "Thanksgiving Food Giveaway",
@@ -2115,7 +1373,7 @@
    "source_key": "82ndstreet",
    "source_url": "https://www.82ndstreet.org/",
    "need": "other",
-   "id": "82ndstreet-2026-11-24-0077",
+   "id": "82ndstreet-2026-11-24-0044",
    "verified": true,
    "photo": "assets/events/bbf21d4a526b2684.webp",
    "photo_w": 640,
@@ -2141,7 +1399,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-24-0078"
+   "id": "cmom-2026-11-24-0045"
   },
   {
    "title": "Spirituality Speaks (Virtual)",
@@ -2163,7 +1421,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-24-0079",
+   "id": "nami-2026-11-24-0046",
    "verified": true
   },
   {
@@ -2186,7 +1444,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-24-0080"
+   "id": "nami-2026-11-24-0047"
   },
   {
    "title": "Spouses and Partners (Virtual)",
@@ -2208,7 +1466,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-24-0081"
+   "id": "nami-2026-11-24-0048"
   },
   {
    "title": "November 2026 CB 1’s Monthly Board Meeting",
@@ -2230,7 +1488,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-11-24-0082",
+   "id": "manhattancb1-2026-11-24-0049",
    "verified": true
   },
   {
@@ -2251,7 +1509,7 @@
    "source_key": "jbrpc",
    "source_url": "https://www.jbrpc.org/",
    "need": "other",
-   "id": "jbrpc-2026-11-24-0083",
+   "id": "jbrpc-2026-11-24-0050",
    "verified": true
   },
   {
@@ -2274,7 +1532,7 @@
    "source_key": "samaritans",
    "source_url": "https://samaritansnyc.org/",
    "need": "crisis",
-   "id": "samaritans-2026-11-24-0084",
+   "id": "samaritans-2026-11-24-0051",
    "verified": true,
    "photo": "assets/events/f040cd774525583d.webp",
    "photo_w": 640,
@@ -2301,7 +1559,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-11-25-0085"
+   "id": "flatironnomad-2026-11-25-0052"
   },
   {
    "title": "Thanksgiving Dinner at Zoi",
@@ -2324,7 +1582,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-11-25-0086"
+   "id": "flatironnomad-2026-11-25-0053"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -2346,7 +1604,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-25-0087"
+   "id": "lesec-2026-11-25-0054"
   },
   {
    "title": "Food scrap drop-off: Union Square",
@@ -2368,7 +1626,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-25-0088"
+   "id": "lesec-2026-11-25-0055"
   },
   {
    "title": "Line Dance Fitness",
@@ -2388,7 +1646,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-25-0089"
+   "id": "parks-2026-11-25-0056"
   },
   {
    "title": "Wednesday Greenmarket at Bartel-Pritchard Square",
@@ -2411,7 +1669,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-25-0090"
+   "id": "prospect-2026-11-25-0057"
   },
   {
    "title": "Food scrap drop-off: East Broadway",
@@ -2433,7 +1691,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-25-0091"
+   "id": "lesec-2026-11-25-0058"
   },
   {
    "title": "Interval Walking Sessions",
@@ -2453,7 +1711,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-25-0092"
+   "id": "parks-2026-11-25-0059"
   },
   {
    "title": "Team RIVER Volunteers",
@@ -2473,7 +1731,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-25-0093"
+   "id": "parks-2026-11-25-0060"
   },
   {
    "title": "Fall Fix-Up",
@@ -2496,7 +1754,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-25-0094"
+   "id": "prospect-2026-11-25-0061"
   },
   {
    "title": "It’s My Park at Seth Low Playground/ Bealin Square",
@@ -2519,7 +1777,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-11-25-0095"
+   "id": "cityparks-2026-11-25-0062"
   },
   {
    "title": "Thankful Pie Patch Placemats",
@@ -2541,7 +1799,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-25-0096"
+   "id": "cmom-2026-11-25-0063"
   },
   {
    "title": "Walk-In! Workshop: Fall Foodscapes",
@@ -2563,7 +1821,8 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-11-25-0097"
+   "id": "sichildrens-2026-11-25-0064",
+   "verified": true
   },
   {
    "title": "The People We Are Thankful For",
@@ -2585,7 +1844,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-25-0098"
+   "id": "cmom-2026-11-25-0065"
   },
   {
    "title": "Mobile Pantry 11/25/2026",
@@ -2596,7 +1855,7 @@
    "borough": "Queens",
    "address": "37-01 Bowne St",
    "description": "",
-   "url": "https://www.foodbanknyc.org/find-food/",
+   "url": "https://www.foodbanknyc.org/event/mobile-pantry-11-25-2026/",
    "image": null,
    "fit": null,
    "kind": "Exclude from Fundraising Event Sections Mobile Pantry…",
@@ -2607,7 +1866,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-11-25-0099"
+   "id": "foodbank-2026-11-25-0066"
   },
   {
    "title": "Family and Friends of People with Co-Occurring Disorders (Virtual)",
@@ -2629,7 +1888,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-25-0100"
+   "id": "nami-2026-11-25-0067"
   },
   {
    "title": "NAMI Connection (Virtual)",
@@ -2651,7 +1910,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-11-25-0101"
+   "id": "nami-2026-11-25-0068"
   },
   {
    "title": "CLOSED: Thanksgiving",
@@ -2673,7 +1932,7 @@
    "source_key": "betances",
    "source_url": "https://www.betances.org/",
    "need": "doctor",
-   "id": "betances-2026-11-26-0102",
+   "id": "betances-2026-11-26-0069",
    "verified": true
   },
   {
@@ -2697,7 +1956,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-11-26-0103"
+   "id": "flatironnomad-2026-11-26-0070"
   },
   {
    "title": "Museum Closed",
@@ -2719,7 +1978,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-26-0104"
+   "id": "cmom-2026-11-26-0071"
   },
   {
    "title": "Thanksgiving Day – Garden is CLOSED",
@@ -2741,7 +2000,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-26-0105"
+   "id": "qbg-2026-11-26-0072"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -2763,7 +2022,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-26-0106"
+   "id": "lesec-2026-11-26-0073"
   },
   {
    "title": "Forest Fitness",
@@ -2783,7 +2042,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-26-0107"
+   "id": "parks-2026-11-26-0074"
   },
   {
    "title": "PPTC Turkey Trot: Race for Reconciliation 5 Miler",
@@ -2805,7 +2064,7 @@
    "source_key": "prospect-park-track-club",
    "source_url": "https://runsignup.com/Race/NY/Brooklyn/PPTCTurkeyTrotRaceforReconciliation5Miler",
    "checked": "2026-10-10",
-   "id": "prospect-park-track-club-2026-11-26-0108",
+   "id": "prospect-park-track-club-2026-11-26-0075",
    "verified": true,
    "photo": "assets/events/eef3fec5dfe26cc0.webp",
    "photo_w": 640,
@@ -2829,7 +2088,8 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-11-26-0109"
+   "id": "sijcc-2026-11-26-0076",
+   "verified": true
   },
   {
    "title": "Thanksgiving: Wave Hill is Closed",
@@ -2849,7 +2109,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-26-0110"
+   "id": "parks-2026-11-26-0077"
   },
   {
    "title": "Ongoing Museum Exhibit: Voices of 1776",
@@ -2869,7 +2129,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "disability",
-   "id": "parks-2026-11-26-0111"
+   "id": "parks-2026-11-26-0078"
   },
   {
    "title": "Sexual Health Mobile Medical Unit",
@@ -2892,7 +2152,8 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-26-0112"
+   "id": "prospect-2026-11-26-0079",
+   "verified": true
   },
   {
    "title": "Workforce Group Career Counseling",
@@ -2914,7 +2175,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "work",
-   "id": "chasi-2026-11-26-0113",
+   "id": "chasi-2026-11-26-0080",
    "verified": true
   },
   {
@@ -2937,7 +2198,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-27-0114"
+   "id": "lesec-2026-11-27-0081"
   },
   {
    "title": "Food scrap drop-off: Union Square",
@@ -2959,7 +2220,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-27-0115"
+   "id": "lesec-2026-11-27-0082"
   },
   {
    "title": "Line Dance Fitness",
@@ -2979,7 +2240,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-27-0116"
+   "id": "parks-2026-11-27-0083"
   },
   {
    "title": "It's My Park at Fraser Square",
@@ -2999,7 +2260,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-27-0117"
+   "id": "parks-2026-11-27-0084"
   },
   {
    "title": "It’s My Park at Fraser Square",
@@ -3022,7 +2283,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-11-27-0118"
+   "id": "cityparks-2026-11-27-0085"
   },
   {
    "title": "Deep Water Workout",
@@ -3042,7 +2303,8 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-11-27-0119"
+   "id": "sijcc-2026-11-27-0086",
+   "verified": true
   },
   {
    "title": "Kissena Park Forest Restoration",
@@ -3062,7 +2324,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-27-0120"
+   "id": "parks-2026-11-27-0087"
   },
   {
    "title": "11/27 Restoration Fridays at Forest Park",
@@ -3082,8 +2344,11 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-11-27-0121",
-   "verified": true
+   "id": "forestparktrust-2026-11-27-0088",
+   "verified": true,
+   "photo": "assets/events/f23dac23cb74a307.webp",
+   "photo_w": 640,
+   "photo_h": 361
   },
   {
    "title": "Living Life Up",
@@ -3105,7 +2370,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-11-27-0122"
+   "id": "chasi-2026-11-27-0089"
   },
   {
    "title": "Performance: The Good Ms. Padgett and Friends!",
@@ -3127,7 +2392,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-27-0123"
+   "id": "cmom-2026-11-27-0090"
   },
   {
    "title": "Relapse Prevention",
@@ -3149,7 +2414,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-11-27-0124"
+   "id": "chasi-2026-11-27-0091"
   },
   {
    "title": "The People We Are Thankful For",
@@ -3171,7 +2436,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-27-0125"
+   "id": "cmom-2026-11-27-0092"
   },
   {
    "title": "Urban Park Rangers | Post-Thanksgiving Day Super Hike",
@@ -3194,7 +2459,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-27-0126"
+   "id": "prospect-2026-11-27-0093"
   },
   {
    "title": "Creative Writing & Crafting Corner",
@@ -3216,7 +2481,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-11-27-0127"
+   "id": "chasi-2026-11-27-0094"
   },
   {
    "title": "Walk-In! Workshop: Fall Foodscapes",
@@ -3238,7 +2503,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-11-27-0128"
+   "id": "sichildrens-2026-11-27-0095"
   },
   {
    "title": "The Jazz Gallery: Joe Martin Quartet",
@@ -3261,7 +2526,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-11-27-0129"
+   "id": "flatironnomad-2026-11-27-0096"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -3283,7 +2548,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-28-0130"
+   "id": "lesec-2026-11-28-0097"
   },
   {
    "title": "Line Dance Fitness",
@@ -3303,7 +2568,7 @@
    "source_key": "parks",
    "source_url": "https://www.nycgovparks.org/events",
    "need": "other",
-   "id": "parks-2026-11-28-0131"
+   "id": "parks-2026-11-28-0098"
   },
   {
    "title": "Food scrap drop-off: Union Square",
@@ -3325,7 +2590,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-28-0132"
+   "id": "lesec-2026-11-28-0099"
   },
   {
    "title": "Greenmarket at Grand Army Plaza",
@@ -3348,7 +2613,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-28-0133"
+   "id": "prospect-2026-11-28-0100"
   },
   {
    "title": "It’s My Park at Westerleigh Park",
@@ -3371,7 +2636,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-11-28-0134"
+   "id": "cityparks-2026-11-28-0101"
   },
   {
    "title": "Introduction to Birdwatching Outings",
@@ -3394,7 +2659,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-28-0135"
+   "id": "prospect-2026-11-28-0102"
   },
   {
    "title": "It’s My Park at Brookville Park",
@@ -3417,7 +2682,28 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-11-28-0136"
+   "id": "cityparks-2026-11-28-0103"
+  },
+  {
+   "title": "Hidden Gems of Queens: Springfield Park",
+   "start": "2026-11-28T11:00:00",
+   "end": "2026-11-28T12:30:00",
+   "all_day": false,
+   "venue": "Springfield Blvd and 146th Avenue Entrance",
+   "borough": "Queens",
+   "address": "134-21 Springfield Lane",
+   "description": "Explore the intersection of history and nature on a guided walk through Springfield Park. Learn about the people, events, and ecological features that have made Springfield Pond an important part of the local landscape. Learn More",
+   "url": "https://www.jbrpc.org/events/2026/11/28/4qwzc6mgoci58gtid87mr4olyw3t2z",
+   "image": "https://images.squarespace-cdn.com/content/v1/5398acafe4b03ea7cc92ff58/1793719564707-RL1WGI0XQCDBXLQ4ON2G/unnamed.webp?format=1500w",
+   "kind": "Jamaica Bay-Rockaway Parks Conservancy",
+   "format": "In person",
+   "free": false,
+   "source": "Jamaica Bay-Rockaway Parks Conservancy",
+   "source_key": "jbrpc",
+   "source_url": "https://www.jbrpc.org/",
+   "need": "other",
+   "id": "jbrpc-2026-11-28-0104",
+   "verified": true
   },
   {
    "title": "Music and Marks Performance and Artmaking: Juilliard Performers",
@@ -3439,7 +2725,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-28-0137"
+   "id": "cmom-2026-11-28-0105"
   },
   {
    "title": "Public Tours",
@@ -3461,7 +2747,7 @@
    "source_key": "wyckoff",
    "source_url": "https://wyckoffmuseum.org/",
    "need": "other",
-   "id": "wyckoff-2026-11-28-0138",
+   "id": "wyckoff-2026-11-28-0106",
    "verified": true
   },
   {
@@ -3484,7 +2770,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-28-0139"
+   "id": "cmom-2026-11-28-0107"
   },
   {
    "title": "It’s My Park at Adam Clayton Powell Jr. Malls",
@@ -3507,7 +2793,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-11-28-0140"
+   "id": "cityparks-2026-11-28-0108"
   },
   {
    "title": "Weekend Walk-In! Workshop: Fall Foodscapes",
@@ -3529,7 +2815,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-11-28-0141"
+   "id": "sichildrens-2026-11-28-0109"
   },
   {
    "title": "Bilingual Birdies Brings Music and Dance to the Museum: Experience this Fun Filled Latin Adventure",
@@ -3551,7 +2837,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-11-28-0142"
+   "id": "sichildrens-2026-11-28-0110"
   },
   {
    "title": "5th Avenue Tree Lighting – Small Business Saturday, 2026",
@@ -3574,7 +2860,7 @@
    "source_key": "parkslope5th",
    "source_url": "https://www.parkslopefifthavenuebid.com/",
    "need": "other",
-   "id": "parkslope5th-2026-11-28-0143"
+   "id": "parkslope5th-2026-11-28-0111"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -3596,7 +2882,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-29-0144"
+   "id": "lesec-2026-11-29-0112"
   },
   {
    "title": "Food scrap drop-off: Tompkins Square Greenmarket",
@@ -3618,7 +2904,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-29-0145"
+   "id": "lesec-2026-11-29-0113"
   },
   {
    "title": "Sunday Greenmarket at Bartel-Pritchard Square",
@@ -3641,7 +2927,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-29-0146"
+   "id": "prospect-2026-11-29-0114"
   },
   {
    "title": "Winter Composting with Big Reuse",
@@ -3663,7 +2949,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-11-29-0147",
+   "id": "randalls-2026-11-29-0115",
    "verified": true
   },
   {
@@ -3685,7 +2971,7 @@
    "source_key": "essexmarket",
    "source_url": "https://www.essexmarket.nyc/",
    "need": "other",
-   "id": "essexmarket-2026-11-29-0148",
+   "id": "essexmarket-2026-11-29-0116",
    "verified": true
   },
   {
@@ -3708,7 +2994,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-29-0149"
+   "id": "cmom-2026-11-29-0117"
   },
   {
    "title": "The People We Are Thankful For",
@@ -3730,7 +3016,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-29-0150"
+   "id": "cmom-2026-11-29-0118"
   },
   {
    "title": "Weekend Walk-In! Workshop: Fall Foodscapes",
@@ -3752,7 +3038,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-11-29-0151"
+   "id": "sichildrens-2026-11-29-0119"
   },
   {
    "title": "Discover Hike: Marine Mammals",
@@ -3772,7 +3058,7 @@
    "source_key": "jbrpc",
    "source_url": "https://www.jbrpc.org/",
    "need": "other",
-   "id": "jbrpc-2026-11-29-0152"
+   "id": "jbrpc-2026-11-29-0120"
   },
   {
    "title": "Jamaica Bay Sunset Walk",
@@ -3792,7 +3078,7 @@
    "source_key": "jbrpc",
    "source_url": "https://www.jbrpc.org/",
    "need": "other",
-   "id": "jbrpc-2026-11-29-0153"
+   "id": "jbrpc-2026-11-29-0121"
   },
   {
    "title": "Silly Billy",
@@ -3814,7 +3100,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-11-29-0154"
+   "id": "sichildrens-2026-11-29-0122"
   },
   {
    "title": "Museum Closed",
@@ -3836,7 +3122,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-11-30-0155"
+   "id": "cmom-2026-11-30-0123"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -3858,7 +3144,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-30-0156"
+   "id": "lesec-2026-11-30-0124"
   },
   {
    "title": "Food scrap drop-off: Union Square",
@@ -3880,7 +3166,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-30-0157"
+   "id": "lesec-2026-11-30-0125"
   },
   {
    "title": "Food scrap drop-off: Grand and Clinton",
@@ -3902,7 +3188,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-11-30-0158"
+   "id": "lesec-2026-11-30-0126"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -3924,7 +3210,8 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-11-30-0159"
+   "id": "qbg-2026-11-30-0127",
+   "verified": true
   },
   {
    "title": "Sexual Health Mobile Medical Unit",
@@ -3947,7 +3234,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-11-30-0160"
+   "id": "prospect-2026-11-30-0128"
   },
   {
    "title": "Fall Bodyroll in the Field House",
@@ -3970,7 +3257,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-11-30-0161",
+   "id": "riverside-2026-11-30-0129",
    "verified": true
   },
   {
@@ -3993,7 +3280,7 @@
    "source_key": "brooklyncb6",
    "source_url": "https://brooklyncb6.cityofnewyork.us/",
    "need": "civic",
-   "id": "brooklyncb6-2026-11-30-0162",
+   "id": "brooklyncb6-2026-11-30-0130",
    "verified": true
   },
   {
@@ -4016,7 +3303,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-01-0163"
+   "id": "lesec-2026-12-01-0131"
   },
   {
    "title": "Bodyweight Blast in the Field House",
@@ -4039,7 +3326,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-01-0164",
+   "id": "riverside-2026-12-01-0132",
    "verified": true
   },
   {
@@ -4062,7 +3349,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-01-0165"
+   "id": "qbg-2026-12-01-0133"
   },
   {
    "title": "Holiday Circle Time with Ida Metsberg",
@@ -4084,7 +3371,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-12-01-0166"
+   "id": "cmom-2026-12-01-0134"
   },
   {
    "title": "Winter Wooden Cottage Scenes",
@@ -4106,7 +3393,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-12-01-0167"
+   "id": "cmom-2026-12-01-0135"
   },
   {
    "title": "Family & Friends (In-Person)",
@@ -4128,7 +3415,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-01-0168"
+   "id": "nami-2026-12-01-0136"
   },
   {
    "title": "NAMI Connection 55+ (Virtual)",
@@ -4150,7 +3437,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-01-0169"
+   "id": "nami-2026-12-01-0137"
   },
   {
    "title": "Asian American & Pacific Islander (AAPI) (Virtual)",
@@ -4172,7 +3459,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-01-0170"
+   "id": "nami-2026-12-01-0138"
   },
   {
    "title": "Spud & Spin: Latke-Making Demo with WooBergs",
@@ -4193,7 +3480,7 @@
    "source_key": "essexmarket",
    "source_url": "https://www.essexmarket.nyc/",
    "need": "other",
-   "id": "essexmarket-2026-12-01-0171"
+   "id": "essexmarket-2026-12-01-0139"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -4215,7 +3502,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-02-0172"
+   "id": "lesec-2026-12-02-0140"
   },
   {
    "title": "Food scrap drop-off: Union Square",
@@ -4237,7 +3524,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-02-0173"
+   "id": "lesec-2026-12-02-0141"
   },
   {
    "title": "Wednesday Greenmarket at Bartel-Pritchard Square",
@@ -4260,7 +3547,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-02-0174"
+   "id": "prospect-2026-12-02-0142"
   },
   {
    "title": "Food scrap drop-off: East Broadway",
@@ -4282,7 +3569,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-02-0175"
+   "id": "lesec-2026-12-02-0143"
   },
   {
    "title": "History of Deinstitutionalization – Part 1",
@@ -4304,7 +3591,7 @@
    "source_key": "cidny",
    "source_url": "https://www.cidny.org/",
    "need": "disability",
-   "id": "cidny-2026-12-02-0176",
+   "id": "cidny-2026-12-02-0144",
    "verified": true
   },
   {
@@ -4328,7 +3615,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-02-0177",
+   "id": "riverside-2026-12-02-0145",
    "verified": true
   },
   {
@@ -4351,7 +3638,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-12-02-0178",
+   "id": "randalls-2026-12-02-0146",
    "verified": true
   },
   {
@@ -4374,7 +3661,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-12-02-0179",
+   "id": "simuseum-2026-12-02-0147",
    "verified": true
   },
   {
@@ -4398,7 +3685,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-02-0180"
+   "id": "cityparks-2026-12-02-0148"
   },
   {
    "title": "Lawn and Field Care Volunteering",
@@ -4421,7 +3708,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-02-0181"
+   "id": "prospect-2026-12-02-0149"
   },
   {
    "title": "Physio Ball",
@@ -4441,7 +3728,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-12-02-0182"
+   "id": "sijcc-2026-12-02-0150"
   },
   {
    "title": "Winter Wooden Cottage Scenes",
@@ -4463,7 +3750,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-12-02-0183"
+   "id": "cmom-2026-12-02-0151"
   },
   {
    "title": "Wanted: A New Broadway Muscial",
@@ -4483,7 +3770,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-12-02-0184"
+   "id": "sijcc-2026-12-02-0152"
   },
   {
    "title": "Edward Steichen and the Fashioning of Celebrity",
@@ -4506,7 +3793,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-02-0185"
+   "id": "flatironnomad-2026-12-02-0153"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -4528,7 +3815,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-02-0186"
+   "id": "sichildrens-2026-12-02-0154"
   },
   {
    "title": "Snowy City Collage",
@@ -4550,7 +3837,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-12-02-0187"
+   "id": "cmom-2026-12-02-0155"
   },
   {
    "title": "Sibling and Adult Child (In-Person)",
@@ -4572,7 +3859,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-02-0188"
+   "id": "nami-2026-12-02-0156"
   },
   {
    "title": "Living with Depression (Virtual)",
@@ -4594,7 +3881,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-02-0189"
+   "id": "nami-2026-12-02-0157"
   },
   {
    "title": "AAPI Family & Friends (Virtual)",
@@ -4616,7 +3903,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-02-0190"
+   "id": "nami-2026-12-02-0158"
   },
   {
    "title": "Holiday Mahjong Night",
@@ -4638,7 +3925,8 @@
    "source_key": "moca",
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
-   "id": "moca-2026-12-02-0191"
+   "id": "moca-2026-12-02-0159",
+   "verified": true
   },
   {
    "title": "Transportation & Street Activity Permits Committee",
@@ -4660,7 +3948,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-02-0192",
+   "id": "manhattancb1-2026-12-02-0160",
    "verified": true
   },
   {
@@ -4683,7 +3971,7 @@
    "source_key": "brooklyncb6",
    "source_url": "https://brooklyncb6.cityofnewyork.us/",
    "need": "civic",
-   "id": "brooklyncb6-2026-12-02-0193",
+   "id": "brooklyncb6-2026-12-02-0161",
    "verified": true
   },
   {
@@ -4706,7 +3994,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2026-12-02-0194",
+   "id": "foodbank-2026-12-02-0162",
    "verified": true,
    "photo": "assets/events/987b4618100fb4b2.webp",
    "photo_w": 640,
@@ -4733,7 +4021,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-02-0195"
+   "id": "flatironnomad-2026-12-02-0163"
   },
   {
    "title": "The Rockefeller Center Christmas Tree Lighting",
@@ -4755,7 +4043,7 @@
    "source_key": "rockefeller-center",
    "source_url": "https://www.rockefellercenter.com/",
    "checked": "2026-10-10",
-   "id": "rockefeller-center-2026-12-02-0196",
+   "id": "rockefeller-center-2026-12-02-0164",
    "verified": true
   },
   {
@@ -4779,7 +4067,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-03-0197",
+   "id": "flatironnomad-2026-12-03-0165",
    "verified": true
   },
   {
@@ -4802,7 +4090,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-03-0198"
+   "id": "lesec-2026-12-03-0166"
   },
   {
    "title": "Sexual Health Mobile Medical Unit",
@@ -4825,7 +4113,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-03-0199"
+   "id": "prospect-2026-12-03-0167"
   },
   {
    "title": "Winter Corps",
@@ -4848,7 +4136,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-03-0200"
+   "id": "prospect-2026-12-03-0168"
   },
   {
    "title": "Workforce Group Career Counseling",
@@ -4870,7 +4158,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "work",
-   "id": "chasi-2026-12-03-0201",
+   "id": "chasi-2026-12-03-0169",
    "verified": true
   },
   {
@@ -4893,7 +4181,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-12-03-0202"
+   "id": "cmom-2026-12-03-0170"
   },
   {
    "title": "Jewett Farms + Co.: Handmade in Maine",
@@ -4916,7 +4204,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-03-0203"
+   "id": "flatironnomad-2026-12-03-0171"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -4938,7 +4226,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-03-0204"
+   "id": "sichildrens-2026-12-03-0172"
   },
   {
    "title": "CloseKnit",
@@ -4958,8 +4246,11 @@
    "source_key": "noblemaritime",
    "source_url": "https://www.noblemaritime.org/",
    "need": "other",
-   "id": "noblemaritime-2026-12-03-0205",
-   "verified": true
+   "id": "noblemaritime-2026-12-03-0173",
+   "verified": true,
+   "photo": "assets/events/20102c994056579b.webp",
+   "photo_w": 640,
+   "photo_h": 480
   },
   {
    "title": "Snowy City Collage",
@@ -4981,7 +4272,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-12-03-0206"
+   "id": "cmom-2026-12-03-0174"
   },
   {
    "title": "Teen Support Group 14-18 (Virtual)",
@@ -5003,7 +4294,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-03-0207"
+   "id": "nami-2026-12-03-0175"
   },
   {
    "title": "Family-to-Family Grads (Virtual)",
@@ -5025,7 +4316,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-03-0208"
+   "id": "nami-2026-12-03-0176"
   },
   {
    "title": "Jewell House Gallery Opening Reception Vol.19: “CAN YOU SEE THE SCENT?” – An Exploration of Fragrance Through Art",
@@ -5048,7 +4339,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-03-0209"
+   "id": "flatironnomad-2026-12-03-0177"
   },
   {
    "title": "LGBTQ+ (Virtual)",
@@ -5070,7 +4361,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-03-0210"
+   "id": "nami-2026-12-03-0178"
   },
   {
    "title": "World Trade Center & Battery Park City Committee",
@@ -5092,7 +4383,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-03-0211",
+   "id": "manhattancb1-2026-12-03-0179",
    "verified": true
   },
   {
@@ -5115,7 +4406,7 @@
    "source_key": "brooklyncb6",
    "source_url": "https://brooklyncb6.cityofnewyork.us/",
    "need": "civic",
-   "id": "brooklyncb6-2026-12-03-0212",
+   "id": "brooklyncb6-2026-12-03-0180",
    "verified": true
   },
   {
@@ -5138,7 +4429,7 @@
    "source_key": "moca",
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
-   "id": "moca-2026-12-03-0213",
+   "id": "moca-2026-12-03-0181",
    "verified": true
   },
   {
@@ -5161,7 +4452,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-04-0214"
+   "id": "lesec-2026-12-04-0182"
   },
   {
    "title": "Food scrap drop-off: Union Square",
@@ -5183,7 +4474,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-04-0215"
+   "id": "lesec-2026-12-04-0183"
   },
   {
    "title": "12/4 Highland Park Horticulture Helpers",
@@ -5203,7 +4494,7 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-12-04-0216",
+   "id": "forestparktrust-2026-12-04-0184",
    "verified": true
   },
   {
@@ -5224,7 +4515,8 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-12-04-0217"
+   "id": "forestparktrust-2026-12-04-0185",
+   "verified": true
   },
   {
    "title": "Living Life Up",
@@ -5246,7 +4538,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-04-0218"
+   "id": "chasi-2026-12-04-0186"
   },
   {
    "title": "Parents (Virtual)",
@@ -5268,7 +4560,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-04-0219"
+   "id": "nami-2026-12-04-0187"
   },
   {
    "title": "Winter Wooden Cottage Scenes",
@@ -5290,7 +4582,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-12-04-0220"
+   "id": "cmom-2026-12-04-0188"
   },
   {
    "title": "Relapse Prevention",
@@ -5312,7 +4604,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-04-0221"
+   "id": "chasi-2026-12-04-0189"
   },
   {
    "title": "Creative Writing & Crafting Corner",
@@ -5334,7 +4626,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-04-0222"
+   "id": "chasi-2026-12-04-0190"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -5356,7 +4648,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-04-0223"
+   "id": "sichildrens-2026-12-04-0191"
   },
   {
    "title": "Wellness Chats (Virtual)",
@@ -5378,7 +4670,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-04-0224"
+   "id": "nami-2026-12-04-0192"
   },
   {
    "title": "Snowy City Collage",
@@ -5400,7 +4692,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-12-04-0225"
+   "id": "cmom-2026-12-04-0193"
   },
   {
    "title": "Grand Army Plaza Menorah Lighting",
@@ -5423,7 +4715,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-04-0226"
+   "id": "prospect-2026-12-04-0194"
   },
   {
    "title": "Community Tree Lighting",
@@ -5445,7 +4737,7 @@
    "source_key": "historic-richmond-town",
    "source_url": "https://www.historicrichmondtown.org/",
    "checked": "2026-10-10",
-   "id": "historic-richmond-town-2026-12-04-0227",
+   "id": "historic-richmond-town-2026-12-04-0195",
    "verified": true
   },
   {
@@ -5466,7 +4758,7 @@
    "source_key": "historic-richmond-town",
    "source_url": "https://www.historicrichmondtown.org/",
    "need": "other",
-   "id": "historic-richmond-town-2026-12-04-0228",
+   "id": "historic-richmond-town-2026-12-04-0196",
    "verified": true
   },
   {
@@ -5490,7 +4782,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-04-0229"
+   "id": "flatironnomad-2026-12-04-0197"
   },
   {
    "title": "Nobody's Coming: Or what your friends without kids worry about at night",
@@ -5510,7 +4802,7 @@
    "source_key": "clemente",
    "source_url": "https://www.theclementecenter.org/",
    "need": "other",
-   "id": "clemente-2026-12-04-0230",
+   "id": "clemente-2026-12-04-0198",
    "verified": true
   },
   {
@@ -5534,7 +4826,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-04-0231"
+   "id": "flatironnomad-2026-12-04-0199"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -5556,7 +4848,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-05-0232"
+   "id": "lesec-2026-12-05-0200"
   },
   {
    "title": "NYCRUNS Ugly Sweater 5K",
@@ -5579,7 +4871,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-05-0233"
+   "id": "prospect-2026-12-05-0201"
   },
   {
    "title": "FIDO Coffee Bark",
@@ -5602,7 +4894,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-05-0234"
+   "id": "prospect-2026-12-05-0202"
   },
   {
    "title": "Food scrap drop-off: Union Square",
@@ -5624,7 +4916,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-05-0235"
+   "id": "lesec-2026-12-05-0203"
   },
   {
    "title": "Greenmarket at Grand Army Plaza",
@@ -5647,7 +4939,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-05-0236"
+   "id": "prospect-2026-12-05-0204"
   },
   {
    "title": "It’s My Park at Moore Homestead Playground",
@@ -5670,7 +4962,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-05-0237"
+   "id": "cityparks-2026-12-05-0205"
   },
   {
    "title": "It’s My Park at Westerleigh Park",
@@ -5693,7 +4985,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-05-0238"
+   "id": "cityparks-2026-12-05-0206"
   },
   {
    "title": "It’s My Park at Wolfe’s Pond Park",
@@ -5716,7 +5008,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-05-0239"
+   "id": "cityparks-2026-12-05-0207"
   },
   {
    "title": "12/5 Myrtle Ave Clean Up at Forest Park",
@@ -5736,7 +5028,7 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-12-05-0240"
+   "id": "forestparktrust-2026-12-05-0208"
   },
   {
    "title": "Electronics recycling: Park Slope",
@@ -5758,7 +5050,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-05-0241"
+   "id": "lesec-2026-12-05-0209"
   },
   {
    "title": "Culture Shop",
@@ -5778,7 +5070,7 @@
    "source_key": "noblemaritime",
    "source_url": "https://www.noblemaritime.org/",
    "need": "other",
-   "id": "noblemaritime-2026-12-05-0242",
+   "id": "noblemaritime-2026-12-05-0210",
    "verified": true
   },
   {
@@ -5801,8 +5093,11 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-12-05-0243",
-   "verified": true
+   "id": "simuseum-2026-12-05-0211",
+   "verified": true,
+   "photo": "assets/events/5d6385edcd3da34e.webp",
+   "photo_w": 640,
+   "photo_h": 803
   },
   {
    "title": "Snowy City Collage",
@@ -5824,7 +5119,7 @@
    "source_key": "cmom",
    "source_url": "https://cmom.org/",
    "need": "family",
-   "id": "cmom-2026-12-05-0244"
+   "id": "cmom-2026-12-05-0212"
   },
   {
    "title": "Public Walking Tour- Chinatown: A Walk through History",
@@ -5846,7 +5141,7 @@
    "source_key": "moca",
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
-   "id": "moca-2026-12-05-0245"
+   "id": "moca-2026-12-05-0213"
   },
   {
    "title": "Christmas Party in Washington Market Park",
@@ -5868,7 +5163,7 @@
    "source_key": "friends-of-washington-market-park",
    "source_url": "https://www.washingtonmarketpark.org/",
    "checked": "2026-10-10",
-   "id": "friends-of-washington-market-park-2026-12-05-0246",
+   "id": "friends-of-washington-market-park-2026-12-05-0214",
    "verified": true,
    "photo": "assets/events/4c29c5eb9475984a.webp",
    "photo_w": 640,
@@ -5892,7 +5187,8 @@
    "source_key": "historic-richmond-town",
    "source_url": "https://www.historicrichmondtown.org/",
    "need": "other",
-   "id": "historic-richmond-town-2026-12-05-0247"
+   "id": "historic-richmond-town-2026-12-05-0215",
+   "verified": true
   },
   {
    "title": "Museum Movers and Shakers",
@@ -5914,7 +5210,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-05-0248"
+   "id": "sichildrens-2026-12-05-0216"
   },
   {
    "title": "Photos with Santa – Bushwick",
@@ -5936,7 +5232,7 @@
    "source_key": "betances",
    "source_url": "https://www.betances.org/",
    "need": "doctor",
-   "id": "betances-2026-12-05-0249",
+   "id": "betances-2026-12-05-0217",
    "verified": true,
    "photo": "assets/events/d46bf36e751d49ce.webp",
    "photo_w": 640,
@@ -5962,7 +5258,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-05-0250"
+   "id": "sichildrens-2026-12-05-0218"
   },
   {
    "title": "A Taste of Home: Queens Memoirists",
@@ -5982,7 +5278,27 @@
    "source_key": "latimer",
    "source_url": "https://www.latimernow.org/",
    "need": "other",
-   "id": "latimer-2026-12-05-0251"
+   "id": "latimer-2026-12-05-0219"
+  },
+  {
+   "title": "Holidays In The Garden: Tree Lighting",
+   "start": "2026-12-05T14:00:00",
+   "end": "2026-12-05T17:00:00",
+   "all_day": false,
+   "venue": "Jamaica Bay-Rockaway Parks Conservancy, Inc.",
+   "borough": "",
+   "address": "480 Beach 43rd Street",
+   "description": "Come experience the magic of the season, as we decorate the holiday tree and deck the Garden with jolly. Where children of all ages and adults alike get the opportunity to decorate their own ornaments to put on the community Holiday Tree and/or take one home…",
+   "url": "https://www.jbrpc.org/events/2026/12/5/holidays-in-the-garden-tree-lighting",
+   "image": "https://images.squarespace-cdn.com/content/v1/5398acafe4b03ea7cc92ff58/1795357970332-9PP9CUUNNPJYKZ4LN9S9/2026+Holidays+in+the+Garden%2C+Tree+Lighting+%282%29.png?format=1500w",
+   "kind": "Jamaica Bay-Rockaway Parks Conservancy",
+   "format": "In person",
+   "free": false,
+   "source": "Jamaica Bay-Rockaway Parks Conservancy",
+   "source_key": "jbrpc",
+   "source_url": "https://www.jbrpc.org/",
+   "need": "other",
+   "id": "jbrpc-2026-12-05-0220"
   },
   {
    "title": "MOCACREATE: Landscape in Miniature with Teaching Artist Yu Rong",
@@ -6004,7 +5320,7 @@
    "source_key": "moca",
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
-   "id": "moca-2026-12-05-0252"
+   "id": "moca-2026-12-05-0221"
   },
   {
    "title": "Sinterklaas – Saint Nicholas Day!",
@@ -6026,7 +5342,7 @@
    "source_key": "wyckoff",
    "source_url": "https://wyckoffmuseum.org/",
    "need": "other",
-   "id": "wyckoff-2026-12-05-0253",
+   "id": "wyckoff-2026-12-05-0222",
    "verified": true
   },
   {
@@ -6047,7 +5363,7 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-12-05-0254"
+   "id": "forestparktrust-2026-12-05-0223"
   },
   {
    "title": "Damayan Annual Holiday Party & Fundraiser",
@@ -6067,7 +5383,7 @@
    "source_key": "damayan",
    "source_url": "https://www.damayanmigrants.org/",
    "need": "other",
-   "id": "damayan-2026-12-05-0255",
+   "id": "damayan-2026-12-05-0224",
    "verified": true
   },
   {
@@ -6089,7 +5405,7 @@
    "source_key": "fortgreenepark",
    "source_url": "https://www.fortgreenepark.org/",
    "need": "other",
-   "id": "fortgreenepark-2026-12-05-0256",
+   "id": "fortgreenepark-2026-12-05-0225",
    "verified": true
   },
   {
@@ -6113,7 +5429,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-05-0257"
+   "id": "riverside-2026-12-05-0226"
   },
   {
    "title": "LEGO and Lights",
@@ -6133,7 +5449,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-12-05-0258"
+   "id": "sijcc-2026-12-05-0227"
   },
   {
    "title": "2027 Brooklyn Pin Competition (Apply by December 6, 2026, at 11:59 PM.)",
@@ -6155,7 +5471,7 @@
    "source_key": "brooklynbp",
    "source_url": "https://www.brooklynbp.nyc.gov/",
    "need": "civic",
-   "id": "brooklynbp-2026-12-06-0259",
+   "id": "brooklynbp-2026-12-06-0228",
    "verified": true,
    "photo": "assets/events/eddb5fe8b72e05cf.webp",
    "photo_w": 640,
@@ -6181,7 +5497,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-06-0260"
+   "id": "lesec-2026-12-06-0229"
   },
   {
    "title": "Food scrap drop-off: Tompkins Square Greenmarket",
@@ -6203,7 +5519,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-06-0261"
+   "id": "lesec-2026-12-06-0230"
   },
   {
    "title": "It’s My Park at Franz Sigel Park",
@@ -6226,7 +5542,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-06-0262"
+   "id": "cityparks-2026-12-06-0231"
   },
   {
    "title": "Sunday Greenmarket at Bartel-Pritchard Square",
@@ -6249,7 +5565,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-06-0263"
+   "id": "prospect-2026-12-06-0232"
   },
   {
    "title": "It’s My Park at Ewen Park",
@@ -6272,7 +5588,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-06-0264"
+   "id": "cityparks-2026-12-06-0233"
   },
   {
    "title": "Birdwatching: First Sunday Outings",
@@ -6295,7 +5611,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-06-0265"
+   "id": "prospect-2026-12-06-0234"
   },
   {
    "title": "Electronics recycling: Cunningham Park",
@@ -6317,7 +5633,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-06-0266"
+   "id": "lesec-2026-12-06-0235"
   },
   {
    "title": "It’s My Park at Henry Hudson Park",
@@ -6340,7 +5656,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-06-0267"
+   "id": "cityparks-2026-12-06-0236"
   },
   {
    "title": "Park Pals at Floyd Bennett Field: Winter Wonders",
@@ -6360,7 +5676,7 @@
    "source_key": "jbrpc",
    "source_url": "https://www.jbrpc.org/",
    "need": "other",
-   "id": "jbrpc-2026-12-06-0268"
+   "id": "jbrpc-2026-12-06-0237"
   },
   {
    "title": "Urban Park Rangers | Doggie Day Hike",
@@ -6383,7 +5699,29 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-06-0269"
+   "id": "prospect-2026-12-06-0238"
+  },
+  {
+   "title": "Dancing Dreidels",
+   "start": "2026-12-06T10:30:00",
+   "end": "2026-12-06T12:00:00",
+   "all_day": false,
+   "venue": "Children's Museum of Manhattan",
+   "borough": "Manhattan",
+   "address": "",
+   "description": "Design and decorate your own spinning dreidels inspired by winter colors, geometric patterns, and traditions of this Hanukkah game. Experiment with balance, shape, and motion while testing your dreidel designs together! 2026-27 Jewish holiday programs are…",
+   "url": "https://cmom.org/event/dancing-dreidels/2026-12-06/",
+   "image": "https://cmom.org/wp-content/uploads/2026/10/UJA_Proud_Partner_stamp_CMOMWEB-e1793207734929.jpg",
+   "fit": "contain",
+   "kind": "Drop-in Programs",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Children's Museum of Manhattan",
+   "source_key": "cmom",
+   "source_url": "https://cmom.org/",
+   "need": "family",
+   "id": "cmom-2026-12-06-0239"
   },
   {
    "title": "Culture Shop",
@@ -6403,7 +5741,8 @@
    "source_key": "noblemaritime",
    "source_url": "https://www.noblemaritime.org/",
    "need": "other",
-   "id": "noblemaritime-2026-12-06-0270"
+   "id": "noblemaritime-2026-12-06-0240",
+   "verified": true
   },
   {
    "title": "Santa at Essex Market",
@@ -6424,8 +5763,30 @@
    "source_key": "essexmarket",
    "source_url": "https://www.essexmarket.nyc/",
    "need": "other",
-   "id": "essexmarket-2026-12-06-0271",
+   "id": "essexmarket-2026-12-06-0241",
    "verified": true
+  },
+  {
+   "title": "Candle Crafting, Menorah Installation, and Hanukkah Puppet Play",
+   "start": "2026-12-06T11:15:00",
+   "end": "2026-12-06T12:15:00",
+   "all_day": false,
+   "venue": "PlayWorks",
+   "borough": "",
+   "address": "",
+   "description": "Create your own candle crafts and a collaborative Menorah installation ! P lay with our puppet theatre with dreidel, menorah, and Hanukkah food puppets! 2026-27 Jewish holiday programs are supported by UJA Federation New York.",
+   "url": "https://cmom.org/event/candle-crafting-menorah-installation-and-hanukkah-puppet-play/2026-12-06/1/",
+   "image": "https://cmom.org/wp-content/uploads/2026/10/UJA_Proud_Partner_stamp_CMOMWEB-e1793207734929.jpg",
+   "fit": "contain",
+   "kind": "Drop-in Programs",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Children's Museum of Manhattan",
+   "source_key": "cmom",
+   "source_url": "https://cmom.org/",
+   "need": "family",
+   "id": "cmom-2026-12-06-0242"
   },
   {
    "title": "ShopRite Kidz Cook: Holiday Cookies",
@@ -6447,7 +5808,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-06-0272"
+   "id": "sichildrens-2026-12-06-0243"
   },
   {
    "title": "Weekend Walk-In! Workshop: Glittering Giftwrap",
@@ -6469,7 +5830,29 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-06-0273"
+   "id": "sichildrens-2026-12-06-0244"
+  },
+  {
+   "title": "Music and Marks Performance and Artmaking: Happy Hanukkah with Meshuganah Mambo!",
+   "start": "2026-12-06T14:00:00",
+   "end": "2026-12-06T14:45:00",
+   "all_day": false,
+   "venue": "PlayWorks",
+   "borough": "",
+   "address": "",
+   "description": "Come for a celebratory Hanukkah experience at CMOM with special artmaking and an exciting performance! Meshuganah Mambo plays music that is uniquely New York: a fusion of klezmer melodies with mambo and Cumbia rhythms for a one-of-a-kind sound. Hop along to…",
+   "url": "https://cmom.org/event/music-and-marks-performance-and-artmaking-happy-hanukkah-with-meshuganah-mambo/2026-12-06/1/",
+   "image": "https://cmom.org/wp-content/uploads/2026/10/UJA_Proud_Partner_stamp_CMOMWEB-e1793207734929.jpg",
+   "fit": "contain",
+   "kind": "Drop-in Programs Performances & Shows",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Children's Museum of Manhattan",
+   "source_key": "cmom",
+   "source_url": "https://cmom.org/",
+   "need": "family",
+   "id": "cmom-2026-12-06-0245"
   },
   {
    "title": "Winter Wonder",
@@ -6491,7 +5874,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-06-0274"
+   "id": "qbg-2026-12-06-0246"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -6513,7 +5896,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-07-0275"
+   "id": "lesec-2026-12-07-0247"
   },
   {
    "title": "Food scrap drop-off: Union Square",
@@ -6535,7 +5918,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-07-0276"
+   "id": "lesec-2026-12-07-0248"
   },
   {
    "title": "Food scrap drop-off: Grand and Clinton",
@@ -6557,7 +5940,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-07-0277"
+   "id": "lesec-2026-12-07-0249"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -6579,7 +5962,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-07-0278"
+   "id": "qbg-2026-12-07-0250"
   },
   {
    "title": "Sexual Health Mobile Medical Unit",
@@ -6602,7 +5985,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-07-0279"
+   "id": "prospect-2026-12-07-0251"
   },
   {
    "title": "Fall Bodyroll in the Field House",
@@ -6625,7 +6008,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-07-0280"
+   "id": "riverside-2026-12-07-0252"
   },
   {
    "title": "Meet Fort Greene Park's Urban Park Rangers",
@@ -6646,7 +6029,7 @@
    "source_key": "fortgreenepark",
    "source_url": "https://www.fortgreenepark.org/",
    "need": "other",
-   "id": "fortgreenepark-2026-12-07-0281",
+   "id": "fortgreenepark-2026-12-07-0253",
    "verified": true
   },
   {
@@ -6669,7 +6052,7 @@
    "source_key": "brooklynbp",
    "source_url": "https://www.brooklynbp.nyc.gov/",
    "need": "civic",
-   "id": "brooklynbp-2026-12-07-0282",
+   "id": "brooklynbp-2026-12-07-0254",
    "verified": true
   },
   {
@@ -6692,7 +6075,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-07-0283"
+   "id": "manhattancb1-2026-12-07-0255"
   },
   {
    "title": "Grand Army Plaza Menorah Lighting",
@@ -6715,7 +6098,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-07-0284"
+   "id": "prospect-2026-12-07-0256"
   },
   {
    "title": "Living with Anxiety (Virtual)",
@@ -6737,7 +6120,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-07-0285"
+   "id": "nami-2026-12-07-0257"
   },
   {
    "title": "Black Minds Matter Family & Friends (Virtual)",
@@ -6759,7 +6142,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-07-0286"
+   "id": "nami-2026-12-07-0258"
   },
   {
    "title": "Food scrap drop-off: Mathews-Palmer Park",
@@ -6781,7 +6164,7 @@
    "source_key": "lesec",
    "source_url": "https://www.lesecologycenter.org/",
    "need": "other",
-   "id": "lesec-2026-12-08-0287"
+   "id": "lesec-2026-12-08-0259"
   },
   {
    "title": "Bodyweight Blast in the Field House",
@@ -6804,7 +6187,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-08-0288"
+   "id": "riverside-2026-12-08-0260"
   },
   {
    "title": "Spirituality Speaks (Virtual)",
@@ -6826,7 +6209,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-08-0289"
+   "id": "nami-2026-12-08-0261"
   },
   {
    "title": "Living with Addiction and Mental Health Challenges (Virtual)",
@@ -6848,7 +6231,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-08-0290"
+   "id": "nami-2026-12-08-0262"
   },
   {
    "title": "Education & Culture Committee",
@@ -6870,7 +6253,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-08-0291"
+   "id": "manhattancb1-2026-12-08-0263"
   },
   {
    "title": "Grand Army Plaza Menorah Lighting",
@@ -6893,7 +6276,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-08-0292"
+   "id": "prospect-2026-12-08-0264"
   },
   {
    "title": "Peer-to-Peer Grads (Virtual)",
@@ -6915,7 +6298,51 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-08-0293"
+   "id": "nami-2026-12-08-0265"
+  },
+  {
+   "title": "Food scrap drop-off: Mathews-Palmer Park",
+   "start": "2026-12-09T07:00:00",
+   "end": "2026-12-09T18:00:00",
+   "all_day": false,
+   "venue": "Mathews–Palmer Park",
+   "borough": "Manhattan",
+   "address": "445 W 45th St",
+   "description": "Thank you for participating in the Hell’s Kitchen Commons Food Scrap Drop-Off. Hell’s Kitchen Commons accepts food scraps at Mathews Palmer Park (45th between 9th/10th Ave) during the park’s open hours. This is a community-managed compost drop-off site.…",
+   "url": "https://www.lesecologycenter.org/calendar/mathews-palmer-park/2026-12-09/",
+   "image": "https://www.lesecologycenter.org/wp-content/uploads/tribe_events/mathews-palmer-park/Compost-Site-Featured-Image.jpg",
+   "fit": null,
+   "kind": "Compost Drop-Off",
+   "format": "In person",
+   "free": true,
+   "alt_url": null,
+   "source": "Lower East Side Ecology Center",
+   "source_key": "lesec",
+   "source_url": "https://www.lesecologycenter.org/",
+   "need": "other",
+   "id": "lesec-2026-12-09-0266"
+  },
+  {
+   "title": "Food scrap drop-off: Union Square",
+   "start": "2026-12-09T08:00:00",
+   "end": "2026-12-09T17:00:00",
+   "all_day": false,
+   "venue": "Union Square Greenmarket",
+   "borough": "Manhattan",
+   "address": "Union Square",
+   "description": "Bring your compost to our original community compost drop-off location, operating since 1994. Located at the eastern edge of the Union Square Greenmarket–look for the grey barrels or ask a GrowNYC representative for the compost drop-off. For more information…",
+   "url": "https://www.lesecologycenter.org/calendar/union-square-compost-drop-off-2020/2026-12-09/",
+   "image": "https://www.lesecologycenter.org/wp-content/uploads/tribe_events/mathews-palmer-park/Compost-Site-Featured-Image.jpg",
+   "fit": null,
+   "kind": "Compost Drop-Off Union Square",
+   "format": "In person",
+   "free": true,
+   "alt_url": null,
+   "source": "Lower East Side Ecology Center",
+   "source_key": "lesec",
+   "source_url": "https://www.lesecologycenter.org/",
+   "need": "other",
+   "id": "lesec-2026-12-09-0267"
   },
   {
    "title": "ULURP Public Hearing Meeting",
@@ -6937,7 +6364,7 @@
    "source_key": "brooklynbp",
    "source_url": "https://www.brooklynbp.nyc.gov/",
    "need": "civic",
-   "id": "brooklynbp-2026-12-09-0294",
+   "id": "brooklynbp-2026-12-09-0268",
    "verified": true
   },
   {
@@ -6961,7 +6388,29 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-09-0295"
+   "id": "prospect-2026-12-09-0269"
+  },
+  {
+   "title": "Food scrap drop-off: East Broadway",
+   "start": "2026-12-09T09:00:00",
+   "end": "2026-12-09T16:00:00",
+   "all_day": false,
+   "venue": "East Broadway",
+   "borough": "Manhattan",
+   "address": "E Broadway &, Rutgers St",
+   "description": "Bring your food scraps to the NYC Compost Project’s morning commuter drop-off location at East Broadway inside Straus Square. For more information, please visit our composting page.",
+   "url": "https://www.lesecologycenter.org/calendar/compost-drop-off-hours-east-broadway-2018-2018-03-21-2/2026-12-09/",
+   "image": "https://www.lesecologycenter.org/wp-content/uploads/tribe_events/mathews-palmer-park/Compost-Site-Featured-Image.jpg",
+   "fit": null,
+   "kind": "Compost Drop-Off",
+   "format": "In person",
+   "free": true,
+   "alt_url": null,
+   "source": "Lower East Side Ecology Center",
+   "source_key": "lesec",
+   "source_url": "https://www.lesecologycenter.org/",
+   "need": "other",
+   "id": "lesec-2026-12-09-0270"
   },
   {
    "title": "History of Deinstitutionalization – Part 2",
@@ -6983,7 +6432,7 @@
    "source_key": "cidny",
    "source_url": "https://www.cidny.org/",
    "need": "disability",
-   "id": "cidny-2026-12-09-0296",
+   "id": "cidny-2026-12-09-0271",
    "verified": true
   },
   {
@@ -7007,7 +6456,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-09-0297"
+   "id": "riverside-2026-12-09-0272"
   },
   {
    "title": "Team RIVER Volunteers",
@@ -7029,7 +6478,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-12-09-0298"
+   "id": "randalls-2026-12-09-0273"
   },
   {
    "title": "It’s My Park at Seth Low Playground/ Bealin Square",
@@ -7052,7 +6501,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-09-0299"
+   "id": "cityparks-2026-12-09-0274"
   },
   {
    "title": "Family and Friends of People with Co-Occurring Disorders (In Person)",
@@ -7074,7 +6523,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-09-0300"
+   "id": "nami-2026-12-09-0275"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -7096,7 +6545,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-09-0301"
+   "id": "sichildrens-2026-12-09-0276"
   },
   {
    "title": "Coping with Chronic Illness & Mental Health Challenges",
@@ -7118,7 +6567,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-09-0302"
+   "id": "nami-2026-12-09-0277"
   },
   {
    "title": "Grand Army Plaza Menorah Lighting",
@@ -7141,7 +6590,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-09-0303"
+   "id": "prospect-2026-12-09-0278"
   },
   {
    "title": "Licensing & Permits Committee",
@@ -7163,7 +6612,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-09-0304"
+   "id": "manhattancb1-2026-12-09-0279"
   },
   {
    "title": "Oda a Volcán",
@@ -7183,7 +6632,7 @@
    "source_key": "clemente",
    "source_url": "https://www.theclementecenter.org/",
    "need": "other",
-   "id": "clemente-2026-12-09-0305",
+   "id": "clemente-2026-12-09-0280",
    "verified": true
   },
   {
@@ -7206,7 +6655,7 @@
    "source_key": "brooklyncb6",
    "source_url": "https://brooklyncb6.cityofnewyork.us/",
    "need": "civic",
-   "id": "brooklyncb6-2026-12-09-0306"
+   "id": "brooklyncb6-2026-12-09-0281"
   },
   {
    "title": "Let’s Get Outside: Engaging Youth in Park Stewardship",
@@ -7229,7 +6678,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-09-0307"
+   "id": "cityparks-2026-12-09-0282"
   },
   {
    "title": "NAMI Connection (Virtual)",
@@ -7251,7 +6700,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-09-0308"
+   "id": "nami-2026-12-09-0283"
   },
   {
    "title": "The Jazz Gallery: Hannah Marks",
@@ -7274,7 +6723,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-09-0309"
+   "id": "flatironnomad-2026-12-09-0284"
   },
   {
    "title": "Sexual Health Mobile Medical Unit",
@@ -7297,7 +6746,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-10-0310"
+   "id": "prospect-2026-12-10-0285"
   },
   {
    "title": "Winter Corps",
@@ -7320,7 +6769,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-10-0311"
+   "id": "prospect-2026-12-10-0286"
   },
   {
    "title": "Workforce Group Career Counseling",
@@ -7342,7 +6791,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "work",
-   "id": "chasi-2026-12-10-0312",
+   "id": "chasi-2026-12-10-0287",
    "verified": true
   },
   {
@@ -7365,7 +6814,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-10-0313"
+   "id": "sichildrens-2026-12-10-0288"
   },
   {
    "title": "Karaoke for a Cause",
@@ -7385,7 +6834,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-12-10-0314"
+   "id": "sijcc-2026-12-10-0289"
   },
   {
    "title": "Teen Support Group 14-18 (Virtual)",
@@ -7407,7 +6856,29 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-10-0315"
+   "id": "nami-2026-12-10-0290"
+  },
+  {
+   "title": "Financial Empowerment Session 5 – English",
+   "start": "2026-12-10T18:00:00",
+   "end": "2026-12-10T19:30:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "",
+   "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-5-english/",
+   "image": null,
+   "fit": null,
+   "kind": "Exclude from Fundraising Event Sections Financial…",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Food Bank For New York City",
+   "source_key": "foodbank",
+   "source_url": "https://www.foodbanknyc.org/",
+   "need": "food",
+   "id": "foodbank-2026-12-10-0291"
   },
   {
    "title": "Grand Army Plaza Menorah Lighting",
@@ -7430,7 +6901,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-10-0316"
+   "id": "prospect-2026-12-10-0292"
   },
   {
    "title": "Landmarks & Preservation Committee",
@@ -7452,7 +6923,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-10-0317"
+   "id": "manhattancb1-2026-12-10-0293"
   },
   {
    "title": "Spanglish (Virtual)",
@@ -7474,7 +6945,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-10-0318"
+   "id": "nami-2026-12-10-0294"
   },
   {
    "title": "MOCA x NYAFF Film Club: Full Moon in New York",
@@ -7496,7 +6967,7 @@
    "source_key": "moca",
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
-   "id": "moca-2026-12-10-0319"
+   "id": "moca-2026-12-10-0295"
   },
   {
    "title": "NAMI Connection (In Person)",
@@ -7518,7 +6989,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-10-0320"
+   "id": "nami-2026-12-10-0296"
   },
   {
    "title": "Normal New York: Not-A-Normal Holiday Show",
@@ -7541,7 +7012,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-11-0321",
+   "id": "flatironnomad-2026-12-11-0297",
    "verified": true
   },
   {
@@ -7562,7 +7033,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-12-11-0322"
+   "id": "sijcc-2026-12-11-0298"
   },
   {
    "title": "12/11 Restoration Fridays at Forest Park",
@@ -7582,7 +7053,7 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-12-11-0323"
+   "id": "forestparktrust-2026-12-11-0299"
   },
   {
    "title": "Living Life Up",
@@ -7604,7 +7075,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-11-0324"
+   "id": "chasi-2026-12-11-0300"
   },
   {
    "title": "Relapse Prevention",
@@ -7626,7 +7097,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-11-0325"
+   "id": "chasi-2026-12-11-0301"
   },
   {
    "title": "Creative Writing & Crafting Corner",
@@ -7648,7 +7119,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-11-0326"
+   "id": "chasi-2026-12-11-0302"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -7670,7 +7141,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-11-0327"
+   "id": "sichildrens-2026-12-11-0303"
   },
   {
    "title": "Wellness Chats (Virtual)",
@@ -7692,7 +7163,7 @@
    "source_key": "nami",
    "source_url": "https://naminycmetro.org/",
    "need": "crisis",
-   "id": "nami-2026-12-11-0328"
+   "id": "nami-2026-12-11-0304"
   },
   {
    "title": "Grand Army Plaza Menorah Lighting",
@@ -7715,7 +7186,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-11-0329"
+   "id": "prospect-2026-12-11-0305"
   },
   {
    "title": "Candlelight Tours",
@@ -7735,7 +7206,7 @@
    "source_key": "historic-richmond-town",
    "source_url": "https://www.historicrichmondtown.org/",
    "need": "other",
-   "id": "historic-richmond-town-2026-12-11-0330"
+   "id": "historic-richmond-town-2026-12-11-0306"
   },
   {
    "title": "It’s My Park at Brookville Park",
@@ -7758,7 +7229,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-11-0331"
+   "id": "cityparks-2026-12-11-0307"
   },
   {
    "title": "Greenmarket at Grand Army Plaza",
@@ -7781,7 +7252,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-12-0332"
+   "id": "prospect-2026-12-12-0308"
   },
   {
    "title": "It’s My Park at Westerleigh Park",
@@ -7804,7 +7275,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-12-0333"
+   "id": "cityparks-2026-12-12-0309"
   },
   {
    "title": "12/12 Clean Up and Bulb Planting at Highland Park",
@@ -7824,7 +7295,7 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-12-12-0334"
+   "id": "forestparktrust-2026-12-12-0310"
   },
   {
    "title": "12/12 Trail Restoration at Forest Park",
@@ -7844,7 +7315,7 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-12-12-0335"
+   "id": "forestparktrust-2026-12-12-0311"
   },
   {
    "title": "Introduction to Birdwatching Outings",
@@ -7867,7 +7338,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-12-0336"
+   "id": "prospect-2026-12-12-0312"
   },
   {
    "title": "Volunteer Day: Leaf No Trace",
@@ -7888,7 +7359,8 @@
    "source_key": "fortgreenepark",
    "source_url": "https://www.fortgreenepark.org/",
    "need": "other",
-   "id": "fortgreenepark-2026-12-12-0337"
+   "id": "fortgreenepark-2026-12-12-0313",
+   "verified": true
   },
   {
    "title": "S.T.E.A.M Saturday: Seasonal Survival",
@@ -7908,7 +7380,7 @@
    "source_key": "latimer",
    "source_url": "https://www.latimernow.org/",
    "need": "other",
-   "id": "latimer-2026-12-12-0338"
+   "id": "latimer-2026-12-12-0314"
   },
   {
    "title": "Urban Park Rangers | Puppet Making and Puppet Show",
@@ -7931,7 +7403,7 @@
    "source_key": "prospect",
    "source_url": "https://www.prospectpark.org/",
    "need": "other",
-   "id": "prospect-2026-12-12-0339"
+   "id": "prospect-2026-12-12-0315"
   },
   {
    "title": "Holiday Market with Heart of Dinner & KEM NYC",
@@ -7952,7 +7424,7 @@
    "source_key": "essexmarket",
    "source_url": "https://www.essexmarket.nyc/",
    "need": "other",
-   "id": "essexmarket-2026-12-12-0340"
+   "id": "essexmarket-2026-12-12-0316"
   },
   {
    "title": "Winter Wreath Workshop",
@@ -7974,7 +7446,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-12-12-0341"
+   "id": "randalls-2026-12-12-0317"
   },
   {
    "title": "Weekend Walk-In! Workshop: Glittering Giftwrap",
@@ -7996,7 +7468,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-12-0342"
+   "id": "sichildrens-2026-12-12-0318"
   },
   {
    "title": "Yuletide Celebration with National Asian Artists Project",
@@ -8018,7 +7490,8 @@
    "source_key": "moca",
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
-   "id": "moca-2026-12-12-0343"
+   "id": "moca-2026-12-12-0319",
+   "verified": true
   },
   {
    "title": "Crazy Science: Liquid Nitrogen",
@@ -8040,7 +7513,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-12-0344"
+   "id": "sichildrens-2026-12-12-0320"
   },
   {
    "title": "Remesas y Sobremesa: Carry for HISTORIAS",
@@ -8060,7 +7533,7 @@
    "source_key": "clemente",
    "source_url": "https://www.theclementecenter.org/",
    "need": "other",
-   "id": "clemente-2026-12-12-0345",
+   "id": "clemente-2026-12-12-0321",
    "verified": true
   },
   {
@@ -8081,7 +7554,30 @@
    "source_key": "jbrpc",
    "source_url": "https://www.jbrpc.org/",
    "need": "other",
-   "id": "jbrpc-2026-12-12-0346"
+   "id": "jbrpc-2026-12-12-0322"
+  },
+  {
+   "title": "Sunday Greenmarket at Bartel-Pritchard Square",
+   "start": "2026-12-13T09:00:00",
+   "end": "2026-12-13T14:00:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "Nestled inside Prospect Park’s tree-shaded southwest corner, this much-loved market is where South Slope and Windsor Terrace residents stock up on locally grown staples. The offerings range from a selection of vegetables, fruits, baked goods, plants and…",
+   "url": "https://www.prospectpark.org/event/sunday-greenmarket-at-bartel-pritchard-square-4/2026-12-13/",
+   "image": "https://www.prospectpark.org/wp-content/uploads/filer_public/bc/e9/bce94562-9695-40f8-9cf3-c7124c2d64b4/greenmarket_c_martin_seck-scaled.jpg",
+   "fit": null,
+   "kind": "Food Wellness",
+   "format": "In person",
+   "free": true,
+   "alt_url": null,
+   "listed": true,
+   "source": "Prospect Park Alliance",
+   "source_key": "prospect",
+   "source_url": "https://www.prospectpark.org/",
+   "need": "other",
+   "id": "prospect-2026-12-13-0323"
   },
   {
    "title": "Winter Birding at Floyd Bennett Field with JBRPC and NYC Bird Alliance",
@@ -8101,7 +7597,7 @@
    "source_key": "jbrpc",
    "source_url": "https://www.jbrpc.org/",
    "need": "other",
-   "id": "jbrpc-2026-12-13-0347"
+   "id": "jbrpc-2026-12-13-0324"
   },
   {
    "title": "39th Annual Holiday Tour",
@@ -8121,7 +7617,7 @@
    "source_key": "latimer",
    "source_url": "https://www.latimernow.org/",
    "need": "other",
-   "id": "latimer-2026-12-13-0348"
+   "id": "latimer-2026-12-13-0325"
   },
   {
    "title": "Photos with Santa _ LES",
@@ -8143,7 +7639,7 @@
    "source_key": "betances",
    "source_url": "https://www.betances.org/",
    "need": "doctor",
-   "id": "betances-2026-12-13-0349",
+   "id": "betances-2026-12-13-0326",
    "verified": true
   },
   {
@@ -8166,7 +7662,30 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-13-0350"
+   "id": "sichildrens-2026-12-13-0327"
+  },
+  {
+   "title": "Skate with Santa at Lakeside",
+   "start": "2026-12-13T12:30:00",
+   "end": "2026-12-13T12:45:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "Celebrate the holiday season with a magical skating experience at the LeFrak Center at Lakeside in Prospect Park! Santa Claus is trading his sleigh for a pair of skates and joining us on the ice for a limited time this December! Bring your family and friends…",
+   "url": "https://www.prospectpark.org/event/skate-with-santa-at-lakeside/2026-12-13/1/",
+   "image": "https://www.prospectpark.org/wp-content/uploads/2026/11/IMG_0086-scaled.jpg",
+   "fit": null,
+   "kind": "Holiday Kids Lakeside",
+   "format": "In person",
+   "free": true,
+   "alt_url": null,
+   "listed": true,
+   "source": "Prospect Park Alliance",
+   "source_key": "prospect",
+   "source_url": "https://www.prospectpark.org/",
+   "need": "other",
+   "id": "prospect-2026-12-13-0328"
   },
   {
    "title": "Oy, it's Christmas!",
@@ -8186,7 +7705,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-12-13-0351"
+   "id": "sijcc-2026-12-13-0329"
   },
   {
    "title": "Crazy Science: Liquid Nitrogen",
@@ -8208,7 +7727,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-13-0352"
+   "id": "sichildrens-2026-12-13-0330"
   },
   {
    "title": "Astronomy: Geminids Meteor Shower",
@@ -8228,7 +7747,7 @@
    "source_key": "jbrpc",
    "source_url": "https://www.jbrpc.org/",
    "need": "other",
-   "id": "jbrpc-2026-12-13-0353"
+   "id": "jbrpc-2026-12-13-0331"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -8250,7 +7769,30 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-14-0354"
+   "id": "qbg-2026-12-14-0332"
+  },
+  {
+   "title": "Sexual Health Mobile Medical Unit",
+   "start": "2026-12-14T10:00:00",
+   "end": "2026-12-14T15:00:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "Brooklyn",
+   "address": "",
+   "description": "Prospect Park Alliance is collaborating with NewYork-Presbyterian to offer comprehensive sexual health services in Brooklyn’s backyard at Grand Army Plaza every Thursday from 10 am to 3 pm and every Monday at the Parkside + Ocean Avenue Entrance from 10 am to…",
+   "url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit-2/2026-12-14/",
+   "image": "https://www.prospectpark.org/wp-content/uploads/2024/08/News-Banner-2024-06-13-nyp-launches-sexual-health-mobile-medical-unit-in-nyc.jpg",
+   "fit": null,
+   "kind": "Free Wellness",
+   "format": "In person",
+   "free": true,
+   "alt_url": null,
+   "listed": true,
+   "source": "Prospect Park Alliance",
+   "source_key": "prospect",
+   "source_url": "https://www.prospectpark.org/",
+   "need": "other",
+   "id": "prospect-2026-12-14-0333"
   },
   {
    "title": "Fall Bodyroll in the Field House",
@@ -8273,7 +7815,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-14-0355"
+   "id": "riverside-2026-12-14-0334"
   },
   {
    "title": "Land Use, Zoning & Economic Development Committee",
@@ -8295,7 +7837,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-14-0356"
+   "id": "manhattancb1-2026-12-14-0335"
   },
   {
    "title": "December 2026 Board Meeting",
@@ -8317,7 +7859,7 @@
    "source_key": "cb14brooklyn",
    "source_url": "https://cb14brooklyn.com/",
    "need": "civic",
-   "id": "cb14brooklyn-2026-12-14-0357",
+   "id": "cb14brooklyn-2026-12-14-0336",
    "verified": true
   },
   {
@@ -8341,7 +7883,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-15-0358"
+   "id": "riverside-2026-12-15-0337"
   },
   {
    "title": "Legacies of Mass Incarceration: Revisiting the Seven Neighborhoods Study",
@@ -8363,7 +7905,7 @@
    "source_key": "fortune",
    "source_url": "https://fortunesociety.org/",
    "need": "other",
-   "id": "fortune-2026-12-15-0359",
+   "id": "fortune-2026-12-15-0338",
    "verified": true
   },
   {
@@ -8384,7 +7926,7 @@
    "source_key": "clemente",
    "source_url": "https://www.theclementecenter.org/",
    "need": "other",
-   "id": "clemente-2026-12-15-0360"
+   "id": "clemente-2026-12-15-0339"
   },
   {
    "title": "Elf on a Shelf 2026",
@@ -8404,7 +7946,7 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-12-15-0361"
+   "id": "forestparktrust-2026-12-15-0340"
   },
   {
    "title": "Wyckoff Cousin Community Calls",
@@ -8426,7 +7968,8 @@
    "source_key": "wyckoff",
    "source_url": "https://wyckoffmuseum.org/",
    "need": "other",
-   "id": "wyckoff-2026-12-15-0362"
+   "id": "wyckoff-2026-12-15-0341",
+   "verified": true
   },
   {
    "title": "Parks, Plazas & Open Space Committee",
@@ -8448,7 +7991,29 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-15-0363"
+   "id": "manhattancb1-2026-12-15-0342"
+  },
+  {
+   "title": "CB6 Committee Meeting- Human Services and Environmental Sustainability",
+   "start": "2026-12-15T18:30:00",
+   "end": "2026-12-15T20:00:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "Agenda TBD",
+   "url": "https://brooklyncb6.cityofnewyork.us/event/cb6-committee-meeting-human-services-and-environmental-sustainability-7/",
+   "image": null,
+   "fit": null,
+   "kind": "Brooklyn Community Board 6",
+   "format": "In person",
+   "free": true,
+   "alt_url": null,
+   "source": "Brooklyn Community Board 6",
+   "source_key": "brooklyncb6",
+   "source_url": "https://brooklyncb6.cityofnewyork.us/",
+   "need": "civic",
+   "id": "brooklyncb6-2026-12-15-0343"
   },
   {
    "title": "Fall Yoga in the Field House",
@@ -8471,7 +8036,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-16-0364"
+   "id": "riverside-2026-12-16-0344"
   },
   {
    "title": "Bird and Nature Walk: Blue Heron Park",
@@ -8493,7 +8058,8 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-12-16-0365"
+   "id": "simuseum-2026-12-16-0345",
+   "verified": true
   },
   {
    "title": "It’s My Park at Seth Low Playground/ Bealin Square",
@@ -8516,7 +8082,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-16-0366"
+   "id": "cityparks-2026-12-16-0346"
   },
   {
    "title": "Other Desert Cities: On Broadway",
@@ -8536,7 +8102,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-12-16-0367"
+   "id": "sijcc-2026-12-16-0347"
   },
   {
    "title": "Physio Ball",
@@ -8556,7 +8122,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2026-12-16-0368"
+   "id": "sijcc-2026-12-16-0348"
   },
   {
    "title": "Holiday House Tours",
@@ -8576,7 +8142,7 @@
    "source_key": "historic-richmond-town",
    "source_url": "https://www.historicrichmondtown.org/",
    "need": "other",
-   "id": "historic-richmond-town-2026-12-16-0369"
+   "id": "historic-richmond-town-2026-12-16-0349"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -8598,7 +8164,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-16-0370"
+   "id": "sichildrens-2026-12-16-0350"
   },
   {
    "title": "Quality of Life, Health, Housing & Human Services Committee",
@@ -8620,7 +8186,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-16-0371"
+   "id": "manhattancb1-2026-12-16-0351"
   },
   {
    "title": "Executive Committee",
@@ -8642,7 +8208,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-16-0372"
+   "id": "manhattancb1-2026-12-16-0352"
   },
   {
    "title": "The Jazz Gallery: Tyshawn Sorey",
@@ -8665,7 +8231,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-16-0373"
+   "id": "flatironnomad-2026-12-16-0353"
   },
   {
    "title": "Workforce Group Career Counseling",
@@ -8687,7 +8253,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "work",
-   "id": "chasi-2026-12-17-0374"
+   "id": "chasi-2026-12-17-0354"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -8709,7 +8275,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-17-0375"
+   "id": "sichildrens-2026-12-17-0355"
   },
   {
    "title": "December 2026 CB 1’s Monthly Board Meeting",
@@ -8731,7 +8297,29 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2026-12-17-0376"
+   "id": "manhattancb1-2026-12-17-0356"
+  },
+  {
+   "title": "Financial Empowerment Session 5 – Spanish",
+   "start": "2026-12-17T18:00:00",
+   "end": "2026-12-17T19:30:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "",
+   "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-5-spanish/",
+   "image": null,
+   "fit": null,
+   "kind": "Exclude from Fundraising Event Sections Financial…",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Food Bank For New York City",
+   "source_key": "foodbank",
+   "source_url": "https://www.foodbanknyc.org/",
+   "need": "food",
+   "id": "foodbank-2026-12-17-0357"
   },
   {
    "title": "December 2026 Monthly Meeting",
@@ -8753,7 +8341,7 @@
    "source_key": "queenscb3",
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
-   "id": "queenscb3-2026-12-17-0377",
+   "id": "queenscb3-2026-12-17-0358",
    "verified": true
   },
   {
@@ -8777,7 +8365,8 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-18-0378"
+   "id": "flatironnomad-2026-12-18-0359",
+   "verified": true
   },
   {
    "title": "12/18 Restoration Fridays at Forest Park",
@@ -8797,7 +8386,7 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-12-18-0379"
+   "id": "forestparktrust-2026-12-18-0360"
   },
   {
    "title": "12/18 Restoration at Highland Park",
@@ -8817,7 +8406,7 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2026-12-18-0380"
+   "id": "forestparktrust-2026-12-18-0361"
   },
   {
    "title": "Living Life Up",
@@ -8839,7 +8428,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-18-0381"
+   "id": "chasi-2026-12-18-0362"
   },
   {
    "title": "Relapse Prevention",
@@ -8861,7 +8450,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-18-0382"
+   "id": "chasi-2026-12-18-0363"
   },
   {
    "title": "Creative Writing & Crafting Corner",
@@ -8883,7 +8472,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-18-0383"
+   "id": "chasi-2026-12-18-0364"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -8905,7 +8494,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-18-0384"
+   "id": "sichildrens-2026-12-18-0365"
   },
   {
    "title": "Dickens’ \"A Christmas Carol\" with Jonathan Kruk*",
@@ -8925,7 +8514,7 @@
    "source_key": "historic-richmond-town",
    "source_url": "https://www.historicrichmondtown.org/",
    "need": "other",
-   "id": "historic-richmond-town-2026-12-18-0385"
+   "id": "historic-richmond-town-2026-12-18-0366"
   },
   {
    "title": "It’s My Park at Westerleigh Park",
@@ -8948,7 +8537,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-19-0386"
+   "id": "cityparks-2026-12-19-0367"
   },
   {
    "title": "It’s My Park at Ewen Park",
@@ -8971,7 +8560,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-19-0387"
+   "id": "cityparks-2026-12-19-0368"
   },
   {
    "title": "It’s My Park at Tompkins Square Park",
@@ -8994,7 +8583,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-19-0388"
+   "id": "cityparks-2026-12-19-0369"
   },
   {
    "title": "Public Tour of With a Single Step: Stories in the Making of America",
@@ -9016,7 +8605,7 @@
    "source_key": "moca",
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
-   "id": "moca-2026-12-19-0389"
+   "id": "moca-2026-12-19-0370"
   },
   {
    "title": "Weekend Walk-In! Workshop: Glittering Giftwrap",
@@ -9038,7 +8627,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-19-0390"
+   "id": "sichildrens-2026-12-19-0371"
   },
   {
    "title": "MOCACREATE: Landscape in Miniature with Teaching Artist Yu Rong",
@@ -9060,7 +8649,7 @@
    "source_key": "moca",
    "source_url": "https://www.mocanyc.org/",
    "need": "other",
-   "id": "moca-2026-12-19-0391"
+   "id": "moca-2026-12-19-0372"
   },
   {
    "title": "Zumba Kids",
@@ -9082,7 +8671,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-19-0392"
+   "id": "sichildrens-2026-12-19-0373"
   },
   {
    "title": "127th Annual Audubon Christmas Bird Count",
@@ -9104,7 +8693,7 @@
    "source_key": "randalls",
    "source_url": "https://randallsisland.org/",
    "need": "other",
-   "id": "randalls-2026-12-20-0393"
+   "id": "randalls-2026-12-20-0374"
   },
   {
    "title": "It’s My Park at Cottages Hill New Brighton Park",
@@ -9127,7 +8716,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-20-0394"
+   "id": "cityparks-2026-12-20-0375"
   },
   {
    "title": "Compost Beautification Community Volunteer Days",
@@ -9149,7 +8738,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-20-0395"
+   "id": "qbg-2026-12-20-0376"
   },
   {
    "title": "Weekend Walk-In! Workshop: Glittering Giftwrap",
@@ -9171,7 +8760,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-20-0396"
+   "id": "sichildrens-2026-12-20-0377"
   },
   {
    "title": "Sea Shanty Sessions",
@@ -9191,7 +8780,7 @@
    "source_key": "noblemaritime",
    "source_url": "https://www.noblemaritime.org/",
    "need": "other",
-   "id": "noblemaritime-2026-12-20-0397"
+   "id": "noblemaritime-2026-12-20-0378"
   },
   {
    "title": "Mighty String Demons",
@@ -9213,7 +8802,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-20-0398"
+   "id": "sichildrens-2026-12-20-0379"
   },
   {
    "title": "Zumba Kids",
@@ -9235,7 +8824,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-20-0399"
+   "id": "sichildrens-2026-12-20-0380"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -9257,7 +8846,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-21-0400"
+   "id": "qbg-2026-12-21-0381"
   },
   {
    "title": "Fall Bodyroll in the Field House",
@@ -9280,7 +8869,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-21-0401"
+   "id": "riverside-2026-12-21-0382"
   },
   {
    "title": "Bodyweight Blast in the Field House",
@@ -9303,7 +8892,7 @@
    "source_key": "riverside",
    "source_url": "https://riversideparknyc.org/",
    "need": "other",
-   "id": "riverside-2026-12-22-0402"
+   "id": "riverside-2026-12-22-0383"
   },
   {
    "title": "Gather and Sing",
@@ -9326,7 +8915,7 @@
    "source_key": "cobblehill",
    "source_url": "https://cobblehill.nyc/",
    "need": "other",
-   "id": "cobblehill-2026-12-22-0403",
+   "id": "cobblehill-2026-12-22-0384",
    "verified": true
   },
   {
@@ -9350,7 +8939,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2026-12-23-0404"
+   "id": "cityparks-2026-12-23-0385"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -9372,7 +8961,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-23-0405"
+   "id": "sichildrens-2026-12-23-0386"
   },
   {
    "title": "The Jazz Gallery: Theo Bleckmann & Friends",
@@ -9395,7 +8984,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-23-0406"
+   "id": "flatironnomad-2026-12-23-0387"
   },
   {
    "title": "Christmas in Red | TEN11 Christmas Party with Santa DJ",
@@ -9418,7 +9007,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-24-0407"
+   "id": "flatironnomad-2026-12-24-0388"
   },
   {
    "title": "Workforce Group Career Counseling",
@@ -9440,7 +9029,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "work",
-   "id": "chasi-2026-12-24-0408"
+   "id": "chasi-2026-12-24-0389"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -9462,7 +9051,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-24-0409"
+   "id": "sichildrens-2026-12-24-0390"
   },
   {
    "title": "CLOSED: Christmas",
@@ -9484,7 +9073,7 @@
    "source_key": "betances",
    "source_url": "https://www.betances.org/",
    "need": "doctor",
-   "id": "betances-2026-12-25-0410"
+   "id": "betances-2026-12-25-0391"
   },
   {
    "title": "Christmas Day – Garden is CLOSED",
@@ -9506,7 +9095,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-25-0411"
+   "id": "qbg-2026-12-25-0392"
   },
   {
    "title": "Living Life Up",
@@ -9528,7 +9117,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-25-0412"
+   "id": "chasi-2026-12-25-0393"
   },
   {
    "title": "Relapse Prevention",
@@ -9550,7 +9139,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-25-0413"
+   "id": "chasi-2026-12-25-0394"
   },
   {
    "title": "Creative Writing & Crafting Corner",
@@ -9572,7 +9161,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2026-12-25-0414"
+   "id": "chasi-2026-12-25-0395"
   },
   {
    "title": "Weekend Walk-In! Workshop: Glittering Giftwrap",
@@ -9594,7 +9183,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-26-0415"
+   "id": "sichildrens-2026-12-26-0396"
   },
   {
    "title": "Silly Billy",
@@ -9616,7 +9205,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-26-0416"
+   "id": "sichildrens-2026-12-26-0397"
   },
   {
    "title": "Weekend Walk-In! Workshop: Glittering Giftwrap",
@@ -9638,7 +9227,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-27-0417"
+   "id": "sichildrens-2026-12-27-0398"
   },
   {
    "title": "A Very GRACE-ful Winter’s Tale",
@@ -9660,7 +9249,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-27-0418"
+   "id": "sichildrens-2026-12-27-0399"
   },
   {
    "title": "Compost Build Community Volunteer Days",
@@ -9682,7 +9271,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2026-12-28-0419"
+   "id": "qbg-2026-12-28-0400"
   },
   {
    "title": "Walk-In! Workshop: Glittering Giftwrap",
@@ -9704,7 +9293,7 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-28-0420"
+   "id": "sichildrens-2026-12-28-0401"
   },
   {
    "title": "Bilingual Birdies Brings Music and Dance to the Museum: Experience this Fun Filled Latin Adventure",
@@ -9726,7 +9315,51 @@
    "source_key": "sichildrens",
    "source_url": "https://sichildrensmuseum.org/",
    "need": "family",
-   "id": "sichildrens-2026-12-28-0421"
+   "id": "sichildrens-2026-12-28-0402"
+  },
+  {
+   "title": "Walk-In! Workshop: Glittering Giftwrap",
+   "start": "2026-12-29T12:00:00",
+   "end": "2026-12-29T16:00:00",
+   "all_day": false,
+   "venue": "Staten Island Children’s Museum",
+   "borough": "Staten Island",
+   "address": "1000 Richmond Terrace, Building M",
+   "description": "[vc_row][vc_column width=”2/3″][vc_column_text]In this hands-on art activity, young artists will use a variety of silver art supplies, including stamps, markers, and stickers, to create their own unique patterns on tan or black paper that they can take home…",
+   "url": "https://sichildrensmuseum.org/event/walk-in-workshop-glittering-giftwrap/2026-12-29/",
+   "image": "https://sichildrensmuseum.org/wp-content/uploads/2026/11/gg-rhombus.png",
+   "fit": null,
+   "kind": "art Art-Making crafts Event for Kids Family Friendly",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Staten Island Children's Museum",
+   "source_key": "sichildrens",
+   "source_url": "https://sichildrensmuseum.org/",
+   "need": "family",
+   "id": "sichildrens-2026-12-29-0403"
+  },
+  {
+   "title": "Binx the Reptile Guy – Dino Scales & Tails",
+   "start": "2026-12-29T16:00:00",
+   "end": "2026-12-29T16:45:00",
+   "all_day": false,
+   "venue": "Staten Island Children’s Museum",
+   "borough": "Staten Island",
+   "address": "1000 Richmond Terrace, Building M",
+   "description": "[vc_row content_placement=”middle”][vc_column width=”2/3″][vc_column_text] Join us for a thrilling journey through time where ancient reptiles meet their modern-day cousins with Binx the Reptile Guy and a live cast of real reptiles – like sulcata and Russian…",
+   "url": "https://sichildrensmuseum.org/event/binx-the-reptile-guy-dino-scales-tails-5/2026-12-29/",
+   "image": "https://sichildrensmuseum.org/wp-content/uploads/2026/01/binx-rhombus.png",
+   "fit": null,
+   "kind": "Event for Kids Family Friendly performance",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Staten Island Children's Museum",
+   "source_key": "sichildrens",
+   "source_url": "https://sichildrensmuseum.org/",
+   "need": "family",
+   "id": "sichildrens-2026-12-29-0404"
   },
   {
    "title": "Bird and Nature Walk: Great Kills Park",
@@ -9748,7 +9381,7 @@
    "source_key": "simuseum",
    "source_url": "https://www.statenislandmuseum.org/",
    "need": "other",
-   "id": "simuseum-2026-12-30-0422"
+   "id": "simuseum-2026-12-30-0405"
   },
   {
    "title": "A Midnight Affair | New Year’s Eve at ZOI Mediterranean NoMad",
@@ -9771,7 +9404,7 @@
    "source_key": "flatironnomad",
    "source_url": "https://www.flatironnomad.nyc/",
    "need": "other",
-   "id": "flatironnomad-2026-12-31-0423"
+   "id": "flatironnomad-2026-12-31-0406"
   },
   {
    "title": "Workforce Group Career Counseling",
@@ -9793,7 +9426,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "work",
-   "id": "chasi-2026-12-31-0424"
+   "id": "chasi-2026-12-31-0407"
   },
   {
    "title": "CETest",
@@ -9815,7 +9448,7 @@
    "source_key": "cidny",
    "source_url": "https://www.cidny.org/",
    "need": "disability",
-   "id": "cidny-2026-12-31-0425",
+   "id": "cidny-2026-12-31-0408",
    "verified": true
   },
   {
@@ -9838,7 +9471,7 @@
    "source_key": "betances",
    "source_url": "https://www.betances.org/",
    "need": "doctor",
-   "id": "betances-2027-01-01-0426"
+   "id": "betances-2027-01-01-0409"
   },
   {
    "title": "New Year’s Day – Garden is CLOSED",
@@ -9860,7 +9493,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2027-01-01-0427"
+   "id": "qbg-2027-01-01-0410"
   },
   {
    "title": "Living Life Up",
@@ -9882,7 +9515,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-01-0428"
+   "id": "chasi-2027-01-01-0411"
   },
   {
    "title": "Relapse Prevention",
@@ -9904,7 +9537,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-01-0429"
+   "id": "chasi-2027-01-01-0412"
   },
   {
    "title": "Creative Writing & Crafting Corner",
@@ -9926,7 +9559,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-01-0430"
+   "id": "chasi-2027-01-01-0413"
   },
   {
    "title": "It’s My Park at Westerleigh Park",
@@ -9949,7 +9582,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2027-01-02-0431"
+   "id": "cityparks-2027-01-02-0414"
   },
   {
    "title": "Here There Are Blueberries: On Broadway",
@@ -9969,7 +9602,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2027-01-06-0432"
+   "id": "sijcc-2027-01-06-0415"
   },
   {
    "title": "Three Kings Day",
@@ -9990,7 +9623,7 @@
    "source_key": "essexmarket",
    "source_url": "https://www.essexmarket.nyc/",
    "need": "other",
-   "id": "essexmarket-2027-01-06-0433"
+   "id": "essexmarket-2027-01-06-0416"
   },
   {
    "title": "Transportation & Street Activity Permits Committee",
@@ -10012,7 +9645,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2027-01-06-0434"
+   "id": "manhattancb1-2027-01-06-0417"
   },
   {
    "title": "Workforce Group Career Counseling",
@@ -10034,7 +9667,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "work",
-   "id": "chasi-2027-01-07-0435"
+   "id": "chasi-2027-01-07-0418"
   },
   {
    "title": "World Trade Center & Battery Park City Committee",
@@ -10056,7 +9689,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2027-01-07-0436"
+   "id": "manhattancb1-2027-01-07-0419"
   },
   {
    "title": "Writing as Healing January 7",
@@ -10078,7 +9711,7 @@
    "source_key": "samaritans",
    "source_url": "https://samaritansnyc.org/",
    "need": "crisis",
-   "id": "samaritans-2027-01-07-0437",
+   "id": "samaritans-2027-01-07-0420",
    "verified": true
   },
   {
@@ -10101,7 +9734,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-08-0438"
+   "id": "chasi-2027-01-08-0421"
   },
   {
    "title": "Relapse Prevention",
@@ -10123,7 +9756,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-08-0439"
+   "id": "chasi-2027-01-08-0422"
   },
   {
    "title": "Creative Writing & Crafting Corner",
@@ -10145,7 +9778,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-08-0440"
+   "id": "chasi-2027-01-08-0423"
   },
   {
    "title": "It’s My Park at Westerleigh Park",
@@ -10168,7 +9801,7 @@
    "source_key": "cityparks",
    "source_url": "https://cityparksfoundation.org/",
    "need": "other",
-   "id": "cityparks-2027-01-09-0441"
+   "id": "cityparks-2027-01-09-0424"
   },
   {
    "title": "Land Use, Zoning & Economic Development Committee",
@@ -10190,7 +9823,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2027-01-11-0442"
+   "id": "manhattancb1-2027-01-11-0425"
   },
   {
    "title": "Pom-poms",
@@ -10210,7 +9843,7 @@
    "source_key": "forestparktrust",
    "source_url": "https://www.forestparktrust.org/",
    "need": "other",
-   "id": "forestparktrust-2027-01-12-0443"
+   "id": "forestparktrust-2027-01-12-0426"
   },
   {
    "title": "Trauma and Disability – Part 1",
@@ -10232,7 +9865,7 @@
    "source_key": "cidny",
    "source_url": "https://www.cidny.org/",
    "need": "disability",
-   "id": "cidny-2027-01-13-0444"
+   "id": "cidny-2027-01-13-0427"
   },
   {
    "title": "27/1/13-PWH-1-Heart Healthy Plate",
@@ -10243,7 +9876,7 @@
    "borough": "",
    "address": "",
    "description": "",
-   "url": "https://us02web.zoom.us/meeting/register/Of67rC3pQ3GPH8mbxFGjRQ#/registration",
+   "url": "https://www.foodbanknyc.org/event/27-1-13-pwh-1-heart-healthy-plate/",
    "image": null,
    "fit": null,
    "kind": "Exclude from Fundraising Event Sections Power Your Health",
@@ -10254,7 +9887,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2027-01-13-0445"
+   "id": "foodbank-2027-01-13-0428"
   },
   {
    "title": "Licensing & Permits Committee",
@@ -10276,7 +9909,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2027-01-13-0446"
+   "id": "manhattancb1-2027-01-13-0429"
   },
   {
    "title": "Workforce Group Career Counseling",
@@ -10298,7 +9931,29 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "work",
-   "id": "chasi-2027-01-14-0447"
+   "id": "chasi-2027-01-14-0430"
+  },
+  {
+   "title": "Financial Empowerment Session 6 – English",
+   "start": "2027-01-14T18:00:00",
+   "end": "2027-01-14T19:30:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "",
+   "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-6-english/",
+   "image": null,
+   "fit": null,
+   "kind": "Exclude from Fundraising Event Sections Financial…",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Food Bank For New York City",
+   "source_key": "foodbank",
+   "source_url": "https://www.foodbanknyc.org/",
+   "need": "food",
+   "id": "foodbank-2027-01-14-0431"
   },
   {
    "title": "Landmarks & Preservation Committee",
@@ -10320,7 +9975,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2027-01-14-0448"
+   "id": "manhattancb1-2027-01-14-0432"
   },
   {
    "title": "Living Life Up",
@@ -10342,7 +9997,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-15-0449"
+   "id": "chasi-2027-01-15-0433"
   },
   {
    "title": "Relapse Prevention",
@@ -10364,7 +10019,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-15-0450"
+   "id": "chasi-2027-01-15-0434"
   },
   {
    "title": "Creative Writing & Crafting Corner",
@@ -10386,7 +10041,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-15-0451"
+   "id": "chasi-2027-01-15-0435"
   },
   {
    "title": "Full Lifeguarding Class & CPR",
@@ -10406,7 +10061,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2027-01-16-0452"
+   "id": "sijcc-2027-01-16-0436"
   },
   {
    "title": "Compost Beautification Community Volunteer Days",
@@ -10428,7 +10083,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2027-01-17-0453"
+   "id": "qbg-2027-01-17-0437"
   },
   {
    "title": "Martin Luther King Jr. Day – Garden is OPEN",
@@ -10450,7 +10105,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2027-01-18-0454"
+   "id": "qbg-2027-01-18-0438"
   },
   {
    "title": "Environmental Protection & Climate Resiliency Committee",
@@ -10472,7 +10127,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2027-01-18-0455"
+   "id": "manhattancb1-2027-01-18-0439"
   },
   {
    "title": "Wyckoff Cousin Community Calls",
@@ -10494,7 +10149,7 @@
    "source_key": "wyckoff",
    "source_url": "https://wyckoffmuseum.org/",
    "need": "other",
-   "id": "wyckoff-2027-01-19-0456"
+   "id": "wyckoff-2027-01-19-0440"
   },
   {
    "title": "Decades Music Bingo",
@@ -10514,7 +10169,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2027-01-19-0457"
+   "id": "sijcc-2027-01-19-0441"
   },
   {
    "title": "Parks, Plazas & Open Space Committee",
@@ -10536,7 +10191,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2027-01-19-0458"
+   "id": "manhattancb1-2027-01-19-0442"
   },
   {
    "title": "Trauma and Disability – Part 2",
@@ -10558,7 +10213,7 @@
    "source_key": "cidny",
    "source_url": "https://www.cidny.org/",
    "need": "disability",
-   "id": "cidny-2027-01-20-0459"
+   "id": "cidny-2027-01-20-0443"
   },
   {
    "title": "Quarterly Board Meeting Jan 2027",
@@ -10581,7 +10236,7 @@
    "source_key": "parkslope5th",
    "source_url": "https://www.parkslopefifthavenuebid.com/",
    "need": "other",
-   "id": "parkslope5th-2027-01-20-0460"
+   "id": "parkslope5th-2027-01-20-0444"
   },
   {
    "title": "Quality of Life, Health, Housing & Human Services Committee",
@@ -10603,7 +10258,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2027-01-20-0461"
+   "id": "manhattancb1-2027-01-20-0445"
   },
   {
    "title": "Workforce Group Career Counseling",
@@ -10625,7 +10280,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "work",
-   "id": "chasi-2027-01-21-0462"
+   "id": "chasi-2027-01-21-0446"
   },
   {
    "title": "Executive Committee",
@@ -10647,7 +10302,29 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2027-01-21-0463"
+   "id": "manhattancb1-2027-01-21-0447"
+  },
+  {
+   "title": "Financial Empowerment Session 6 – Spanish",
+   "start": "2027-01-21T18:00:00",
+   "end": "2027-01-21T19:30:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "",
+   "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-6-spanish/",
+   "image": null,
+   "fit": null,
+   "kind": "Exclude from Fundraising Event Sections Financial…",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Food Bank For New York City",
+   "source_key": "foodbank",
+   "source_url": "https://www.foodbanknyc.org/",
+   "need": "food",
+   "id": "foodbank-2027-01-21-0448"
   },
   {
    "title": "January 2027 Monthly Meeting",
@@ -10669,7 +10346,7 @@
    "source_key": "queenscb3",
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
-   "id": "queenscb3-2027-01-21-0464",
+   "id": "queenscb3-2027-01-21-0449",
    "verified": true
   },
   {
@@ -10692,7 +10369,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-22-0465"
+   "id": "chasi-2027-01-22-0450"
   },
   {
    "title": "Relapse Prevention",
@@ -10714,7 +10391,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-22-0466"
+   "id": "chasi-2027-01-22-0451"
   },
   {
    "title": "Creative Writing & Crafting Corner",
@@ -10736,7 +10413,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-22-0467"
+   "id": "chasi-2027-01-22-0452"
   },
   {
    "title": "Full Lifeguarding Class & CPR",
@@ -10756,7 +10433,7 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2027-01-23-0468"
+   "id": "sijcc-2027-01-23-0453"
   },
   {
    "title": "Farm Cooking Workshop: Preserving Elderberries",
@@ -10778,7 +10455,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2027-01-24-0469"
+   "id": "qbg-2027-01-24-0454"
   },
   {
    "title": "January 2027 CB 1’s Monthly Board Meeting",
@@ -10800,7 +10477,7 @@
    "source_key": "manhattancb1",
    "source_url": "https://manhattancb1.cityofnewyork.us/",
    "need": "civic",
-   "id": "manhattancb1-2027-01-26-0470"
+   "id": "manhattancb1-2027-01-26-0455"
   },
   {
    "title": "27/1/27-PWH-2-Cut the Salt Not the Flavor",
@@ -10811,7 +10488,7 @@
    "borough": "",
    "address": "",
    "description": "",
-   "url": "https://us02web.zoom.us/meeting/register/Of67rC3pQ3GPH8mbxFGjRQ#/registration",
+   "url": "https://www.foodbanknyc.org/event/27-1-27-pwh-2-cut-the-salt-not-the-flavor/",
    "image": null,
    "fit": null,
    "kind": "Exclude from Fundraising Event Sections Power Your Health",
@@ -10822,7 +10499,7 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2027-01-27-0471"
+   "id": "foodbank-2027-01-27-0456"
   },
   {
    "title": "Workforce Group Career Counseling",
@@ -10844,7 +10521,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "work",
-   "id": "chasi-2027-01-28-0472"
+   "id": "chasi-2027-01-28-0457"
   },
   {
    "title": "Living Life Up",
@@ -10866,7 +10543,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-29-0473"
+   "id": "chasi-2027-01-29-0458"
   },
   {
    "title": "Relapse Prevention",
@@ -10888,7 +10565,7 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-29-0474"
+   "id": "chasi-2027-01-29-0459"
   },
   {
    "title": "Creative Writing & Crafting Corner",
@@ -10910,7 +10587,27 @@
    "source_key": "chasi",
    "source_url": "https://chasiny.org/",
    "need": "other",
-   "id": "chasi-2027-01-29-0475"
+   "id": "chasi-2027-01-29-0460"
+  },
+  {
+   "title": "Winter Birding at Floyd Bennett Field with JBRPC and NYC Bird Alliance",
+   "start": "2027-01-31T09:30:00",
+   "end": "2027-01-31T11:00:00",
+   "all_day": false,
+   "venue": "The Nest",
+   "borough": "Brooklyn",
+   "address": "135 Aviation Road",
+   "description": "Join NYC Bird Alliance and Jamaica Bay-Rockaway Parks Conservancy at Floyd Bennett Field, one of NYC's top spots for spotting winter wildlife! This former airfield-turned-natural haven offers a variety of habitats, from marshes to meadows, making it the…",
+   "url": "https://www.jbrpc.org/events/2025/12/7/fall-birding-at-floyd-bennett-field-with-nyc-bird-alliance-gx4dz-2e6kk-2e5cn-rb8ws",
+   "image": "https://images.squarespace-cdn.com/content/v1/5398acafe4b03ea7cc92ff58/1764711410261-ADCCEG7DT8WW8A9X5EXI/Tree_Swallow_Lloyd_Spitalnik.jpg?format=1500w",
+   "kind": "Jamaica Bay-Rockaway Parks Conservancy",
+   "format": "In person",
+   "free": false,
+   "source": "Jamaica Bay-Rockaway Parks Conservancy",
+   "source_key": "jbrpc",
+   "source_url": "https://www.jbrpc.org/",
+   "need": "other",
+   "id": "jbrpc-2027-01-31-0461"
   },
   {
    "title": "27/2/10-PWH-3-Mindful Meal Makeover",
@@ -10921,7 +10618,7 @@
    "borough": "",
    "address": "",
    "description": "",
-   "url": "https://us02web.zoom.us/meeting/register/Of67rC3pQ3GPH8mbxFGjRQ?#/registration",
+   "url": "https://www.foodbanknyc.org/event/27-2-10-pwh-2-mindful-meal-makeover/",
    "image": null,
    "fit": null,
    "kind": "Exclude from Fundraising Event Sections Power Your Health",
@@ -10932,7 +10629,29 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2027-02-10-0476"
+   "id": "foodbank-2027-02-10-0462"
+  },
+  {
+   "title": "Financial Empowerment Session 7 – English",
+   "start": "2027-02-11T18:00:00",
+   "end": "2027-02-11T19:30:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "",
+   "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-7-english/",
+   "image": null,
+   "fit": null,
+   "kind": "Exclude from Fundraising Event Sections Financial…",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Food Bank For New York City",
+   "source_key": "foodbank",
+   "source_url": "https://www.foodbanknyc.org/",
+   "need": "food",
+   "id": "foodbank-2027-02-11-0463"
   },
   {
    "title": "Presidents’ Day – Garden is OPEN",
@@ -10954,7 +10673,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2027-02-15-0477"
+   "id": "qbg-2027-02-15-0464"
   },
   {
    "title": "Wyckoff Cousin Community Calls",
@@ -10976,7 +10695,29 @@
    "source_key": "wyckoff",
    "source_url": "https://wyckoffmuseum.org/",
    "need": "other",
-   "id": "wyckoff-2027-02-16-0478"
+   "id": "wyckoff-2027-02-16-0465"
+  },
+  {
+   "title": "Financial Empowerment Session 7 – Spanish",
+   "start": "2027-02-18T18:00:00",
+   "end": "2027-02-18T19:30:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "",
+   "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-7-spanish/",
+   "image": null,
+   "fit": null,
+   "kind": "Exclude from Fundraising Event Sections Financial…",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Food Bank For New York City",
+   "source_key": "foodbank",
+   "source_url": "https://www.foodbanknyc.org/",
+   "need": "food",
+   "id": "foodbank-2027-02-18-0466"
   },
   {
    "title": "February 2027 Monthly Meeting",
@@ -10998,7 +10739,7 @@
    "source_key": "queenscb3",
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
-   "id": "queenscb3-2027-02-18-0479"
+   "id": "queenscb3-2027-02-18-0467"
   },
   {
    "title": "Compost Beautification Community Volunteer Days",
@@ -11020,7 +10761,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2027-02-21-0480"
+   "id": "qbg-2027-02-21-0468"
   },
   {
    "title": "27/2/24-PWH-4-Heart Smart Living",
@@ -11031,7 +10772,7 @@
    "borough": "",
    "address": "",
    "description": "",
-   "url": "https://us02web.zoom.us/meeting/register/Of67rC3pQ3GPH8mbxFGjRQ?#/registration",
+   "url": "https://www.foodbanknyc.org/event/27-2-24-pwh-4-heart-smart-living/",
    "image": null,
    "fit": null,
    "kind": "Exclude from Fundraising Event Sections Power Your Health",
@@ -11042,7 +10783,27 @@
    "source_key": "foodbank",
    "source_url": "https://www.foodbanknyc.org/",
    "need": "food",
-   "id": "foodbank-2027-02-24-0481"
+   "id": "foodbank-2027-02-24-0469"
+  },
+  {
+   "title": "Winter Birding at Floyd Bennett Field with JBRPC and NYC Bird Alliance",
+   "start": "2027-02-28T09:30:00",
+   "end": "2027-02-28T11:00:00",
+   "all_day": false,
+   "venue": "The Nest",
+   "borough": "Brooklyn",
+   "address": "135 Aviation Road",
+   "description": "Join NYC Bird Alliance and Jamaica Bay-Rockaway Parks Conservancy at Floyd Bennett Field, one of NYC's top spots for spotting winter wildlife! This former airfield-turned-natural haven offers a variety of habitats, from marshes to meadows, making it the…",
+   "url": "https://www.jbrpc.org/events/2025/12/7/fall-birding-at-floyd-bennett-field-with-nyc-bird-alliance-gx4dz-2e6kk-2e5cn-rb8ws-nd5em",
+   "image": "https://images.squarespace-cdn.com/content/v1/5398acafe4b03ea7cc92ff58/1764711410261-ADCCEG7DT8WW8A9X5EXI/Tree_Swallow_Lloyd_Spitalnik.jpg?format=1500w",
+   "kind": "Jamaica Bay-Rockaway Parks Conservancy",
+   "format": "In person",
+   "free": false,
+   "source": "Jamaica Bay-Rockaway Parks Conservancy",
+   "source_key": "jbrpc",
+   "source_url": "https://www.jbrpc.org/",
+   "need": "other",
+   "id": "jbrpc-2027-02-28-0470"
   },
   {
    "title": "The Saltwater Frontier: The Meeting of Maritime Cultures in the Colonial Northeast",
@@ -11062,7 +10823,29 @@
    "source_key": "noblemaritime",
    "source_url": "https://www.noblemaritime.org/",
    "need": "other",
-   "id": "noblemaritime-2027-03-07-0482"
+   "id": "noblemaritime-2027-03-07-0471"
+  },
+  {
+   "title": "Financial Empowerment Session 8 – English",
+   "start": "2027-03-11T18:00:00",
+   "end": "2027-03-11T19:30:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "",
+   "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-8-english/",
+   "image": null,
+   "fit": null,
+   "kind": "Exclude from Fundraising Event Sections Financial…",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Food Bank For New York City",
+   "source_key": "foodbank",
+   "source_url": "https://www.foodbanknyc.org/",
+   "need": "food",
+   "id": "foodbank-2027-03-11-0472"
   },
   {
    "title": "Wyckoff Cousin Community Calls",
@@ -11084,7 +10867,7 @@
    "source_key": "wyckoff",
    "source_url": "https://wyckoffmuseum.org/",
    "need": "other",
-   "id": "wyckoff-2027-03-16-0483"
+   "id": "wyckoff-2027-03-16-0473"
   },
   {
    "title": "Dolly: A True Original Musical",
@@ -11104,7 +10887,29 @@
    "source_key": "sijcc",
    "source_url": "https://www.sijcc.org/",
    "need": "family",
-   "id": "sijcc-2027-03-17-0484"
+   "id": "sijcc-2027-03-17-0474"
+  },
+  {
+   "title": "Financial Empowerment Session 8 – Spanish",
+   "start": "2027-03-18T18:00:00",
+   "end": "2027-03-18T19:30:00",
+   "all_day": false,
+   "venue": "",
+   "borough": "",
+   "address": "",
+   "description": "",
+   "url": "https://www.foodbanknyc.org/event/financial-empowerment-session-8-spanish/",
+   "image": null,
+   "fit": null,
+   "kind": "Exclude from Fundraising Event Sections Financial…",
+   "format": "In person",
+   "free": false,
+   "alt_url": null,
+   "source": "Food Bank For New York City",
+   "source_key": "foodbank",
+   "source_url": "https://www.foodbanknyc.org/",
+   "need": "food",
+   "id": "foodbank-2027-03-18-0475"
   },
   {
    "title": "March 2027 Monthly Meeting",
@@ -11126,7 +10931,7 @@
    "source_key": "queenscb3",
    "source_url": "https://queenscb3.cityofnewyork.us/",
    "need": "civic",
-   "id": "queenscb3-2027-03-18-0485"
+   "id": "queenscb3-2027-03-18-0476"
   },
   {
    "title": "Compost Beautification Community Volunteer Days",
@@ -11148,7 +10953,7 @@
    "source_key": "qbg",
    "source_url": "https://queensbotanical.org/",
    "need": "other",
-   "id": "qbg-2027-03-21-0486"
+   "id": "qbg-2027-03-21-0477"
   }
  ]
 }
